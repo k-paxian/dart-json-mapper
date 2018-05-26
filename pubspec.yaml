@@ -1,0 +1,15 @@
+name: json_mapper
+version: 0.0.0
+description: >
+  This package allows programmers to annotate Dart classes in order to
+  serialize/deserialize them from/to JSON string in one line of code.
+author: Alexander Mazuruk <alexander.mazuruk@gmail.com>
+homepage: https://github.com/k-paxian/dart-json-mapper
+environment:
+  sdk: '>=1.12.0 <=2.0.0-dev.58.0'
+dependencies:
+  reflectable: 2.0.0
+  build_runner: ^0.8.0
+dev_dependencies:
+  build_test: ^0.10.0
+  test: ^0.12.0

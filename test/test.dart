@@ -1,0 +1,109 @@
+library json_mapper.test;
+
+import "package:test/test.dart";
+import 'package:json_mapper/converters.dart';
+import 'package:json_mapper/annotations.dart';
+import 'package:json_mapper/json_mapper.dart';
+import 'test.reflectable.dart';
+
+@JsonSerializable()
+enum Color {
+  Red,
+  Blue,
+  Green,
+  Brown,
+  Yellow,
+  Black,
+  White
+}
+
+@JsonSerializable()
+class Car {
+  @JsonProperty(name: 'modelName')
+  String model;
+
+  @JsonProperty(converter: enumConverter)
+  Color color;
+
+  Car([this.model, this.color]);
+}
+
+@JsonSerializable()
+class Person {
+  List<String> skills = ['Go', 'Dart', 'Flutter'];
+
+  @JsonProperty(name: 'last_promotion_date', ignore: true)
+  DateTime lastPromotionDate;
+
+  @JsonProperty(name: 'hire_date', converter: dateConverter)
+  DateTime hireDate = new DateTime.utc(2003,02,28);
+
+  bool married = true;
+  String name = "Forest";
+
+  @JsonProperty(ignore: true)
+  num salary;
+
+  num dob;
+  num age = 36;
+  var lastName = "Gump";
+
+  @JsonProperty(name: 'eye_color', converter: enumConverter)
+  Color eyeColor = Color.Blue;
+
+  @JsonProperty(converter: enumConverter)
+  Color hairColor = Color.Brown;
+
+  List<Car> vehicles = [
+    new Car("Tesla", Color.Black),
+    new Car("BMW", Color.Red)
+  ];
+
+  Person();
+}
+
+void main() {
+  initializeReflectable();
+
+  test("Verify serialization to JSON", () {
+      expect(
+          JsonMapper.serialize(new Person()),
+'''{
+ "skills": [
+  "Go",
+  "Dart",
+  "Flutter"
+ ],
+ "hire_date": "2003-02-28",
+ "married": true,
+ "name": "Forest",
+ "dob": null,
+ "age": 36,
+ "lastName": "Gump",
+ "eye_color": 1,
+ "hairColor": 3,
+ "vehicles": [
+  {
+   "modelName": "Tesla",
+   "color": 5
+  },
+  {
+   "modelName": "BMW",
+   "color": 0
+  }
+ ]
+}'''
+      );
+  });
+
+  test("Verify deserialization from JSON", () {
+    // given
+    String json = '''{"modelName":"Tesla","color":5}''';
+    Car etalonCar = new Car("Tesla", Color.Black);
+    // when
+    Car targetCar = JsonMapper.deserialize(json, Car);
+    // then
+    expect(targetCar.model, etalonCar.model);
+    expect(targetCar.color, etalonCar.color);
+  });
+}
