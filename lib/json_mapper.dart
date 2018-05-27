@@ -25,11 +25,11 @@ class JsonMapper {
     Map<String, MethodMirror> instanceMembers = classMirror.instanceMembers;
     return instanceMembers.values
         .where((MethodMirror method) {
-      return method.isGetter &&
-          method.isSynthetic &&
-          instanceMembers[method.simpleName + '='] != null &&
-          !method.isPrivate;
-    })
+          return method.isGetter &&
+              method.isSynthetic &&
+              instanceMembers[method.simpleName + '='] != null &&
+              !method.isPrivate;
+        })
         .map((MethodMirror method) => method.simpleName)
         .toList();
   }
