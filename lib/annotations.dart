@@ -7,10 +7,15 @@ class JsonProperty {
   final String name;
   final ICustomConverter converter;
   final bool ignore;
-  const JsonProperty({this.name, this.ignore, this.converter});
+  final Type type;
+
+  const JsonProperty({this.name, this.ignore, this.converter, this.type});
 
   String toString() {
-    return "JsonProperty name: ${name}, ignore: ${ignore}, converter: ${converter}";
+    return "JsonProperty name: ${name}, "
+        "ignore: ${ignore}, "
+        "type: ${type}, "
+        "converter: ${converter}";
   }
 }
 

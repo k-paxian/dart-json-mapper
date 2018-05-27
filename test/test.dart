@@ -1,9 +1,10 @@
 library json_mapper.test;
 
-import "package:test/test.dart";
-import 'package:json_mapper/converters.dart';
 import 'package:json_mapper/annotations.dart';
+import 'package:json_mapper/converters.dart';
 import 'package:json_mapper/json_mapper.dart';
+import "package:test/test.dart";
+
 import 'test.reflectable.dart';
 
 @JsonSerializable()
@@ -54,10 +55,13 @@ class Person {
   @JsonProperty(converter: enumConverter)
   Color hairColor = Color.Brown;
 
+  @JsonProperty(type: Car)
   List<Car> vehicles = [
     new Car("Tesla", Color.Black),
     new Car("BMW", Color.Red)
   ];
+
+  String get fullName => "${name} ${lastName}";
 
   Person();
 }
@@ -65,10 +69,7 @@ class Person {
 void main() {
   initializeReflectable();
 
-  test("Verify serialization to JSON", () {
-      expect(
-          JsonMapper.serialize(new Person()),
-'''{
+  final String personJson = '''{
  "skills": [
   "Go",
   "Dart",
@@ -92,11 +93,28 @@ void main() {
    "color": 0
   }
  ]
-}'''
-      );
+}''';
+
+  test("Verify serialization to JSON", () {
+    // given
+    // when
+    String targetJson = JsonMapper.serialize(new Person());
+    // then
+    expect(targetJson, personJson);
   });
 
   test("Verify deserialization from JSON", () {
+    // given
+    Person etalon = new Person();
+    // when
+    Person target = JsonMapper.deserialize(personJson, Person);
+    // then
+    expect(target.fullName, etalon.fullName);
+    expect(target.eyeColor, etalon.eyeColor);
+    expect(JsonMapper.serialize(target), personJson);
+  });
+
+  test("Verify simple deserialization from JSON", () {
     // given
     String json = '''{"modelName":"Tesla","color":5}''';
     Car etalonCar = new Car("Tesla", Color.Black);
