@@ -1,7 +1,5 @@
 library json_mapper.converters;
 
-import 'dart:mirrors' as dm;
-
 import 'package:dart_json_mapper/annotations.dart';
 import 'package:reflectable/reflectable.dart';
 
@@ -41,11 +39,7 @@ class EnumConverter implements ICustomConverter {
   @override
   Object fromJSON(dynamic jsonValue, JsonProperty jsonProperty,
       [VariableMirror variableMirror]) {
-    ClassMirror cm = variableMirror.type;
-    return dm
-        .reflectClass(cm.reflectedType)
-        .getField(#values)
-        .reflectee[jsonValue];
+    return jsonProperty.enumValues[jsonValue];
   }
 
   @override

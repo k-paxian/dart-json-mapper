@@ -3,6 +3,7 @@ library json_mapper;
 import 'dart:convert';
 
 import 'package:dart_json_mapper/annotations.dart';
+import 'package:dart_json_mapper/converters.dart';
 import "package:reflectable/reflectable.dart";
 
 class JsonMapper {
@@ -48,6 +49,27 @@ class JsonMapper {
     return result;
   }
 
+  ICustomConverter getConverter(JsonProperty jsonProperty) {
+    ICustomConverter result = jsonProperty.converter;
+    if (jsonProperty.enumValues != null && result == null) {
+      result = enumConverter;
+    }
+    return result;
+  }
+
+  bool isScalarType(Object object) {
+    if (object is num) {
+      return true;
+    }
+    if (object is bool) {
+      return true;
+    }
+    if (object is String) {
+      return true;
+    }
+    return false;
+  }
+
   dynamic serializeObject(Object o) {
     if (o == null) {
       return null;
@@ -89,8 +111,9 @@ class JsonMapper {
         if (fieldMeta.name != null) {
           jsonFieldName = fieldMeta.name;
         }
-        if (fieldMeta.converter != null) {
-          result[jsonFieldName] = fieldMeta.converter
+        ICustomConverter converter = instance.getConverter(fieldMeta);
+        if (converter != null) {
+          result[jsonFieldName] = converter
               .toJSON(fieldValue, fieldMeta, safeGetInstanceMirror(fieldValue));
           continue;
         }
@@ -106,7 +129,7 @@ class JsonMapper {
 
   static Object deserialize(dynamic jsonValue, dynamic instanceType) {
     ClassMirror cm = instance.classes[instanceType.toString()];
-    Object objectInstance = cm.newInstance("", []);
+    Object objectInstance = cm.isEnum ? null : cm.newInstance("", []);
     InstanceMirror im = instance.safeGetInstanceMirror(objectInstance);
     Map<String, dynamic> m = (jsonValue is String)
         ? instance.jsonDecoder.convert(jsonValue)
@@ -128,13 +151,16 @@ class JsonMapper {
                 .map((item) => deserialize(item, fieldMeta.type))
                 .toList();
           } else {
-            fieldValue = deserialize(fieldValue, fieldMeta.type);
+            if (!instance.isScalarType(fieldValue)) {
+              fieldValue = deserialize(fieldValue, fieldMeta.type);
+            }
           }
         }
-        if (fieldMeta.converter != null) {
+        ICustomConverter converter = instance.getConverter(fieldMeta);
+        if (converter != null) {
           im.invokeSetter(
               fieldName,
-              fieldMeta.converter.fromJSON(
+              converter.fromJSON(
                   fieldValue, fieldMeta, im.type.declarations[fieldName]));
           continue;
         }

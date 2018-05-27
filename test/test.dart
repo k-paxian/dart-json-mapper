@@ -23,7 +23,7 @@ class Car {
   @JsonProperty(name: 'modelName')
   String model;
 
-  @JsonProperty(converter: enumConverter)
+  @JsonProperty(enumValues: Color.values)
   Color color;
 
   Car([this.model, this.color]);
@@ -37,7 +37,7 @@ class Person {
   DateTime lastPromotionDate;
 
   @JsonProperty(name: 'hire_date', converter: dateConverter)
-  DateTime hireDate = new DateTime.utc(2003,02,28);
+  DateTime hireDate = new DateTime(2003, 02, 28);
 
   bool married = true;
   String name = "Forest";
@@ -49,10 +49,10 @@ class Person {
   num age = 36;
   var lastName = "Gump";
 
-  @JsonProperty(name: 'eye_color', converter: enumConverter)
+  @JsonProperty(name: 'eye_color', enumValues: Color.values)
   Color eyeColor = Color.Blue;
 
-  @JsonProperty(converter: enumConverter)
+  @JsonProperty(enumValues: Color.values)
   Color hairColor = Color.Brown;
 
   @JsonProperty(type: Car)

@@ -8,13 +8,16 @@ class JsonProperty {
   final ICustomConverter converter;
   final bool ignore;
   final Type type;
+  final List<dynamic> enumValues;
 
-  const JsonProperty({this.name, this.ignore, this.converter, this.type});
+  const JsonProperty(
+      {this.name, this.ignore, this.converter, this.type, this.enumValues});
 
   String toString() {
     return "JsonProperty name: ${name}, "
         "ignore: ${ignore}, "
         "type: ${type}, "
+        "enumValues: ${enumValues}, "
         "converter: ${converter}";
   }
 }
