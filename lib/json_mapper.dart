@@ -2,7 +2,7 @@ library json_mapper;
 
 import 'dart:convert';
 
-import 'package:json_mapper/annotations.dart';
+import 'package:dart_json_mapper/annotations.dart';
 import "package:reflectable/reflectable.dart";
 
 class JsonMapper {

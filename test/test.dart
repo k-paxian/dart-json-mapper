@@ -1,8 +1,8 @@
 library json_mapper.test;
 
-import 'package:json_mapper/annotations.dart';
-import 'package:json_mapper/converters.dart';
-import 'package:json_mapper/json_mapper.dart';
+import 'package:dart_json_mapper/annotations.dart';
+import 'package:dart_json_mapper/converters.dart';
+import 'package:dart_json_mapper/json_mapper.dart';
 import "package:test/test.dart";
 
 import 'test.reflectable.dart';

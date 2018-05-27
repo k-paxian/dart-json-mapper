@@ -1,6 +1,6 @@
 library json_mapper.annotations;
 
-import 'package:json_mapper/converters.dart';
+import 'package:dart_json_mapper/converters.dart';
 import "package:reflectable/reflectable.dart";
 
 class JsonProperty {

@@ -2,7 +2,7 @@ library json_mapper.converters;
 
 import 'dart:mirrors' as dm;
 
-import 'package:json_mapper/annotations.dart';
+import 'package:dart_json_mapper/annotations.dart';
 import 'package:reflectable/reflectable.dart';
 
 abstract class ICustomConverter {
