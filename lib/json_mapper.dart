@@ -42,22 +42,37 @@ class JsonMapper {
     return result;
   }
 
-  JsonProperty getFieldMetaData(String fieldName, ClassMirror classMirror) {
-    JsonProperty result;
-    classMirror.declarations.forEach((key, v) =>
-        v.metadata.forEach((m) => fieldName == key ? result = m : null));
-    return result;
-  }
-
   ICustomConverter getConverter(JsonProperty jsonProperty) {
-    ICustomConverter result = jsonProperty.converter;
-    if (jsonProperty.enumValues != null && result == null) {
+    ICustomConverter result =
+        jsonProperty != null ? jsonProperty.converter : null;
+    if (jsonProperty != null &&
+        jsonProperty.enumValues != null &&
+        result == null) {
       result = enumConverter;
     }
     return result;
   }
 
+  enumeratePublicFields(InstanceMirror instanceMirror, Function visitor) {
+    for (String name in getPublicFieldNames(instanceMirror.type)) {
+      String jsonName = name;
+      JsonProperty meta = instanceMirror.type.declarations[name].metadata
+          .firstWhere((m) => m is JsonProperty, orElse: () => null);
+      if (meta != null && meta.ignore == true) {
+        continue;
+      }
+      if (meta != null && meta.name != null) {
+        jsonName = meta.name;
+      }
+      visitor(name, jsonName, instanceMirror.invokeGetter(name), meta,
+          getConverter(meta));
+    }
+  }
+
   bool isScalarType(Object object) {
+    if (object == null) {
+      return true;
+    }
     if (object is num) {
       return true;
     }
@@ -71,23 +86,11 @@ class JsonMapper {
   }
 
   dynamic serializeObject(Object o) {
-    if (o == null) {
-      return null;
-    }
-    if (o is DateTime) {
-      return o.toIso8601String();
-    }
-    if (o is num) {
+    if (isScalarType(o)) {
       return o;
     }
     if (o is List) {
       return o.map(serializeObject).toList();
-    }
-    if (o is String) {
-      return o;
-    }
-    if (o is bool) {
-      return o;
     }
     InstanceMirror im = safeGetInstanceMirror(o);
 
@@ -95,31 +98,15 @@ class JsonMapper {
       return null;
     }
 
-    if (im.type.isEnum) {
-      return im.invokeGetter('index');
-    }
-
     Map result = {};
-    for (String fieldName in instance.getPublicFieldNames(im.type)) {
-      var jsonFieldName = fieldName;
-      JsonProperty fieldMeta = instance.getFieldMetaData(fieldName, im.type);
-      final fieldValue = im.invokeGetter(fieldName);
-      if (fieldMeta != null) {
-        if (fieldMeta.ignore == true) {
-          continue;
-        }
-        if (fieldMeta.name != null) {
-          jsonFieldName = fieldMeta.name;
-        }
-        ICustomConverter converter = instance.getConverter(fieldMeta);
-        if (converter != null) {
-          result[jsonFieldName] = converter.toJSON(
-              fieldValue, fieldMeta, safeGetInstanceMirror(fieldValue));
-          continue;
-        }
+    enumeratePublicFields(im, (name, jsonName, value, meta, converter) {
+      if (converter != null) {
+        result[jsonName] =
+            converter.toJSON(value, meta, safeGetInstanceMirror(value));
+      } else {
+        result[jsonName] = serializeObject(value);
       }
-      result[jsonFieldName] = serializeObject(fieldValue);
-    }
+    });
     return result;
   }
 
@@ -135,38 +122,27 @@ class JsonMapper {
         ? instance.jsonDecoder.convert(jsonValue)
         : jsonValue;
 
-    for (String fieldName in instance.getPublicFieldNames(im.type)) {
-      var fieldValue = m[fieldName];
-      JsonProperty fieldMeta = instance.getFieldMetaData(fieldName, im.type);
-      if (fieldMeta != null) {
-        if (fieldMeta.ignore == true) {
-          continue;
-        }
-        if (fieldMeta.name != null) {
-          fieldValue = m[fieldMeta.name];
-        }
-        if (fieldMeta.type != null) {
+    instance.enumeratePublicFields(im,
+        (name, jsonName, value, meta, converter) {
+      var fieldValue = m[jsonName];
+      if (meta != null) {
+        if (meta.type != null) {
           if (fieldValue is List) {
-            fieldValue = fieldValue
-                .map((item) => deserialize(item, fieldMeta.type))
-                .toList();
+            fieldValue =
+                fieldValue.map((item) => deserialize(item, meta.type)).toList();
           } else {
             if (!instance.isScalarType(fieldValue)) {
-              fieldValue = deserialize(fieldValue, fieldMeta.type);
+              fieldValue = deserialize(fieldValue, meta.type);
             }
           }
         }
-        ICustomConverter converter = instance.getConverter(fieldMeta);
         if (converter != null) {
-          im.invokeSetter(
-              fieldName,
-              converter.fromJSON(
-                  fieldValue, fieldMeta, im.type.declarations[fieldName]));
-          continue;
+          fieldValue =
+              converter.fromJSON(fieldValue, meta, im.type.declarations[name]);
         }
       }
-      im.invokeSetter(fieldName, fieldValue);
-    }
+      im.invokeSetter(name, fieldValue);
+    });
     return objectInstance;
   }
 }
