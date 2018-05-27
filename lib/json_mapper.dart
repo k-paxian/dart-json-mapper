@@ -113,8 +113,8 @@ class JsonMapper {
         }
         ICustomConverter converter = instance.getConverter(fieldMeta);
         if (converter != null) {
-          result[jsonFieldName] = converter
-              .toJSON(fieldValue, fieldMeta, safeGetInstanceMirror(fieldValue));
+          result[jsonFieldName] = converter.toJSON(
+              fieldValue, fieldMeta, safeGetInstanceMirror(fieldValue));
           continue;
         }
       }

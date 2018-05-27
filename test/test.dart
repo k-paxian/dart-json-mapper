@@ -8,15 +8,7 @@ import "package:test/test.dart";
 import 'test.reflectable.dart';
 
 @JsonSerializable()
-enum Color {
-  Red,
-  Blue,
-  Green,
-  Brown,
-  Yellow,
-  Black,
-  White
-}
+enum Color { Red, Blue, Green, Brown, Yellow, Black, White }
 
 @JsonSerializable()
 class Car {
