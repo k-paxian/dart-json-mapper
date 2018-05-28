@@ -4,9 +4,8 @@ import 'package:dart_json_mapper/annotations.dart';
 import 'package:dart_json_mapper/converters.dart';
 import 'package:dart_json_mapper/json_mapper.dart';
 
-import 'example.reflectable.dart';
+import 'example.reflectable.dart'; // Import generated code.
 
-@JsonSerializable()
 enum Color { Red, Blue, Green, Brown, Yellow, Black, White }
 
 @JsonSerializable()
@@ -48,7 +47,7 @@ class Person {
   @JsonProperty(name: 'eye_color', enumValues: Color.values)
   Color eyeColor = Color.Blue;
 
-  @JsonProperty(enumValues: Color.values)
+  @JsonProperty(enumValues: Color.values, converter: enumConverterNumeric)
   Color hairColor = Color.Brown;
 
   @JsonProperty(type: Car)
@@ -85,16 +84,16 @@ void main() {
  "dob": null,
  "age": 36,
  "lastName": "Gump",
- "eye_color": 1,
+ "eye_color": "Color.Blue",
  "hairColor": 3,
  "vehicles": [
   {
    "modelName": "Tesla",
-   "color": 5
+   "color": "Color.Black"
   },
   {
    "modelName": "BMW",
-   "color": 0
+   "color": "Color.Red"
   }
  ]
 }''';

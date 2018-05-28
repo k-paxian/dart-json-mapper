@@ -31,10 +31,54 @@ class DateConverter implements ICustomConverter {
   }
 }
 
+const dateTimeConverter = const DateTimeConverter();
+
+class DateTimeConverter implements ICustomConverter {
+  const DateTimeConverter() : super();
+
+  @override
+  Object fromJSON(dynamic jsonValue, JsonProperty jsonProperty,
+      [VariableMirror variableMirror]) {
+    return DateTime.parse(jsonValue);
+  }
+
+  @override
+  dynamic toJSON(Object object, JsonProperty jsonProperty,
+      [InstanceMirror objectMirror]) {
+    DateTime dt = (object as DateTime);
+    return "${dt.year.toString()}-${dt.month.toString().padLeft(2, '0')
+    }-${dt.day.toString().padLeft(2, '0')} "
+        "${dt.hour.toString().padLeft(2, '0')}:"
+        "${dt.minute.toString().padLeft(2, '0')}:"
+        "${dt.second.toString().padLeft(2, '0')}."
+        "${dt.millisecond.toString().padRight(3, '0')}z";
+  }
+}
+
 const enumConverter = const EnumConverter();
 
 class EnumConverter implements ICustomConverter {
   const EnumConverter() : super();
+
+  @override
+  Object fromJSON(dynamic jsonValue, JsonProperty jsonProperty,
+      [VariableMirror variableMirror]) {
+    return jsonProperty.enumValues.firstWhere(
+        (eValue) => eValue.toString() == jsonValue.toString(),
+        orElse: () => null);
+  }
+
+  @override
+  dynamic toJSON(Object object, JsonProperty jsonProperty,
+      [InstanceMirror objectMirror]) {
+    return object.toString();
+  }
+}
+
+const enumConverterNumeric = const EnumConverterNumeric();
+
+class EnumConverterNumeric implements ICustomConverter {
+  const EnumConverterNumeric() : super();
 
   @override
   Object fromJSON(dynamic jsonValue, JsonProperty jsonProperty,
@@ -45,10 +89,6 @@ class EnumConverter implements ICustomConverter {
   @override
   dynamic toJSON(Object object, JsonProperty jsonProperty,
       [InstanceMirror objectMirror]) {
-    var result = object.toString();
-    if (objectMirror != null && objectMirror.type.isEnum) {
-      result = objectMirror.invokeGetter('index');
-    }
-    return result;
+    return jsonProperty.enumValues.indexOf(object);
   }
 }

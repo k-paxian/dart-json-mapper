@@ -5,9 +5,8 @@ import 'package:dart_json_mapper/converters.dart';
 import 'package:dart_json_mapper/json_mapper.dart';
 import "package:test/test.dart";
 
-import 'test.reflectable.dart';
+import 'test.reflectable.dart'; // Import generated code.
 
-@JsonSerializable()
 enum Color { Red, Blue, Green, Brown, Yellow, Black, White }
 
 @JsonSerializable()
@@ -25,8 +24,8 @@ class Car {
 class Person {
   List<String> skills = ['Go', 'Dart', 'Flutter'];
 
-  @JsonProperty(name: 'last_promotion_date', ignore: true)
-  DateTime lastPromotionDate;
+  @JsonProperty(name: 'last_promotion_date', converter: dateTimeConverter)
+  DateTime lastPromotionDate = new DateTime(2008, 05, 13, 22, 33, 44, 55);
 
   @JsonProperty(name: 'hire_date', converter: dateConverter)
   DateTime hireDate = new DateTime(2003, 02, 28);
@@ -44,7 +43,7 @@ class Person {
   @JsonProperty(name: 'eye_color', enumValues: Color.values)
   Color eyeColor = Color.Blue;
 
-  @JsonProperty(enumValues: Color.values)
+  @JsonProperty(enumValues: Color.values, converter: enumConverterNumeric)
   Color hairColor = Color.Brown;
 
   @JsonProperty(type: Car)
@@ -67,22 +66,23 @@ void main() {
   "Dart",
   "Flutter"
  ],
+ "last_promotion_date": "2008-05-13 22:33:44.550z",
  "hire_date": "2003-02-28",
  "married": true,
  "name": "Forest",
  "dob": null,
  "age": 36,
  "lastName": "Gump",
- "eye_color": 1,
+ "eye_color": "Color.Blue",
  "hairColor": 3,
  "vehicles": [
   {
    "modelName": "Tesla",
-   "color": 5
+   "color": "Color.Black"
   },
   {
    "modelName": "BMW",
-   "color": 0
+   "color": "Color.Red"
   }
  ]
 }''';
@@ -108,7 +108,7 @@ void main() {
 
   test("Verify simple deserialization from JSON", () {
     // given
-    String json = '''{"modelName":"Tesla","color":5}''';
+    String json = '''{"modelName":"Tesla","color":"Color.Black"}''';
     Car etalonCar = new Car("Tesla", Color.Black);
     // when
     Car targetCar = JsonMapper.deserialize(json, Car);
