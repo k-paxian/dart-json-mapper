@@ -1,3 +1,8 @@
+## 0.0.5
+
+* DateConverter & NumberConverter introduced
+* Parameters for custom converter introduced
+
 ## 0.0.4
 
 * Convert Enum values to string by default, to skip a disordered values drawback 

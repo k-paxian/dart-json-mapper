@@ -24,17 +24,25 @@ class Car {
 class Person {
   List<String> skills = ['Go', 'Dart', 'Flutter'];
 
-  @JsonProperty(name: 'last_promotion_date', converter: dateTimeConverter)
-  DateTime lastPromotionDate = new DateTime(2008, 05, 13, 22, 33, 44, 55);
+  @JsonProperty(
+      name: 'last_promotion_date',
+      converter: dateConverter,
+      converterParams: {'format': 'MM-dd-yyyy H:m:s'})
+  DateTime lastPromotionDate = new DateTime(2008, 05, 13, 22, 33, 44);
 
-  @JsonProperty(name: 'hire_date', converter: dateConverter)
+  @JsonProperty(
+      name: 'hire_date',
+      converter: dateConverter,
+      converterParams: {'format': 'MM/dd/yyyy'})
   DateTime hireDate = new DateTime(2003, 02, 28);
 
+  @JsonProperty(ignore: true)
   bool married = true;
+
   String name = "Forest";
 
-  @JsonProperty(ignore: true)
-  num salary;
+  @JsonProperty(converter: numberConverter)
+  num salary = 1200000;
 
   num dob;
   num age = 36;
@@ -66,10 +74,10 @@ void main() {
   "Dart",
   "Flutter"
  ],
- "last_promotion_date": "2008-05-13 22:33:44.550z",
- "hire_date": "2003-02-28",
- "married": true,
+ "last_promotion_date": "05-13-2008 22:33:44",
+ "hire_date": "02/28/2003",
  "name": "Forest",
+ "salary": "1,200,000",
  "dob": null,
  "age": 36,
  "lastName": "Gump",

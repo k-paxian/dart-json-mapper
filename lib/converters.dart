@@ -1,6 +1,7 @@
 library json_mapper.converters;
 
 import 'package:dart_json_mapper/annotations.dart';
+import 'package:intl/intl.dart';
 import 'package:reflectable/reflectable.dart';
 
 abstract class ICustomConverter {
@@ -11,47 +12,61 @@ abstract class ICustomConverter {
       [VariableMirror variableMirror]);
 }
 
+class BaseCustomConverter {
+  const BaseCustomConverter() : super();
+  dynamic getConverterParameter(String name, JsonProperty jsonProperty) {
+    return jsonProperty.converterParams != null
+        ? jsonProperty.converterParams[name]
+        : null;
+  }
+}
+
 const dateConverter = const DateConverter();
 
-class DateConverter implements ICustomConverter {
+class DateConverter extends BaseCustomConverter implements ICustomConverter {
   const DateConverter() : super();
 
   @override
   Object fromJSON(dynamic jsonValue, JsonProperty jsonProperty,
       [VariableMirror variableMirror]) {
-    return DateTime.parse(jsonValue);
+    return getDateFormat(jsonProperty).parse(jsonValue);
   }
 
   @override
   dynamic toJSON(Object object, JsonProperty jsonProperty,
       [InstanceMirror objectMirror]) {
-    DateTime dt = (object as DateTime);
-    return "${dt.year.toString()}-${dt.month.toString().padLeft(2, '0')
-    }-${dt.day.toString().padLeft(2, '0')}";
+    return getDateFormat(jsonProperty).format(object);
+  }
+
+  DateFormat getDateFormat(JsonProperty jsonProperty) {
+    String format = getConverterParameter('format', jsonProperty);
+    if (format == null) {
+      format = "yyyy-MM-dd";
+    }
+    return new DateFormat(format);
   }
 }
 
-const dateTimeConverter = const DateTimeConverter();
+const numberConverter = const NumberConverter();
 
-class DateTimeConverter implements ICustomConverter {
-  const DateTimeConverter() : super();
+class NumberConverter extends BaseCustomConverter implements ICustomConverter {
+  const NumberConverter() : super();
 
   @override
   Object fromJSON(dynamic jsonValue, JsonProperty jsonProperty,
       [VariableMirror variableMirror]) {
-    return DateTime.parse(jsonValue);
+    return getNumberFormat(jsonProperty).parse(jsonValue);
   }
 
   @override
   dynamic toJSON(Object object, JsonProperty jsonProperty,
       [InstanceMirror objectMirror]) {
-    DateTime dt = (object as DateTime);
-    return "${dt.year.toString()}-${dt.month.toString().padLeft(2, '0')
-    }-${dt.day.toString().padLeft(2, '0')} "
-        "${dt.hour.toString().padLeft(2, '0')}:"
-        "${dt.minute.toString().padLeft(2, '0')}:"
-        "${dt.second.toString().padLeft(2, '0')}."
-        "${dt.millisecond.toString().padRight(3, '0')}z";
+    return getNumberFormat(jsonProperty).format(object);
+  }
+
+  NumberFormat getNumberFormat(JsonProperty jsonProperty) {
+    String format = getConverterParameter('format', jsonProperty);
+    return new NumberFormat(format);
   }
 }
 

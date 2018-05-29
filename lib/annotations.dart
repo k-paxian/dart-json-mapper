@@ -9,15 +9,22 @@ class JsonProperty {
   final bool ignore;
   final Type type;
   final List<dynamic> enumValues;
+  final Map<String, dynamic> converterParams;
 
   const JsonProperty(
-      {this.name, this.ignore, this.converter, this.type, this.enumValues});
+      {this.name,
+      this.ignore,
+      this.converter,
+      this.type,
+      this.enumValues,
+      this.converterParams});
 
   String toString() {
     return "JsonProperty name: ${name}, "
         "ignore: ${ignore}, "
         "type: ${type}, "
         "enumValues: ${enumValues}, "
+        "converterParams: ${converterParams}, "
         "converter: ${converter}";
   }
 }
