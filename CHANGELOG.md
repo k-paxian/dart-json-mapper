@@ -1,3 +1,7 @@
+## 0.0.6
+
+* build & watch scripts added as a tooling for development time
+
 ## 0.0.5
 
 * DateConverter & NumberConverter introduced

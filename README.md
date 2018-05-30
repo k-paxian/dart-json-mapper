@@ -14,7 +14,7 @@ Library has **NO** dependency on `dart:mirrors`, one of the reasons is described
 Dart classes reflection mechanism is based on [reflectable][3] library. This means "extended types information" is auto-generated out of existing Dart program guided by the annotated classes only, as the result types information is accesible at runtime, at a reduced cost.
 
 Say, you have a dart program *main.dart* having some classes intended to be traveling to JSON and back.
-- First thing you should do is to put @JsonSerializable annotation on each of those classes
+- First thing you should do is to put @JsonSerializable() annotation on each of those classes
 - Next step is to auto generate *main.reflectable.dart* file. And afterwards import that file into *main.dart*
 
 **lib/main.dart**
@@ -24,7 +24,7 @@ import 'package:dart_json_mapper/json_mapper.dart';
 
 import 'main.reflectable.dart'; // Import generated code.
 
-@JsonSerializable // This annotation let instances of MyData be dumped to JSON w/o extra efforts.
+@JsonSerializable() // This annotation let instances of MyData be dumped to JSON w/o extra efforts.
 class MyData {
   int a = 123;
   MyData([this.a]); // Important! Constructor must not have any required parameters.
@@ -44,15 +44,22 @@ Now run the code generation step with the root of your package as the current
 directory:
 
 ```shell
-> dart package:dart_json_mapper/builder.dart lib/main.dart
+> pub run dart_json_mapper:build lib/main.dart
 ```
 
 where `lib/main.dart` should be replaced by the root library of the
 program for which you wish to generate code. You can generate code for
 several programs in one step; for instance, to generate code for a set of
 test files in `test`, this would typically be
-`package:dart_json_mapper/builder.dart test/*_test.dart`.
+`pub run dart_json_mapper:build test/*_test.dart`.
 **You'll need to re-run code generation each time you are making changes to `lib/main.dart`**
+So for development time, use `watch` like this
+
+```shell
+> pub run dart_json_mapper:watch lib/main.dart
+```
+
+Each time you modify your project code, all *.reflectable.dart files will be updated as well.
 - Next step is to add "*.reflectable.dart" to your .gitignore
 - This is it, basic setup is done.
 
