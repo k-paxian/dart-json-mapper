@@ -29,6 +29,8 @@ class JsonProperty {
   }
 }
 
+const jsonSerializable = const JsonSerializable();
+
 class JsonSerializable extends Reflectable {
   const JsonSerializable()
       : super(instanceInvokeCapability, metadataCapability,

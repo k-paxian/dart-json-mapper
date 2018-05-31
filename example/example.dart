@@ -8,7 +8,7 @@ import 'example.reflectable.dart'; // Import generated code.
 
 enum Color { Red, Blue, Green, Brown, Yellow, Black, White }
 
-@JsonSerializable()
+@jsonSerializable
 class Car {
   @JsonProperty(name: 'modelName')
   String model;
@@ -24,7 +24,7 @@ class Car {
   }
 }
 
-@JsonSerializable()
+@jsonSerializable
 class Person {
   List<String> skills = ['Go', 'Dart', 'Flutter'];
 

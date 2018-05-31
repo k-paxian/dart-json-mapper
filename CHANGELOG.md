@@ -1,3 +1,8 @@
+## 0.0.7
+
+* Support Lists of Enums, Dates, Numbers etc.
+* @JsonSerializable() => @jsonSerializable
+
 ## 0.0.6
 
 * build & watch scripts added as a tooling for development time

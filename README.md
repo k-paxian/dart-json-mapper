@@ -14,7 +14,7 @@ Library has **NO** dependency on `dart:mirrors`, one of the reasons is described
 Dart classes reflection mechanism is based on [reflectable][3] library. This means "extended types information" is auto-generated out of existing Dart program guided by the annotated classes only, as the result types information is accesible at runtime, at a reduced cost.
 
 Say, you have a dart program *main.dart* having some classes intended to be traveling to JSON and back.
-- First thing you should do is to put @JsonSerializable() annotation on each of those classes
+- First thing you should do is to put @jsonSerializable annotation on each of those classes
 - Next step is to auto generate *main.reflectable.dart* file. And afterwards import that file into *main.dart*
 
 **lib/main.dart**
@@ -24,14 +24,14 @@ import 'package:dart_json_mapper/json_mapper.dart';
 
 import 'main.reflectable.dart'; // Import generated code.
 
-@JsonSerializable() // This annotation let instances of MyData be dumped to JSON w/o extra efforts.
+@jsonSerializable // This annotation let instances of MyData traveling to/from JSON
 class MyData {
   int a = 123;
   MyData([this.a]); // Important! Constructor must not have any required parameters.
 }
 
 main() {
-  initializeReflectable(); // Set up reflection support. Imported from main.reflectable.dart
+  initializeReflectable(); // Imported from main.reflectable.dart
   
   print(JsonMapper.serialize(new MyData(456)));
   // { 

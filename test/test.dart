@@ -9,7 +9,7 @@ import 'test.reflectable.dart'; // Import generated code.
 
 enum Color { Red, Blue, Green, Brown, Yellow, Black, White }
 
-@JsonSerializable()
+@jsonSerializable
 class Car {
   @JsonProperty(name: 'modelName')
   String model;
@@ -20,9 +20,16 @@ class Car {
   Car([this.model, this.color]);
 }
 
-@JsonSerializable()
+@jsonSerializable
 class Person {
   List<String> skills = ['Go', 'Dart', 'Flutter'];
+
+  @JsonProperty(converter: dateConverter)
+  List<DateTime> specialDates = [
+    new DateTime(2013, 02, 28),
+    new DateTime(2023, 02, 28),
+    new DateTime(2003, 02, 28)
+  ];
 
   @JsonProperty(
       name: 'last_promotion_date',
@@ -39,6 +46,8 @@ class Person {
   @JsonProperty(ignore: true)
   bool married = true;
 
+  bool active = true;
+
   String name = "Forest";
 
   @JsonProperty(converter: numberConverter)
@@ -47,6 +56,9 @@ class Person {
   num dob;
   num age = 36;
   var lastName = "Gump";
+
+  @JsonProperty(enumValues: Color.values)
+  List<Color> favouriteColours = [Color.Black, Color.White];
 
   @JsonProperty(name: 'eye_color', enumValues: Color.values)
   Color eyeColor = Color.Blue;
@@ -74,13 +86,23 @@ void main() {
   "Dart",
   "Flutter"
  ],
+ "specialDates": [
+  "2013-02-28",
+  "2023-02-28",
+  "2003-02-28"
+ ],
  "last_promotion_date": "05-13-2008 22:33:44",
  "hire_date": "02/28/2003",
+ "active": true,
  "name": "Forest",
  "salary": "1,200,000",
  "dob": null,
  "age": 36,
  "lastName": "Gump",
+ "favouriteColours": [
+  "Color.Black",
+  "Color.White"
+ ],
  "eye_color": "Color.Blue",
  "hairColor": 3,
  "vehicles": [
@@ -98,30 +120,16 @@ void main() {
   test("Verify serialization to JSON", () {
     // given
     // when
-    String targetJson = JsonMapper.serialize(new Person());
+    String target = JsonMapper.serialize(new Person());
     // then
-    expect(targetJson, personJson);
+    expect(target, personJson);
   });
 
-  test("Verify deserialization from JSON", () {
+  test("Verify serialization <=> deserialization", () {
     // given
-    Person etalon = new Person();
     // when
     Person target = JsonMapper.deserialize(personJson, Person);
     // then
-    expect(target.fullName, etalon.fullName);
-    expect(target.eyeColor, etalon.eyeColor);
     expect(JsonMapper.serialize(target), personJson);
-  });
-
-  test("Verify simple deserialization from JSON", () {
-    // given
-    String json = '''{"modelName":"Tesla","color":"Color.Black"}''';
-    Car etalonCar = new Car("Tesla", Color.Black);
-    // when
-    Car targetCar = JsonMapper.deserialize(json, Car);
-    // then
-    expect(targetCar.model, etalonCar.model);
-    expect(targetCar.color, etalonCar.color);
   });
 }

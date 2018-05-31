@@ -101,8 +101,13 @@ class JsonMapper {
     Map result = {};
     enumeratePublicFields(im, (name, jsonName, value, meta, converter) {
       if (converter != null) {
-        result[jsonName] =
-            converter.toJSON(value, meta, safeGetInstanceMirror(value));
+        convert(item) =>
+            converter.toJSON(item, meta, safeGetInstanceMirror(item));
+        if (value is List) {
+          result[jsonName] = value.map(convert).toList();
+        } else {
+          result[jsonName] = convert(value);
+        }
       } else {
         result[jsonName] = serializeObject(value);
       }
@@ -137,8 +142,13 @@ class JsonMapper {
           }
         }
         if (converter != null) {
-          fieldValue =
-              converter.fromJSON(fieldValue, meta, im.type.declarations[name]);
+          convert(item) =>
+              converter.fromJSON(item, meta, im.type.declarations[name]);
+          if (fieldValue is List) {
+            fieldValue = fieldValue.map(convert).toList();
+          } else {
+            fieldValue = convert(fieldValue);
+          }
         }
       }
       im.invokeSetter(name, fieldValue);
