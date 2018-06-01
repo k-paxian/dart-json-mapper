@@ -27,15 +27,24 @@ import 'main.reflectable.dart'; // Import generated code.
 @jsonSerializable // This annotation let instances of MyData traveling to/from JSON
 class MyData {
   int a = 123;
-  MyData([this.a]); // Important! Constructor must not have any required parameters.
+
+  @JsonProperty(ignore: true)
+  bool b;
+
+  @JsonProperty(name: 'd')
+  String c;
+
+  // Important! Constructor must not have any required parameters.
+  MyData([this.a, this.b, this.c]);
 }
 
 main() {
   initializeReflectable(); // Imported from main.reflectable.dart
   
-  print(JsonMapper.serialize(new MyData(456)));
+  print(JsonMapper.serialize(new MyData(456, true, "yes")));
   // { 
-  //  "a": 456
+  //  "a": 456,
+  //  "d": "yes"
   // }
 }
 ```

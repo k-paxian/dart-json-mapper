@@ -6,12 +6,26 @@ import 'package:dart_json_mapper/annotations.dart';
 import 'package:dart_json_mapper/converters.dart';
 import "package:reflectable/reflectable.dart";
 
+abstract class CircularReferenceError extends Error {
+  factory CircularReferenceError(String message) = _CircularReferenceErrorImpl;
+}
+
+class _CircularReferenceErrorImpl extends Error
+    implements CircularReferenceError {
+  final String _message;
+
+  _CircularReferenceErrorImpl(String message) : _message = message;
+
+  toString() => _message;
+}
+
 class JsonMapper {
   static final JsonMapper instance = new JsonMapper._internal();
   final JsonEncoder jsonEncoder = new JsonEncoder.withIndent(" ");
   final JsonDecoder jsonDecoder = new JsonDecoder();
   final serializable = const JsonSerializable();
-  final Map<String, ClassMirror> classes = <String, ClassMirror>{};
+  final Map<String, ClassMirror> classes = {};
+  final Map<String, Object> processedObjects = {};
 
   factory JsonMapper() => instance;
 
@@ -38,7 +52,27 @@ class JsonMapper {
     InstanceMirror result;
     try {
       result = serializable.reflect(object);
-    } catch (e) {}
+    } catch (error) {}
+    return result;
+  }
+
+  String getObjectKey(Object object) {
+    return '${object.runtimeType}-${object.hashCode}';
+  }
+
+  bool isObjectAlreadyProcessed(Object object) {
+    bool result = false;
+
+    if (object.runtimeType.toString() == 'Null') {
+      return result;
+    }
+
+    String key = getObjectKey(object);
+    if (processedObjects.containsKey(key)) {
+      result = true;
+    } else {
+      processedObjects[key] = object;
+    }
     return result;
   }
 
@@ -85,14 +119,19 @@ class JsonMapper {
     return false;
   }
 
-  dynamic serializeObject(Object o) {
-    if (isScalarType(o)) {
-      return o;
+  dynamic serializeObject(Object object) {
+    if (isObjectAlreadyProcessed(object)) {
+      throw new CircularReferenceError(
+          "Circular reference detected. ${getObjectKey(object)}, ${object.toString()}");
     }
-    if (o is List) {
-      return o.map(serializeObject).toList();
+
+    if (isScalarType(object)) {
+      return object;
     }
-    InstanceMirror im = safeGetInstanceMirror(o);
+    if (object is List) {
+      return object.map(serializeObject).toList();
+    }
+    InstanceMirror im = safeGetInstanceMirror(object);
 
     if (im == null) {
       return null;
@@ -115,29 +154,24 @@ class JsonMapper {
     return result;
   }
 
-  static dynamic serialize(Object o) {
-    return instance.jsonEncoder.convert(instance.serializeObject(o));
-  }
-
-  static Object deserialize(dynamic jsonValue, dynamic instanceType) {
-    ClassMirror cm = instance.classes[instanceType.toString()];
+  Object deserializeObject(dynamic jsonValue, dynamic instanceType) {
+    ClassMirror cm = classes[instanceType.toString()];
     Object objectInstance = cm.isEnum ? null : cm.newInstance("", []);
-    InstanceMirror im = instance.safeGetInstanceMirror(objectInstance);
-    Map<String, dynamic> m = (jsonValue is String)
-        ? instance.jsonDecoder.convert(jsonValue)
-        : jsonValue;
+    InstanceMirror im = safeGetInstanceMirror(objectInstance);
+    Map<String, dynamic> m =
+        (jsonValue is String) ? jsonDecoder.convert(jsonValue) : jsonValue;
 
-    instance.enumeratePublicFields(im,
-        (name, jsonName, value, meta, converter) {
+    enumeratePublicFields(im, (name, jsonName, value, meta, converter) {
       var fieldValue = m[jsonName];
       if (meta != null) {
         if (meta.type != null) {
           if (fieldValue is List) {
-            fieldValue =
-                fieldValue.map((item) => deserialize(item, meta.type)).toList();
+            fieldValue = fieldValue
+                .map((item) => deserializeObject(item, meta.type))
+                .toList();
           } else {
-            if (!instance.isScalarType(fieldValue)) {
-              fieldValue = deserialize(fieldValue, meta.type);
+            if (!isScalarType(fieldValue)) {
+              fieldValue = deserializeObject(fieldValue, meta.type);
             }
           }
         }
@@ -154,5 +188,14 @@ class JsonMapper {
       im.invokeSetter(name, fieldValue);
     });
     return objectInstance;
+  }
+
+  static dynamic serialize(Object object) {
+    instance.processedObjects.clear();
+    return instance.jsonEncoder.convert(instance.serializeObject(object));
+  }
+
+  static Object deserialize(dynamic jsonValue, dynamic instanceType) {
+    return instance.deserializeObject(jsonValue, instanceType);
   }
 }

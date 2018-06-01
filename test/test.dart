@@ -17,6 +17,9 @@ class Car {
   @JsonProperty(enumValues: Color.values)
   Color color;
 
+  @JsonProperty(type: Car)
+  Car replacement;
+
   Car([this.model, this.color]);
 }
 
@@ -108,11 +111,13 @@ void main() {
  "vehicles": [
   {
    "modelName": "Tesla",
-   "color": "Color.Black"
+   "color": "Color.Black",
+   "replacement": null
   },
   {
    "modelName": "BMW",
-   "color": "Color.Red"
+   "color": "Color.Red",
+   "replacement": null
   }
  ]
 }''';
@@ -120,7 +125,7 @@ void main() {
   test("Verify serialization to JSON", () {
     // given
     // when
-    String target = JsonMapper.serialize(new Person());
+    final String target = JsonMapper.serialize(new Person());
     // then
     expect(target, personJson);
   });
@@ -128,8 +133,21 @@ void main() {
   test("Verify serialization <=> deserialization", () {
     // given
     // when
-    Person target = JsonMapper.deserialize(personJson, Person);
+    final Person target = JsonMapper.deserialize(personJson, Person);
     // then
     expect(JsonMapper.serialize(target), personJson);
+  });
+
+  test("Verify circular reference detection during serialization", () {
+    // given
+    final Car car = new Car('VW', Color.Blue);
+    car.replacement = car;
+    try {
+      // when
+      JsonMapper.serialize(car);
+    } catch (error) {
+      // then
+      expect(error, new isInstanceOf<CircularReferenceError>());
+    }
   });
 }

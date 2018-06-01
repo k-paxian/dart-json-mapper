@@ -1,3 +1,7 @@
+## 0.0.8
+
+* Circular reference detection during serialization added
+
 ## 0.0.7
 
 * Support Lists of Enums, Dates, Numbers etc.
