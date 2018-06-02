@@ -72,6 +72,43 @@ Each time you modify your project code, all *.reflectable.dart files will be upd
 - Next step is to add "*.reflectable.dart" to your .gitignore
 - This is it, basic setup is done.
 
+## Why is this library exists? 
+`When there are so much alternatives out there`
+
+| Name        | `Web + Flutter` support | Pros       | Cons  |
+| ------------- |:-------------:| -----:|:-----------:|  
+|[json_object_lite][100]| yes | | Target class has to be inherited from JsonObjectLite + boilerplate code |
+|[jaguar_serializer][101]| yes | |Tons of boilerplate, personal serializer generated per each target class, unnecessary abstraction - "model"|
+|[nomirrorsmap][102]| yes | | Cumbersome usage|
+|[dson_core][103]| no | ||
+|[dson][104]| yes | |Requires target class to be inherited from mixin + too much different unobvious annotations, like @ignore, @cyclical, @uid, etc|
+|[dartson][105]| no | ||
+|[json_god][106]| no | ||
+|[jaguar_json][107]| no | ||
+|[serializer_generator][108]| no | ||
+|[dynamo][109]| yes  | |Produces JSON output with type information injected in it|
+|[serialization][110]|yes  | |Cumbersome configuration and setup, will require continuous maintenance|
+|[serializable][111]| yes | |Requires target class to be inherited from mixin, no custom logic allowed|
+|[json_annotation][112]|yes  | |Depends on  [json_serializable][113] which is not compatible with Flutter|
+|[json_serializable][113]| no | ||
+|[json_mapper][114]| no | ||
+
+
+[100]: https://pub.dartlang.org/packages/json_object_lite
+[101]: https://pub.dartlang.org/packages/jaguar_serializer
+[102]: https://pub.dartlang.org/packages/nomirrorsmap
+[103]: https://pub.dartlang.org/packages/dson_core
+[104]: https://pub.dartlang.org/packages/dson
+[105]: https://pub.dartlang.org/packages/dartson
+[106]: https://pub.dartlang.org/packages/json_god
+[107]: https://pub.dartlang.org/packages/jaguar_json
+[108]: https://pub.dartlang.org/packages/serializer_generator
+[109]: https://pub.dartlang.org/packages/dynamo
+[110]: https://pub.dartlang.org/packages/serialization
+[111]: https://pub.dartlang.org/packages/serializable
+[112]: https://pub.dartlang.org/packages/json_annotation
+[113]: https://pub.dartlang.org/packages/json_serializable
+[114]: https://pub.dartlang.org/packages/json_mapper
 
 ## Feature requests and bug reports
 
