@@ -76,11 +76,13 @@ Each time you modify your project code, all *.reflectable.dart files will be upd
 `When there are so many alternatives out there`
 
 It would be nice to have a Json serialization/deserialization library
-* Compatible with both Flutter and Web platforms
+* Compatible with all Dart platforms, including Flutter and Web platforms.
 * No need to extend target classes from *any* mixins/base/abstract classes to keep code cleaner
 * Clean and simple setup, transparent and straightforward usage with no heavy maintanance involved
 * No extra boilerplate code involved
 * Custom converters support per each target class field
+
+But, as of today we have...
 
 | Name        | `Web + Flutter` support | Concerns   |
 | ----------- |:-----------------------:|:-----------|  
