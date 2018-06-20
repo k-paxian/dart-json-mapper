@@ -6,7 +6,7 @@ description: >
 author: Alexander Mazuruk <alexander.mazuruk@gmail.com>
 homepage: https://github.com/k-paxian/dart-json-mapper
 environment:
-  sdk: '>=1.12.0 <=2.0.0-dev.58.0'
+  sdk: '>=1.12.0 <2.0.0'
 dependencies:
   reflectable: ^2.0.0
   barback: ^0.15.0

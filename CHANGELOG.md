@@ -1,3 +1,7 @@
+## 0.0.9
+
+Tiny update to fix pubspec & readme
+
 ## 0.0.8
 
 * Circular reference detection during serialization added
