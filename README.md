@@ -72,6 +72,53 @@ Each time you modify your project code, all *.reflectable.dart files will be upd
 - Next step is to add "*.reflectable.dart" to your .gitignore
 - This is it, basic setup is done.
 
+## Example
+
+```dart
+  enum Color { Red, Blue, Green, Brown, Yellow, Black, White }
+  
+  @jsonSerializable
+  class Car {
+    @JsonProperty(name: 'modelName')
+    String model;
+  
+    @JsonProperty(enumValues: Color.values)
+    Color color;
+  
+    @JsonProperty(type: Car)
+    Car replacement;
+  
+    Car([this.model, this.color]);
+  }
+  
+  @jsonSerializable
+  class Immutable {
+    final int id;
+    final String name;
+    final Car car;
+  
+    Immutable({this.id, this.name, this.car});
+  }
+  
+  print(
+      JsonMapper.serialize(
+        new Immutable(id: 1, name: 'Bob', car: new Car('Audi', Color.Green))
+      )
+  );
+``` 
+Output:
+```json
+        {
+         "id": 1,
+         "name": "Bob",
+         "car": {
+          "modelName": "Audi",
+          "color": "Color.Green",
+          "replacement": null
+         }
+        }
+```
+
 ## Why is this library exists? 
 `When there are so many alternatives out there`
 
@@ -101,6 +148,7 @@ But, as of today we have...
 |[json_annotation][112]|yes   |Depends on  [json_serializable][113] which is not compatible with Flutter|
 |[json_serializable][113]| no  ||
 |[json_mapper][114]| no ||
+|[built_value][115]| yes |Over engineered solution, boilerplate, yes it's auto generated, but it is still boilerplate! enforces Immutability for all models, imply own patterns on your code base, too much responsibility in one library |
 
 
 [100]: https://pub.dartlang.org/packages/json_object_lite
@@ -118,6 +166,7 @@ But, as of today we have...
 [112]: https://pub.dartlang.org/packages/json_annotation
 [113]: https://pub.dartlang.org/packages/json_serializable
 [114]: https://pub.dartlang.org/packages/json_mapper
+[115]: https://pub.dartlang.org/packages/built_value
 
 ## Feature requests and bug reports
 

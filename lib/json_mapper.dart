@@ -35,14 +35,17 @@ class JsonMapper {
     }
   }
 
+  MethodMirror getPublicConstructor(ClassMirror classMirror) {
+    return classMirror.declarations.values.where((DeclarationMirror dm) {
+      return !dm.isPrivate && dm is MethodMirror && dm.isConstructor;
+    }).first;
+  }
+
   List<String> getPublicFieldNames(ClassMirror classMirror) {
     Map<String, MethodMirror> instanceMembers = classMirror.instanceMembers;
     return instanceMembers.values
         .where((MethodMirror method) {
-          return method.isGetter &&
-              method.isSynthetic &&
-              instanceMembers[method.simpleName + '='] != null &&
-              !method.isPrivate;
+          return method.isGetter && method.isSynthetic && !method.isPrivate;
         })
         .map((MethodMirror method) => method.simpleName)
         .toList();
@@ -52,6 +55,14 @@ class JsonMapper {
     InstanceMirror result;
     try {
       result = serializable.reflect(object);
+    } catch (error) {}
+    return result;
+  }
+
+  String safeGetParameterTypeName(ParameterMirror p) {
+    String result;
+    try {
+      result = p.type.simpleName;
     } catch (error) {}
     return result;
   }
@@ -90,6 +101,8 @@ class JsonMapper {
   enumeratePublicFields(InstanceMirror instanceMirror, Function visitor) {
     for (String name in getPublicFieldNames(instanceMirror.type)) {
       String jsonName = name;
+      bool isGetterOnly =
+          instanceMirror.type.instanceMembers[name + '='] == null;
       JsonProperty meta = instanceMirror.type.declarations[name].metadata
           .firstWhere((m) => m is JsonProperty, orElse: () => null);
       if (meta != null && meta.ignore == true) {
@@ -98,9 +111,30 @@ class JsonMapper {
       if (meta != null && meta.name != null) {
         jsonName = meta.name;
       }
-      visitor(name, jsonName, instanceMirror.invokeGetter(name), meta,
-          getConverter(meta));
+      visitor(name, jsonName, instanceMirror.invokeGetter(name), isGetterOnly,
+          meta, getConverter(meta));
     }
+  }
+
+  Map<Symbol, dynamic> getNamedArguments(
+      ClassMirror cm, Map<String, dynamic> jsonMap) {
+    Map<Symbol, dynamic> result = new Map();
+    MethodMirror constructorMirror = getPublicConstructor(cm);
+    if (constructorMirror == null) {
+      return result;
+    }
+    constructorMirror.parameters.forEach((ParameterMirror param) {
+      String typeName = safeGetParameterTypeName(param);
+      String paramName = param.simpleName;
+      if (param.isNamed && jsonMap.containsKey(paramName)) {
+        dynamic value = jsonMap[paramName];
+        if (classes[typeName] != null) {
+          value = deserializeObject(value, typeName);
+        }
+        result[new Symbol(paramName)] = value;
+      }
+    });
+    return result;
   }
 
   bool isScalarType(Object object) {
@@ -138,7 +172,8 @@ class JsonMapper {
     }
 
     Map result = {};
-    enumeratePublicFields(im, (name, jsonName, value, meta, converter) {
+    enumeratePublicFields(im,
+        (name, jsonName, value, isGetterOnly, meta, converter) {
       if (converter != null) {
         convert(item) =>
             converter.toJSON(item, meta, safeGetInstanceMirror(item));
@@ -156,13 +191,16 @@ class JsonMapper {
 
   Object deserializeObject(dynamic jsonValue, dynamic instanceType) {
     ClassMirror cm = classes[instanceType.toString()];
-    Object objectInstance = cm.isEnum ? null : cm.newInstance("", []);
-    InstanceMirror im = safeGetInstanceMirror(objectInstance);
-    Map<String, dynamic> m =
+    Map<String, dynamic> jsonMap =
         (jsonValue is String) ? jsonDecoder.convert(jsonValue) : jsonValue;
+    Object objectInstance = cm.isEnum
+        ? null
+        : cm.newInstance("", [], getNamedArguments(cm, jsonMap));
+    InstanceMirror im = safeGetInstanceMirror(objectInstance);
 
-    enumeratePublicFields(im, (name, jsonName, value, meta, converter) {
-      var fieldValue = m[jsonName];
+    enumeratePublicFields(im,
+        (name, jsonName, value, isGetterOnly, meta, converter) {
+      var fieldValue = jsonMap[jsonName];
       if (meta != null) {
         if (meta.type != null) {
           if (fieldValue is List) {
@@ -185,7 +223,9 @@ class JsonMapper {
           }
         }
       }
-      im.invokeSetter(name, fieldValue);
+      if (!isGetterOnly) {
+        im.invokeSetter(name, fieldValue);
+      }
     });
     return objectInstance;
   }

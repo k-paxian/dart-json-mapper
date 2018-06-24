@@ -24,6 +24,15 @@ class Car {
 }
 
 @jsonSerializable
+class Immutable {
+  final int id;
+  final String name;
+  final Car car;
+
+  Immutable({this.id, this.name, this.car});
+}
+
+@jsonSerializable
 class Person {
   List<String> skills = ['Go', 'Dart', 'Flutter'];
 
@@ -149,5 +158,29 @@ void main() {
       // then
       expect(error, new isInstanceOf<CircularReferenceError>());
     }
+  });
+
+  test("Verify immutable class serialization <=> deserialization", () {
+    // given
+    final String immutableJson = '''{
+ "id": 1,
+ "name": "Bob",
+ "car": {
+  "modelName": "Audi",
+  "color": "Color.Green",
+  "replacement": null
+ }
+}''';
+    Immutable i =
+        new Immutable(id: 1, name: 'Bob', car: new Car('Audi', Color.Green));
+    // when
+    final String target = JsonMapper.serialize(i);
+    // then
+    expect(target, immutableJson);
+
+    // when
+    final Immutable ic = JsonMapper.deserialize(immutableJson, Immutable);
+    // then
+    expect(JsonMapper.serialize(ic), immutableJson);
   });
 }

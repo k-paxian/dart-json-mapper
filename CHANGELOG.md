@@ -1,3 +1,8 @@
+## 0.1.0
+
+* Update readme
+* Immutable classes serialization / deserialization support
+
 ## 0.0.9
 
 Tiny update to fix pubspec & readme
