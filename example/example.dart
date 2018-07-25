@@ -31,7 +31,7 @@ class Person {
   @JsonProperty(name: 'last_promotion_date', ignore: true)
   DateTime lastPromotionDate;
 
-  @JsonProperty(name: 'hire_date', converter: dateConverter)
+  @JsonProperty(name: 'hire_date')
   DateTime hireDate = new DateTime(2003, 02, 28);
 
   bool married = true;
@@ -50,7 +50,6 @@ class Person {
   @JsonProperty(enumValues: Color.values, converter: enumConverterNumeric)
   Color hairColor = Color.Brown;
 
-  @JsonProperty(type: Car)
   List<Car> vehicles = [
     new Car("Tesla", Color.Black),
     new Car("BMW", Color.Red)

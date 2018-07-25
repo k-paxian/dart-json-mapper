@@ -2,6 +2,7 @@ library json_mapper.test;
 
 import 'package:dart_json_mapper/annotations.dart';
 import 'package:dart_json_mapper/converters.dart';
+import 'package:dart_json_mapper/errors.dart';
 import 'package:dart_json_mapper/json_mapper.dart';
 import "package:test/test.dart";
 
@@ -17,7 +18,6 @@ class Car {
   @JsonProperty(enumValues: Color.values)
   Color color;
 
-  @JsonProperty(type: Car)
   Car replacement;
 
   Car([this.model, this.color]);
@@ -36,7 +36,6 @@ class Immutable {
 class Person {
   List<String> skills = ['Go', 'Dart', 'Flutter'];
 
-  @JsonProperty(converter: dateConverter)
   List<DateTime> specialDates = [
     new DateTime(2013, 02, 28),
     new DateTime(2023, 02, 28),
@@ -45,14 +44,10 @@ class Person {
 
   @JsonProperty(
       name: 'last_promotion_date',
-      converter: dateConverter,
       converterParams: {'format': 'MM-dd-yyyy H:m:s'})
   DateTime lastPromotionDate = new DateTime(2008, 05, 13, 22, 33, 44);
 
-  @JsonProperty(
-      name: 'hire_date',
-      converter: dateConverter,
-      converterParams: {'format': 'MM/dd/yyyy'})
+  @JsonProperty(name: 'hire_date', converterParams: {'format': 'MM/dd/yyyy'})
   DateTime hireDate = new DateTime(2003, 02, 28);
 
   @JsonProperty(ignore: true)
@@ -62,11 +57,11 @@ class Person {
 
   String name = "Forest";
 
-  @JsonProperty(converter: numberConverter)
-  num salary = 1200000;
-
+  @JsonProperty(converterParams: {'format': '##.##'})
+  num salary = 1200000.246;
   num dob;
   num age = 36;
+
   var lastName = "Gump";
 
   @JsonProperty(enumValues: Color.values)
@@ -78,7 +73,6 @@ class Person {
   @JsonProperty(enumValues: Color.values, converter: enumConverterNumeric)
   Color hairColor = Color.Brown;
 
-  @JsonProperty(type: Car)
   List<Car> vehicles = [
     new Car("Tesla", Color.Black),
     new Car("BMW", Color.Red)
@@ -107,7 +101,7 @@ void main() {
  "hire_date": "02/28/2003",
  "active": true,
  "name": "Forest",
- "salary": "1,200,000",
+ "salary": "1200000.25",
  "dob": null,
  "age": 36,
  "lastName": "Gump",

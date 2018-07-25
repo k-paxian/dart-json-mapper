@@ -4,20 +4,8 @@ import 'dart:convert';
 
 import 'package:dart_json_mapper/annotations.dart';
 import 'package:dart_json_mapper/converters.dart';
+import 'package:dart_json_mapper/errors.dart';
 import "package:reflectable/reflectable.dart";
-
-abstract class CircularReferenceError extends Error {
-  factory CircularReferenceError(String message) = _CircularReferenceErrorImpl;
-}
-
-class _CircularReferenceErrorImpl extends Error
-    implements CircularReferenceError {
-  final String _message;
-
-  _CircularReferenceErrorImpl(String message) : _message = message;
-
-  toString() => _message;
-}
 
 class JsonMapper {
   static final JsonMapper instance = new JsonMapper._internal();
@@ -87,7 +75,33 @@ class JsonMapper {
     return result;
   }
 
-  ICustomConverter getConverter(JsonProperty jsonProperty) {
+  Type getScalarType(Type type) {
+    String itemTypeName = type.toString();
+    if (itemTypeName.indexOf("List<") == 0) {
+      itemTypeName =
+          itemTypeName.substring("List<".length, itemTypeName.length - 1);
+      if (itemTypeName == "DateTime") {
+        return DateTime;
+      }
+      if (itemTypeName == "num") {
+        return num;
+      }
+      if (itemTypeName == "bool") {
+        return bool;
+      }
+      if (itemTypeName == "String") {
+        return String;
+      }
+    }
+
+    if (classes[itemTypeName] != null) {
+      return classes[itemTypeName].reflectedType;
+    }
+
+    return type;
+  }
+
+  ICustomConverter getConverter(JsonProperty jsonProperty, Type type) {
     ICustomConverter result =
         jsonProperty != null ? jsonProperty.converter : null;
     if (jsonProperty != null &&
@@ -95,12 +109,21 @@ class JsonMapper {
         result == null) {
       result = enumConverter;
     }
+    if (result == null && (type == DateTime)) {
+      result = dateConverter;
+    }
+    if (result == null && (type == num)) {
+      result = numberConverter;
+    }
     return result;
   }
 
   enumeratePublicFields(InstanceMirror instanceMirror, Function visitor) {
     for (String name in getPublicFieldNames(instanceMirror.type)) {
       String jsonName = name;
+      VariableMirror variableMirror =
+          instanceMirror.type.declarations[name] as VariableMirror;
+      Type variableScalarType = getScalarType(variableMirror.reflectedType);
       bool isGetterOnly =
           instanceMirror.type.instanceMembers[name + '='] == null;
       JsonProperty meta = instanceMirror.type.declarations[name].metadata
@@ -112,7 +135,7 @@ class JsonMapper {
         jsonName = meta.name;
       }
       visitor(name, jsonName, instanceMirror.invokeGetter(name), isGetterOnly,
-          meta, getConverter(meta));
+          meta, getConverter(meta, variableScalarType), variableScalarType);
     }
   }
 
@@ -129,7 +152,7 @@ class JsonMapper {
       if (param.isNamed && jsonMap.containsKey(paramName)) {
         dynamic value = jsonMap[paramName];
         if (classes[typeName] != null) {
-          value = deserializeObject(value, typeName);
+          value = deserializeObject(value, classes[typeName].reflectedType);
         }
         result[new Symbol(paramName)] = value;
       }
@@ -173,7 +196,7 @@ class JsonMapper {
 
     Map result = {};
     enumeratePublicFields(im,
-        (name, jsonName, value, isGetterOnly, meta, converter) {
+        (name, jsonName, value, isGetterOnly, meta, converter, type) {
       if (converter != null) {
         convert(item) =>
             converter.toJSON(item, meta, safeGetInstanceMirror(item));
@@ -189,7 +212,16 @@ class JsonMapper {
     return result;
   }
 
-  Object deserializeObject(dynamic jsonValue, dynamic instanceType) {
+  Object deserializeObject(dynamic jsonValue, dynamic instanceType,
+      [JsonProperty parentMeta]) {
+    ICustomConverter converter = getConverter(parentMeta, instanceType);
+    if (converter != null) {
+      return converter.fromJSON(jsonValue, parentMeta);
+    }
+    if (instanceType == String) {
+      return jsonValue;
+    }
+
     ClassMirror cm = classes[instanceType.toString()];
     Map<String, dynamic> jsonMap =
         (jsonValue is String) ? jsonDecoder.convert(jsonValue) : jsonValue;
@@ -199,28 +231,26 @@ class JsonMapper {
     InstanceMirror im = safeGetInstanceMirror(objectInstance);
 
     enumeratePublicFields(im,
-        (name, jsonName, value, isGetterOnly, meta, converter) {
+        (name, jsonName, value, isGetterOnly, meta, converter, type) {
       var fieldValue = jsonMap[jsonName];
-      if (meta != null) {
-        if (meta.type != null) {
-          if (fieldValue is List) {
-            fieldValue = fieldValue
-                .map((item) => deserializeObject(item, meta.type))
-                .toList();
-          } else {
-            if (!isScalarType(fieldValue)) {
-              fieldValue = deserializeObject(fieldValue, meta.type);
-            }
+      if (type != null) {
+        if (fieldValue is List) {
+          fieldValue = fieldValue
+              .map((item) => deserializeObject(item, type, meta))
+              .toList();
+        } else {
+          if (!isScalarType(fieldValue)) {
+            fieldValue = deserializeObject(fieldValue, type, meta);
           }
         }
-        if (converter != null) {
-          convert(item) =>
-              converter.fromJSON(item, meta, im.type.declarations[name]);
-          if (fieldValue is List) {
-            fieldValue = fieldValue.map(convert).toList();
-          } else {
-            fieldValue = convert(fieldValue);
-          }
+      }
+      if (converter != null) {
+        convert(item) =>
+            converter.fromJSON(item, meta, im.type.declarations[name]);
+        if (fieldValue is List) {
+          fieldValue = fieldValue.map(convert).toList();
+        } else {
+          fieldValue = convert(fieldValue);
         }
       }
       if (!isGetterOnly) {

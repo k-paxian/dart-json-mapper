@@ -85,7 +85,6 @@ Each time you modify your project code, all *.reflectable.dart files will be upd
     @JsonProperty(enumValues: Color.values)
     Color color;
   
-    @JsonProperty(type: Car)
     Car replacement;
   
     Car([this.model, this.color]);
@@ -108,15 +107,15 @@ Each time you modify your project code, all *.reflectable.dart files will be upd
 ``` 
 Output:
 ```json
-        {
-         "id": 1,
-         "name": "Bob",
-         "car": {
-          "modelName": "Audi",
-          "color": "Color.Green",
-          "replacement": null
-         }
-        }
+{
+ "id": 1,
+ "name": "Bob",
+ "car": {
+  "modelName": "Audi",
+  "color": "Color.Green",
+  "replacement": null
+ }
+}
 ```
 
 ## Why is this library exists? 

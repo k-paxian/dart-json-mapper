@@ -15,7 +15,7 @@ abstract class ICustomConverter {
 class BaseCustomConverter {
   const BaseCustomConverter() : super();
   dynamic getConverterParameter(String name, JsonProperty jsonProperty) {
-    return jsonProperty.converterParams != null
+    return jsonProperty != null && jsonProperty.converterParams != null
         ? jsonProperty.converterParams[name]
         : null;
   }
@@ -29,13 +29,19 @@ class DateConverter extends BaseCustomConverter implements ICustomConverter {
   @override
   Object fromJSON(dynamic jsonValue, JsonProperty jsonProperty,
       [VariableMirror variableMirror]) {
-    return getDateFormat(jsonProperty).parse(jsonValue);
+    DateFormat format = getDateFormat(jsonProperty);
+    return format != null && jsonValue is String
+        ? format.parse(jsonValue)
+        : jsonValue;
   }
 
   @override
   dynamic toJSON(Object object, JsonProperty jsonProperty,
       [InstanceMirror objectMirror]) {
-    return getDateFormat(jsonProperty).format(object);
+    DateFormat format = getDateFormat(jsonProperty);
+    return format != null && !(object is String)
+        ? format.format(object)
+        : object;
   }
 
   DateFormat getDateFormat(JsonProperty jsonProperty) {
@@ -55,18 +61,24 @@ class NumberConverter extends BaseCustomConverter implements ICustomConverter {
   @override
   Object fromJSON(dynamic jsonValue, JsonProperty jsonProperty,
       [VariableMirror variableMirror]) {
-    return getNumberFormat(jsonProperty).parse(jsonValue);
+    NumberFormat format = getNumberFormat(jsonProperty);
+    return format != null
+        ? getNumberFormat(jsonProperty).parse(jsonValue)
+        : jsonValue;
   }
 
   @override
   dynamic toJSON(Object object, JsonProperty jsonProperty,
       [InstanceMirror objectMirror]) {
-    return getNumberFormat(jsonProperty).format(object);
+    NumberFormat format = getNumberFormat(jsonProperty);
+    return object != null && format != null
+        ? getNumberFormat(jsonProperty).format(object)
+        : object;
   }
 
   NumberFormat getNumberFormat(JsonProperty jsonProperty) {
     String format = getConverterParameter('format', jsonProperty);
-    return new NumberFormat(format);
+    return format != null ? new NumberFormat(format) : null;
   }
 }
 

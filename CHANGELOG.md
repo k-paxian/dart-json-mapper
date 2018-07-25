@@ -1,3 +1,8 @@
+## 0.1.1
+
+* Converter auto detection based on field type
+* Update pubspec for Dart 2.0
+
 ## 0.1.0
 
 * Update readme
@@ -5,7 +10,7 @@
 
 ## 0.0.9
 
-Tiny update to fix pubspec & readme
+* Tiny update to fix pubspec & readme
 
 ## 0.0.8
 
