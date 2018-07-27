@@ -6,9 +6,9 @@ import "package:reflectable/reflectable.dart";
 class JsonProperty {
   final String name;
   final ICustomConverter converter;
+  final Map<String, dynamic> converterParams;
   final bool ignore;
   final List<dynamic> enumValues;
-  final Map<String, dynamic> converterParams;
 
   const JsonProperty(
       {this.name,

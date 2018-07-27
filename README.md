@@ -75,35 +75,36 @@ Each time you modify your project code, all *.reflectable.dart files will be upd
 ## Example
 
 ```dart
-  enum Color { Red, Blue, Green, Brown, Yellow, Black, White }
-  
-  @jsonSerializable
-  class Car {
+enum Color { Red, Blue, Green, Brown, Yellow, Black, White }
+
+@jsonSerializable
+class Car {
     @JsonProperty(name: 'modelName')
     String model;
-  
+    
     @JsonProperty(enumValues: Color.values)
     Color color;
-  
+    
+    @JsonProperty(ignore: true)
     Car replacement;
-  
+    
     Car([this.model, this.color]);
-  }
-  
-  @jsonSerializable
-  class Immutable {
+}
+
+@jsonSerializable
+class Immutable {
     final int id;
     final String name;
     final Car car;
-  
-    Immutable({this.id, this.name, this.car});
-  }
-  
-  print(
-      JsonMapper.serialize(
-        new Immutable(id: 1, name: 'Bob', car: new Car('Audi', Color.Green))
-      )
-  );
+    
+    const Immutable({this.id, this.name, this.car});
+}
+
+print(
+  JsonMapper.serialize(
+    new Immutable(id: 1, name: 'Bob', car: new Car('Audi', Color.Green))
+  )
+);
 ``` 
 Output:
 ```json
@@ -112,8 +113,7 @@ Output:
  "name": "Bob",
  "car": {
   "modelName": "Audi",
-  "color": "Color.Green",
-  "replacement": null
+  "color": "Color.Green"
  }
 }
 ```

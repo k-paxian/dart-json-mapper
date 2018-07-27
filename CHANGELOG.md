@@ -1,3 +1,8 @@
+## 0.1.2
+
+* Converters registry introduced
+* Error handling improved
+
 ## 0.1.1
 
 * Converter auto detection based on field type

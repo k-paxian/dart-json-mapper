@@ -18,6 +18,7 @@ class Car {
   @JsonProperty(enumValues: Color.values)
   Color color;
 
+  @JsonProperty(ignore: true)
   Car replacement;
 
   Car([this.model, this.color]);
@@ -29,7 +30,7 @@ class Immutable {
   final String name;
   final Car car;
 
-  Immutable({this.id, this.name, this.car});
+  const Immutable({this.id, this.name, this.car});
 }
 
 @jsonSerializable
@@ -83,6 +84,20 @@ class Person {
   Person();
 }
 
+class CustomStringConverter implements ICustomConverter {
+  const CustomStringConverter() : super();
+
+  @override
+  Object fromJSON(dynamic jsonValue, JsonProperty jsonProperty) {
+    return jsonValue;
+  }
+
+  @override
+  dynamic toJSON(Object object, JsonProperty jsonProperty) {
+    return '_${object}_';
+  }
+}
+
 void main() {
   initializeReflectable();
 
@@ -93,9 +108,9 @@ void main() {
   "Flutter"
  ],
  "specialDates": [
-  "2013-02-28",
-  "2023-02-28",
-  "2003-02-28"
+  "2013-02-28 00:00:00.000",
+  "2023-02-28 00:00:00.000",
+  "2003-02-28 00:00:00.000"
  ],
  "last_promotion_date": "05-13-2008 22:33:44",
  "hire_date": "02/28/2003",
@@ -114,13 +129,11 @@ void main() {
  "vehicles": [
   {
    "modelName": "Tesla",
-   "color": "Color.Black",
-   "replacement": null
+   "color": "Color.Black"
   },
   {
    "modelName": "BMW",
-   "color": "Color.Red",
-   "replacement": null
+   "color": "Color.Red"
   }
  ]
 }''';
@@ -161,8 +174,7 @@ void main() {
  "name": "Bob",
  "car": {
   "modelName": "Audi",
-  "color": "Color.Green",
-  "replacement": null
+  "color": "Color.Green"
  }
 }''';
     Immutable i =
@@ -176,5 +188,25 @@ void main() {
     final Immutable ic = JsonMapper.deserialize(immutableJson, Immutable);
     // then
     expect(JsonMapper.serialize(ic), immutableJson);
+  });
+
+  test("Verify custom String converter", () {
+    // given
+    final String json = '''{
+ "id": 1,
+ "name": "_Bob_",
+ "car": {
+  "modelName": "_Audi_",
+  "color": "Color.Green"
+ }
+}''';
+    JsonMapper.registerConverter(String, new CustomStringConverter());
+
+    Immutable i =
+        new Immutable(id: 1, name: 'Bob', car: new Car('Audi', Color.Green));
+    // when
+    final String target = JsonMapper.serialize(i);
+    // then
+    expect(target, json);
   });
 }

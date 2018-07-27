@@ -14,6 +14,7 @@ class JsonMapper {
   final serializable = const JsonSerializable();
   final Map<String, ClassMirror> classes = {};
   final Map<String, Object> processedObjects = {};
+  final Map<Type, ICustomConverter> converters = {};
 
   factory JsonMapper() => instance;
 
@@ -21,6 +22,13 @@ class JsonMapper {
     for (ClassMirror classMirror in serializable.annotatedClasses) {
       classes[classMirror.simpleName] = classMirror;
     }
+    registerDefaultConverters();
+  }
+
+  void registerDefaultConverters() {
+    converters[String] = defaultStringConverter;
+    converters[DateTime] = dateConverter;
+    converters[num] = numberConverter;
   }
 
   MethodMirror getPublicConstructor(ClassMirror classMirror) {
@@ -62,7 +70,8 @@ class JsonMapper {
   bool isObjectAlreadyProcessed(Object object) {
     bool result = false;
 
-    if (object.runtimeType.toString() == 'Null') {
+    if (object.runtimeType.toString() == 'Null' ||
+        object.runtimeType.toString() == 'bool') {
       return result;
     }
 
@@ -109,11 +118,8 @@ class JsonMapper {
         result == null) {
       result = enumConverter;
     }
-    if (result == null && (type == DateTime)) {
-      result = dateConverter;
-    }
-    if (result == null && (type == num)) {
-      result = numberConverter;
+    if (result == null && converters[type] != null) {
+      result = converters[type];
     }
     return result;
   }
@@ -178,8 +184,7 @@ class JsonMapper {
 
   dynamic serializeObject(Object object) {
     if (isObjectAlreadyProcessed(object)) {
-      throw new CircularReferenceError(
-          "Circular reference detected. ${getObjectKey(object)}, ${object.toString()}");
+      throw new CircularReferenceError(object);
     }
 
     if (isScalarType(object)) {
@@ -190,16 +195,19 @@ class JsonMapper {
     }
     InstanceMirror im = safeGetInstanceMirror(object);
 
-    if (im == null) {
-      return null;
+    if (im == null || im.type == null) {
+      if (im != null) {
+        throw new MissingEnumValuesError(object.runtimeType);
+      } else {
+        throw new MissingAnnotationOnTypeError(object.runtimeType);
+      }
     }
 
     Map result = {};
     enumeratePublicFields(im,
         (name, jsonName, value, isGetterOnly, meta, converter, type) {
       if (converter != null) {
-        convert(item) =>
-            converter.toJSON(item, meta, safeGetInstanceMirror(item));
+        convert(item) => converter.toJSON(item, meta);
         if (value is List) {
           result[jsonName] = value.map(convert).toList();
         } else {
@@ -218,11 +226,11 @@ class JsonMapper {
     if (converter != null) {
       return converter.fromJSON(jsonValue, parentMeta);
     }
-    if (instanceType == String) {
-      return jsonValue;
-    }
 
     ClassMirror cm = classes[instanceType.toString()];
+    if (cm == null) {
+      throw new MissingAnnotationOnTypeError(instanceType);
+    }
     Map<String, dynamic> jsonMap =
         (jsonValue is String) ? jsonDecoder.convert(jsonValue) : jsonValue;
     Object objectInstance = cm.isEnum
@@ -245,8 +253,7 @@ class JsonMapper {
         }
       }
       if (converter != null) {
-        convert(item) =>
-            converter.fromJSON(item, meta, im.type.declarations[name]);
+        convert(item) => converter.fromJSON(item, meta);
         if (fieldValue is List) {
           fieldValue = fieldValue.map(convert).toList();
         } else {
@@ -258,6 +265,10 @@ class JsonMapper {
       }
     });
     return objectInstance;
+  }
+
+  static void registerConverter(Type type, ICustomConverter converter) {
+    instance.converters[type] = converter;
   }
 
   static dynamic serialize(Object object) {
