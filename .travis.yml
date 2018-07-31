@@ -1,7 +1,4 @@
 language: dart
+xvfb: false
 dart:
   - dev
-dart_task:
-  - test: --exclude-tags no-xvfb
-  - test: --tags no-xvfb
-  xvfb: false
