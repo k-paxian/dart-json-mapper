@@ -1,3 +1,5 @@
 language: dart
 dart:
   - dev
+dart_task:
+  xvfb: false
