@@ -8,9 +8,9 @@ import 'package:dart_json_mapper/errors.dart';
 import "package:reflectable/reflectable.dart";
 
 class JsonMapper {
-  static final JsonMapper instance = new JsonMapper._internal();
-  final JsonEncoder jsonEncoder = new JsonEncoder.withIndent(" ");
-  final JsonDecoder jsonDecoder = new JsonDecoder();
+  static final JsonMapper instance = JsonMapper._internal();
+  final JsonEncoder jsonEncoder = JsonEncoder.withIndent(" ");
+  final JsonDecoder jsonDecoder = JsonDecoder();
   final serializable = const JsonSerializable();
   final Map<String, ClassMirror> classes = {};
   final Map<String, Object> processedObjects = {};
@@ -147,7 +147,7 @@ class JsonMapper {
 
   Map<Symbol, dynamic> getNamedArguments(
       ClassMirror cm, Map<String, dynamic> jsonMap) {
-    Map<Symbol, dynamic> result = new Map();
+    Map<Symbol, dynamic> result = Map();
     MethodMirror constructorMirror = getPublicConstructor(cm);
     if (constructorMirror == null) {
       return result;
@@ -160,7 +160,7 @@ class JsonMapper {
         if (classes[typeName] != null) {
           value = deserializeObject(value, classes[typeName].reflectedType);
         }
-        result[new Symbol(paramName)] = value;
+        result[Symbol(paramName)] = value;
       }
     });
     return result;
@@ -184,7 +184,7 @@ class JsonMapper {
 
   dynamic serializeObject(Object object) {
     if (isObjectAlreadyProcessed(object)) {
-      throw new CircularReferenceError(object);
+      throw CircularReferenceError(object);
     }
 
     if (isScalarType(object)) {
@@ -197,9 +197,9 @@ class JsonMapper {
 
     if (im == null || im.type == null) {
       if (im != null) {
-        throw new MissingEnumValuesError(object.runtimeType);
+        throw MissingEnumValuesError(object.runtimeType);
       } else {
-        throw new MissingAnnotationOnTypeError(object.runtimeType);
+        throw MissingAnnotationOnTypeError(object.runtimeType);
       }
     }
 
@@ -229,7 +229,7 @@ class JsonMapper {
 
     ClassMirror cm = classes[instanceType.toString()];
     if (cm == null) {
-      throw new MissingAnnotationOnTypeError(instanceType);
+      throw MissingAnnotationOnTypeError(instanceType);
     }
     Map<String, dynamic> jsonMap =
         (jsonValue is String) ? jsonDecoder.convert(jsonValue) : jsonValue;
@@ -261,7 +261,12 @@ class JsonMapper {
         }
       }
       if (!isGetterOnly) {
-        im.invokeSetter(name, fieldValue);
+        var l = im.invokeGetter(name);
+        if (l is List && fieldValue is List) {
+          fieldValue.map((item) => l.add(item));
+        } else {
+          im.invokeSetter(name, fieldValue);
+        }
       }
     });
     return objectInstance;

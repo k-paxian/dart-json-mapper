@@ -25,9 +25,14 @@ class DateConverter extends BaseCustomConverter implements ICustomConverter {
   @override
   Object fromJSON(dynamic jsonValue, JsonProperty jsonProperty) {
     DateFormat format = getDateFormat(jsonProperty);
-    return format != null && (jsonValue is String)
-        ? format.parse(jsonValue)
-        : jsonValue;
+
+    if (jsonValue is String) {
+      return format != null
+          ? format.parse(jsonValue)
+          : DateTime.parse(jsonValue);
+    }
+
+    return jsonValue;
   }
 
   @override

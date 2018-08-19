@@ -1,3 +1,9 @@
+## 0.1.3
+
+* Support Dart 2.0
+* Support latest reflectable library changes
+* Remove dependency on barback
+
 ## 0.1.2
 
 * Converters registry introduced
