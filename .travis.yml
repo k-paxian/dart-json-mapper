@@ -3,4 +3,4 @@ xvfb: false
 dart:
   - stable
 dart_task:
-  - test: --platform vm
+  - test: --platform vm -r json ./test/test.dart
