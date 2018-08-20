@@ -9,7 +9,7 @@ Future<BuildResult> reflectableBuild(List<String> arguments) async {
     // Globbing may produce an empty argument list, and it might be ok,
     // but we should give at least notify the caller.
     print("reflectable_builder: No arguments given, exiting.");
-    return new BuildResult(BuildStatus.success, []);
+    return BuildResult(BuildStatus.success, []);
   } else {
     return await build([newBuilderApplication(arguments)],
         deleteFilesByDefault: true);

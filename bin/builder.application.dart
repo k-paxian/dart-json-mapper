@@ -21,8 +21,8 @@ class ReflectableBuilder implements Builder {
 
     await buildStep.writeAsString(
         outputId,
-        new BuilderImplementation().buildMirrorLibrary(resolver, inputId,
-            outputId, inputLibrary, visibleLibraries, true, []));
+        BuilderImplementation().buildMirrorLibrary(resolver, inputId, outputId,
+            inputLibrary, visibleLibraries, true, []));
   }
 
   Map<String, List<String>> get buildExtensions => const {
@@ -33,10 +33,10 @@ class ReflectableBuilder implements Builder {
 BuilderApplication newBuilderApplication(List<String> arguments) {
   // TODO(eernst) feature: We should support some customization of
   // the settings, e.g., specifying options like `suppress_warnings`.
-  BuilderOptions options = new BuilderOptions(
+  BuilderOptions options = BuilderOptions(
       <String, dynamic>{"entry_points": arguments, "formatted": true},
       isRoot: true);
-  final builder = new ReflectableBuilder(options);
+  final builder = ReflectableBuilder(options);
 
-  return applyToRoot(builder, generateFor: new InputSet(include: arguments));
+  return applyToRoot(builder, generateFor: InputSet(include: arguments));
 }

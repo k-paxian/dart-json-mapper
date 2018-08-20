@@ -42,7 +42,7 @@ class MyData {
 main() {
   initializeReflectable(); // Imported from main.reflectable.dart
   
-  print(JsonMapper.serialize(new MyData(456, true, "yes")));
+  print(JsonMapper.serialize(MyData(456, true, "yes")));
   // { 
   //  "a": 456,
   //  "d": "yes"
@@ -103,7 +103,7 @@ class Immutable {
 
 print(
   JsonMapper.serialize(
-    new Immutable(id: 1, name: 'Bob', car: new Car('Audi', Color.Green))
+    Immutable(id: 1, name: 'Bob', car: Car('Audi', Color.Green))
   )
 );
 ``` 
