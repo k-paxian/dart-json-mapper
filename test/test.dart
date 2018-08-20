@@ -38,18 +38,18 @@ class Person {
   List<String> skills = ['Go', 'Dart', 'Flutter'];
 
   List<DateTime> specialDates = [
-    new DateTime(2013, 02, 28),
-    new DateTime(2023, 02, 28),
-    new DateTime(2003, 02, 28)
+    DateTime(2013, 02, 28),
+    DateTime(2023, 02, 28),
+    DateTime(2003, 02, 28)
   ];
 
   @JsonProperty(
       name: 'last_promotion_date',
       converterParams: {'format': 'MM-dd-yyyy H:m:s'})
-  DateTime lastPromotionDate = new DateTime(2008, 05, 13, 22, 33, 44);
+  DateTime lastPromotionDate = DateTime(2008, 05, 13, 22, 33, 44);
 
   @JsonProperty(name: 'hire_date', converterParams: {'format': 'MM/dd/yyyy'})
-  DateTime hireDate = new DateTime(2003, 02, 28);
+  DateTime hireDate = DateTime(2003, 02, 28);
 
   @JsonProperty(ignore: true)
   bool married = true;
@@ -74,10 +74,7 @@ class Person {
   @JsonProperty(enumValues: Color.values, converter: enumConverterNumeric)
   Color hairColor = Color.Brown;
 
-  List<Car> vehicles = [
-    new Car("Tesla", Color.Black),
-    new Car("BMW", Color.Red)
-  ];
+  List<Car> vehicles = [Car("Tesla", Color.Black), Car("BMW", Color.Red)];
 
   String get fullName => "${name} ${lastName}";
 
@@ -141,7 +138,7 @@ void main() {
   test("Verify serialization to JSON", () {
     // given
     // when
-    final String target = JsonMapper.serialize(new Person());
+    final String target = JsonMapper.serialize(Person());
     // then
     expect(target, personJson);
   });
@@ -156,14 +153,14 @@ void main() {
 
   test("Verify circular reference detection during serialization", () {
     // given
-    final Car car = new Car('VW', Color.Blue);
+    final Car car = Car('VW', Color.Blue);
     car.replacement = car;
     try {
       // when
       JsonMapper.serialize(car);
     } catch (error) {
       // then
-      expect(error, new isInstanceOf<CircularReferenceError>());
+      expect(error, TypeMatcher<CircularReferenceError>());
     }
   });
 
@@ -177,8 +174,7 @@ void main() {
   "color": "Color.Green"
  }
 }''';
-    Immutable i =
-        new Immutable(id: 1, name: 'Bob', car: new Car('Audi', Color.Green));
+    Immutable i = Immutable(id: 1, name: 'Bob', car: Car('Audi', Color.Green));
     // when
     final String target = JsonMapper.serialize(i);
     // then
@@ -200,10 +196,9 @@ void main() {
   "color": "Color.Green"
  }
 }''';
-    JsonMapper.registerConverter(String, new CustomStringConverter());
+    JsonMapper.registerConverter(String, CustomStringConverter());
 
-    Immutable i =
-        new Immutable(id: 1, name: 'Bob', car: new Car('Audi', Color.Green));
+    Immutable i = Immutable(id: 1, name: 'Bob', car: Car('Audi', Color.Green));
     // when
     final String target = JsonMapper.serialize(i);
     // then

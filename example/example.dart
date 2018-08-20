@@ -32,7 +32,7 @@ class Person {
   DateTime lastPromotionDate;
 
   @JsonProperty(name: 'hire_date')
-  DateTime hireDate = new DateTime(2003, 02, 28);
+  DateTime hireDate = DateTime(2003, 02, 28);
 
   bool married = true;
   String name = "Forest";
@@ -50,10 +50,7 @@ class Person {
   @JsonProperty(enumValues: Color.values, converter: enumConverterNumeric)
   Color hairColor = Color.Brown;
 
-  List<Car> vehicles = [
-    new Car("Tesla", Color.Black),
-    new Car("BMW", Color.Red)
-  ];
+  List<Car> vehicles = [Car("Tesla", Color.Black), Car("BMW", Color.Red)];
 
   String get fullName => "${name} ${lastName}";
 
@@ -98,7 +95,7 @@ void main() {
 }''';
 
   // Serialize
-  print(JsonMapper.serialize(new Person()));
+  print(JsonMapper.serialize(Person()));
 
   // Deserialize
   print(JsonMapper.deserialize(personJson, Person));

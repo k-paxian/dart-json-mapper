@@ -45,7 +45,7 @@ class DateConverter extends BaseCustomConverter implements ICustomConverter {
 
   DateFormat getDateFormat(JsonProperty jsonProperty) {
     String format = getConverterParameter('format', jsonProperty);
-    return format != null ? new DateFormat(format) : null;
+    return format != null ? DateFormat(format) : null;
   }
 }
 
@@ -72,7 +72,7 @@ class NumberConverter extends BaseCustomConverter implements ICustomConverter {
 
   NumberFormat getNumberFormat(JsonProperty jsonProperty) {
     String format = getConverterParameter('format', jsonProperty);
-    return format != null ? new NumberFormat(format) : null;
+    return format != null ? NumberFormat(format) : null;
   }
 }
 
