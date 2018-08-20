@@ -17,7 +17,7 @@ class BaseCustomConverter {
   }
 }
 
-const dateConverter = const DateConverter();
+const dateConverter = DateConverter();
 
 class DateConverter extends BaseCustomConverter implements ICustomConverter {
   const DateConverter() : super();
@@ -49,7 +49,7 @@ class DateConverter extends BaseCustomConverter implements ICustomConverter {
   }
 }
 
-const numberConverter = const NumberConverter();
+const numberConverter = NumberConverter();
 
 class NumberConverter extends BaseCustomConverter implements ICustomConverter {
   const NumberConverter() : super();
@@ -76,7 +76,7 @@ class NumberConverter extends BaseCustomConverter implements ICustomConverter {
   }
 }
 
-const enumConverter = const EnumConverter();
+const enumConverter = EnumConverter();
 
 class EnumConverter implements ICustomConverter {
   const EnumConverter() : super();
@@ -94,7 +94,7 @@ class EnumConverter implements ICustomConverter {
   }
 }
 
-const enumConverterNumeric = const EnumConverterNumeric();
+const enumConverterNumeric = EnumConverterNumeric();
 
 class EnumConverterNumeric implements ICustomConverter {
   const EnumConverterNumeric() : super();
@@ -110,7 +110,7 @@ class EnumConverterNumeric implements ICustomConverter {
   }
 }
 
-const defaultStringConverter = const StringConverter();
+const defaultStringConverter = StringConverter();
 
 class StringConverter implements ICustomConverter {
   const StringConverter() : super();

@@ -26,7 +26,7 @@ class JsonProperty {
   }
 }
 
-const jsonSerializable = const JsonSerializable();
+const jsonSerializable = JsonSerializable();
 
 class JsonSerializable extends Reflectable {
   const JsonSerializable()

@@ -1,5 +1,9 @@
 analyzer:
-  strong-mode: true
+  errors:
+    todo: ignore
+  exclude:
+    - example/*.reflectable.dart
+    - test/*.reflectable.dart
 
 linter:
   rules:
@@ -9,3 +13,8 @@ linter:
     - list_remove_unrelated_type
     - unrelated_type_equality_checks
     - valid_regexps
+    - avoid_empty_else
+    - cancel_subscriptions
+    - close_sinks
+    - unnecessary_const
+    - unnecessary_new
