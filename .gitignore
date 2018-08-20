@@ -14,4 +14,3 @@ doc/api/
 
 *.iml
 .idea
-*.reflectable.dart

@@ -1,5 +1,6 @@
 # dart-json-mapper
 
+[![Build Status][travis-badge]][travis-badge-url]
 [![pub package](https://img.shields.io/pub/v/dart_json_mapper.svg)](https://pub.dartlang.org/packages/dart_json_mapper)
 
 Serialize / Deserialize Dart Objects to / from JSON
@@ -177,3 +178,6 @@ Please file feature requests and bugs using the
 [1]: https://github.com/flutter/flutter/issues/1150
 [2]: https://github.com/k-paxian/dart-json-mapper/issues
 [3]: https://pub.dartlang.org/packages/reflectable
+
+[travis-badge]: https://travis-ci.org/k-paxian/dart-json-mapper.svg?branch=master
+[travis-badge-url]: https://travis-ci.org/k-paxian/dart-json-mapper

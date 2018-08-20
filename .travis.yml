@@ -1,4 +1,6 @@
 language: dart
 xvfb: false
 dart:
-  - dev
+  - stable
+dart_task:
+  - test: --platform vm
