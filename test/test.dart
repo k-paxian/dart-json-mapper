@@ -65,6 +65,10 @@ class Person {
 
   var lastName = "Gump";
 
+  Map properties = {'first': 'partridge', 'cash': 23000, 'required': true};
+
+  Symbol sym = Symbol('foo');
+
   @JsonProperty(enumValues: Color.values)
   List<Color> favouriteColours = [Color.Black, Color.White];
 
@@ -117,6 +121,12 @@ void main() {
  "dob": null,
  "age": 36,
  "lastName": "Gump",
+ "properties": {
+  "first": "partridge",
+  "cash": 23000,
+  "required": true
+ },
+ "sym": "foo",
  "favouriteColours": [
   "Color.Black",
   "Color.White"

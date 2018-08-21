@@ -26,7 +26,10 @@ class JsonMapper {
   }
 
   void registerDefaultConverters() {
-    converters[String] = defaultStringConverter;
+    converters[String] = defaultConverter;
+    converters[bool] = defaultConverter;
+    converters[Map] = defaultConverter;
+    converters[Symbol] = symbolConverter;
     converters[DateTime] = dateConverter;
     converters[num] = numberConverter;
   }

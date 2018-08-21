@@ -110,10 +110,30 @@ class EnumConverterNumeric implements ICustomConverter {
   }
 }
 
-const defaultStringConverter = StringConverter();
+const symbolConverter = SymbolConverter();
 
-class StringConverter implements ICustomConverter {
-  const StringConverter() : super();
+class SymbolConverter implements ICustomConverter {
+  const SymbolConverter() : super();
+
+  @override
+  Object fromJSON(dynamic jsonValue, JsonProperty jsonProperty) {
+    return Symbol(jsonValue);
+  }
+
+  @override
+  dynamic toJSON(Object object, JsonProperty jsonProperty) {
+    return RegExp('"(.+)"')
+        .allMatches(object.toString())
+        .first
+        .group(0)
+        .replaceAll("\"", '');
+  }
+}
+
+const defaultConverter = DefaultConverter();
+
+class DefaultConverter implements ICustomConverter {
+  const DefaultConverter() : super();
 
   @override
   Object fromJSON(dynamic jsonValue, JsonProperty jsonProperty) {
