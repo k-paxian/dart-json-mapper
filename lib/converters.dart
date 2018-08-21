@@ -57,7 +57,7 @@ class NumberConverter extends BaseCustomConverter implements ICustomConverter {
   @override
   Object fromJSON(dynamic jsonValue, JsonProperty jsonProperty) {
     NumberFormat format = getNumberFormat(jsonProperty);
-    return format != null
+    return format != null && (jsonValue is String)
         ? getNumberFormat(jsonProperty).parse(jsonValue)
         : jsonValue;
   }
@@ -101,7 +101,7 @@ class EnumConverterNumeric implements ICustomConverter {
 
   @override
   Object fromJSON(dynamic jsonValue, JsonProperty jsonProperty) {
-    return jsonProperty.enumValues[jsonValue];
+    return jsonValue is int ? jsonProperty.enumValues[jsonValue] : jsonValue;
   }
 
   @override
@@ -117,7 +117,7 @@ class SymbolConverter implements ICustomConverter {
 
   @override
   Object fromJSON(dynamic jsonValue, JsonProperty jsonProperty) {
-    return Symbol(jsonValue);
+    return jsonValue is String ? Symbol(jsonValue) : jsonValue;
   }
 
   @override

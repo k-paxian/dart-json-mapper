@@ -32,6 +32,8 @@ class JsonMapper {
     converters[Symbol] = symbolConverter;
     converters[DateTime] = dateConverter;
     converters[num] = numberConverter;
+    converters[int] = numberConverter;
+    converters[double] = numberConverter;
   }
 
   MethodMirror getPublicConstructor(ClassMirror classMirror) {
@@ -169,30 +171,20 @@ class JsonMapper {
     return result;
   }
 
-  bool isScalarType(Object object) {
-    if (object == null) {
-      return true;
-    }
-    if (object is num) {
-      return true;
-    }
-    if (object is bool) {
-      return true;
-    }
-    if (object is String) {
-      return true;
-    }
-    return false;
-  }
-
   dynamic serializeObject(Object object) {
+    if (object == null) {
+      return object;
+    }
+
     if (isObjectAlreadyProcessed(object)) {
       throw CircularReferenceError(object);
     }
 
-    if (isScalarType(object)) {
-      return object;
+    ICustomConverter converter = getConverter(null, object.runtimeType);
+    if (converter != null) {
+      return converter.toJSON(object, null);
     }
+
     if (object is List) {
       return object.map(serializeObject).toList();
     }
@@ -250,9 +242,7 @@ class JsonMapper {
               .map((item) => deserializeObject(item, type, meta))
               .toList();
         } else {
-          if (!isScalarType(fieldValue)) {
-            fieldValue = deserializeObject(fieldValue, type, meta);
-          }
+          fieldValue = deserializeObject(fieldValue, type, meta);
         }
       }
       if (converter != null) {
