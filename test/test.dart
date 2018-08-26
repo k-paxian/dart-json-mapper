@@ -10,6 +10,7 @@ import 'test.reflectable.dart';
 
 part 'json.dart';
 part 'model.dart';
+part 'test.constructors.dart';
 part 'test.converters.dart';
 part 'test.errors.dart';
 part 'test.integration.dart';
@@ -19,5 +20,6 @@ void main() {
 
   testErrorHandling();
   testConverters();
+  testConstructors();
   testIntegration();
 }

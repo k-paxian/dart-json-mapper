@@ -2,18 +2,16 @@
 // https://github.com/dart-lang/reflectable.
 
 import "dart:core";
-
 import 'package:dart_json_mapper/annotations.dart' as prefix0;
 import 'package:dart_json_mapper/converters.dart' as prefix2;
-import "package:reflectable/mirrors.dart" as m;
-import "package:reflectable/reflectable.dart" as r show Reflectable;
-import "package:reflectable/src/reflectable_builder_based.dart" as r;
-
 import 'test.dart' as prefix1;
-// ignore:unused_import
-// ignore:unused_import
-// ignore:unused_import
 
+// ignore:unused_import
+import "package:reflectable/mirrors.dart" as m;
+// ignore:unused_import
+import "package:reflectable/src/reflectable_builder_based.dart" as r;
+// ignore:unused_import
+import "package:reflectable/reflectable.dart" as r show Reflectable;
 
 final _data = <r.Reflectable, r.ReflectorData>{
   const prefix0.JsonSerializable(): new r.ReflectorData(
@@ -24,36 +22,15 @@ final _data = <r.Reflectable, r.ReflectorData>{
             7,
             0,
             const prefix0.JsonSerializable(),
-            const <int>[0, 1, 2, 30],
-            const <int>[31, 32, 33, 34, 35, 24, 25, 26, 27, 28, 29],
+            const <int>[0, 1, 2, 38],
+            const <int>[39, 40, 41, 42, 43, 32, 33, 34, 35, 36, 37],
             const <int>[],
             -1,
             {},
             {},
             {
               r"": (b) =>
-                  ([model, color]) => b ? new prefix1.Car(model, color) : null
-            },
-            -1,
-            -1,
-            const <int>[-1],
-            const <Object>[prefix0.jsonSerializable],
-            null),
-        new r.NonGenericClassMirrorImpl(
-            r"Immutable",
-            r"json_mapper.test.Immutable",
-            7,
-            1,
-            const prefix0.JsonSerializable(),
-            const <int>[3, 4, 5, 39],
-            const <int>[31, 32, 33, 34, 35, 36, 37, 38],
-            const <int>[],
-            -1,
-            {},
-            {},
-            {
-              r"": (b) => ({id, name, car}) =>
-                  b ? new prefix1.Immutable(id: id, name: name, car: car) : null
+                  (model, color) => b ? new prefix1.Car(model, color) : null
             },
             -1,
             -1,
@@ -64,9 +41,12 @@ final _data = <r.Reflectable, r.ReflectorData>{
             r"Person",
             r"json_mapper.test.Person",
             7,
-            2,
+            1,
             const prefix0.JsonSerializable(),
             const <int>[
+              3,
+              4,
+              5,
               6,
               7,
               8,
@@ -81,18 +61,11 @@ final _data = <r.Reflectable, r.ReflectorData>{
               17,
               18,
               19,
-              20,
-              21,
-              22,
-              74,
-              75
+              78,
+              79
             ],
             const <int>[
-              31,
-              32,
-              33,
-              34,
-              35,
+              39,
               40,
               41,
               42,
@@ -127,7 +100,11 @@ final _data = <r.Reflectable, r.ReflectorData>{
               71,
               72,
               73,
-              74
+              74,
+              75,
+              76,
+              77,
+              78
             ],
             const <int>[],
             -1,
@@ -140,13 +117,124 @@ final _data = <r.Reflectable, r.ReflectorData>{
             const <Object>[prefix0.jsonSerializable],
             null),
         new r.NonGenericClassMirrorImpl(
-            r"UnAnnotatedEnumField",
-            r"json_mapper.test.UnAnnotatedEnumField",
+            r"PositionalParametersClass",
+            r"json_mapper.test.PositionalParametersClass",
+            7,
+            2,
+            const prefix0.JsonSerializable(),
+            const <int>[20, 21, 84],
+            const <int>[39, 40, 41, 42, 43, 80, 81, 82, 83],
+            const <int>[],
+            -1,
+            {},
+            {},
+            {
+              r"": (b) => (firstName, lastName) => b
+                  ? new prefix1.PositionalParametersClass(firstName, lastName)
+                  : null
+            },
+            -1,
+            -1,
+            const <int>[-1],
+            const <Object>[prefix0.jsonSerializable],
+            null),
+        new r.NonGenericClassMirrorImpl(
+            r"OptionalParametersClass",
+            r"json_mapper.test.OptionalParametersClass",
             7,
             3,
             const prefix0.JsonSerializable(),
-            const <int>[23, 78],
-            const <int>[31, 32, 33, 34, 35, 76, 77],
+            const <int>[22, 23, 89],
+            const <int>[39, 40, 41, 42, 43, 85, 86, 87, 88],
+            const <int>[],
+            -1,
+            {},
+            {},
+            {
+              r"": (b) => ([firstName, lastName]) => b
+                  ? new prefix1.OptionalParametersClass(firstName, lastName)
+                  : null
+            },
+            -1,
+            -1,
+            const <int>[-1],
+            const <Object>[prefix0.jsonSerializable],
+            null),
+        new r.NonGenericClassMirrorImpl(
+            r"PartiallyOptionalParametersClass",
+            r"json_mapper.test.PartiallyOptionalParametersClass",
+            7,
+            4,
+            const prefix0.JsonSerializable(),
+            const <int>[24, 25, 94],
+            const <int>[39, 40, 41, 42, 43, 90, 91, 92, 93],
+            const <int>[],
+            -1,
+            {},
+            {},
+            {
+              r"": (b) => (firstName, [lastName]) => b
+                  ? new prefix1.PartiallyOptionalParametersClass(
+                      firstName, lastName)
+                  : null
+            },
+            -1,
+            -1,
+            const <int>[-1],
+            const <Object>[prefix0.jsonSerializable],
+            null),
+        new r.NonGenericClassMirrorImpl(
+            r"NamedParametersClass",
+            r"json_mapper.test.NamedParametersClass",
+            7,
+            5,
+            const prefix0.JsonSerializable(),
+            const <int>[26, 27, 99],
+            const <int>[39, 40, 41, 42, 43, 95, 96, 97, 98],
+            const <int>[],
+            -1,
+            {},
+            {},
+            {
+              r"": (b) => ({firstName, lastName}) => b
+                  ? new prefix1.NamedParametersClass(
+                      firstName: firstName, lastName: lastName)
+                  : null
+            },
+            -1,
+            -1,
+            const <int>[-1],
+            const <Object>[prefix0.jsonSerializable],
+            null),
+        new r.NonGenericClassMirrorImpl(
+            r"Immutable",
+            r"json_mapper.test.Immutable",
+            7,
+            6,
+            const prefix0.JsonSerializable(),
+            const <int>[28, 29, 30, 103],
+            const <int>[39, 40, 41, 42, 43, 100, 101, 102],
+            const <int>[],
+            -1,
+            {},
+            {},
+            {
+              r"": (b) => (id, name, car) =>
+                  b ? new prefix1.Immutable(id, name, car) : null
+            },
+            -1,
+            -1,
+            const <int>[-1],
+            const <Object>[prefix0.jsonSerializable],
+            null),
+        new r.NonGenericClassMirrorImpl(
+            r"UnAnnotatedEnumField",
+            r"json_mapper.test.UnAnnotatedEnumField",
+            7,
+            7,
+            const prefix0.JsonSerializable(),
+            const <int>[31, 106],
+            const <int>[39, 40, 41, 42, 43, 104, 105],
             const <int>[],
             -1,
             {},
@@ -165,11 +253,11 @@ final _data = <r.Reflectable, r.ReflectorData>{
             0,
             const prefix0.JsonSerializable(),
             -1,
-            4,
-            4,
+            8,
+            8,
             const <Object>[const prefix0.JsonProperty(name: 'modelName')]),
         new r.VariableMirrorImpl(r"color", 32773, 0,
-            const prefix0.JsonSerializable(), -1, 5, 5, const <Object>[
+            const prefix0.JsonSerializable(), -1, 9, 9, const <Object>[
           const prefix0.JsonProperty(enumValues: prefix1.Color.values)
         ]),
         new r.VariableMirrorImpl(
@@ -181,24 +269,18 @@ final _data = <r.Reflectable, r.ReflectorData>{
             0,
             0,
             const <Object>[const prefix0.JsonProperty(ignore: true)]),
-        new r.VariableMirrorImpl(r"id", 33797, 1,
-            const prefix0.JsonSerializable(), -1, 6, 6, const <Object>[]),
-        new r.VariableMirrorImpl(r"name", 33797, 1,
-            const prefix0.JsonSerializable(), -1, 4, 4, const <Object>[]),
-        new r.VariableMirrorImpl(r"car", 33797, 1,
-            const prefix0.JsonSerializable(), 0, 0, 0, const <Object>[]),
-        new r.VariableMirrorImpl(r"skills", 2129925, 2,
-            const prefix0.JsonSerializable(), -1, 7, 8, const <Object>[]),
-        new r.VariableMirrorImpl(r"specialDates", 2129925, 2,
-            const prefix0.JsonSerializable(), -1, 9, 10, const <Object>[]),
-        new r.VariableMirrorImpl(r"lastPromotionDate", 32773, 2,
-            const prefix0.JsonSerializable(), -1, 11, 11, const <Object>[
+        new r.VariableMirrorImpl(r"skills", 2129925, 1,
+            const prefix0.JsonSerializable(), -1, 10, 11, const <Object>[]),
+        new r.VariableMirrorImpl(r"specialDates", 2129925, 1,
+            const prefix0.JsonSerializable(), -1, 12, 13, const <Object>[]),
+        new r.VariableMirrorImpl(r"lastPromotionDate", 32773, 1,
+            const prefix0.JsonSerializable(), -1, 14, 14, const <Object>[
           const prefix0.JsonProperty(
               name: 'last_promotion_date',
               converterParams: const {'format': 'MM-dd-yyyy H:m:s'})
         ]),
-        new r.VariableMirrorImpl(r"hireDate", 32773, 2,
-            const prefix0.JsonSerializable(), -1, 11, 11, const <Object>[
+        new r.VariableMirrorImpl(r"hireDate", 32773, 1,
+            const prefix0.JsonSerializable(), -1, 14, 14, const <Object>[
           const prefix0.JsonProperty(
               name: 'hire_date',
               converterParams: const {'format': 'MM/dd/yyyy'})
@@ -206,193 +288,255 @@ final _data = <r.Reflectable, r.ReflectorData>{
         new r.VariableMirrorImpl(
             r"married",
             32773,
-            2,
+            1,
             const prefix0.JsonSerializable(),
             -1,
-            12,
-            12,
+            15,
+            15,
             const <Object>[const prefix0.JsonProperty(ignore: true)]),
-        new r.VariableMirrorImpl(r"active", 32773, 2,
-            const prefix0.JsonSerializable(), -1, 12, 12, const <Object>[]),
-        new r.VariableMirrorImpl(r"name", 32773, 2,
-            const prefix0.JsonSerializable(), -1, 4, 4, const <Object>[]),
-        new r.VariableMirrorImpl(r"salary", 32773, 2,
-            const prefix0.JsonSerializable(), -1, 13, 13, const <Object>[
+        new r.VariableMirrorImpl(r"active", 32773, 1,
+            const prefix0.JsonSerializable(), -1, 15, 15, const <Object>[]),
+        new r.VariableMirrorImpl(r"name", 32773, 1,
+            const prefix0.JsonSerializable(), -1, 8, 8, const <Object>[]),
+        new r.VariableMirrorImpl(r"salary", 32773, 1,
+            const prefix0.JsonSerializable(), -1, 16, 16, const <Object>[
           const prefix0.JsonProperty(converterParams: const {'format': '##.##'})
         ]),
-        new r.VariableMirrorImpl(r"dob", 32773, 2,
-            const prefix0.JsonSerializable(), -1, 13, 13, const <Object>[]),
-        new r.VariableMirrorImpl(r"age", 32773, 2,
-            const prefix0.JsonSerializable(), -1, 13, 13, const <Object>[]),
-        new r.VariableMirrorImpl(r"lastName", 32773, 2,
-            const prefix0.JsonSerializable(), -1, 4, 4, const <Object>[]),
-        new r.VariableMirrorImpl(r"properties", 2129925, 2,
-            const prefix0.JsonSerializable(), -1, 14, 15, const <Object>[]),
-        new r.VariableMirrorImpl(r"sym", 32773, 2,
+        new r.VariableMirrorImpl(r"dob", 32773, 1,
             const prefix0.JsonSerializable(), -1, 16, 16, const <Object>[]),
-        new r.VariableMirrorImpl(r"favouriteColours", 2129925, 2,
-            const prefix0.JsonSerializable(), -1, 17, 18, const <Object>[
+        new r.VariableMirrorImpl(r"age", 32773, 1,
+            const prefix0.JsonSerializable(), -1, 16, 16, const <Object>[]),
+        new r.VariableMirrorImpl(r"lastName", 32773, 1,
+            const prefix0.JsonSerializable(), -1, 8, 8, const <Object>[]),
+        new r.VariableMirrorImpl(r"properties", 2129925, 1,
+            const prefix0.JsonSerializable(), -1, 17, 18, const <Object>[]),
+        new r.VariableMirrorImpl(r"sym", 32773, 1,
+            const prefix0.JsonSerializable(), -1, 19, 19, const <Object>[]),
+        new r.VariableMirrorImpl(r"favouriteColours", 2129925, 1,
+            const prefix0.JsonSerializable(), -1, 20, 21, const <Object>[
           const prefix0.JsonProperty(enumValues: prefix1.Color.values)
         ]),
-        new r.VariableMirrorImpl(r"eyeColor", 32773, 2,
-            const prefix0.JsonSerializable(), -1, 5, 5, const <Object>[
+        new r.VariableMirrorImpl(r"eyeColor", 32773, 1,
+            const prefix0.JsonSerializable(), -1, 9, 9, const <Object>[
           const prefix0.JsonProperty(
               name: 'eye_color', enumValues: prefix1.Color.values)
         ]),
-        new r.VariableMirrorImpl(r"hairColor", 32773, 2,
-            const prefix0.JsonSerializable(), -1, 5, 5, const <Object>[
+        new r.VariableMirrorImpl(r"hairColor", 32773, 1,
+            const prefix0.JsonSerializable(), -1, 9, 9, const <Object>[
           const prefix0.JsonProperty(
               enumValues: prefix1.Color.values,
               converter: prefix2.enumConverterNumeric)
         ]),
-        new r.VariableMirrorImpl(r"vehicles", 2129925, 2,
-            const prefix0.JsonSerializable(), -1, 19, 20, const <Object>[]),
-        new r.VariableMirrorImpl(r"sex", 32773, 3,
-            const prefix0.JsonSerializable(), -1, 21, 21, const <Object>[]),
+        new r.VariableMirrorImpl(r"vehicles", 2129925, 1,
+            const prefix0.JsonSerializable(), -1, 22, 23, const <Object>[]),
+        new r.VariableMirrorImpl(r"firstName", 32773, 2,
+            const prefix0.JsonSerializable(), -1, 8, 8, const <Object>[]),
+        new r.VariableMirrorImpl(r"lastName", 32773, 2,
+            const prefix0.JsonSerializable(), -1, 8, 8, const <Object>[]),
+        new r.VariableMirrorImpl(r"firstName", 32773, 3,
+            const prefix0.JsonSerializable(), -1, 8, 8, const <Object>[]),
+        new r.VariableMirrorImpl(r"lastName", 32773, 3,
+            const prefix0.JsonSerializable(), -1, 8, 8, const <Object>[]),
+        new r.VariableMirrorImpl(r"firstName", 32773, 4,
+            const prefix0.JsonSerializable(), -1, 8, 8, const <Object>[]),
+        new r.VariableMirrorImpl(r"lastName", 32773, 4,
+            const prefix0.JsonSerializable(), -1, 8, 8, const <Object>[]),
+        new r.VariableMirrorImpl(r"firstName", 32773, 5,
+            const prefix0.JsonSerializable(), -1, 8, 8, const <Object>[]),
+        new r.VariableMirrorImpl(r"lastName", 32773, 5,
+            const prefix0.JsonSerializable(), -1, 8, 8, const <Object>[]),
+        new r.VariableMirrorImpl(r"id", 33797, 6,
+            const prefix0.JsonSerializable(), -1, 24, 24, const <Object>[]),
+        new r.VariableMirrorImpl(r"name", 33797, 6,
+            const prefix0.JsonSerializable(), -1, 8, 8, const <Object>[]),
+        new r.VariableMirrorImpl(r"car", 33797, 6,
+            const prefix0.JsonSerializable(), 0, 0, 0, const <Object>[]),
+        new r.VariableMirrorImpl(r"sex", 32773, 7,
+            const prefix0.JsonSerializable(), -1, 25, 25, const <Object>[]),
         new r.ImplicitGetterMirrorImpl(
-            const prefix0.JsonSerializable(), 0, 4, 4, 24),
+            const prefix0.JsonSerializable(), 0, 8, 8, 32),
         new r.ImplicitSetterMirrorImpl(
-            const prefix0.JsonSerializable(), 0, 4, 4, 25),
+            const prefix0.JsonSerializable(), 0, 8, 8, 33),
         new r.ImplicitGetterMirrorImpl(
-            const prefix0.JsonSerializable(), 1, 5, 5, 26),
+            const prefix0.JsonSerializable(), 1, 9, 9, 34),
         new r.ImplicitSetterMirrorImpl(
-            const prefix0.JsonSerializable(), 1, 5, 5, 27),
+            const prefix0.JsonSerializable(), 1, 9, 9, 35),
         new r.ImplicitGetterMirrorImpl(
-            const prefix0.JsonSerializable(), 2, 0, 0, 28),
+            const prefix0.JsonSerializable(), 2, 0, 0, 36),
         new r.ImplicitSetterMirrorImpl(
-            const prefix0.JsonSerializable(), 2, 0, 0, 29),
+            const prefix0.JsonSerializable(), 2, 0, 0, 37),
         new r.MethodMirrorImpl(r"", 0, 0, -1, 0, 0, const <int>[0, 1],
             const prefix0.JsonSerializable(), const <Object>[]),
-        new r.MethodMirrorImpl(r"==", 131074, null, -1, 12, 12, const <int>[5],
+        new r.MethodMirrorImpl(r"==", 131074, null, -1, 15, 15, const <int>[5],
             const prefix0.JsonSerializable(), const <Object>[]),
-        new r.MethodMirrorImpl(r"toString", 131074, null, -1, 4, 4,
+        new r.MethodMirrorImpl(r"toString", 131074, null, -1, 8, 8,
             const <int>[], const prefix0.JsonSerializable(), const <Object>[]),
         new r.MethodMirrorImpl(r"noSuchMethod", 65538, null, null, null, null,
             const <int>[6], const prefix0.JsonSerializable(), const <Object>[]),
-        new r.MethodMirrorImpl(r"hashCode", 131075, null, -1, 6, 6,
+        new r.MethodMirrorImpl(r"hashCode", 131075, null, -1, 24, 24,
             const <int>[], const prefix0.JsonSerializable(), const <Object>[]),
-        new r.MethodMirrorImpl(r"runtimeType", 131075, null, -1, 22, 22,
+        new r.MethodMirrorImpl(r"runtimeType", 131075, null, -1, 26, 26,
             const <int>[], const prefix0.JsonSerializable(), const <Object>[]),
         new r.ImplicitGetterMirrorImpl(
-            const prefix0.JsonSerializable(), 3, 6, 6, 36),
+            const prefix0.JsonSerializable(), 3, 10, 11, 44),
+        new r.ImplicitSetterMirrorImpl(
+            const prefix0.JsonSerializable(), 3, 10, 11, 45),
         new r.ImplicitGetterMirrorImpl(
-            const prefix0.JsonSerializable(), 4, 4, 4, 37),
+            const prefix0.JsonSerializable(), 4, 12, 13, 46),
+        new r.ImplicitSetterMirrorImpl(
+            const prefix0.JsonSerializable(), 4, 12, 13, 47),
         new r.ImplicitGetterMirrorImpl(
-            const prefix0.JsonSerializable(), 5, 0, 0, 38),
-        new r.MethodMirrorImpl(r"", 128, 1, -1, 1, 1, const <int>[7, 8, 9],
+            const prefix0.JsonSerializable(), 5, 14, 14, 48),
+        new r.ImplicitSetterMirrorImpl(
+            const prefix0.JsonSerializable(), 5, 14, 14, 49),
+        new r.ImplicitGetterMirrorImpl(
+            const prefix0.JsonSerializable(), 6, 14, 14, 50),
+        new r.ImplicitSetterMirrorImpl(
+            const prefix0.JsonSerializable(), 6, 14, 14, 51),
+        new r.ImplicitGetterMirrorImpl(
+            const prefix0.JsonSerializable(), 7, 15, 15, 52),
+        new r.ImplicitSetterMirrorImpl(
+            const prefix0.JsonSerializable(), 7, 15, 15, 53),
+        new r.ImplicitGetterMirrorImpl(
+            const prefix0.JsonSerializable(), 8, 15, 15, 54),
+        new r.ImplicitSetterMirrorImpl(
+            const prefix0.JsonSerializable(), 8, 15, 15, 55),
+        new r.ImplicitGetterMirrorImpl(
+            const prefix0.JsonSerializable(), 9, 8, 8, 56),
+        new r.ImplicitSetterMirrorImpl(
+            const prefix0.JsonSerializable(), 9, 8, 8, 57),
+        new r.ImplicitGetterMirrorImpl(
+            const prefix0.JsonSerializable(), 10, 16, 16, 58),
+        new r.ImplicitSetterMirrorImpl(
+            const prefix0.JsonSerializable(), 10, 16, 16, 59),
+        new r.ImplicitGetterMirrorImpl(
+            const prefix0.JsonSerializable(), 11, 16, 16, 60),
+        new r.ImplicitSetterMirrorImpl(
+            const prefix0.JsonSerializable(), 11, 16, 16, 61),
+        new r.ImplicitGetterMirrorImpl(
+            const prefix0.JsonSerializable(), 12, 16, 16, 62),
+        new r.ImplicitSetterMirrorImpl(
+            const prefix0.JsonSerializable(), 12, 16, 16, 63),
+        new r.ImplicitGetterMirrorImpl(
+            const prefix0.JsonSerializable(), 13, 8, 8, 64),
+        new r.ImplicitSetterMirrorImpl(
+            const prefix0.JsonSerializable(), 13, 8, 8, 65),
+        new r.ImplicitGetterMirrorImpl(
+            const prefix0.JsonSerializable(), 14, 17, 18, 66),
+        new r.ImplicitSetterMirrorImpl(
+            const prefix0.JsonSerializable(), 14, 17, 18, 67),
+        new r.ImplicitGetterMirrorImpl(
+            const prefix0.JsonSerializable(), 15, 19, 19, 68),
+        new r.ImplicitSetterMirrorImpl(
+            const prefix0.JsonSerializable(), 15, 19, 19, 69),
+        new r.ImplicitGetterMirrorImpl(
+            const prefix0.JsonSerializable(), 16, 20, 21, 70),
+        new r.ImplicitSetterMirrorImpl(
+            const prefix0.JsonSerializable(), 16, 20, 21, 71),
+        new r.ImplicitGetterMirrorImpl(
+            const prefix0.JsonSerializable(), 17, 9, 9, 72),
+        new r.ImplicitSetterMirrorImpl(
+            const prefix0.JsonSerializable(), 17, 9, 9, 73),
+        new r.ImplicitGetterMirrorImpl(
+            const prefix0.JsonSerializable(), 18, 9, 9, 74),
+        new r.ImplicitSetterMirrorImpl(
+            const prefix0.JsonSerializable(), 18, 9, 9, 75),
+        new r.ImplicitGetterMirrorImpl(
+            const prefix0.JsonSerializable(), 19, 22, 23, 76),
+        new r.ImplicitSetterMirrorImpl(
+            const prefix0.JsonSerializable(), 19, 22, 23, 77),
+        new r.MethodMirrorImpl(r"fullName", 131075, 1, -1, 8, 8, const <int>[],
+            const prefix0.JsonSerializable(), const <Object>[]),
+        new r.MethodMirrorImpl(r"", 0, 1, -1, 1, 1, const <int>[],
             const prefix0.JsonSerializable(), const <Object>[]),
         new r.ImplicitGetterMirrorImpl(
-            const prefix0.JsonSerializable(), 6, 7, 8, 40),
+            const prefix0.JsonSerializable(), 20, 8, 8, 80),
         new r.ImplicitSetterMirrorImpl(
-            const prefix0.JsonSerializable(), 6, 7, 8, 41),
+            const prefix0.JsonSerializable(), 20, 8, 8, 81),
         new r.ImplicitGetterMirrorImpl(
-            const prefix0.JsonSerializable(), 7, 9, 10, 42),
+            const prefix0.JsonSerializable(), 21, 8, 8, 82),
         new r.ImplicitSetterMirrorImpl(
-            const prefix0.JsonSerializable(), 7, 9, 10, 43),
-        new r.ImplicitGetterMirrorImpl(
-            const prefix0.JsonSerializable(), 8, 11, 11, 44),
-        new r.ImplicitSetterMirrorImpl(
-            const prefix0.JsonSerializable(), 8, 11, 11, 45),
-        new r.ImplicitGetterMirrorImpl(
-            const prefix0.JsonSerializable(), 9, 11, 11, 46),
-        new r.ImplicitSetterMirrorImpl(
-            const prefix0.JsonSerializable(), 9, 11, 11, 47),
-        new r.ImplicitGetterMirrorImpl(
-            const prefix0.JsonSerializable(), 10, 12, 12, 48),
-        new r.ImplicitSetterMirrorImpl(
-            const prefix0.JsonSerializable(), 10, 12, 12, 49),
-        new r.ImplicitGetterMirrorImpl(
-            const prefix0.JsonSerializable(), 11, 12, 12, 50),
-        new r.ImplicitSetterMirrorImpl(
-            const prefix0.JsonSerializable(), 11, 12, 12, 51),
-        new r.ImplicitGetterMirrorImpl(
-            const prefix0.JsonSerializable(), 12, 4, 4, 52),
-        new r.ImplicitSetterMirrorImpl(
-            const prefix0.JsonSerializable(), 12, 4, 4, 53),
-        new r.ImplicitGetterMirrorImpl(
-            const prefix0.JsonSerializable(), 13, 13, 13, 54),
-        new r.ImplicitSetterMirrorImpl(
-            const prefix0.JsonSerializable(), 13, 13, 13, 55),
-        new r.ImplicitGetterMirrorImpl(
-            const prefix0.JsonSerializable(), 14, 13, 13, 56),
-        new r.ImplicitSetterMirrorImpl(
-            const prefix0.JsonSerializable(), 14, 13, 13, 57),
-        new r.ImplicitGetterMirrorImpl(
-            const prefix0.JsonSerializable(), 15, 13, 13, 58),
-        new r.ImplicitSetterMirrorImpl(
-            const prefix0.JsonSerializable(), 15, 13, 13, 59),
-        new r.ImplicitGetterMirrorImpl(
-            const prefix0.JsonSerializable(), 16, 4, 4, 60),
-        new r.ImplicitSetterMirrorImpl(
-            const prefix0.JsonSerializable(), 16, 4, 4, 61),
-        new r.ImplicitGetterMirrorImpl(
-            const prefix0.JsonSerializable(), 17, 14, 15, 62),
-        new r.ImplicitSetterMirrorImpl(
-            const prefix0.JsonSerializable(), 17, 14, 15, 63),
-        new r.ImplicitGetterMirrorImpl(
-            const prefix0.JsonSerializable(), 18, 16, 16, 64),
-        new r.ImplicitSetterMirrorImpl(
-            const prefix0.JsonSerializable(), 18, 16, 16, 65),
-        new r.ImplicitGetterMirrorImpl(
-            const prefix0.JsonSerializable(), 19, 17, 18, 66),
-        new r.ImplicitSetterMirrorImpl(
-            const prefix0.JsonSerializable(), 19, 17, 18, 67),
-        new r.ImplicitGetterMirrorImpl(
-            const prefix0.JsonSerializable(), 20, 5, 5, 68),
-        new r.ImplicitSetterMirrorImpl(
-            const prefix0.JsonSerializable(), 20, 5, 5, 69),
-        new r.ImplicitGetterMirrorImpl(
-            const prefix0.JsonSerializable(), 21, 5, 5, 70),
-        new r.ImplicitSetterMirrorImpl(
-            const prefix0.JsonSerializable(), 21, 5, 5, 71),
-        new r.ImplicitGetterMirrorImpl(
-            const prefix0.JsonSerializable(), 22, 19, 20, 72),
-        new r.ImplicitSetterMirrorImpl(
-            const prefix0.JsonSerializable(), 22, 19, 20, 73),
-        new r.MethodMirrorImpl(r"fullName", 131075, 2, -1, 4, 4, const <int>[],
-            const prefix0.JsonSerializable(), const <Object>[]),
-        new r.MethodMirrorImpl(r"", 0, 2, -1, 2, 2, const <int>[],
+            const prefix0.JsonSerializable(), 21, 8, 8, 83),
+        new r.MethodMirrorImpl(r"", 0, 2, -1, 2, 2, const <int>[24, 25],
             const prefix0.JsonSerializable(), const <Object>[]),
         new r.ImplicitGetterMirrorImpl(
-            const prefix0.JsonSerializable(), 23, 21, 21, 76),
+            const prefix0.JsonSerializable(), 22, 8, 8, 85),
         new r.ImplicitSetterMirrorImpl(
-            const prefix0.JsonSerializable(), 23, 21, 21, 77),
-        new r.MethodMirrorImpl(r"", 64, 3, -1, 3, 3, const <int>[],
+            const prefix0.JsonSerializable(), 22, 8, 8, 86),
+        new r.ImplicitGetterMirrorImpl(
+            const prefix0.JsonSerializable(), 23, 8, 8, 87),
+        new r.ImplicitSetterMirrorImpl(
+            const prefix0.JsonSerializable(), 23, 8, 8, 88),
+        new r.MethodMirrorImpl(r"", 0, 3, -1, 3, 3, const <int>[28, 29],
+            const prefix0.JsonSerializable(), const <Object>[]),
+        new r.ImplicitGetterMirrorImpl(
+            const prefix0.JsonSerializable(), 24, 8, 8, 90),
+        new r.ImplicitSetterMirrorImpl(
+            const prefix0.JsonSerializable(), 24, 8, 8, 91),
+        new r.ImplicitGetterMirrorImpl(
+            const prefix0.JsonSerializable(), 25, 8, 8, 92),
+        new r.ImplicitSetterMirrorImpl(
+            const prefix0.JsonSerializable(), 25, 8, 8, 93),
+        new r.MethodMirrorImpl(r"", 0, 4, -1, 4, 4, const <int>[32, 33],
+            const prefix0.JsonSerializable(), const <Object>[]),
+        new r.ImplicitGetterMirrorImpl(
+            const prefix0.JsonSerializable(), 26, 8, 8, 95),
+        new r.ImplicitSetterMirrorImpl(
+            const prefix0.JsonSerializable(), 26, 8, 8, 96),
+        new r.ImplicitGetterMirrorImpl(
+            const prefix0.JsonSerializable(), 27, 8, 8, 97),
+        new r.ImplicitSetterMirrorImpl(
+            const prefix0.JsonSerializable(), 27, 8, 8, 98),
+        new r.MethodMirrorImpl(r"", 0, 5, -1, 5, 5, const <int>[36, 37],
+            const prefix0.JsonSerializable(), const <Object>[]),
+        new r.ImplicitGetterMirrorImpl(
+            const prefix0.JsonSerializable(), 28, 24, 24, 100),
+        new r.ImplicitGetterMirrorImpl(
+            const prefix0.JsonSerializable(), 29, 8, 8, 101),
+        new r.ImplicitGetterMirrorImpl(
+            const prefix0.JsonSerializable(), 30, 0, 0, 102),
+        new r.MethodMirrorImpl(r"", 128, 6, -1, 6, 6, const <int>[40, 41, 42],
+            const prefix0.JsonSerializable(), const <Object>[]),
+        new r.ImplicitGetterMirrorImpl(
+            const prefix0.JsonSerializable(), 31, 25, 25, 104),
+        new r.ImplicitSetterMirrorImpl(
+            const prefix0.JsonSerializable(), 31, 25, 25, 105),
+        new r.MethodMirrorImpl(r"", 64, 7, -1, 7, 7, const <int>[],
             const prefix0.JsonSerializable(), const [])
       ],
       <m.ParameterMirror>[
         new r.ParameterMirrorImpl(
             r"model",
-            36870,
-            30,
+            32774,
+            38,
             const prefix0.JsonSerializable(),
             -1,
-            4,
-            4,
+            8,
+            8,
             const <Object>[],
             null,
             null),
         new r.ParameterMirrorImpl(
             r"color",
-            36870,
-            30,
+            32774,
+            38,
             const prefix0.JsonSerializable(),
             -1,
-            5,
-            5,
+            9,
+            9,
             const <Object>[],
             null,
             null),
-        new r.ParameterMirrorImpl(r"_model", 32870, 25,
-            const prefix0.JsonSerializable(), -1, 4, 4, const [], null, null),
-        new r.ParameterMirrorImpl(r"_color", 32870, 27,
-            const prefix0.JsonSerializable(), -1, 5, 5, const [], null, null),
-        new r.ParameterMirrorImpl(r"_replacement", 32870, 29,
+        new r.ParameterMirrorImpl(r"_model", 32870, 33,
+            const prefix0.JsonSerializable(), -1, 8, 8, const [], null, null),
+        new r.ParameterMirrorImpl(r"_color", 32870, 35,
+            const prefix0.JsonSerializable(), -1, 9, 9, const [], null, null),
+        new r.ParameterMirrorImpl(r"_replacement", 32870, 37,
             const prefix0.JsonSerializable(), 0, 0, 0, const [], null, null),
         new r.ParameterMirrorImpl(
             r"other",
             16390,
-            31,
+            39,
             const prefix0.JsonSerializable(),
             null,
             null,
@@ -403,92 +547,199 @@ final _data = <r.Reflectable, r.ReflectorData>{
         new r.ParameterMirrorImpl(
             r"invocation",
             32774,
-            33,
+            41,
             const prefix0.JsonSerializable(),
             -1,
-            23,
-            23,
+            27,
+            27,
+            const <Object>[],
+            null,
+            null),
+        new r.ParameterMirrorImpl(r"_skills", 2130022, 45,
+            const prefix0.JsonSerializable(), -1, 10, 11, const [], null, null),
+        new r.ParameterMirrorImpl(r"_specialDates", 2130022, 47,
+            const prefix0.JsonSerializable(), -1, 12, 13, const [], null, null),
+        new r.ParameterMirrorImpl(r"_lastPromotionDate", 32870, 49,
+            const prefix0.JsonSerializable(), -1, 14, 14, const [], null, null),
+        new r.ParameterMirrorImpl(r"_hireDate", 32870, 51,
+            const prefix0.JsonSerializable(), -1, 14, 14, const [], null, null),
+        new r.ParameterMirrorImpl(r"_married", 32870, 53,
+            const prefix0.JsonSerializable(), -1, 15, 15, const [], null, null),
+        new r.ParameterMirrorImpl(r"_active", 32870, 55,
+            const prefix0.JsonSerializable(), -1, 15, 15, const [], null, null),
+        new r.ParameterMirrorImpl(r"_name", 32870, 57,
+            const prefix0.JsonSerializable(), -1, 8, 8, const [], null, null),
+        new r.ParameterMirrorImpl(r"_salary", 32870, 59,
+            const prefix0.JsonSerializable(), -1, 16, 16, const [], null, null),
+        new r.ParameterMirrorImpl(r"_dob", 32870, 61,
+            const prefix0.JsonSerializable(), -1, 16, 16, const [], null, null),
+        new r.ParameterMirrorImpl(r"_age", 32870, 63,
+            const prefix0.JsonSerializable(), -1, 16, 16, const [], null, null),
+        new r.ParameterMirrorImpl(r"_lastName", 32870, 65,
+            const prefix0.JsonSerializable(), -1, 8, 8, const [], null, null),
+        new r.ParameterMirrorImpl(r"_properties", 2130022, 67,
+            const prefix0.JsonSerializable(), -1, 17, 18, const [], null, null),
+        new r.ParameterMirrorImpl(r"_sym", 32870, 69,
+            const prefix0.JsonSerializable(), -1, 19, 19, const [], null, null),
+        new r.ParameterMirrorImpl(r"_favouriteColours", 2130022, 71,
+            const prefix0.JsonSerializable(), -1, 20, 21, const [], null, null),
+        new r.ParameterMirrorImpl(r"_eyeColor", 32870, 73,
+            const prefix0.JsonSerializable(), -1, 9, 9, const [], null, null),
+        new r.ParameterMirrorImpl(r"_hairColor", 32870, 75,
+            const prefix0.JsonSerializable(), -1, 9, 9, const [], null, null),
+        new r.ParameterMirrorImpl(r"_vehicles", 2130022, 77,
+            const prefix0.JsonSerializable(), -1, 22, 23, const [], null, null),
+        new r.ParameterMirrorImpl(
+            r"firstName",
+            32774,
+            84,
+            const prefix0.JsonSerializable(),
+            -1,
+            8,
+            8,
             const <Object>[],
             null,
             null),
         new r.ParameterMirrorImpl(
-            r"id",
-            45062,
-            39,
+            r"lastName",
+            32774,
+            84,
             const prefix0.JsonSerializable(),
             -1,
-            6,
-            6,
+            8,
+            8,
             const <Object>[],
             null,
-            #id),
+            null),
+        new r.ParameterMirrorImpl(r"_firstName", 32870, 81,
+            const prefix0.JsonSerializable(), -1, 8, 8, const [], null, null),
+        new r.ParameterMirrorImpl(r"_lastName", 32870, 83,
+            const prefix0.JsonSerializable(), -1, 8, 8, const [], null, null),
+        new r.ParameterMirrorImpl(
+            r"firstName",
+            36870,
+            89,
+            const prefix0.JsonSerializable(),
+            -1,
+            8,
+            8,
+            const <Object>[],
+            null,
+            null),
+        new r.ParameterMirrorImpl(
+            r"lastName",
+            36870,
+            89,
+            const prefix0.JsonSerializable(),
+            -1,
+            8,
+            8,
+            const <Object>[],
+            null,
+            null),
+        new r.ParameterMirrorImpl(r"_firstName", 32870, 86,
+            const prefix0.JsonSerializable(), -1, 8, 8, const [], null, null),
+        new r.ParameterMirrorImpl(r"_lastName", 32870, 88,
+            const prefix0.JsonSerializable(), -1, 8, 8, const [], null, null),
+        new r.ParameterMirrorImpl(
+            r"firstName",
+            32774,
+            94,
+            const prefix0.JsonSerializable(),
+            -1,
+            8,
+            8,
+            const <Object>[],
+            null,
+            null),
+        new r.ParameterMirrorImpl(
+            r"lastName",
+            36870,
+            94,
+            const prefix0.JsonSerializable(),
+            -1,
+            8,
+            8,
+            const <Object>[],
+            null,
+            null),
+        new r.ParameterMirrorImpl(r"_firstName", 32870, 91,
+            const prefix0.JsonSerializable(), -1, 8, 8, const [], null, null),
+        new r.ParameterMirrorImpl(r"_lastName", 32870, 93,
+            const prefix0.JsonSerializable(), -1, 8, 8, const [], null, null),
+        new r.ParameterMirrorImpl(
+            r"firstName",
+            45062,
+            99,
+            const prefix0.JsonSerializable(),
+            -1,
+            8,
+            8,
+            const <Object>[],
+            null,
+            #firstName),
+        new r.ParameterMirrorImpl(
+            r"lastName",
+            45062,
+            99,
+            const prefix0.JsonSerializable(),
+            -1,
+            8,
+            8,
+            const <Object>[],
+            null,
+            #lastName),
+        new r.ParameterMirrorImpl(r"_firstName", 32870, 96,
+            const prefix0.JsonSerializable(), -1, 8, 8, const [], null, null),
+        new r.ParameterMirrorImpl(r"_lastName", 32870, 98,
+            const prefix0.JsonSerializable(), -1, 8, 8, const [], null, null),
+        new r.ParameterMirrorImpl(
+            r"id",
+            32774,
+            103,
+            const prefix0.JsonSerializable(),
+            -1,
+            24,
+            24,
+            const <Object>[],
+            null,
+            null),
         new r.ParameterMirrorImpl(
             r"name",
-            45062,
-            39,
+            32774,
+            103,
             const prefix0.JsonSerializable(),
             -1,
-            4,
-            4,
+            8,
+            8,
             const <Object>[],
             null,
-            #name),
+            null),
         new r.ParameterMirrorImpl(
             r"car",
-            45062,
-            39,
+            32774,
+            103,
             const prefix0.JsonSerializable(),
             0,
             0,
             0,
             const <Object>[],
             null,
-            #car),
-        new r.ParameterMirrorImpl(r"_skills", 2130022, 41,
-            const prefix0.JsonSerializable(), -1, 7, 8, const [], null, null),
-        new r.ParameterMirrorImpl(r"_specialDates", 2130022, 43,
-            const prefix0.JsonSerializable(), -1, 9, 10, const [], null, null),
-        new r.ParameterMirrorImpl(r"_lastPromotionDate", 32870, 45,
-            const prefix0.JsonSerializable(), -1, 11, 11, const [], null, null),
-        new r.ParameterMirrorImpl(r"_hireDate", 32870, 47,
-            const prefix0.JsonSerializable(), -1, 11, 11, const [], null, null),
-        new r.ParameterMirrorImpl(r"_married", 32870, 49,
-            const prefix0.JsonSerializable(), -1, 12, 12, const [], null, null),
-        new r.ParameterMirrorImpl(r"_active", 32870, 51,
-            const prefix0.JsonSerializable(), -1, 12, 12, const [], null, null),
-        new r.ParameterMirrorImpl(r"_name", 32870, 53,
-            const prefix0.JsonSerializable(), -1, 4, 4, const [], null, null),
-        new r.ParameterMirrorImpl(r"_salary", 32870, 55,
-            const prefix0.JsonSerializable(), -1, 13, 13, const [], null, null),
-        new r.ParameterMirrorImpl(r"_dob", 32870, 57,
-            const prefix0.JsonSerializable(), -1, 13, 13, const [], null, null),
-        new r.ParameterMirrorImpl(r"_age", 32870, 59,
-            const prefix0.JsonSerializable(), -1, 13, 13, const [], null, null),
-        new r.ParameterMirrorImpl(r"_lastName", 32870, 61,
-            const prefix0.JsonSerializable(), -1, 4, 4, const [], null, null),
-        new r.ParameterMirrorImpl(r"_properties", 2130022, 63,
-            const prefix0.JsonSerializable(), -1, 14, 15, const [], null, null),
-        new r.ParameterMirrorImpl(r"_sym", 32870, 65,
-            const prefix0.JsonSerializable(), -1, 16, 16, const [], null, null),
-        new r.ParameterMirrorImpl(r"_favouriteColours", 2130022, 67,
-            const prefix0.JsonSerializable(), -1, 17, 18, const [], null, null),
-        new r.ParameterMirrorImpl(r"_eyeColor", 32870, 69,
-            const prefix0.JsonSerializable(), -1, 5, 5, const [], null, null),
-        new r.ParameterMirrorImpl(r"_hairColor", 32870, 71,
-            const prefix0.JsonSerializable(), -1, 5, 5, const [], null, null),
-        new r.ParameterMirrorImpl(r"_vehicles", 2130022, 73,
-            const prefix0.JsonSerializable(), -1, 19, 20, const [], null, null),
-        new r.ParameterMirrorImpl(r"_sex", 32870, 77,
-            const prefix0.JsonSerializable(), -1, 21, 21, const [], null, null)
+            null),
+        new r.ParameterMirrorImpl(r"_sex", 32870, 105,
+            const prefix0.JsonSerializable(), -1, 25, 25, const [], null, null)
       ],
       <Type>[
         prefix1.Car,
-        prefix1.Immutable,
         prefix1.Person,
+        prefix1.PositionalParametersClass,
+        prefix1.OptionalParametersClass,
+        prefix1.PartiallyOptionalParametersClass,
+        prefix1.NamedParametersClass,
+        prefix1.Immutable,
         prefix1.UnAnnotatedEnumField,
         String,
         prefix1.Color,
-        int,
         const m.TypeValue<List<String>>().type,
         List,
         const m.TypeValue<List<DateTime>>().type,
@@ -503,11 +754,12 @@ final _data = <r.Reflectable, r.ReflectorData>{
         List,
         const m.TypeValue<List<prefix1.Car>>().type,
         List,
+        int,
         prefix1.Sex,
         Type,
         Invocation
       ],
-      4,
+      8,
       {
         r"==": (dynamic instance) => (x) => instance == x,
         r"toString": (dynamic instance) => instance.toString,
@@ -517,15 +769,13 @@ final _data = <r.Reflectable, r.ReflectorData>{
         r"model": (dynamic instance) => instance.model,
         r"color": (dynamic instance) => instance.color,
         r"replacement": (dynamic instance) => instance.replacement,
-        r"id": (dynamic instance) => instance.id,
-        r"name": (dynamic instance) => instance.name,
-        r"car": (dynamic instance) => instance.car,
         r"skills": (dynamic instance) => instance.skills,
         r"specialDates": (dynamic instance) => instance.specialDates,
         r"lastPromotionDate": (dynamic instance) => instance.lastPromotionDate,
         r"hireDate": (dynamic instance) => instance.hireDate,
         r"married": (dynamic instance) => instance.married,
         r"active": (dynamic instance) => instance.active,
+        r"name": (dynamic instance) => instance.name,
         r"salary": (dynamic instance) => instance.salary,
         r"dob": (dynamic instance) => instance.dob,
         r"age": (dynamic instance) => instance.age,
@@ -537,6 +787,9 @@ final _data = <r.Reflectable, r.ReflectorData>{
         r"hairColor": (dynamic instance) => instance.hairColor,
         r"vehicles": (dynamic instance) => instance.vehicles,
         r"fullName": (dynamic instance) => instance.fullName,
+        r"firstName": (dynamic instance) => instance.firstName,
+        r"id": (dynamic instance) => instance.id,
+        r"car": (dynamic instance) => instance.car,
         r"sex": (dynamic instance) => instance.sex
       },
       {
@@ -565,6 +818,7 @@ final _data = <r.Reflectable, r.ReflectorData>{
         r"eyeColor=": (dynamic instance, value) => instance.eyeColor = value,
         r"hairColor=": (dynamic instance, value) => instance.hairColor = value,
         r"vehicles=": (dynamic instance, value) => instance.vehicles = value,
+        r"firstName=": (dynamic instance, value) => instance.firstName = value,
         r"sex=": (dynamic instance, value) => instance.sex = value
       },
       null,

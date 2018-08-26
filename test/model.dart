@@ -13,16 +13,7 @@ class Car {
   @JsonProperty(ignore: true)
   Car replacement;
 
-  Car([this.model, this.color]);
-}
-
-@jsonSerializable
-class Immutable {
-  final int id;
-  final String name;
-  final Car car;
-
-  const Immutable({this.id, this.name, this.car});
+  Car(this.model, this.color);
 }
 
 @jsonSerializable

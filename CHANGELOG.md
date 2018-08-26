@@ -1,3 +1,9 @@
+## 1.0.0
+
+* Positional constructor parameters support
+* Support for Symbol, Map types
+* More tests added
+
 ## 0.1.3
 
 * Support Dart 2.0

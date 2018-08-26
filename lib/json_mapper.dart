@@ -130,14 +130,14 @@ class JsonMapper {
   }
 
   enumeratePublicFields(InstanceMirror instanceMirror, Function visitor) {
-    for (String name in getPublicFieldNames(instanceMirror.type)) {
+    ClassMirror classMirror = instanceMirror.type;
+    for (String name in getPublicFieldNames(classMirror)) {
       String jsonName = name;
       VariableMirror variableMirror =
-          instanceMirror.type.declarations[name] as VariableMirror;
+          classMirror.declarations[name] as VariableMirror;
       Type variableScalarType = getScalarType(variableMirror.reflectedType);
-      bool isGetterOnly =
-          instanceMirror.type.instanceMembers[name + '='] == null;
-      JsonProperty meta = instanceMirror.type.declarations[name].metadata
+      bool isGetterOnly = classMirror.instanceMembers[name + '='] == null;
+      JsonProperty meta = classMirror.declarations[name].metadata
           .firstWhere((m) => m is JsonProperty, orElse: () => null);
       if (meta != null && meta.ignore == true) {
         continue;
@@ -150,24 +150,53 @@ class JsonMapper {
     }
   }
 
+  enumerateConstructorParameters(ClassMirror classMirror, Function visitor) {
+    MethodMirror methodMirror = getPublicConstructor(classMirror);
+    if (methodMirror == null) {
+      return;
+    }
+    methodMirror.parameters.forEach((ParameterMirror param) {
+      String name = param.simpleName;
+      VariableMirror variableMirror =
+          classMirror.declarations[name] as VariableMirror;
+      String jsonName = name;
+      JsonProperty meta = variableMirror.metadata
+          .firstWhere((m) => m is JsonProperty, orElse: () => null);
+      if (meta != null && meta.ignore == true) {
+        return;
+      }
+      if (meta != null && meta.name != null) {
+        jsonName = meta.name;
+      }
+
+      visitor(param, name, jsonName, meta, variableMirror.reflectedType);
+    });
+  }
+
   Map<Symbol, dynamic> getNamedArguments(
       ClassMirror cm, Map<String, dynamic> jsonMap) {
     Map<Symbol, dynamic> result = Map();
-    MethodMirror constructorMirror = getPublicConstructor(cm);
-    if (constructorMirror == null) {
-      return result;
-    }
-    constructorMirror.parameters.forEach((ParameterMirror param) {
-      String typeName = safeGetParameterTypeName(param);
-      String paramName = param.simpleName;
-      if (param.isNamed && jsonMap.containsKey(paramName)) {
-        dynamic value = jsonMap[paramName];
-        if (classes[typeName] != null) {
-          value = deserializeObject(value, classes[typeName].reflectedType);
-        }
-        result[Symbol(paramName)] = value;
+
+    enumerateConstructorParameters(cm, (param, name, jsonName, meta, type) {
+      if (param.isNamed && jsonMap.containsKey(name)) {
+        result[Symbol(name)] = deserializeObject(jsonMap[name], type, meta);
       }
     });
+
+    return result;
+  }
+
+  List getPositionalArguments(ClassMirror cm, Map<String, dynamic> jsonMap) {
+    List result = [];
+
+    enumerateConstructorParameters(cm, (param, name, jsonName, meta, type) {
+      if (!param.isOptional &&
+          !param.isNamed &&
+          jsonMap.containsKey(jsonName)) {
+        result.add(deserializeObject(jsonMap[jsonName], type, meta));
+      }
+    });
+
     return result;
   }
 
@@ -230,7 +259,8 @@ class JsonMapper {
         (jsonValue is String) ? jsonDecoder.convert(jsonValue) : jsonValue;
     Object objectInstance = cm.isEnum
         ? null
-        : cm.newInstance("", [], getNamedArguments(cm, jsonMap));
+        : cm.newInstance("", getPositionalArguments(cm, jsonMap),
+            getNamedArguments(cm, jsonMap));
     InstanceMirror im = safeGetInstanceMirror(objectInstance);
 
     enumeratePublicFields(im,
@@ -269,9 +299,17 @@ class JsonMapper {
     instance.converters[type] = converter;
   }
 
-  static dynamic serialize(Object object) {
+  static String serialize(Object object, [String indent]) {
     instance.processedObjects.clear();
-    return instance.jsonEncoder.convert(instance.serializeObject(object));
+    JsonEncoder encoder = instance.jsonEncoder;
+    if (indent != null && indent.isEmpty) {
+      encoder = JsonEncoder();
+    } else {
+      if (indent != null && indent.isNotEmpty) {
+        encoder = JsonEncoder.withIndent(indent);
+      }
+    }
+    return encoder.convert(instance.serializeObject(object));
   }
 
   static Object deserialize(dynamic jsonValue, dynamic instanceType) {

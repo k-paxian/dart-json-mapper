@@ -16,7 +16,7 @@ class Car {
   @JsonProperty(enumValues: Color.values)
   Color color;
 
-  Car([this.model, this.color]);
+  Car(this.model, this.color);
 
   @override
   String toString() {

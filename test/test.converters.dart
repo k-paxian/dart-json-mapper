@@ -28,8 +28,7 @@ testConverters() {
 }''';
       JsonMapper.registerConverter(String, CustomStringConverter());
 
-      Immutable i =
-          Immutable(id: 1, name: 'Bob', car: Car('Audi', Color.Green));
+      Immutable i = Immutable(1, 'Bob', Car('Audi', Color.Green));
       // when
       final String target = JsonMapper.serialize(i);
       // then
