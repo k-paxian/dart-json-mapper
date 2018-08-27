@@ -13,7 +13,7 @@ testIntegration() {
     test("Serialization <=> Deserialization", () {
       // given
       // when
-      final Person target = JsonMapper.deserialize(personJson, Person);
+      final Person target = JsonMapper.deserialize(personJson);
       // then
       expect(JsonMapper.serialize(target), personJson);
     });

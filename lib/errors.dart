@@ -40,3 +40,17 @@ class _MissingEnumValuesErrorImpl extends Error
   toString() => "It seems your Enum class field is missing annotation:\n"
       "@JsonProperty(enumValues: ${_type.toString()}.values)";
 }
+
+abstract class MissingTypeForDeserializationError extends Error {
+  factory MissingTypeForDeserializationError() =
+      _MissingTypeForDeserializationErrorImpl;
+}
+
+class _MissingTypeForDeserializationErrorImpl extends Error
+    implements MissingTypeForDeserializationError {
+  _MissingTypeForDeserializationErrorImpl() : super();
+
+  toString() => "It seems you've omitted target Type for deserialization.\n"
+      "You should call it like this: JsonMapper.deserialize<TargetType>(jsonString)\n"
+      "OR Infere type via result variable like: TargetType target = JsonMapper.deserialize(jsonString)";
+}

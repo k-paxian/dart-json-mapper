@@ -247,7 +247,7 @@ class JsonMapper {
     return result;
   }
 
-  Object deserializeObject(dynamic jsonValue, dynamic instanceType,
+  Object deserializeObject(dynamic jsonValue, Type instanceType,
       [JsonProperty parentMeta]) {
     ICustomConverter converter = getConverter(parentMeta, instanceType);
     if (converter != null) {
@@ -315,7 +315,8 @@ class JsonMapper {
     return encoder.convert(instance.serializeObject(object));
   }
 
-  static Object deserialize(dynamic jsonValue, dynamic instanceType) {
-    return instance.deserializeObject(jsonValue, instanceType);
+  static T deserialize<T>(String jsonValue) {
+    assert(T != dynamic ? true : throw MissingTypeForDeserializationError());
+    return instance.deserializeObject(jsonValue, T);
   }
 }

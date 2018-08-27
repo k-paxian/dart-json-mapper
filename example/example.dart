@@ -98,5 +98,5 @@ void main() {
   print(JsonMapper.serialize(Person()));
 
   // Deserialize
-  print(JsonMapper.deserialize(personJson, Person));
+  print(JsonMapper.deserialize<Person>(personJson));
 }

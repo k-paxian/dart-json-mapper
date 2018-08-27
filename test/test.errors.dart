@@ -45,5 +45,16 @@ testErrorHandling() {
         expect(error, TypeMatcher<MissingEnumValuesError>());
       }
     });
+
+    test("Missing target type for deserialization", () {
+      // given
+      try {
+        // when
+        JsonMapper.deserialize("{}");
+      } catch (error) {
+        // then
+        expect(error, TypeMatcher<MissingTypeForDeserializationError>());
+      }
+    });
   });
 }

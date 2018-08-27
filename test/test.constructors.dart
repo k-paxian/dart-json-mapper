@@ -94,7 +94,7 @@ testConstructors() {
       expect(target, immutableJson);
 
       // when
-      final Immutable ic = JsonMapper.deserialize(immutableJson, Immutable);
+      final Immutable ic = JsonMapper.deserialize(immutableJson);
       // then
       expect(JsonMapper.serialize(ic), immutableJson);
     });
