@@ -48,7 +48,17 @@ class Person {
 
   var lastName = "Gump";
 
+  dynamic dyn = "dyn";
+  dynamic dynNum = 9;
+  dynamic dynBool = false;
+
   Map properties = {'first': 'partridge', 'cash': 23000, 'required': true};
+
+  Map<String, dynamic> map = {
+    'first': 'partridge',
+    'cash': 23000,
+    'required': true
+  };
 
   Symbol sym = Symbol('foo');
 

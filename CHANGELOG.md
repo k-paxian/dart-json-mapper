@@ -1,3 +1,8 @@
+## 1.0.1
+
+* Improved Support for Map<K, V> type
+* Added basic Support for dynamic type
+
 ## 1.0.0
 
 * Positional constructor parameters support

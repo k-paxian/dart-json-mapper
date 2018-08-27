@@ -19,7 +19,15 @@ final String personJson = '''{
  "dob": null,
  "age": 36,
  "lastName": "Gump",
+ "dyn": "dyn",
+ "dynNum": 9,
+ "dynBool": false,
  "properties": {
+  "first": "partridge",
+  "cash": 23000,
+  "required": true
+ },
+ "map": {
   "first": "partridge",
   "cash": 23000,
   "required": true

@@ -26,9 +26,9 @@ class JsonMapper {
   }
 
   void registerDefaultConverters() {
+    converters[dynamic] = defaultConverter;
     converters[String] = defaultConverter;
     converters[bool] = defaultConverter;
-    converters[Map] = defaultConverter;
     converters[Symbol] = symbolConverter;
     converters[DateTime] = dateConverter;
     converters[num] = numberConverter;
@@ -125,6 +125,9 @@ class JsonMapper {
     }
     if (result == null && converters[type] != null) {
       result = converters[type];
+    }
+    if (result == null && type.toString().indexOf('Map<') == 0) {
+      result = defaultConverter;
     }
     return result;
   }
