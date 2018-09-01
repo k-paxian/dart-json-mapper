@@ -1,15 +1,15 @@
 part of json_mapper.test;
 
-class CustomStringConverter implements ICustomConverter {
+class CustomStringConverter implements ICustomConverter<String> {
   const CustomStringConverter() : super();
 
   @override
-  Object fromJSON(dynamic jsonValue, JsonProperty jsonProperty) {
+  String fromJSON(dynamic jsonValue, JsonProperty jsonProperty) {
     return jsonValue;
   }
 
   @override
-  dynamic toJSON(Object object, JsonProperty jsonProperty) {
+  dynamic toJSON(String object, JsonProperty jsonProperty) {
     return '_${object}_';
   }
 }

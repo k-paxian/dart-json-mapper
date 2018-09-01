@@ -29,6 +29,16 @@ class NamedParametersClass {
 }
 
 @jsonSerializable
+class IgnoredFieldClass {
+  String firstName;
+
+  @JsonProperty(ignore: true)
+  String lastName;
+
+  IgnoredFieldClass(this.firstName, this.lastName);
+}
+
+@jsonSerializable
 class Immutable {
   final int id;
   final String name;
@@ -75,6 +85,21 @@ testConstructors() {
       final String target = JsonMapper.serialize(instance, '');
       // then
       expect(target, json);
+    });
+
+    test("IgnoredFieldClass class", () {
+      // given
+      var instance = IgnoredFieldClass("Bob", "Marley");
+      // when
+      var target = JsonMapper.serialize(instance, '');
+      // then
+      expect(target, '{"firstName":"Bob"}');
+
+      // when
+      IgnoredFieldClass instance2 = JsonMapper.deserialize(json);
+      // then
+      expect(instance2.firstName, "Bob");
+      expect(instance2.lastName, null);
     });
 
     test("Immutable class", () {

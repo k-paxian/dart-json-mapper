@@ -3,11 +3,14 @@ library json_mapper.converters;
 import 'package:dart_json_mapper/annotations.dart';
 import 'package:intl/intl.dart';
 
-abstract class ICustomConverter {
-  dynamic toJSON(Object object, JsonProperty jsonProperty);
-  Object fromJSON(dynamic jsonValue, JsonProperty jsonProperty);
+/// Abstract class for custom converters implementations
+abstract class ICustomConverter<T> {
+  dynamic toJSON(T object, JsonProperty jsonProperty);
+  T fromJSON(dynamic jsonValue, JsonProperty jsonProperty);
 }
 
+/// Base class for custom type converter having access to parameters provided
+/// by the [JsonProperty] meta
 class BaseCustomConverter {
   const BaseCustomConverter() : super();
   dynamic getConverterParameter(String name, JsonProperty jsonProperty) {
@@ -19,6 +22,7 @@ class BaseCustomConverter {
 
 const dateConverter = DateConverter();
 
+/// Default converter for [DateTime] type
 class DateConverter extends BaseCustomConverter implements ICustomConverter {
   const DateConverter() : super();
 
@@ -51,6 +55,7 @@ class DateConverter extends BaseCustomConverter implements ICustomConverter {
 
 const numberConverter = NumberConverter();
 
+/// Default converter for [num] type
 class NumberConverter extends BaseCustomConverter implements ICustomConverter {
   const NumberConverter() : super();
 
@@ -78,6 +83,7 @@ class NumberConverter extends BaseCustomConverter implements ICustomConverter {
 
 const enumConverter = EnumConverter();
 
+/// Default converter for [enum] type
 class EnumConverter implements ICustomConverter {
   const EnumConverter() : super();
 
@@ -96,6 +102,7 @@ class EnumConverter implements ICustomConverter {
 
 const enumConverterNumeric = EnumConverterNumeric();
 
+/// Numeric index based converter for [enum] type
 class EnumConverterNumeric implements ICustomConverter {
   const EnumConverterNumeric() : super();
 
@@ -112,6 +119,7 @@ class EnumConverterNumeric implements ICustomConverter {
 
 const symbolConverter = SymbolConverter();
 
+/// Default converter for [Symbol] type
 class SymbolConverter implements ICustomConverter {
   const SymbolConverter() : super();
 
@@ -132,6 +140,7 @@ class SymbolConverter implements ICustomConverter {
 
 const defaultConverter = DefaultConverter();
 
+/// Default converter for all types
 class DefaultConverter implements ICustomConverter {
   const DefaultConverter() : super();
 

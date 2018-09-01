@@ -1,3 +1,8 @@
+## 1.0.2
+
+* Added some docs
+* Added test on ignored class field
+
 ## 1.0.1
 
 * Improved Support for Map<K, V> type

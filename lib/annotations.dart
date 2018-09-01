@@ -3,11 +3,25 @@ library json_mapper.annotations;
 import 'package:dart_json_mapper/converters.dart';
 import "package:reflectable/reflectable.dart";
 
+/// [JsonProperty] is used as metadata, marking individual class fields for
+/// fine tuned configuration parameters.
 class JsonProperty {
+  /// Denotes the json property name to be used for mapping to the annotated field
   final String name;
+
+  /// Declares custom converter instance, to be used for annotated field
+  /// serialization / deserialization
   final ICustomConverter converter;
+
+  /// Map of named parameters to be passed to the custom converter instance
   final Map<String, dynamic> converterParams;
+
+  /// Declares annotated field as ignored so it will be excluded from
+  /// serialization / deserialization process
   final bool ignore;
+
+  /// Provides a way to specify enum values, via Dart built in
+  /// capability for all Enum instances. `Enum.values`
   final List<dynamic> enumValues;
 
   const JsonProperty(
@@ -26,8 +40,12 @@ class JsonProperty {
   }
 }
 
+/// [jsonSerializable] is used as shorthand metadata, marking classes for
+/// serialization / deserialization, w/o "()"
 const jsonSerializable = JsonSerializable();
 
+/// [JsonSerializable] is used as metadata, marking classes as
+/// serialization / deserialization capable targets
 class JsonSerializable extends Reflectable {
   const JsonSerializable()
       : super(

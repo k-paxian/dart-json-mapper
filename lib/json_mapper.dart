@@ -7,6 +7,8 @@ import 'package:dart_json_mapper/converters.dart';
 import 'package:dart_json_mapper/errors.dart';
 import "package:reflectable/reflectable.dart";
 
+/// Singleton class providing static methods for Dart objects conversion
+/// from / to JSON string
 class JsonMapper {
   static final JsonMapper instance = JsonMapper._internal();
   final JsonEncoder jsonEncoder = JsonEncoder.withIndent(" ");
@@ -15,6 +17,31 @@ class JsonMapper {
   final Map<String, ClassMirror> classes = {};
   final Map<String, Object> processedObjects = {};
   final Map<Type, ICustomConverter> converters = {};
+
+  /// Assign custom converter instance for certain Type handling
+  static void registerConverter(Type type, ICustomConverter converter) {
+    instance.converters[type] = converter;
+  }
+
+  /// Converts Dart object to JSON string, indented by `indent`
+  static String serialize(Object object, [String indent]) {
+    instance.processedObjects.clear();
+    JsonEncoder encoder = instance.jsonEncoder;
+    if (indent != null && indent.isEmpty) {
+      encoder = JsonEncoder();
+    } else {
+      if (indent != null && indent.isNotEmpty) {
+        encoder = JsonEncoder.withIndent(indent);
+      }
+    }
+    return encoder.convert(instance.serializeObject(object));
+  }
+
+  /// Converts JSON string to Dart object of type T
+  static T deserialize<T>(String jsonValue) {
+    assert(T != dynamic ? true : throw MissingTypeForDeserializationError());
+    return instance.deserializeObject(jsonValue, T);
+  }
 
   factory JsonMapper() => instance;
 
@@ -56,14 +83,6 @@ class JsonMapper {
     InstanceMirror result;
     try {
       result = serializable.reflect(object);
-    } catch (error) {}
-    return result;
-  }
-
-  String safeGetParameterTypeName(ParameterMirror p) {
-    String result;
-    try {
-      result = p.type.simpleName;
     } catch (error) {}
     return result;
   }
@@ -165,9 +184,6 @@ class JsonMapper {
       String jsonName = name;
       JsonProperty meta = variableMirror.metadata
           .firstWhere((m) => m is JsonProperty, orElse: () => null);
-      if (meta != null && meta.ignore == true) {
-        return;
-      }
       if (meta != null && meta.name != null) {
         jsonName = meta.name;
       }
@@ -181,6 +197,9 @@ class JsonMapper {
     Map<Symbol, dynamic> result = Map();
 
     enumerateConstructorParameters(cm, (param, name, jsonName, meta, type) {
+      if (meta != null && meta.ignore == true) {
+        return;
+      }
       if (param.isNamed && jsonMap.containsKey(name)) {
         result[Symbol(name)] = deserializeObject(jsonMap[name], type, meta);
       }
@@ -192,11 +211,16 @@ class JsonMapper {
   List getPositionalArguments(ClassMirror cm, Map<String, dynamic> jsonMap) {
     List result = [];
 
-    enumerateConstructorParameters(cm, (param, name, jsonName, meta, type) {
+    enumerateConstructorParameters(cm,
+        (param, name, jsonName, JsonProperty meta, type) {
       if (!param.isOptional &&
           !param.isNamed &&
           jsonMap.containsKey(jsonName)) {
-        result.add(deserializeObject(jsonMap[jsonName], type, meta));
+        var value = deserializeObject(jsonMap[jsonName], type, meta);
+        if (meta != null && meta.ignore == true) {
+          value = null;
+        }
+        result.add(value);
       }
     });
 
@@ -296,27 +320,5 @@ class JsonMapper {
       }
     });
     return objectInstance;
-  }
-
-  static void registerConverter(Type type, ICustomConverter converter) {
-    instance.converters[type] = converter;
-  }
-
-  static String serialize(Object object, [String indent]) {
-    instance.processedObjects.clear();
-    JsonEncoder encoder = instance.jsonEncoder;
-    if (indent != null && indent.isEmpty) {
-      encoder = JsonEncoder();
-    } else {
-      if (indent != null && indent.isNotEmpty) {
-        encoder = JsonEncoder.withIndent(indent);
-      }
-    }
-    return encoder.convert(instance.serializeObject(object));
-  }
-
-  static T deserialize<T>(String jsonValue) {
-    assert(T != dynamic ? true : throw MissingTypeForDeserializationError());
-    return instance.deserializeObject(jsonValue, T);
   }
 }
