@@ -1,6 +1,16 @@
 part of json_mapper.test;
 
 @jsonSerializable
+class StringListClass {
+  static List<String> asListString(dynamic value) => value.cast<String>();
+
+  @JsonProperty(valueDecoratorFunction: StringListClass.asListString)
+  List<String> list;
+
+  StringListClass(this.list);
+}
+
+@jsonSerializable
 class PositionalParametersClass {
   String firstName;
   String lastName;
@@ -85,6 +95,15 @@ testConstructors() {
       final String target = JsonMapper.serialize(instance, '');
       // then
       expect(target, json);
+    });
+
+    test("StringListClass class", () {
+      // given
+      // when
+      StringListClass instance =
+          JsonMapper.deserialize('{"list":["Bob","Marley"]}');
+      // then
+      expect(instance.list.length, 2);
     });
 
     test("IgnoredFieldClass class", () {

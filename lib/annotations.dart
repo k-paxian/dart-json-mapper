@@ -3,6 +3,8 @@ library json_mapper.annotations;
 import 'package:dart_json_mapper/converters.dart';
 import "package:reflectable/reflectable.dart";
 
+typedef ValueDecoratorFunction = dynamic Function(dynamic value);
+
 /// [JsonProperty] is used as metadata, marking individual class fields for
 /// fine tuned configuration parameters.
 class JsonProperty {
@@ -16,6 +18,12 @@ class JsonProperty {
   /// Map of named parameters to be passed to the custom converter instance
   final Map<String, dynamic> converterParams;
 
+  /// Decorate value before setting it to the new instance field during
+  /// deserialization process.
+  ///
+  /// Most commonly used for casting List<dynamic> to List<T>
+  final ValueDecoratorFunction valueDecoratorFunction;
+
   /// Declares annotated field as ignored so it will be excluded from
   /// serialization / deserialization process
   final bool ignore;
@@ -26,6 +34,7 @@ class JsonProperty {
 
   const JsonProperty(
       {this.name,
+      this.valueDecoratorFunction,
       this.ignore,
       this.converter,
       this.enumValues,

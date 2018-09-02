@@ -108,9 +108,17 @@ class JsonMapper {
     return result;
   }
 
-  Type getScalarType(Type type) {
+  bool isListType(Type type) {
     String itemTypeName = type.toString();
     if (itemTypeName.indexOf("List<") == 0) {
+      return true;
+    }
+    return false;
+  }
+
+  Type getScalarType(Type type) {
+    String itemTypeName = type.toString();
+    if (this.isListType(type)) {
       itemTypeName =
           itemTypeName.substring("List<".length, itemTypeName.length - 1);
       if (itemTypeName == "DateTime") {
@@ -216,7 +224,17 @@ class JsonMapper {
       if (!param.isOptional &&
           !param.isNamed &&
           jsonMap.containsKey(jsonName)) {
-        var value = deserializeObject(jsonMap[jsonName], type, meta);
+        var value = jsonMap[jsonName];
+        if (this.isListType(type) && value is List) {
+          value = (value as List)
+              .map((item) => deserializeObject(item, item.runtimeType, meta))
+              .toList();
+        } else {
+          value = deserializeObject(value, type, meta);
+        }
+        if (meta != null && meta.valueDecoratorFunction != null) {
+          value = meta.valueDecoratorFunction(value);
+        }
         if (meta != null && meta.ignore == true) {
           value = null;
         }
@@ -290,8 +308,8 @@ class JsonMapper {
             getNamedArguments(cm, jsonMap));
     InstanceMirror im = safeGetInstanceMirror(objectInstance);
 
-    enumeratePublicFields(im,
-        (name, jsonName, value, isGetterOnly, meta, converter, type) {
+    enumeratePublicFields(im, (name, jsonName, value, isGetterOnly,
+        JsonProperty meta, converter, type) {
       var fieldValue = jsonMap[jsonName];
       if (type != null) {
         if (fieldValue is List) {
@@ -311,6 +329,9 @@ class JsonMapper {
         }
       }
       if (!isGetterOnly) {
+        if (meta != null && meta.valueDecoratorFunction != null) {
+          fieldValue = meta.valueDecoratorFunction(fieldValue);
+        }
         var l = im.invokeGetter(name);
         if (l is List && fieldValue is List) {
           fieldValue.map((item) => l.add(item));
