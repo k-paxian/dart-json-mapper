@@ -17,10 +17,17 @@ class JsonMapper {
   final Map<String, ClassMirror> classes = {};
   final Map<String, Object> processedObjects = {};
   final Map<Type, ICustomConverter> converters = {};
+  final Map<String, ValueDecoratorFunction> valueDecorators = {};
 
-  /// Assign custom converter instance for certain Type handling
+  /// Assign custom converter instance for certain Type
   static void registerConverter(Type type, ICustomConverter converter) {
     instance.converters[type] = converter;
+  }
+
+  /// Assign custom value decorator function for certain Type
+  static void registerValueDecorator(
+      Type type, ValueDecoratorFunction valueDecorator) {
+    instance.valueDecorators[type.toString()] = valueDecorator;
   }
 
   /// Converts Dart object to JSON string, indented by `indent`
@@ -50,6 +57,24 @@ class JsonMapper {
       classes[classMirror.simpleName] = classMirror;
     }
     registerDefaultConverters();
+    registerDefaultValueDecorators();
+  }
+
+  void registerDefaultValueDecorators() {
+    valueDecorators[List<String>().runtimeType.toString()] =
+        DefaultValueDecorator.asStringList;
+    valueDecorators[List<DateTime>().runtimeType.toString()] =
+        DefaultValueDecorator.asDateTimeList;
+    valueDecorators[List<num>().runtimeType.toString()] =
+        DefaultValueDecorator.asNumList;
+    valueDecorators[List<int>().runtimeType.toString()] =
+        DefaultValueDecorator.asIntList;
+    valueDecorators[List<double>().runtimeType.toString()] =
+        DefaultValueDecorator.asDoubleList;
+    valueDecorators[List<bool>().runtimeType.toString()] =
+        DefaultValueDecorator.asBoolList;
+    valueDecorators[List<Symbol>().runtimeType.toString()] =
+        DefaultValueDecorator.asSymbolList;
   }
 
   void registerDefaultConverters() {
@@ -142,6 +167,16 @@ class JsonMapper {
     return type;
   }
 
+  ValueDecoratorFunction getValueDecorator(
+      JsonProperty jsonProperty, Type type) {
+    ValueDecoratorFunction result =
+        jsonProperty != null ? jsonProperty.valueDecoratorFunction : null;
+    if (result == null && valueDecorators[type.toString()] != null) {
+      result = valueDecorators[type.toString()];
+    }
+    return result;
+  }
+
   ICustomConverter getConverter(JsonProperty jsonProperty, Type type) {
     ICustomConverter result =
         jsonProperty != null ? jsonProperty.converter : null;
@@ -157,6 +192,14 @@ class JsonMapper {
       result = defaultConverter;
     }
     return result;
+  }
+
+  dynamic applyValueDecorator(dynamic value, Type type, [JsonProperty meta]) {
+    ValueDecoratorFunction valueDecoratorFunction =
+        getValueDecorator(meta, type);
+    return valueDecoratorFunction != null
+        ? valueDecoratorFunction(value)
+        : value;
   }
 
   enumeratePublicFields(InstanceMirror instanceMirror, Function visitor) {
@@ -175,8 +218,15 @@ class JsonMapper {
       if (meta != null && meta.name != null) {
         jsonName = meta.name;
       }
-      visitor(name, jsonName, instanceMirror.invokeGetter(name), isGetterOnly,
-          meta, getConverter(meta, variableScalarType), variableScalarType);
+      visitor(
+          name,
+          jsonName,
+          instanceMirror.invokeGetter(name),
+          isGetterOnly,
+          meta,
+          getConverter(meta, variableScalarType),
+          variableScalarType,
+          variableMirror.reflectedType);
     }
   }
 
@@ -208,8 +258,16 @@ class JsonMapper {
       if (meta != null && meta.ignore == true) {
         return;
       }
-      if (param.isNamed && jsonMap.containsKey(name)) {
-        result[Symbol(name)] = deserializeObject(jsonMap[name], type, meta);
+      if (param.isNamed && jsonMap.containsKey(jsonName)) {
+        var value = jsonMap[jsonName];
+        if (this.isListType(type) && value is List) {
+          value = (value as List)
+              .map((item) => deserializeObject(item, getScalarType(type), meta))
+              .toList();
+        } else {
+          value = deserializeObject(value, type, meta);
+        }
+        result[Symbol(name)] = applyValueDecorator(value, type, meta);
       }
     });
 
@@ -227,14 +285,12 @@ class JsonMapper {
         var value = jsonMap[jsonName];
         if (this.isListType(type) && value is List) {
           value = (value as List)
-              .map((item) => deserializeObject(item, item.runtimeType, meta))
+              .map((item) => deserializeObject(item, getScalarType(type), meta))
               .toList();
         } else {
           value = deserializeObject(value, type, meta);
         }
-        if (meta != null && meta.valueDecoratorFunction != null) {
-          value = meta.valueDecoratorFunction(value);
-        }
+        value = applyValueDecorator(value, type, meta);
         if (meta != null && meta.ignore == true) {
           value = null;
         }
@@ -273,8 +329,8 @@ class JsonMapper {
     }
 
     Map result = {};
-    enumeratePublicFields(im,
-        (name, jsonName, value, isGetterOnly, meta, converter, type) {
+    enumeratePublicFields(im, (name, jsonName, value, isGetterOnly, meta,
+        converter, scalarType, type) {
       if (converter != null) {
         convert(item) => converter.toJSON(item, meta);
         if (value is List) {
@@ -296,6 +352,16 @@ class JsonMapper {
       return converter.fromJSON(jsonValue, parentMeta);
     }
 
+    if (isListType(instanceType)) {
+      List<dynamic> jsonList =
+          (jsonValue is String) ? jsonDecoder.convert(jsonValue) : jsonValue;
+      var value = jsonList
+          .map((item) => deserializeObject(item, getScalarType(instanceType)))
+          .toList();
+      value = applyValueDecorator(value, instanceType, parentMeta);
+      return value;
+    }
+
     ClassMirror cm = classes[instanceType.toString()];
     if (cm == null) {
       throw MissingAnnotationOnTypeError(instanceType);
@@ -309,16 +375,14 @@ class JsonMapper {
     InstanceMirror im = safeGetInstanceMirror(objectInstance);
 
     enumeratePublicFields(im, (name, jsonName, value, isGetterOnly,
-        JsonProperty meta, converter, type) {
+        JsonProperty meta, converter, scalarType, type) {
       var fieldValue = jsonMap[jsonName];
-      if (type != null) {
-        if (fieldValue is List) {
-          fieldValue = fieldValue
-              .map((item) => deserializeObject(item, type, meta))
-              .toList();
-        } else {
-          fieldValue = deserializeObject(fieldValue, type, meta);
-        }
+      if (fieldValue is List) {
+        fieldValue = fieldValue
+            .map((item) => deserializeObject(item, scalarType, meta))
+            .toList();
+      } else {
+        fieldValue = deserializeObject(fieldValue, type, meta);
       }
       if (converter != null) {
         convert(item) => converter.fromJSON(item, meta);
@@ -329,9 +393,7 @@ class JsonMapper {
         }
       }
       if (!isGetterOnly) {
-        if (meta != null && meta.valueDecoratorFunction != null) {
-          fieldValue = meta.valueDecoratorFunction(fieldValue);
-        }
+        fieldValue = applyValueDecorator(fieldValue, type, meta);
         var l = im.invokeGetter(name);
         if (l is List && fieldValue is List) {
           fieldValue.map((item) => l.add(item));
@@ -342,4 +404,14 @@ class JsonMapper {
     });
     return objectInstance;
   }
+}
+
+class DefaultValueDecorator {
+  static List<String> asStringList(dynamic value) => value.cast<String>();
+  static List<DateTime> asDateTimeList(dynamic value) => value.cast<DateTime>();
+  static List<bool> asBoolList(dynamic value) => value.cast<bool>();
+  static List<num> asNumList(dynamic value) => value.cast<num>();
+  static List<int> asIntList(dynamic value) => value.cast<int>();
+  static List<double> asDoubleList(dynamic value) => value.cast<double>();
+  static List<Symbol> asSymbolList(dynamic value) => value.cast<Symbol>();
 }

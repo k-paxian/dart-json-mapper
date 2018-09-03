@@ -18,15 +18,8 @@ class Car {
 
 @jsonSerializable
 class Person {
-  static List<String> asListString(dynamic value) => value.cast<String>();
-  static List<DateTime> asListDateTime(dynamic value) => value.cast<DateTime>();
-  static List<Color> asListColor(dynamic value) => value.cast<Color>();
-  static List<Car> asListCar(dynamic value) => value.cast<Car>();
-
-  @JsonProperty(valueDecoratorFunction: Person.asListString)
   List<String> skills = ['Go', 'Dart', 'Flutter'];
 
-  @JsonProperty(valueDecoratorFunction: Person.asListDateTime)
   List<DateTime> specialDates = [
     DateTime(2013, 02, 28),
     DateTime(2023, 02, 28),
@@ -69,8 +62,7 @@ class Person {
 
   Symbol sym = Symbol('foo');
 
-  @JsonProperty(
-      enumValues: Color.values, valueDecoratorFunction: Person.asListColor)
+  @JsonProperty(enumValues: Color.values)
   List<Color> favouriteColours = [Color.Black, Color.White];
 
   @JsonProperty(name: 'eye_color', enumValues: Color.values)
@@ -79,7 +71,6 @@ class Person {
   @JsonProperty(enumValues: Color.values, converter: enumConverterNumeric)
   Color hairColor = Color.Brown;
 
-  @JsonProperty(valueDecoratorFunction: Person.asListCar)
   List<Car> vehicles = [Car("Tesla", Color.Black), Car("BMW", Color.Red)];
 
   String get fullName => "${name} ${lastName}";

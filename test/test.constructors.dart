@@ -2,11 +2,7 @@ part of json_mapper.test;
 
 @jsonSerializable
 class StringListClass {
-  static List<String> asListString(dynamic value) => value.cast<String>();
-
-  @JsonProperty(valueDecoratorFunction: StringListClass.asListString)
   List<String> list;
-
   StringListClass(this.list);
 }
 

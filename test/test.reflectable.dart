@@ -324,16 +324,24 @@ final _data = <r.Reflectable, r.ReflectorData>{
             0,
             null,
             const <Object>[const prefix0.JsonProperty(ignore: true)]),
-        new r.VariableMirrorImpl(r"skills", 2129925, 1,
-            const prefix0.JsonSerializable(), -1, 12, 13, null, const <Object>[
-          const prefix0.JsonProperty(
-              valueDecoratorFunction: prefix1.Person.asListString)
-        ]),
-        new r.VariableMirrorImpl(r"specialDates", 2129925, 1,
-            const prefix0.JsonSerializable(), -1, 14, 15, null, const <Object>[
-          const prefix0.JsonProperty(
-              valueDecoratorFunction: prefix1.Person.asListDateTime)
-        ]),
+        new r.VariableMirrorImpl(
+            r"skills",
+            2129925,
+            1,
+            const prefix0.JsonSerializable(),
+            -1,
+            12,
+            13,
+            null, const <Object>[]),
+        new r.VariableMirrorImpl(
+            r"specialDates",
+            2129925,
+            1,
+            const prefix0.JsonSerializable(),
+            -1,
+            14,
+            15,
+            null, const <Object>[]),
         new r.VariableMirrorImpl(r"lastPromotionDate", 32773, 1,
             const prefix0.JsonSerializable(), -1, 16, 16, null, const <Object>[
           const prefix0.JsonProperty(
@@ -461,9 +469,7 @@ final _data = <r.Reflectable, r.ReflectorData>{
             null, const <Object>[]),
         new r.VariableMirrorImpl(r"favouriteColours", 2129925, 1,
             const prefix0.JsonSerializable(), -1, 24, 25, null, const <Object>[
-          const prefix0.JsonProperty(
-              enumValues: prefix1.Color.values,
-              valueDecoratorFunction: prefix1.Person.asListColor)
+          const prefix0.JsonProperty(enumValues: prefix1.Color.values)
         ]),
         new r.VariableMirrorImpl(r"eyeColor", 32773, 1,
             const prefix0.JsonSerializable(), -1, 11, 11, null, const <Object>[
@@ -476,16 +482,24 @@ final _data = <r.Reflectable, r.ReflectorData>{
               enumValues: prefix1.Color.values,
               converter: prefix2.enumConverterNumeric)
         ]),
-        new r.VariableMirrorImpl(r"vehicles", 2129925, 1,
-            const prefix0.JsonSerializable(), -1, 26, 27, null, const <Object>[
-          const prefix0.JsonProperty(
-              valueDecoratorFunction: prefix1.Person.asListCar)
-        ]),
-        new r.VariableMirrorImpl(r"list", 2129925, 2,
-            const prefix0.JsonSerializable(), -1, 12, 13, null, const <Object>[
-          const prefix0.JsonProperty(
-              valueDecoratorFunction: prefix1.StringListClass.asListString)
-        ]),
+        new r.VariableMirrorImpl(
+            r"vehicles",
+            2129925,
+            1,
+            const prefix0.JsonSerializable(),
+            -1,
+            26,
+            27,
+            null, const <Object>[]),
+        new r.VariableMirrorImpl(
+            r"list",
+            2129925,
+            2,
+            const prefix0.JsonSerializable(),
+            -1,
+            12,
+            13,
+            null, const <Object>[]),
         new r.VariableMirrorImpl(
             r"firstName",
             32773,

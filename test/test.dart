@@ -14,12 +14,14 @@ part 'test.constructors.dart';
 part 'test.converters.dart';
 part 'test.errors.dart';
 part 'test.integration.dart';
+part 'test.value.decorators.dart';
 
 void main() {
   initializeReflectable();
 
   testErrorHandling();
   testConverters();
+  testValueDecorators();
   testConstructors();
   testIntegration();
 }

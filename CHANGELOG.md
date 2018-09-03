@@ -1,3 +1,7 @@
+## 1.0.4
+
+* Value decorators support enhanced
+
 ## 1.0.3
 
 * Value decorator introduced
