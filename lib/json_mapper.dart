@@ -1,6 +1,7 @@
 library json_mapper;
 
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:dart_json_mapper/annotations.dart';
 import 'package:dart_json_mapper/converters.dart';
@@ -61,23 +62,29 @@ class JsonMapper {
   }
 
   void registerDefaultValueDecorators() {
+    // Generic types
     valueDecorators[List<String>().runtimeType.toString()] =
-        DefaultValueDecorator.asStringList;
+        (value) => value.cast<String>();
     valueDecorators[List<DateTime>().runtimeType.toString()] =
-        DefaultValueDecorator.asDateTimeList;
+        (value) => value.cast<DateTime>();
     valueDecorators[List<num>().runtimeType.toString()] =
-        DefaultValueDecorator.asNumList;
+        (value) => value.cast<num>();
     valueDecorators[List<int>().runtimeType.toString()] =
-        DefaultValueDecorator.asIntList;
+        (value) => value.cast<int>();
     valueDecorators[List<double>().runtimeType.toString()] =
-        DefaultValueDecorator.asDoubleList;
+        (value) => value.cast<double>();
     valueDecorators[List<bool>().runtimeType.toString()] =
-        DefaultValueDecorator.asBoolList;
+        (value) => value.cast<bool>();
     valueDecorators[List<Symbol>().runtimeType.toString()] =
-        DefaultValueDecorator.asSymbolList;
+        (value) => value.cast<Symbol>();
+
+    // Typed data
+    valueDecorators[Uint8List(0).runtimeType.toString()] =
+        (value) => Uint8List.fromList(value.cast<int>());
   }
 
   void registerDefaultConverters() {
+    // Generic types
     converters[dynamic] = defaultConverter;
     converters[String] = defaultConverter;
     converters[bool] = defaultConverter;
@@ -86,6 +93,8 @@ class JsonMapper {
     converters[num] = numberConverter;
     converters[int] = numberConverter;
     converters[double] = numberConverter;
+    // Typed data
+    converters[Uint8List] = uint8ListConverter;
   }
 
   MethodMirror getPublicConstructor(ClassMirror classMirror) {
@@ -260,7 +269,7 @@ class JsonMapper {
       }
       if (param.isNamed && jsonMap.containsKey(jsonName)) {
         var value = jsonMap[jsonName];
-        if (this.isListType(type) && value is List) {
+        if (this.isListType(type) && this.isListType(value.runtimeType)) {
           value = (value as List)
               .map((item) => deserializeObject(item, getScalarType(type), meta))
               .toList();
@@ -283,7 +292,7 @@ class JsonMapper {
           !param.isNamed &&
           jsonMap.containsKey(jsonName)) {
         var value = jsonMap[jsonName];
-        if (this.isListType(type) && value is List) {
+        if (this.isListType(type) && this.isListType(value.runtimeType)) {
           value = (value as List)
               .map((item) => deserializeObject(item, getScalarType(type), meta))
               .toList();
@@ -333,7 +342,7 @@ class JsonMapper {
         converter, scalarType, type) {
       if (converter != null) {
         convert(item) => converter.toJSON(item, meta);
-        if (value is List) {
+        if (isListType(value.runtimeType)) {
           result[jsonName] = value.map(convert).toList();
         } else {
           result[jsonName] = convert(value);
@@ -386,7 +395,7 @@ class JsonMapper {
       }
       if (converter != null) {
         convert(item) => converter.fromJSON(item, meta);
-        if (fieldValue is List) {
+        if (isListType(fieldValue.runtimeType)) {
           fieldValue = fieldValue.map(convert).toList();
         } else {
           fieldValue = convert(fieldValue);
@@ -404,14 +413,4 @@ class JsonMapper {
     });
     return objectInstance;
   }
-}
-
-class DefaultValueDecorator {
-  static List<String> asStringList(dynamic value) => value.cast<String>();
-  static List<DateTime> asDateTimeList(dynamic value) => value.cast<DateTime>();
-  static List<bool> asBoolList(dynamic value) => value.cast<bool>();
-  static List<num> asNumList(dynamic value) => value.cast<num>();
-  static List<int> asIntList(dynamic value) => value.cast<int>();
-  static List<double> asDoubleList(dynamic value) => value.cast<double>();
-  static List<Symbol> asSymbolList(dynamic value) => value.cast<Symbol>();
 }

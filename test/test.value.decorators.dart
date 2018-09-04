@@ -6,7 +6,7 @@ testValueDecorators() {
       // given
       // when
       JsonMapper.registerValueDecorator(
-          List<Car>().runtimeType, (dynamic value) => value.cast<Car>());
+          List<Car>().runtimeType, (value) => value.cast<Car>());
 
       List<Car> target = JsonMapper.deserialize(
           '[{"modelName": "Audi", "color": "Color.Green"}]');

@@ -1,5 +1,7 @@
 library json_mapper.test;
 
+import 'dart:typed_data';
+
 import 'package:dart_json_mapper/annotations.dart';
 import 'package:dart_json_mapper/converters.dart';
 import 'package:dart_json_mapper/errors.dart';

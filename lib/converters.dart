@@ -1,5 +1,8 @@
 library json_mapper.converters;
 
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:dart_json_mapper/annotations.dart';
 import 'package:intl/intl.dart';
 
@@ -135,6 +138,23 @@ class SymbolConverter implements ICustomConverter {
         .first
         .group(0)
         .replaceAll("\"", '');
+  }
+}
+
+const uint8ListConverter = Uint8ListConverter();
+
+/// Uint8List converter to base64 and back
+class Uint8ListConverter implements ICustomConverter {
+  const Uint8ListConverter() : super();
+
+  @override
+  Object fromJSON(dynamic jsonValue, JsonProperty jsonProperty) {
+    return jsonValue is String ? base64Decode(jsonValue) : jsonValue;
+  }
+
+  @override
+  dynamic toJSON(Object object, JsonProperty jsonProperty) {
+    return object is Uint8List ? base64Encode(object) : object;
   }
 }
 

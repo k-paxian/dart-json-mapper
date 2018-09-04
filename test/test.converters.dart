@@ -14,8 +14,31 @@ class CustomStringConverter implements ICustomConverter<String> {
   }
 }
 
+@jsonSerializable
+class BinaryData {
+  Uint8List data;
+  BinaryData(this.data);
+}
+
 testConverters() {
   group("[Verify converters]", () {
+    test("Uint8List converter", () {
+      // given
+      final String json = '{"data":"QmFzZTY0IGlzIHdvcmtpbmch"}';
+      final String rawString = "Base64 is working!";
+
+      // when
+      String targetJson = JsonMapper.serialize(
+          BinaryData(Uint8List.fromList(rawString.codeUnits)), '');
+      // then
+      expect(targetJson, json);
+
+      // when
+      BinaryData target = JsonMapper.deserialize(json);
+      // then
+      expect(rawString, String.fromCharCodes(target.data));
+    });
+
     test("Custom String converter", () {
       // given
       final String json = '''{

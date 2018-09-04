@@ -1,3 +1,7 @@
+## 1.0.5
+
+* Uint8List type support
+
 ## 1.0.4
 
 * Value decorators support enhanced
