@@ -1,6 +1,6 @@
 ## 1.0.5
 
-* Uint8List type support
+* Uint8List, BigInt types support added
 
 ## 1.0.4
 
