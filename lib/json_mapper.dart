@@ -77,6 +77,8 @@ class JsonMapper {
         (value) => value.cast<bool>();
     valueDecorators[List<Symbol>().runtimeType.toString()] =
         (value) => value.cast<Symbol>();
+    valueDecorators[List<BigInt>().runtimeType.toString()] =
+        (value) => value.cast<BigInt>();
 
     // Typed data
     valueDecorators[Uint8List(0).runtimeType.toString()] =
@@ -93,6 +95,8 @@ class JsonMapper {
     converters[num] = numberConverter;
     converters[int] = numberConverter;
     converters[double] = numberConverter;
+    converters[BigInt] = bigIntConverter;
+
     // Typed data
     converters[Uint8List] = uint8ListConverter;
   }

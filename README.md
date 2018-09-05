@@ -11,7 +11,7 @@ This package allows programmers to annotate Dart classes in order to
 * Compatible with **all** Dart platforms, including **Flutter** and **Web** platforms
 * No need to extend your classes from **any** mixins/base/abstract classes to keep code leaner
 * Clean and simple setup, transparent and straightforward usage with **no heavy maintenance**
-* **No extra boilerplate** code involved, 100% generated only
+* **No extra boilerplate** involved, 100% generated only
 * **Custom converters** support per each class field
   
 ## Basic setup

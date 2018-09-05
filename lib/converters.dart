@@ -143,7 +143,7 @@ class SymbolConverter implements ICustomConverter {
 
 const uint8ListConverter = Uint8ListConverter();
 
-/// Uint8List converter to base64 and back
+/// [Uint8List] converter to base64 and back
 class Uint8ListConverter implements ICustomConverter {
   const Uint8ListConverter() : super();
 
@@ -155,6 +155,23 @@ class Uint8ListConverter implements ICustomConverter {
   @override
   dynamic toJSON(Object object, JsonProperty jsonProperty) {
     return object is Uint8List ? base64Encode(object) : object;
+  }
+}
+
+const bigIntConverter = BigIntConverter();
+
+/// [BigInt] converter
+class BigIntConverter implements ICustomConverter {
+  const BigIntConverter() : super();
+
+  @override
+  Object fromJSON(dynamic jsonValue, JsonProperty jsonProperty) {
+    return jsonValue is String ? BigInt.parse(jsonValue) : jsonValue;
+  }
+
+  @override
+  dynamic toJSON(Object object, JsonProperty jsonProperty) {
+    return object is BigInt ? object.toString() : object;
   }
 }
 

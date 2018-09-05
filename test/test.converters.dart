@@ -20,8 +20,31 @@ class BinaryData {
   BinaryData(this.data);
 }
 
+@jsonSerializable
+class BigIntData {
+  BigInt bigInt;
+  BigIntData(this.bigInt);
+}
+
 testConverters() {
   group("[Verify converters]", () {
+    test("BigInt converter", () {
+      // given
+      final String rawString = "1234567890000000012345678900";
+      final String json = '{"bigInt":"${rawString}"}';
+
+      // when
+      String targetJson =
+          JsonMapper.serialize(BigIntData(BigInt.parse(rawString)), '');
+      // then
+      expect(targetJson, json);
+
+      // when
+      BigIntData target = JsonMapper.deserialize(json);
+      // then
+      expect(rawString, target.bigInt.toString());
+    });
+
     test("Uint8List converter", () {
       // given
       final String json = '{"data":"QmFzZTY0IGlzIHdvcmtpbmch"}';
