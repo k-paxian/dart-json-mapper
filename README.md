@@ -129,9 +129,11 @@ Output:
 Since Dart language has no possibility to create typed lists dynamically, it's a bit of a challenge
 to create exact typed lists via reflection approach. List types has to be declared explicitly.
 
+```
 For example List() will produce List<dynamic> type which can't be directly set to the concrete
 target field List<Car> for instance. So obvious workaround will be to cast 
 List<dynamic> => List<Car>, which can be performed as List<dynamic>().cast<Car>().
+```
 
 In order to do so, we'll use Value Decorator Function inspired by Decorator pattern.
 
@@ -141,10 +143,12 @@ JsonMapper.registerValueDecorator(List<Car>().runtimeType, (value) => value.cast
 List<Car> myCarsList = JsonMapper.deserialize('[{"modelName": "Audi", "color": "Color.Green"}]');
 ```
 
+```
 Basic list based types like List<num>, List<Sring>, List<bool>, List<DateTime>, etc. 
 supported out of the box. For custom List types like List<Car> you have to register value decorator
 function as showed in a code snippet above before using deserialization. 
 This function will have explicit cast to concrete List type.
+```
 
 ## Enum based types handling
 
