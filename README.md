@@ -124,6 +124,44 @@ Output:
 }
 ```
 
+## List based types handling
+
+Since Dart language has no possibility to create typed lists dynamically, it's a bit of a challenge
+to create exact typed lists via reflection approach. List types has to be declared explicitly.
+
+For example List() will produce List<dynamic> type which can't be directly set to the concrete
+target field List<Car> for instance. So obvious workaround will be to cast 
+List<dynamic> => List<Car>, which can be performed as List<dynamic>().cast<Car>().
+
+In order to do so, we'll use Value Decorator Function inspired by Decorator pattern.
+
+```dart
+JsonMapper.registerValueDecorator(List<Car>().runtimeType, (value) => value.cast<Car>());
+
+List<Car> myCarsList = JsonMapper.deserialize('[{"modelName": "Audi", "color": "Color.Green"}]');
+```
+
+Basic list based types like List<num>, List<Sring>, List<bool>, List<DateTime>, etc. 
+supported out of the box. For custom List types like List<Car> you have to register value decorator
+function as showed in a code snippet above before using deserialization. 
+This function will have explicit cast to concrete List type.
+
+## Enum based types handling
+
+Enum construction in Dart has a specific meaning, and has to be treated accordingly.
+
+Enum declarations should not be annotated with @jsonSerializable, since they are not a classes 
+technically, but a special built in types.
+
+```dart
+    @JsonProperty(enumValues: Color.values)
+    Color color;
+```
+
+Each enum based class field has to be annotated as showed in a snippet above. 
+Enum.values refers to a list of all possible enum values, it's a handy built in capability of all
+enum based types. Without providing all values it's not possible to traverse it's values properly.
+ 
 ## Feature requests and bug reports
 
 Please file feature requests and bugs using the
