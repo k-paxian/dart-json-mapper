@@ -21,7 +21,7 @@ Library has **NO** dependency on `dart:mirrors`, one of the reasons is described
 Dart classes reflection mechanism is based on [reflectable][3] library. This means "extended types information" is auto-generated out of existing Dart program guided by the annotated classes only, as the result types information is accesible at runtime, at a reduced cost.
 
 Say, you have a dart program *main.dart* having some classes intended to be traveling to JSON and back.
-- First thing you should do is to put @jsonSerializable annotation on each of those classes
+- First thing you should do is to put `@jsonSerializable` annotation on each of those classes
 - Next step is to auto generate *main.reflectable.dart* file. And afterwards import that file into *main.dart*
 
 **lib/main.dart**
@@ -150,7 +150,7 @@ This function will have explicit cast to concrete List type.
 
 Enum construction in Dart has a specific meaning, and has to be treated accordingly.
 
-Enum declarations should not be annotated with @jsonSerializable, since they are not a classes 
+Enum declarations should not be annotated with `@jsonSerializable`, since they are not a classes 
 technically, but a special built in types.
 
 ```dart
@@ -159,7 +159,7 @@ Color color;
 ```
 
 Each enum based class field has to be annotated as showed in a snippet above. 
-Enum.values refers to a list of all possible enum values, it's a handy built in capability of all
+Enum`.values` refers to a list of all possible enum values, it's a handy built in capability of all
 enum based types. Without providing all values it's not possible to traverse it's values properly.
  
 ## Feature requests and bug reports
