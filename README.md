@@ -154,8 +154,8 @@ Enum declarations should not be annotated with @jsonSerializable, since they are
 technically, but a special built in types.
 
 ```dart
-    @JsonProperty(enumValues: Color.values)
-    Color color;
+@JsonProperty(enumValues: Color.values)
+Color color;
 ```
 
 Each enum based class field has to be annotated as showed in a snippet above. 
