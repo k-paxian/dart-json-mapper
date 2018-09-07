@@ -161,6 +161,41 @@ Color color;
 Each enum based class field has to be annotated as showed in a snippet above. 
 Enum`.values` refers to a list of all possible enum values, it's a handy built in capability of all
 enum based types. Without providing all values it's not possible to traverse it's values properly.
+
+## Custom based types handling
+
+For the very custom types, specific ones, or doesn't currently supported by this library, you can 
+provide your own custom Converter class per each custom runtimeType.
+
+```dart
+/// Abstract class for custom converters implementations
+abstract class ICustomConverter<T> {
+  dynamic toJSON(T object, JsonProperty jsonProperty);
+  T fromJSON(dynamic jsonValue, JsonProperty jsonProperty);
+}
+```
+
+All you need to get going with this, is to implement this abstract class and register it afterwards
+ 
+```dart
+class CustomStringConverter implements ICustomConverter<String> {
+  const CustomStringConverter() : super();
+
+  @override
+  String fromJSON(dynamic jsonValue, JsonProperty jsonProperty) {
+    return jsonValue;
+  }
+
+  @override
+  dynamic toJSON(String object, JsonProperty jsonProperty) {
+    return '_${object}_';
+  }
+}
+
+JsonMapper.registerConverter(String, CustomStringConverter());
+```
+
+And this is it, you are all set and ready to go. Happy coding!
  
 ## Feature requests and bug reports
 
