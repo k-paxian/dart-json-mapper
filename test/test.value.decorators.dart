@@ -1,15 +1,41 @@
 part of json_mapper.test;
 
 testValueDecorators() {
+  final String carListJson = '[{"modelName":"Audi","color":"Color.Green"}]';
+
   group("[Verify value decorators]", () {
+    test("Custom Set<Car> value decorator", () {
+      // given
+      var set = Set<Car>();
+      set.add(Car("Audi", Color.Green));
+
+      // when
+      String json = JsonMapper.serialize(set, '');
+
+      // then
+      expect(json, carListJson);
+
+      // given
+      JsonMapper.registerValueDecorator<Set<Car>>(
+          (value) => Set<Car>.from(value));
+
+      // when
+      Set<Car> target = JsonMapper.deserialize(carListJson);
+
+      // then
+      expect(target.length, 1);
+      expect(target.first, TypeMatcher<Car>());
+      expect(target.first.model, "Audi");
+      expect(target.first.color, Color.Green);
+    });
+
     test("Custom List<Car> value decorator", () {
       // given
-      // when
-      JsonMapper.registerValueDecorator(
-          List<Car>().runtimeType, (value) => value.cast<Car>());
+      JsonMapper.registerValueDecorator<List<Car>>(
+          (value) => value.cast<Car>());
 
-      List<Car> target = JsonMapper.deserialize(
-          '[{"modelName": "Audi", "color": "Color.Green"}]');
+      // when
+      List<Car> target = JsonMapper.deserialize(carListJson);
 
       // then
       expect(target.length, 1);

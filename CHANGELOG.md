@@ -1,3 +1,7 @@
+## 1.0.6
+
+* Set based types support added
+
 ## 1.0.5
 
 * Uint8List, BigInt types support added

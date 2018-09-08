@@ -136,7 +136,7 @@ target field `List<Car>` for instance. So obvious workaround will be to cast
 In order to do so, we'll use Value Decorator Function inspired by Decorator pattern.
 
 ```dart
-JsonMapper.registerValueDecorator(List<Car>().runtimeType, (value) => value.cast<Car>());
+JsonMapper.registerValueDecorator<List<Car>>((value) => value.cast<Car>());
 
 List<Car> myCarsList = JsonMapper.deserialize('[{"modelName": "Audi", "color": "Color.Green"}]');
 ```
@@ -175,7 +175,7 @@ abstract class ICustomConverter<T> {
 }
 ```
 
-All you need to get going with this, is to implement this abstract class and register it afterwards
+All you need to get going with this, is to implement this abstract class
  
 ```dart
 class CustomStringConverter implements ICustomConverter<String> {
@@ -191,8 +191,19 @@ class CustomStringConverter implements ICustomConverter<String> {
     return '_${object}_';
   }
 }
+```
 
-JsonMapper.registerConverter(String, CustomStringConverter());
+And register it afterwards, if you want to have it applied for **all** occurrences of specified type 
+
+```dart
+JsonMapper.registerConverter<String>(CustomStringConverter());
+```
+
+OR use it individually on selected class fields, via `@JsonProperty` annotation 
+
+```dart
+@JsonProperty(converter: CustomStringConverter())
+String title;
 ```
 
 And this is it, you are all set and ready to go. Happy coding!

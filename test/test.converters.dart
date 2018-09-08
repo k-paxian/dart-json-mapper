@@ -72,7 +72,7 @@ testConverters() {
   "color": "Color.Green"
  }
 }''';
-      JsonMapper.registerConverter(String, CustomStringConverter());
+      JsonMapper.registerConverter<String>(CustomStringConverter());
 
       Immutable i = Immutable(1, 'Bob', Car('Audi', Color.Green));
       // when
@@ -80,7 +80,7 @@ testConverters() {
       // then
       expect(target, json);
 
-      JsonMapper.registerConverter(String, defaultConverter);
+      JsonMapper.registerConverter<String>(defaultConverter);
     });
   });
 }

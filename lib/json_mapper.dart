@@ -21,14 +21,13 @@ class JsonMapper {
   final Map<String, ValueDecoratorFunction> valueDecorators = {};
 
   /// Assign custom converter instance for certain Type
-  static void registerConverter(Type type, ICustomConverter converter) {
-    instance.converters[type] = converter;
+  static void registerConverter<T>(ICustomConverter converter) {
+    instance.converters[T] = converter;
   }
 
   /// Assign custom value decorator function for certain Type
-  static void registerValueDecorator(
-      Type type, ValueDecoratorFunction valueDecorator) {
-    instance.valueDecorators[type.toString()] = valueDecorator;
+  static void registerValueDecorator<T>(ValueDecoratorFunction valueDecorator) {
+    instance.valueDecorators[T.toString()] = valueDecorator;
   }
 
   /// Converts Dart object to JSON string, indented by `indent`
@@ -154,23 +153,36 @@ class JsonMapper {
     return false;
   }
 
+  bool isSetType(Type type) {
+    String itemTypeName = type.toString();
+    if (itemTypeName.indexOf("Set<") == 0) {
+      return true;
+    }
+    return false;
+  }
+
   Type getScalarType(Type type) {
     String itemTypeName = type.toString();
+
     if (this.isListType(type)) {
       itemTypeName =
           itemTypeName.substring("List<".length, itemTypeName.length - 1);
-      if (itemTypeName == "DateTime") {
-        return DateTime;
-      }
-      if (itemTypeName == "num") {
-        return num;
-      }
-      if (itemTypeName == "bool") {
-        return bool;
-      }
-      if (itemTypeName == "String") {
-        return String;
-      }
+    }
+    if (this.isSetType(type)) {
+      itemTypeName =
+          itemTypeName.substring("Set<".length, itemTypeName.length - 1);
+    }
+    if (itemTypeName == "DateTime") {
+      return DateTime;
+    }
+    if (itemTypeName == "num") {
+      return num;
+    }
+    if (itemTypeName == "bool") {
+      return bool;
+    }
+    if (itemTypeName == "String") {
+      return String;
     }
 
     if (classes[itemTypeName] != null) {
@@ -184,8 +196,9 @@ class JsonMapper {
       JsonProperty jsonProperty, Type type) {
     ValueDecoratorFunction result =
         jsonProperty != null ? jsonProperty.valueDecoratorFunction : null;
-    if (result == null && valueDecorators[type.toString()] != null) {
-      result = valueDecorators[type.toString()];
+    String typeId = type.toString();
+    if (result == null && valueDecorators[typeId] != null) {
+      result = valueDecorators[typeId];
     }
     return result;
   }
@@ -328,6 +341,10 @@ class JsonMapper {
       return converter.toJSON(object, null);
     }
 
+    if (object is Set) {
+      object = (object as Set).toList();
+    }
+
     if (object is List) {
       return object.map(serializeObject).toList();
     }
@@ -365,14 +382,13 @@ class JsonMapper {
       return converter.fromJSON(jsonValue, parentMeta);
     }
 
-    if (isListType(instanceType)) {
+    if (isListType(instanceType) || isSetType(instanceType)) {
       List<dynamic> jsonList =
           (jsonValue is String) ? jsonDecoder.convert(jsonValue) : jsonValue;
       var value = jsonList
           .map((item) => deserializeObject(item, getScalarType(instanceType)))
           .toList();
-      value = applyValueDecorator(value, instanceType, parentMeta);
-      return value;
+      return applyValueDecorator(value, instanceType, parentMeta);
     }
 
     ClassMirror cm = classes[instanceType.toString()];
