@@ -145,48 +145,18 @@ class JsonMapper {
     return result;
   }
 
-  bool isListType(Type type) {
-    String itemTypeName = type.toString();
-    if (itemTypeName.indexOf("List<") == 0) {
-      return true;
-    }
-    return false;
-  }
-
-  bool isSetType(Type type) {
-    String itemTypeName = type.toString();
-    if (itemTypeName.indexOf("Set<") == 0) {
-      return true;
-    }
-    return false;
-  }
-
   Type getScalarType(Type type) {
-    String itemTypeName = type.toString();
+    TypeInfo typeInfo = TypeInfo(type);
+    String scalarTypeName = typeInfo.scalarTypeName;
 
-    if (this.isListType(type)) {
-      itemTypeName =
-          itemTypeName.substring("List<".length, itemTypeName.length - 1);
-    }
-    if (this.isSetType(type)) {
-      itemTypeName =
-          itemTypeName.substring("Set<".length, itemTypeName.length - 1);
-    }
-    if (itemTypeName == "DateTime") {
-      return DateTime;
-    }
-    if (itemTypeName == "num") {
-      return num;
-    }
-    if (itemTypeName == "bool") {
-      return bool;
-    }
-    if (itemTypeName == "String") {
-      return String;
+    /// Dart Built-in Types
+    if (typeInfo.scalarType != null) {
+      return typeInfo.scalarType;
     }
 
-    if (classes[itemTypeName] != null) {
-      return classes[itemTypeName].reflectedType;
+    /// Custom Types annotated with [@jsonSerializable]
+    if (classes[scalarTypeName] != null) {
+      return classes[scalarTypeName].reflectedType;
     }
 
     return type;
@@ -204,6 +174,7 @@ class JsonMapper {
   }
 
   ICustomConverter getConverter(JsonProperty jsonProperty, Type type) {
+    TypeInfo typeInfo = TypeInfo(type);
     ICustomConverter result =
         jsonProperty != null ? jsonProperty.converter : null;
     if (jsonProperty != null &&
@@ -214,15 +185,19 @@ class JsonMapper {
     if (result == null && converters[type] != null) {
       result = converters[type];
     }
-    if (result == null && type.toString().indexOf('Map<') == 0) {
+    if (result == null && typeInfo.isMap) {
       result = defaultConverter;
     }
     return result;
   }
 
-  dynamic applyValueDecorator(dynamic value, Type type, [JsonProperty meta]) {
+  dynamic applyValueDecorator(dynamic value, TypeInfo typeInfo,
+      [JsonProperty meta]) {
     ValueDecoratorFunction valueDecoratorFunction =
-        getValueDecorator(meta, type);
+        getValueDecorator(meta, typeInfo.type);
+    if (typeInfo.isSet && value is! Set && value is Iterable) {
+      value = Set.from(value);
+    }
     return valueDecoratorFunction != null
         ? valueDecoratorFunction(value)
         : value;
@@ -252,7 +227,7 @@ class JsonMapper {
           meta,
           getConverter(meta, variableScalarType),
           variableScalarType,
-          variableMirror.reflectedType);
+          TypeInfo(variableMirror.reflectedType));
     }
   }
 
@@ -272,7 +247,8 @@ class JsonMapper {
         jsonName = meta.name;
       }
 
-      visitor(param, name, jsonName, meta, variableMirror.reflectedType);
+      visitor(
+          param, name, jsonName, meta, TypeInfo(variableMirror.reflectedType));
     });
   }
 
@@ -280,20 +256,23 @@ class JsonMapper {
       ClassMirror cm, Map<String, dynamic> jsonMap) {
     Map<Symbol, dynamic> result = Map();
 
-    enumerateConstructorParameters(cm, (param, name, jsonName, meta, type) {
+    enumerateConstructorParameters(cm,
+        (param, name, jsonName, meta, TypeInfo typeInfo) {
       if (meta != null && meta.ignore == true) {
         return;
       }
       if (param.isNamed && jsonMap.containsKey(jsonName)) {
         var value = jsonMap[jsonName];
-        if (this.isListType(type) && this.isListType(value.runtimeType)) {
+        TypeInfo valueTypeInfo = TypeInfo(value.runtimeType);
+        if (typeInfo.isIterable && valueTypeInfo.isIterable) {
           value = (value as List)
-              .map((item) => deserializeObject(item, getScalarType(type), meta))
+              .map((item) =>
+                  deserializeObject(item, getScalarType(typeInfo.type), meta))
               .toList();
         } else {
-          value = deserializeObject(value, type, meta);
+          value = deserializeObject(value, typeInfo.type, meta);
         }
-        result[Symbol(name)] = applyValueDecorator(value, type, meta);
+        result[Symbol(name)] = applyValueDecorator(value, typeInfo, meta);
       }
     });
 
@@ -304,19 +283,21 @@ class JsonMapper {
     List result = [];
 
     enumerateConstructorParameters(cm,
-        (param, name, jsonName, JsonProperty meta, type) {
+        (param, name, jsonName, JsonProperty meta, TypeInfo typeInfo) {
       if (!param.isOptional &&
           !param.isNamed &&
           jsonMap.containsKey(jsonName)) {
         var value = jsonMap[jsonName];
-        if (this.isListType(type) && this.isListType(value.runtimeType)) {
+        TypeInfo valueTypeInfo = TypeInfo(value.runtimeType);
+        if (typeInfo.isIterable && valueTypeInfo.isIterable) {
           value = (value as List)
-              .map((item) => deserializeObject(item, getScalarType(type), meta))
+              .map((item) =>
+                  deserializeObject(item, getScalarType(typeInfo.type), meta))
               .toList();
         } else {
-          value = deserializeObject(value, type, meta);
+          value = deserializeObject(value, typeInfo.type, meta);
         }
-        value = applyValueDecorator(value, type, meta);
+        value = applyValueDecorator(value, typeInfo, meta);
         if (meta != null && meta.ignore == true) {
           value = null;
         }
@@ -341,11 +322,7 @@ class JsonMapper {
       return converter.toJSON(object, null);
     }
 
-    if (object is Set) {
-      object = (object as Set).toList();
-    }
-
-    if (object is List) {
+    if (object is Iterable) {
       return object.map(serializeObject).toList();
     }
     InstanceMirror im = safeGetInstanceMirror(object);
@@ -360,10 +337,11 @@ class JsonMapper {
 
     Map result = {};
     enumeratePublicFields(im, (name, jsonName, value, isGetterOnly, meta,
-        converter, scalarType, type) {
+        converter, scalarType, TypeInfo typeInfo) {
       if (converter != null) {
+        TypeInfo valueTypeInfo = TypeInfo(value.runtimeType);
         convert(item) => converter.toJSON(item, meta);
-        if (isListType(value.runtimeType)) {
+        if (valueTypeInfo.isList) {
           result[jsonName] = value.map(convert).toList();
         } else {
           result[jsonName] = convert(value);
@@ -377,23 +355,24 @@ class JsonMapper {
 
   Object deserializeObject(dynamic jsonValue, Type instanceType,
       [JsonProperty parentMeta]) {
-    ICustomConverter converter = getConverter(parentMeta, instanceType);
+    TypeInfo typeInfo = TypeInfo(instanceType);
+    ICustomConverter converter = getConverter(parentMeta, typeInfo.type);
     if (converter != null) {
       return converter.fromJSON(jsonValue, parentMeta);
     }
 
-    if (isListType(instanceType) || isSetType(instanceType)) {
+    if (typeInfo.isIterable) {
       List<dynamic> jsonList =
           (jsonValue is String) ? jsonDecoder.convert(jsonValue) : jsonValue;
       var value = jsonList
-          .map((item) => deserializeObject(item, getScalarType(instanceType)))
+          .map((item) => deserializeObject(item, getScalarType(typeInfo.type)))
           .toList();
-      return applyValueDecorator(value, instanceType, parentMeta);
+      return applyValueDecorator(value, typeInfo, parentMeta);
     }
 
-    ClassMirror cm = classes[instanceType.toString()];
+    ClassMirror cm = classes[typeInfo.typeName];
     if (cm == null) {
-      throw MissingAnnotationOnTypeError(instanceType);
+      throw MissingAnnotationOnTypeError(typeInfo.type);
     }
     Map<String, dynamic> jsonMap =
         (jsonValue is String) ? jsonDecoder.convert(jsonValue) : jsonValue;
@@ -404,25 +383,26 @@ class JsonMapper {
     InstanceMirror im = safeGetInstanceMirror(objectInstance);
 
     enumeratePublicFields(im, (name, jsonName, value, isGetterOnly,
-        JsonProperty meta, converter, scalarType, type) {
+        JsonProperty meta, converter, scalarType, TypeInfo typeInfo) {
       var fieldValue = jsonMap[jsonName];
       if (fieldValue is List) {
         fieldValue = fieldValue
             .map((item) => deserializeObject(item, scalarType, meta))
             .toList();
       } else {
-        fieldValue = deserializeObject(fieldValue, type, meta);
+        fieldValue = deserializeObject(fieldValue, typeInfo.type, meta);
       }
       if (converter != null) {
         convert(item) => converter.fromJSON(item, meta);
-        if (isListType(fieldValue.runtimeType)) {
+        TypeInfo valueTypeInfo = TypeInfo(fieldValue.runtimeType);
+        if (valueTypeInfo.isList) {
           fieldValue = fieldValue.map(convert).toList();
         } else {
           fieldValue = convert(fieldValue);
         }
       }
       if (!isGetterOnly) {
-        fieldValue = applyValueDecorator(fieldValue, type, meta);
+        fieldValue = applyValueDecorator(fieldValue, typeInfo, meta);
         var l = im.invokeGetter(name);
         if (l is List && fieldValue is List) {
           fieldValue.map((item) => l.add(item));
@@ -432,5 +412,78 @@ class JsonMapper {
       }
     });
     return objectInstance;
+  }
+}
+
+/// Provides enhanced type information based on `Type.toString()` value
+class TypeInfo {
+  Type type;
+  TypeInfo(this.type);
+
+  String get typeName {
+    return type.toString();
+  }
+
+  bool get isIterable {
+    return isList || isSet;
+  }
+
+  bool get isList {
+    return typeName.indexOf("List<") == 0;
+  }
+
+  bool get isSet {
+    return typeName.indexOf("Set<") == 0;
+  }
+
+  bool get isMap {
+    return typeName.indexOf("Map<") == 0;
+  }
+
+  /// Returns scalar type out of [Iterable<E>] type
+  Type get scalarType {
+    final String typeName = scalarTypeName;
+    if (typeName == "DateTime") {
+      return DateTime;
+    }
+    if (typeName == "num") {
+      return num;
+    }
+    if (typeName == "int") {
+      return int;
+    }
+    if (typeName == "double") {
+      return double;
+    }
+    if (typeName == "BigInt") {
+      return BigInt;
+    }
+    if (typeName == "bool") {
+      return bool;
+    }
+    if (typeName == "String") {
+      return String;
+    }
+    if (typeName == "Symbol") {
+      return Symbol;
+    }
+    if (typeName == "dynamic") {
+      return dynamic;
+    }
+    return null;
+  }
+
+  /// Returns scalar type name out of [Iterable<E>] type
+  String get scalarTypeName {
+    String result = '';
+    if (isIterable) {
+      result = RegExp('<(.+)>')
+          .allMatches(typeName)
+          .first
+          .group(0)
+          .replaceAll("<", '')
+          .replaceAll(">", '');
+    }
+    return result;
   }
 }

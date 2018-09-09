@@ -6,7 +6,7 @@ testValueDecorators() {
   group("[Verify value decorators]", () {
     test("Custom Set<Car> value decorator", () {
       // given
-      var set = Set<Car>();
+      Set<Car> set = Set<Car>();
       set.add(Car("Audi", Color.Green));
 
       // when
@@ -16,8 +16,7 @@ testValueDecorators() {
       expect(json, carListJson);
 
       // given
-      JsonMapper.registerValueDecorator<Set<Car>>(
-          (value) => Set<Car>.from(value));
+      JsonMapper.registerValueDecorator<Set<Car>>((value) => value.cast<Car>());
 
       // when
       Set<Car> target = JsonMapper.deserialize(carListJson);
