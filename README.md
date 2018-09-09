@@ -124,10 +124,10 @@ Output:
 }
 ```
 
-## List based types handling
+## Iterable based types handling
 
-Since Dart language has no possibility to create typed lists dynamically, it's a bit of a challenge
-to create exact typed lists via reflection approach. List types has to be declared explicitly.
+Since Dart language has no possibility to create typed iterables dynamically, it's a bit of a challenge
+to create exact typed lists/sets/etc via reflection approach. Those types has to be declared explicitly.
 
 For example List() will produce `List<dynamic>` type which can't be directly set to the concrete
 target field `List<Car>` for instance. So obvious workaround will be to cast 
@@ -136,15 +136,20 @@ target field `List<Car>` for instance. So obvious workaround will be to cast
 In order to do so, we'll use Value Decorator Function inspired by Decorator pattern.
 
 ```dart
-JsonMapper.registerValueDecorator<List<Car>>((value) => value.cast<Car>());
+final iterableCarDecorator = (value) => value.cast<Car>();
+JsonMapper.registerValueDecorator<List<Car>>(iterableCarDecorator);
+JsonMapper.registerValueDecorator<Set<Car>>(iterableCarDecorator);
 
 List<Car> myCarsList = JsonMapper.deserialize('[{"modelName": "Audi", "color": "Color.Green"}]');
+Set<Car> myCarsSet = JsonMapper.deserialize('[{"modelName": "Audi", "color": "Color.Green"}]');
 ```
 
-Basic list based types like `List<num>, List<Sring>, List<bool>, List<DateTime>`, etc. 
-supported out of the box. For custom List types like `List<Car>` you have to register value decorator
-function as showed in a code snippet above before using deserialization. 
-This function will have explicit cast to concrete List type.
+Basic iterable based generics using Dart built-in types like `List<num>, List<Sring>, List<bool>, 
+List<DateTime>, Set<num>, Set<Sring>, Set<bool>, Set<DateTime>, etc.` supported out of the box. 
+
+For custom iterable types like `List<Car> / Set<Car>` you have to register value decorator function 
+as showed in a code snippet above before using deserialization. This function will have explicit 
+cast to concrete iterable type.
 
 ## Enum based types handling
 

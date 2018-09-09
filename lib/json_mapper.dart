@@ -61,7 +61,8 @@ class JsonMapper {
   }
 
   void registerDefaultValueDecorators() {
-    // Generic types
+    // Dart built-in types
+    // List
     valueDecorators[List<String>().runtimeType.toString()] =
         (value) => value.cast<String>();
     valueDecorators[List<DateTime>().runtimeType.toString()] =
@@ -78,6 +79,16 @@ class JsonMapper {
         (value) => value.cast<Symbol>();
     valueDecorators[List<BigInt>().runtimeType.toString()] =
         (value) => value.cast<BigInt>();
+
+    // Set
+    valueDecorators['Set<String>'] = (value) => value.cast<String>();
+    valueDecorators['Set<DateTime>'] = (value) => value.cast<DateTime>();
+    valueDecorators['Set<num>'] = (value) => value.cast<num>();
+    valueDecorators['Set<int>'] = (value) => value.cast<int>();
+    valueDecorators['Set<double>'] = (value) => value.cast<double>();
+    valueDecorators['Set<bool>'] = (value) => value.cast<bool>();
+    valueDecorators['Set<Symbol>'] = (value) => value.cast<Symbol>();
+    valueDecorators['Set<BigInt>'] = (value) => value.cast<BigInt>();
 
     // Typed data
     valueDecorators[Uint8List(0).runtimeType.toString()] =
