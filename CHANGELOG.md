@@ -1,3 +1,7 @@
+## 1.0.7
+
+* Iterable based types support enhanced
+
 ## 1.0.6
 
 * Set based types support added

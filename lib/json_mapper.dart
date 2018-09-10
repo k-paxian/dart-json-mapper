@@ -96,7 +96,7 @@ class JsonMapper {
   }
 
   void registerDefaultConverters() {
-    // Generic types
+    // Built-in types
     converters[dynamic] = defaultConverter;
     converters[String] = defaultConverter;
     converters[bool] = defaultConverter;
