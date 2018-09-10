@@ -137,11 +137,12 @@ In order to do so, we'll use Value Decorator Function inspired by Decorator patt
 
 ```dart
 final iterableCarDecorator = (value) => value.cast<Car>();
+final String json = '[{"modelName": "Audi", "color": "Color.Green"}]';
 JsonMapper.registerValueDecorator<List<Car>>(iterableCarDecorator);
 JsonMapper.registerValueDecorator<Set<Car>>(iterableCarDecorator);
 
-List<Car> myCarsList = JsonMapper.deserialize('[{"modelName": "Audi", "color": "Color.Green"}]');
-Set<Car> myCarsSet = JsonMapper.deserialize('[{"modelName": "Audi", "color": "Color.Green"}]');
+List<Car> myCarsList = JsonMapper.deserialize(json);
+Set<Car> myCarsSet = JsonMapper.deserialize(json);
 ```
 
 Basic iterable based generics using Dart built-in types like `List<num>, List<Sring>, List<bool>, 
