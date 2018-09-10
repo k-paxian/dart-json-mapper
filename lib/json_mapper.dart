@@ -6,6 +6,7 @@ import 'dart:typed_data';
 import 'package:dart_json_mapper/annotations.dart';
 import 'package:dart_json_mapper/converters.dart';
 import 'package:dart_json_mapper/errors.dart';
+import "package:fixnum/fixnum.dart";
 import "package:reflectable/reflectable.dart";
 
 /// Singleton class providing static methods for Dart objects conversion
@@ -109,6 +110,10 @@ class JsonMapper {
 
     // Typed data
     converters[Uint8List] = uint8ListConverter;
+
+    // fixnum
+    converters[Int32] = int32Converter;
+    converters[Int64] = int64Converter;
   }
 
   MethodMirror getPublicConstructor(ClassMirror classMirror) {

@@ -1,3 +1,7 @@
+## 1.0.8
+
+* Fixnum types Int32, Int64 support added
+
 ## 1.0.7
 
 * Iterable based types support enhanced
