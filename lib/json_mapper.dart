@@ -474,6 +474,12 @@ class TypeInfo {
     if (typeName == "BigInt") {
       return BigInt;
     }
+    if (typeName == "Int32") {
+      return Int32;
+    }
+    if (typeName == "Int64") {
+      return Int64;
+    }
     if (typeName == "bool") {
       return bool;
     }

@@ -9,15 +9,15 @@ import 'package:intl/intl.dart';
 
 /// Abstract class for custom converters implementations
 abstract class ICustomConverter<T> {
-  dynamic toJSON(T object, JsonProperty jsonProperty);
-  T fromJSON(dynamic jsonValue, JsonProperty jsonProperty);
+  dynamic toJSON(T object, [JsonProperty jsonProperty]);
+  T fromJSON(dynamic jsonValue, [JsonProperty jsonProperty]);
 }
 
 /// Base class for custom type converter having access to parameters provided
 /// by the [JsonProperty] meta
 class BaseCustomConverter {
   const BaseCustomConverter() : super();
-  dynamic getConverterParameter(String name, JsonProperty jsonProperty) {
+  dynamic getConverterParameter(String name, [JsonProperty jsonProperty]) {
     return jsonProperty != null && jsonProperty.converterParams != null
         ? jsonProperty.converterParams[name]
         : null;
@@ -31,7 +31,7 @@ class DateConverter extends BaseCustomConverter implements ICustomConverter {
   const DateConverter() : super();
 
   @override
-  Object fromJSON(dynamic jsonValue, JsonProperty jsonProperty) {
+  Object fromJSON(dynamic jsonValue, [JsonProperty jsonProperty]) {
     DateFormat format = getDateFormat(jsonProperty);
 
     if (jsonValue is String) {
@@ -44,14 +44,14 @@ class DateConverter extends BaseCustomConverter implements ICustomConverter {
   }
 
   @override
-  dynamic toJSON(Object object, JsonProperty jsonProperty) {
+  dynamic toJSON(Object object, [JsonProperty jsonProperty]) {
     DateFormat format = getDateFormat(jsonProperty);
     return format != null && !(object is String)
         ? format.format(object)
         : object.toString();
   }
 
-  DateFormat getDateFormat(JsonProperty jsonProperty) {
+  DateFormat getDateFormat([JsonProperty jsonProperty]) {
     String format = getConverterParameter('format', jsonProperty);
     return format != null ? DateFormat(format) : null;
   }
@@ -64,7 +64,7 @@ class NumberConverter extends BaseCustomConverter implements ICustomConverter {
   const NumberConverter() : super();
 
   @override
-  Object fromJSON(dynamic jsonValue, JsonProperty jsonProperty) {
+  Object fromJSON(dynamic jsonValue, [JsonProperty jsonProperty]) {
     NumberFormat format = getNumberFormat(jsonProperty);
     return format != null && (jsonValue is String)
         ? getNumberFormat(jsonProperty).parse(jsonValue)
@@ -72,14 +72,14 @@ class NumberConverter extends BaseCustomConverter implements ICustomConverter {
   }
 
   @override
-  dynamic toJSON(Object object, JsonProperty jsonProperty) {
+  dynamic toJSON(Object object, [JsonProperty jsonProperty]) {
     NumberFormat format = getNumberFormat(jsonProperty);
     return object != null && format != null
         ? getNumberFormat(jsonProperty).format(object)
         : object;
   }
 
-  NumberFormat getNumberFormat(JsonProperty jsonProperty) {
+  NumberFormat getNumberFormat([JsonProperty jsonProperty]) {
     String format = getConverterParameter('format', jsonProperty);
     return format != null ? NumberFormat(format) : null;
   }
@@ -92,14 +92,14 @@ class EnumConverter implements ICustomConverter {
   const EnumConverter() : super();
 
   @override
-  Object fromJSON(dynamic jsonValue, JsonProperty jsonProperty) {
+  Object fromJSON(dynamic jsonValue, [JsonProperty jsonProperty]) {
     return jsonProperty.enumValues.firstWhere(
         (eValue) => eValue.toString() == jsonValue.toString(),
         orElse: () => null);
   }
 
   @override
-  dynamic toJSON(Object object, JsonProperty jsonProperty) {
+  dynamic toJSON(Object object, [JsonProperty jsonProperty]) {
     return object.toString();
   }
 }
@@ -111,12 +111,12 @@ class EnumConverterNumeric implements ICustomConverter {
   const EnumConverterNumeric() : super();
 
   @override
-  Object fromJSON(dynamic jsonValue, JsonProperty jsonProperty) {
+  Object fromJSON(dynamic jsonValue, [JsonProperty jsonProperty]) {
     return jsonValue is int ? jsonProperty.enumValues[jsonValue] : jsonValue;
   }
 
   @override
-  dynamic toJSON(Object object, JsonProperty jsonProperty) {
+  dynamic toJSON(Object object, [JsonProperty jsonProperty]) {
     return jsonProperty.enumValues.indexOf(object);
   }
 }
@@ -128,12 +128,12 @@ class SymbolConverter implements ICustomConverter {
   const SymbolConverter() : super();
 
   @override
-  Object fromJSON(dynamic jsonValue, JsonProperty jsonProperty) {
+  Object fromJSON(dynamic jsonValue, [JsonProperty jsonProperty]) {
     return jsonValue is String ? Symbol(jsonValue) : jsonValue;
   }
 
   @override
-  dynamic toJSON(Object object, JsonProperty jsonProperty) {
+  dynamic toJSON(Object object, [JsonProperty jsonProperty]) {
     return RegExp('"(.+)"')
         .allMatches(object.toString())
         .first
@@ -149,12 +149,12 @@ class Uint8ListConverter implements ICustomConverter {
   const Uint8ListConverter() : super();
 
   @override
-  Object fromJSON(dynamic jsonValue, JsonProperty jsonProperty) {
+  Object fromJSON(dynamic jsonValue, [JsonProperty jsonProperty]) {
     return jsonValue is String ? base64Decode(jsonValue) : jsonValue;
   }
 
   @override
-  dynamic toJSON(Object object, JsonProperty jsonProperty) {
+  dynamic toJSON(Object object, [JsonProperty jsonProperty]) {
     return object is Uint8List ? base64Encode(object) : object;
   }
 }
@@ -166,12 +166,12 @@ class BigIntConverter implements ICustomConverter {
   const BigIntConverter() : super();
 
   @override
-  Object fromJSON(dynamic jsonValue, JsonProperty jsonProperty) {
+  Object fromJSON(dynamic jsonValue, [JsonProperty jsonProperty]) {
     return jsonValue is String ? BigInt.parse(jsonValue) : jsonValue;
   }
 
   @override
-  dynamic toJSON(Object object, JsonProperty jsonProperty) {
+  dynamic toJSON(Object object, [JsonProperty jsonProperty]) {
     return object is BigInt ? object.toString() : object;
   }
 }
@@ -183,12 +183,12 @@ class Int32Converter implements ICustomConverter {
   const Int32Converter() : super();
 
   @override
-  Object fromJSON(dynamic jsonValue, JsonProperty jsonProperty) {
+  Object fromJSON(dynamic jsonValue, [JsonProperty jsonProperty]) {
     return jsonValue is String ? Int32.parseInt(jsonValue) : jsonValue;
   }
 
   @override
-  dynamic toJSON(Object object, JsonProperty jsonProperty) {
+  dynamic toJSON(Object object, [JsonProperty jsonProperty]) {
     return object is Int32 ? object.toString() : object;
   }
 }
@@ -200,12 +200,12 @@ class Int64Converter implements ICustomConverter {
   const Int64Converter() : super();
 
   @override
-  Object fromJSON(dynamic jsonValue, JsonProperty jsonProperty) {
+  Object fromJSON(dynamic jsonValue, [JsonProperty jsonProperty]) {
     return jsonValue is String ? Int64.parseInt(jsonValue) : jsonValue;
   }
 
   @override
-  dynamic toJSON(Object object, JsonProperty jsonProperty) {
+  dynamic toJSON(Object object, [JsonProperty jsonProperty]) {
     return object is Int64 ? object.toString() : object;
   }
 }
@@ -217,12 +217,12 @@ class DefaultConverter implements ICustomConverter {
   const DefaultConverter() : super();
 
   @override
-  Object fromJSON(dynamic jsonValue, JsonProperty jsonProperty) {
+  Object fromJSON(dynamic jsonValue, [JsonProperty jsonProperty]) {
     return jsonValue;
   }
 
   @override
-  dynamic toJSON(Object object, JsonProperty jsonProperty) {
+  dynamic toJSON(Object object, [JsonProperty jsonProperty]) {
     return object;
   }
 }
