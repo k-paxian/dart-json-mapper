@@ -1,10 +1,10 @@
 library json_mapper.converters;
 
-import 'dart:convert';
-import 'dart:typed_data';
+import 'dart:convert' show base64Decode, base64Encode;
+import 'dart:typed_data' show Uint8List;
 
 import 'package:dart_json_mapper/annotations.dart';
-import 'package:fixnum/fixnum.dart';
+import 'package:fixnum/fixnum.dart' show Int32, Int64;
 import 'package:intl/intl.dart';
 
 /// Abstract class for custom converters implementations

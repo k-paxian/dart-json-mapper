@@ -2,16 +2,18 @@
 // https://github.com/dart-lang/reflectable.
 
 import "dart:core";
-import 'example.dart' as prefix1;
+
 import 'package:dart_json_mapper/annotations.dart' as prefix0;
 import 'package:dart_json_mapper/converters.dart' as prefix2;
-
-// ignore:unused_import
 import "package:reflectable/mirrors.dart" as m;
-// ignore:unused_import
-import "package:reflectable/src/reflectable_builder_based.dart" as r;
-// ignore:unused_import
 import "package:reflectable/reflectable.dart" as r show Reflectable;
+import "package:reflectable/src/reflectable_builder_based.dart" as r;
+
+import 'example.dart' as prefix1;
+// ignore:unused_import
+// ignore:unused_import
+// ignore:unused_import
+
 
 final _data = <r.Reflectable, r.ReflectorData>{
   const prefix0.JsonSerializable(): new r.ReflectorData(
@@ -191,7 +193,7 @@ final _data = <r.Reflectable, r.ReflectorData>{
             null,
             const <int>[5],
             const prefix0.JsonSerializable(),
-            const <Object>[]),
+            const <Object>[const pragma("vm:entry-point")]),
         new r.MethodMirrorImpl(r"hashCode", 131075, null, -1, 11, 11, null,
             const <int>[], const prefix0.JsonSerializable(), const <Object>[]),
         new r.MethodMirrorImpl(r"runtimeType", 131075, null, -1, 12, 12, null,

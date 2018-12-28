@@ -3,17 +3,19 @@
 
 import "dart:core";
 import 'dart:typed_data' as prefix3;
+
 import 'package:dart_json_mapper/annotations.dart' as prefix0;
 import 'package:dart_json_mapper/converters.dart' as prefix2;
 import 'package:fixnum/fixnum.dart' as prefix4;
-import 'test.dart' as prefix1;
-
-// ignore:unused_import
 import "package:reflectable/mirrors.dart" as m;
-// ignore:unused_import
-import "package:reflectable/src/reflectable_builder_based.dart" as r;
-// ignore:unused_import
 import "package:reflectable/reflectable.dart" as r show Reflectable;
+import "package:reflectable/src/reflectable_builder_based.dart" as r;
+
+import 'test.dart' as prefix1;
+// ignore:unused_import
+// ignore:unused_import
+// ignore:unused_import
+
 
 final _data = <r.Reflectable, r.ReflectorData>{
   const prefix0.JsonSerializable(): new r.ReflectorData(
@@ -758,7 +760,7 @@ final _data = <r.Reflectable, r.ReflectorData>{
             null,
             const <int>[6],
             const prefix0.JsonSerializable(),
-            const <Object>[]),
+            const <Object>[const pragma("vm:entry-point")]),
         new r.MethodMirrorImpl(r"hashCode", 131075, null, -1, 32, 32, null,
             const <int>[], const prefix0.JsonSerializable(), const <Object>[]),
         new r.MethodMirrorImpl(r"runtimeType", 131075, null, -1, 38, 38, null,

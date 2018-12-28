@@ -1,12 +1,12 @@
 library json_mapper;
 
-import 'dart:convert';
-import 'dart:typed_data';
+import 'dart:convert' show JsonEncoder, JsonDecoder;
+import 'dart:typed_data' show Uint8List;
 
 import 'package:dart_json_mapper/annotations.dart';
 import 'package:dart_json_mapper/converters.dart';
 import 'package:dart_json_mapper/errors.dart';
-import "package:fixnum/fixnum.dart";
+import "package:fixnum/fixnum.dart" show Int32, Int64;
 import "package:reflectable/reflectable.dart";
 
 /// Singleton class providing static methods for Dart objects conversion

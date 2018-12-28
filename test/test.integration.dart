@@ -5,17 +5,23 @@ testIntegration() {
     test("Serialization", () {
       // given
       // when
-      final String target = JsonMapper.serialize(Person());
+      final String json = JsonMapper.serialize(Person());
       // then
-      expect(target, personJson);
+      expect(json, personJson);
     });
 
     test("Serialization <=> Deserialization", () {
       // given
       // when
-      final Person target = JsonMapper.deserialize(personJson);
+      Stopwatch stopwatch = Stopwatch()..start();
+      final Person person = JsonMapper.deserialize(personJson);
+      final deserializationMs = stopwatch.elapsedMilliseconds;
+      final json = JsonMapper.serialize(person);
+      print('Deserialization executed in ${deserializationMs} ms');
+      print(
+          'Serialization executed in ${stopwatch.elapsedMilliseconds - deserializationMs} ms');
       // then
-      expect(JsonMapper.serialize(target), personJson);
+      expect(json, personJson);
     });
   });
 }
