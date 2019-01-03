@@ -1,3 +1,7 @@
+## 1.0.9
+
+* Added support for derived classes
+
 ## 1.0.8
 
 * Fixnum types Int32, Int64 support added
