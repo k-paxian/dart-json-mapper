@@ -3,6 +3,4 @@ xvfb: false
 dart:
   - stable
 script:
-  - pub run build_runner build
-dart_task:
-  - test: --platform vm ./test/test.dart
+  - pub run build_runner test

@@ -3,7 +3,7 @@ targets:
     builders:
       reflectable:
         generate_for:
-          - test/test.dart
+          - test/_test.dart
           - example/example.dart
         options:
           formatted: true

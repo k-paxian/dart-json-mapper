@@ -9,7 +9,7 @@ import 'package:dart_json_mapper/json_mapper.dart';
 import "package:fixnum/fixnum.dart";
 import "package:test/test.dart";
 
-import 'test.reflectable.dart';
+import '_test.reflectable.dart';
 
 part 'json.dart';
 part 'model.dart';
