@@ -189,6 +189,42 @@ class JsonMapper {
     return result;
   }
 
+  Type getDeclarationType(DeclarationMirror mirror) {
+    Type result;
+    VariableMirror variable;
+    MethodMirror method;
+
+    try {
+      variable = mirror as VariableMirror;
+      result = variable.hasReflectedType ? variable.reflectedType : null;
+    } catch (error) {}
+
+    try {
+      method = mirror as MethodMirror;
+      result =
+          method.hasReflectedReturnType ? method.reflectedReturnType : null;
+    } catch (error) {}
+
+    if (result == null) {
+      result = dynamic;
+    }
+    return result;
+  }
+
+  DeclarationMirror getDeclarationMirror(ClassMirror classMirror, String name) {
+    DeclarationMirror result;
+    result = classMirror.declarations[name] as VariableMirror;
+    if (result == null) {
+      classMirror.instanceMembers
+          .forEach((memberName, MethodMirror methodMirror) {
+        if (memberName == name) {
+          result = methodMirror;
+        }
+      });
+    }
+    return result;
+  }
+
   ICustomConverter getConverter(JsonProperty jsonProperty, Type type) {
     TypeInfo typeInfo = TypeInfo(type);
     ICustomConverter result =
@@ -223,11 +259,15 @@ class JsonMapper {
     ClassMirror classMirror = instanceMirror.type;
     for (String name in getPublicFieldNames(classMirror)) {
       String jsonName = name;
-      VariableMirror variableMirror =
-          classMirror.declarations[name] as VariableMirror;
-      Type variableScalarType = getScalarType(variableMirror.reflectedType);
+      DeclarationMirror declarationMirror =
+          getDeclarationMirror(classMirror, name);
+      if (declarationMirror == null) {
+        continue;
+      }
+      Type variableScalarType =
+          getScalarType(getDeclarationType(declarationMirror));
       bool isGetterOnly = classMirror.instanceMembers[name + '='] == null;
-      JsonProperty meta = classMirror.declarations[name].metadata
+      JsonProperty meta = declarationMirror.metadata
           .firstWhere((m) => m is JsonProperty, orElse: () => null);
       if (meta != null && meta.ignore == true) {
         continue;
@@ -243,7 +283,7 @@ class JsonMapper {
           meta,
           getConverter(meta, variableScalarType),
           variableScalarType,
-          TypeInfo(variableMirror.reflectedType));
+          TypeInfo(getDeclarationType(declarationMirror)));
     }
   }
 
@@ -254,17 +294,20 @@ class JsonMapper {
     }
     methodMirror.parameters.forEach((ParameterMirror param) {
       String name = param.simpleName;
-      VariableMirror variableMirror =
-          classMirror.declarations[name] as VariableMirror;
+      DeclarationMirror declarationMirror =
+          getDeclarationMirror(classMirror, name);
+      if (declarationMirror == null) {
+        return;
+      }
       String jsonName = name;
-      JsonProperty meta = variableMirror.metadata
+      JsonProperty meta = declarationMirror.metadata
           .firstWhere((m) => m is JsonProperty, orElse: () => null);
       if (meta != null && meta.name != null) {
         jsonName = meta.name;
       }
 
-      visitor(
-          param, name, jsonName, meta, TypeInfo(variableMirror.reflectedType));
+      visitor(param, name, jsonName, meta,
+          TypeInfo(getDeclarationType(declarationMirror)));
     });
   }
 

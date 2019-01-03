@@ -1,5 +1,15 @@
 part of json_mapper.test;
 
+class Base<T> {
+  final T value;
+  Base(this.value);
+}
+
+@jsonSerializable
+class Derived extends Base<String> {
+  Derived(String value) : super(value);
+}
+
 @jsonSerializable
 class StringListClass {
   List<String> list;
@@ -91,6 +101,18 @@ testConstructors() {
       final String target = JsonMapper.serialize(instance, '');
       // then
       expect(target, json);
+    });
+
+    test("Derived class", () {
+      // given
+      final String json = '{"value":"Bob"}';
+      final Derived target = Derived("Bob");
+      // when
+      Derived instance = JsonMapper.deserialize(json);
+      String targetJson = JsonMapper.serialize(target, '');
+      // then
+      expect(instance.value, "Bob");
+      expect(targetJson, json);
     });
 
     test("StringListClass class", () {
