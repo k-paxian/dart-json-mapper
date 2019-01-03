@@ -1,3 +1,7 @@
+## 1.1.0
+
+* Update build process, from now on relying on build_runner over build.yaml
+
 ## 1.0.9
 
 * Added support for derived classes
