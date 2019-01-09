@@ -11,6 +11,16 @@ class Derived extends Base<String> {
 }
 
 @jsonSerializable
+class Pt {
+  Pt();
+}
+
+@jsonSerializable
+class PtDerived extends Base<Pt>{
+  PtDerived(Pt value) : super(value);
+}
+
+@jsonSerializable
 class StringListClass {
   List<String> list;
   StringListClass(this.list);
@@ -107,12 +117,15 @@ testConstructors() {
       // given
       final String json = '{"value":"Bob"}';
       final Derived target = Derived("Bob");
+      final PtDerived pTarget = PtDerived(Pt());
       // when
       Derived instance = JsonMapper.deserialize(json);
       String targetJson = JsonMapper.serialize(target, '');
+      String pTargetJson = JsonMapper.serialize(pTarget, '');
       // then
       expect(instance.value, "Bob");
       expect(targetJson, json);
+      expect(pTargetJson, '{"value":{}}');
     });
 
     test("StringListClass class", () {

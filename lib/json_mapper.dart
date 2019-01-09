@@ -225,8 +225,8 @@ class JsonMapper {
     return result;
   }
 
-  ICustomConverter getConverter(JsonProperty jsonProperty, Type type) {
-    TypeInfo typeInfo = TypeInfo(type);
+  ICustomConverter getConverter(JsonProperty jsonProperty, Type declarationType, [Type valueType]) {
+    TypeInfo declarationTypeInfo = TypeInfo(declarationType);
     ICustomConverter result =
         jsonProperty != null ? jsonProperty.converter : null;
     if (jsonProperty != null &&
@@ -234,10 +234,16 @@ class JsonMapper {
         result == null) {
       result = enumConverter;
     }
-    if (result == null && converters[type] != null) {
-      result = converters[type];
+
+    Type targetType = declarationType;
+    if (declarationType == dynamic && valueType != null) {
+      targetType = valueType;
     }
-    if (result == null && typeInfo.isMap) {
+
+    if (result == null && converters[targetType] != null) {
+      result = converters[targetType];
+    }
+    if (result == null && declarationTypeInfo.isMap) {
       result = defaultConverter;
     }
     return result;
@@ -269,6 +275,7 @@ class JsonMapper {
       bool isGetterOnly = classMirror.instanceMembers[name + '='] == null;
       JsonProperty meta = declarationMirror.metadata
           .firstWhere((m) => m is JsonProperty, orElse: () => null);
+      dynamic value = instanceMirror.invokeGetter(name);
       if (meta != null && meta.ignore == true) {
         continue;
       }
@@ -278,10 +285,10 @@ class JsonMapper {
       visitor(
           name,
           jsonName,
-          instanceMirror.invokeGetter(name),
+          value,
           isGetterOnly,
           meta,
-          getConverter(meta, variableScalarType),
+          getConverter(meta, variableScalarType, value != null ? value.runtimeType : null),
           variableScalarType,
           TypeInfo(getDeclarationType(declarationMirror)));
     }
@@ -480,7 +487,7 @@ class TypeInfo {
   TypeInfo(this.type);
 
   String get typeName {
-    return type.toString();
+    return type != null ? type.toString() : '';
   }
 
   bool get isIterable {
@@ -550,5 +557,10 @@ class TypeInfo {
           .replaceAll(">", '');
     }
     return result;
+  }
+
+  @override
+  String toString() {
+    return 'TypeInfo{scalarTypeName: $scalarTypeName}';
   }
 }
