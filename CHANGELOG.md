@@ -1,6 +1,7 @@
 ## 1.1.0
 
-* Update build process, from now on relying on build_runner over build.yaml
+* Update build process, from now on relying on build_runner configured over build.yaml
+* Issues #2, #3 has been fixed
 
 ## 1.0.9
 

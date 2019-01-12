@@ -16,6 +16,16 @@ This package allows programmers to annotate Dart classes in order to
   
 ## Basic setup
 
+Please add the following dependencies to your `pubspec.yaml`:
+
+```
+dependencies:
+  dart_json_mapper: any
+dev_dependencies:
+  reflectable: ^2.0.8
+  build_runner: ^1.1.2
+```
+
 Library has **NO** dependency on `dart:mirrors`, one of the reasons is described [here][1].
 
 Dart classes reflection mechanism is based on [reflectable][3] library. This means "extended types information" is auto-generated out of existing Dart program guided by the annotated classes only, as the result types information is accesible at runtime, at a reduced cost.
@@ -55,23 +65,32 @@ main() {
 }
 ```
 
+Go ahead and create a `build.yaml` file in your project root directory. Then add the
+following content:
+
+```
+targets:
+  $default:
+    builders:
+      reflectable:
+        generate_for:
+          - lib/main.dart
+        options:
+          formatted: true
+```
+
 Now run the code generation step with the root of your package as the current
 directory:
 
 ```shell
-> pub run dart_json_mapper:build lib/main.dart
+> pub run build_runner build
 ```
 
-where `lib/main.dart` should be replaced by the root library of the
-program for which you wish to generate code. You can generate code for
-several programs in one step; for instance, to generate code for a set of
-test files in `test`, this would typically be
-`pub run dart_json_mapper:build test/*_test.dart`.
 **You'll need to re-run code generation each time you are making changes to `lib/main.dart`**
 So for development time, use `watch` like this
 
 ```shell
-> pub run dart_json_mapper:watch lib/main.dart
+> pub run build_runner watch
 ```
 
 Each time you modify your project code, all *.reflectable.dart files will be updated as well.
