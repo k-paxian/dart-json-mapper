@@ -1,5 +1,23 @@
 part of json_mapper.test;
 
+@jsonSerializable
+class Foo {
+  final Bar bar;
+  final String message;
+
+  Foo(this.bar, this.message);
+}
+
+@jsonSerializable
+class Bar {
+  final Baz baz;
+
+  Bar(this.baz);
+}
+
+@jsonSerializable
+class Baz {}
+
 class Base<T> {
   final T value;
   Base(this.value);
@@ -111,6 +129,18 @@ testConstructors() {
       final String target = JsonMapper.serialize(instance, '');
       // then
       expect(target, json);
+    });
+
+    test("Nested null value object should be null w/o NPE", () {
+      // given
+      final String json = '{"bar":null,"message":"hello world"}';
+      final Foo target = Foo(null, "hello world");
+      // when
+      Foo instance = JsonMapper.deserialize(json);
+      String targetJson = JsonMapper.serialize(target, '');
+      // then
+      expect(instance.message, "hello world");
+      expect(targetJson, json);
     });
 
     test("Derived class", () {

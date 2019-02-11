@@ -232,16 +232,9 @@ String title;
 ```
 
 And this is it, you are all set and ready to go. Happy coding!
- 
-## Feature requests and bug reports
-
-Please file feature requests and bugs using the
-[github issue tracker for this repository][2].
-
 
 
 [1]: https://github.com/flutter/flutter/issues/1150
-[2]: https://github.com/k-paxian/dart-json-mapper/issues
 [3]: https://pub.dartlang.org/packages/reflectable
 
 [travis-badge]: https://travis-ci.org/k-paxian/dart-json-mapper.svg?branch=master

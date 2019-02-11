@@ -225,7 +225,8 @@ class JsonMapper {
     return result;
   }
 
-  ICustomConverter getConverter(JsonProperty jsonProperty, Type declarationType, [Type valueType]) {
+  ICustomConverter getConverter(JsonProperty jsonProperty, Type declarationType,
+      [Type valueType]) {
     TypeInfo declarationTypeInfo = TypeInfo(declarationType);
     ICustomConverter result =
         jsonProperty != null ? jsonProperty.converter : null;
@@ -288,7 +289,8 @@ class JsonMapper {
           value,
           isGetterOnly,
           meta,
-          getConverter(meta, variableScalarType, value != null ? value.runtimeType : null),
+          getConverter(meta, variableScalarType,
+              value != null ? value.runtimeType : null),
           variableScalarType,
           TypeInfo(getDeclarationType(declarationMirror)));
     }
@@ -421,6 +423,9 @@ class JsonMapper {
 
   Object deserializeObject(dynamic jsonValue, Type instanceType,
       [JsonProperty parentMeta]) {
+    if (jsonValue == null) {
+      return null;
+    }
     TypeInfo typeInfo = TypeInfo(instanceType);
     ICustomConverter converter = getConverter(parentMeta, typeInfo.type);
     if (converter != null) {
