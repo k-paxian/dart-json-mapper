@@ -5,14 +5,16 @@ abstract class Business {
   String name;
 }
 
-@JsonSerializable(includeTypeName: true)
+@jsonSerializable
+@JsonObject(includeTypeName: true)
 class Hotel extends Business {
   int stars;
 
   Hotel(this.stars);
 }
 
-@JsonSerializable(includeTypeName: true)
+@jsonSerializable
+@JsonObject(includeTypeName: true)
 class Startup extends Business {
   int userCount;
 

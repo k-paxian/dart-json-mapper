@@ -56,13 +56,17 @@ const jsonSerializable = JsonSerializable();
 
 final String DEFAULT_TYPE_NAME_PROPERTY = '@@type';
 
-/// [JsonSerializable] is used as metadata, marking classes as
-/// serialization / deserialization capable targets
-class JsonSerializable extends Reflectable {
+class JsonObject {
   /// Declares necessity for annotated class to dump type name to json property
   final bool includeTypeName;
 
-  const JsonSerializable({this.includeTypeName})
+  const JsonObject({this.includeTypeName});
+}
+
+/// [JsonSerializable] is used as metadata, marking classes as
+/// serialization / deserialization capable targets
+class JsonSerializable extends Reflectable {
+  const JsonSerializable()
       : super(
             instanceInvokeCapability,
             metadataCapability,

@@ -8,7 +8,7 @@ homepage: https://github.com/k-paxian/dart-json-mapper
 environment:
   sdk: '>=2.0.0 <3.0.0'
 dependencies:
-  reflectable: 2.0.8
+  reflectable: ^2.0.10+1
   fixnum: ^0.10.8
   intl: ^0.15.6
 dev_dependencies:
