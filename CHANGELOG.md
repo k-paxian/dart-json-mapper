@@ -1,3 +1,7 @@
+## 1.1.2
+
+* Issue #6 has been fixed
+
 ## 1.1.1
 
 * Issue #4 has been fixed

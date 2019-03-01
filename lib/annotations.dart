@@ -40,6 +40,7 @@ class JsonProperty {
       this.enumValues,
       this.converterParams});
 
+  @override
   String toString() {
     return "JsonProperty name: ${name}, "
         "ignore: ${ignore}, "
@@ -53,10 +54,15 @@ class JsonProperty {
 /// serialization / deserialization, w/o "()"
 const jsonSerializable = JsonSerializable();
 
+final String DEFAULT_TYPE_NAME_PROPERTY = '@@type';
+
 /// [JsonSerializable] is used as metadata, marking classes as
 /// serialization / deserialization capable targets
 class JsonSerializable extends Reflectable {
-  const JsonSerializable()
+  /// Declares necessity for annotated class to dump type name to json property
+  final bool includeTypeName;
+
+  const JsonSerializable({this.includeTypeName})
       : super(
             instanceInvokeCapability,
             metadataCapability,

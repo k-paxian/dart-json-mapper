@@ -21,6 +21,9 @@ class JsonMapper {
   final Map<Type, ICustomConverter> converters = {};
   final Map<String, ValueDecoratorFunction> valueDecorators = {};
 
+  /// Customize name for Json property to store class type name
+  static String typeNameProperty = DEFAULT_TYPE_NAME_PROPERTY;
+
   /// Assign custom converter instance for certain Type
   static void registerConverter<T>(ICustomConverter converter) {
     instance.converters[T] = converter;
@@ -320,6 +323,15 @@ class JsonMapper {
     });
   }
 
+  dumpTypeNameToObjectProperty(dynamic object, ClassMirror classMirror) {
+    final JsonSerializable meta = classMirror.metadata
+        .firstWhere((m) => m is JsonSerializable, orElse: () => null);
+    if (meta != null && meta.includeTypeName == true) {
+      final typeInfo = TypeInfo(classMirror.reflectedType);
+      object[typeNameProperty] = typeInfo.typeName;
+    }
+  }
+
   Map<Symbol, dynamic> getNamedArguments(
       ClassMirror cm, Map<String, dynamic> jsonMap) {
     Map<Symbol, dynamic> result = Map();
@@ -404,6 +416,7 @@ class JsonMapper {
     }
 
     Map result = {};
+    dumpTypeNameToObjectProperty(result, im.type);
     enumeratePublicFields(im, (name, jsonName, value, isGetterOnly, meta,
         converter, scalarType, TypeInfo typeInfo) {
       if (converter != null) {
@@ -441,12 +454,16 @@ class JsonMapper {
       return applyValueDecorator(value, typeInfo, parentMeta);
     }
 
-    ClassMirror cm = classes[typeInfo.typeName];
+    Map<String, dynamic> jsonMap =
+        (jsonValue is String) ? jsonDecoder.convert(jsonValue) : jsonValue;
+    String typeName = jsonMap.containsKey(typeNameProperty)
+        ? jsonMap[typeNameProperty]
+        : typeInfo.typeName;
+    ClassMirror cm = classes[typeName];
     if (cm == null) {
       throw MissingAnnotationOnTypeError(typeInfo.type);
     }
-    Map<String, dynamic> jsonMap =
-        (jsonValue is String) ? jsonDecoder.convert(jsonValue) : jsonValue;
+
     Object objectInstance = cm.isEnum
         ? null
         : cm.newInstance("", getPositionalArguments(cm, jsonMap),
@@ -489,6 +506,7 @@ class JsonMapper {
 /// Provides enhanced type information based on `Type.toString()` value
 class TypeInfo {
   Type type;
+
   TypeInfo(this.type);
 
   String get typeName {
