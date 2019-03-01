@@ -129,7 +129,11 @@ class JsonMapper {
     Map<String, MethodMirror> instanceMembers = classMirror.instanceMembers;
     return instanceMembers.values
         .where((MethodMirror method) {
-          return method.isGetter && method.isSynthetic && !method.isPrivate;
+      final isGetterAndSetter = method.isGetter &&
+          classMirror.instanceMembers[method.simpleName + '='] != null;
+      return (method.isGetter &&
+          (method.isSynthetic || isGetterAndSetter)) &&
+          !method.isPrivate;
         })
         .map((MethodMirror method) => method.simpleName)
         .toList();
@@ -216,7 +220,9 @@ class JsonMapper {
 
   DeclarationMirror getDeclarationMirror(ClassMirror classMirror, String name) {
     DeclarationMirror result;
-    result = classMirror.declarations[name] as VariableMirror;
+    try {
+      result = classMirror.declarations[name] as VariableMirror;
+    } catch (error) {}
     if (result == null) {
       classMirror.instanceMembers
           .forEach((memberName, MethodMirror methodMirror) {

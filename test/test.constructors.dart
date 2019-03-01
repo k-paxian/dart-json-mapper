@@ -1,6 +1,15 @@
 part of json_mapper.test;
 
 @jsonSerializable
+class User {
+  String _email;
+
+  String get email => _email;
+
+  set email(String email) => _email = email;
+}
+
+@jsonSerializable
 class Foo {
   final Bar bar;
   final String message;
@@ -20,6 +29,7 @@ class Baz {}
 
 class Base<T> {
   final T value;
+
   Base(this.value);
 }
 
@@ -34,13 +44,14 @@ class Pt {
 }
 
 @jsonSerializable
-class PtDerived extends Base<Pt>{
+class PtDerived extends Base<Pt> {
   PtDerived(Pt value) : super(value);
 }
 
 @jsonSerializable
 class StringListClass {
   List<String> list;
+
   StringListClass(this.list);
 }
 
@@ -48,6 +59,7 @@ class StringListClass {
 class PositionalParametersClass {
   String firstName;
   String lastName;
+
   PositionalParametersClass(this.firstName, this.lastName);
 }
 
@@ -55,6 +67,7 @@ class PositionalParametersClass {
 class OptionalParametersClass {
   String firstName;
   String lastName;
+
   OptionalParametersClass([this.firstName, this.lastName]);
 }
 
@@ -62,6 +75,7 @@ class OptionalParametersClass {
 class PartiallyOptionalParametersClass {
   String firstName;
   String lastName;
+
   PartiallyOptionalParametersClass(this.firstName, [this.lastName]);
 }
 
@@ -69,6 +83,7 @@ class PartiallyOptionalParametersClass {
 class NamedParametersClass {
   String firstName;
   String lastName;
+
   NamedParametersClass({this.firstName, this.lastName});
 }
 
@@ -156,6 +171,16 @@ testConstructors() {
       expect(instance.value, "Bob");
       expect(targetJson, json);
       expect(pTargetJson, '{"value":{}}');
+    });
+
+    test("User class, getter/setter property w/o constructor", () {
+      // given
+      final User user = User();
+      user.email = 'a@a.com';
+      // when
+      final json = JsonMapper.serialize(user, '');
+      // then
+      expect(json, '{"email":"a@a.com"}');
     });
 
     test("StringListClass class", () {
