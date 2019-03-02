@@ -1,3 +1,7 @@
+## 1.1.3
+
+* Documented use case with Inherited classes derived from abstract / base class
+
 ## 1.1.2
 
 * Issues #5, #6 has been fixed

@@ -330,8 +330,8 @@ class JsonMapper {
   }
 
   dumpTypeNameToObjectProperty(dynamic object, ClassMirror classMirror) {
-    final JsonObject meta = classMirror.metadata
-        .firstWhere((m) => m is JsonObject, orElse: () => null);
+    final Json meta = classMirror.metadata
+        .firstWhere((m) => m is Json, orElse: () => null);
     if (meta != null && meta.includeTypeName == true) {
       final typeInfo = TypeInfo(classMirror.reflectedType);
       object[typeNameProperty] = typeInfo.typeName;

@@ -6,7 +6,7 @@ abstract class Business {
 }
 
 @jsonSerializable
-@JsonObject(includeTypeName: true)
+@Json(includeTypeName: true)
 class Hotel extends Business {
   int stars;
 
@@ -14,7 +14,7 @@ class Hotel extends Business {
 }
 
 @jsonSerializable
-@JsonObject(includeTypeName: true)
+@Json(includeTypeName: true)
 class Startup extends Business {
   int userCount;
 
@@ -87,14 +87,13 @@ testValueDecorators() {
 
     test(
         "Should dump typeName to json property when"
-        " @JsonSerializable(includeTypeName: true)", () {
+            " @Json(includeTypeName: true)", () {
       // given
       final jack = Stakeholder("Jack", [Startup(10), Hotel(4)]);
 
       // when
-      final iterableBusinessDecorator = (value) => value.cast<Business>();
       JsonMapper.registerValueDecorator<List<Business>>(
-          iterableBusinessDecorator);
+              (value) => value.cast<Business>());
       final String json = JsonMapper.serialize(jack);
       final Stakeholder target = JsonMapper.deserialize(json);
 

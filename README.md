@@ -95,7 +95,7 @@ So for development time, use `watch` like this
 
 Each time you modify your project code, all *.reflectable.dart files will be updated as well.
 - Next step is to add "*.reflectable.dart" to your .gitignore
-- This is it, basic setup is done.
+- And this is it, you are all set and ready to go. Happy coding!
 
 ## Example with immutable class
 
@@ -187,6 +187,64 @@ Each enum based class field has to be annotated as showed in a snippet above.
 Enum`.values` refers to a list of all possible enum values, it's a handy built in capability of all
 enum based types. Without providing all values it's not possible to traverse it's values properly.
 
+## Inherited classes derived from abstract / base class
+
+Please use complementary `@Json(includeTypeName: true)` annotation for subclasses
+derived from abstract or base class. This way _dart-json-mapper_
+will dump the concrete object type to the JSON output during serialization process.
+This ensures, that _dart-json-mapper_ will be able to reconstruct the object with
+the proper type during deserialization process.
+
+``` dart
+@jsonSerializable
+abstract class Business {
+  String name;
+}
+
+@jsonSerializable
+@Json(includeTypeName: true)
+class Hotel extends Business {
+  int stars;
+
+  Hotel(this.stars);
+}
+
+@jsonSerializable
+@Json(includeTypeName: true)
+class Startup extends Business {
+  int userCount;
+
+  Startup(this.userCount);
+}
+
+@jsonSerializable
+class Stakeholder {
+  String fullName;
+  List<Business> businesses;
+
+  Stakeholder(this.fullName, this.businesses);
+}
+
+// given
+final jack = Stakeholder("Jack", [Startup(10), Hotel(4)]);
+
+// when
+JsonMapper.registerValueDecorator<List<Business>>((value) => value.cast<Business>());
+final String json = JsonMapper.serialize(jack);
+final Stakeholder target = JsonMapper.deserialize(json);
+
+// then
+expect(target.businesses[0], TypeMatcher<Startup>());
+expect(target.businesses[1], TypeMatcher<Hotel>());
+```
+
+Using static `JsonMapper.typeNameProperty` you can specify suitable name
+for the json property, which will contain the object type:
+
+``` dart
+JsonMapper.typeNameProperty = "objectType";
+```
+
 ## Custom based types handling
 
 For the very custom types, specific ones, or doesn't currently supported by this library, you can 
@@ -230,59 +288,6 @@ OR use it individually on selected class fields, via `@JsonProperty` annotation
 @JsonProperty(converter: CustomStringConverter())
 String title;
 ```
-
-## Typenamehandling
-
-With setting the `includeTypeName` property to `true` _dart-json-mapper_ will dump the object type to the JSON output. This ensures, that _dart-json-mapper_ can reconstruct the object with the right type when deserializing.
-
-``` dart
-@jsonSerializable
-abstract class Business {
-  String name;
-}
-
-@JsonSerializable(includeTypeName: true)
-class Hotel extends Business {
-  int stars;
-
-  Hotel(this.stars);
-}
-
-@JsonSerializable(includeTypeName: true)
-class Startup extends Business {
-  int userCount;
-
-  Startup(this.userCount);
-}
-
-@jsonSerializable
-class Stakeholder {
-  String fullName;
-  List<Business> businesses;
-
-  Stakeholder(this.fullName, this.businesses);
-}
-
-final jack = Stakeholder("Jack", [Startup(10), Hotel(4)]);
-
-final iterableBusinessDecorator = (value) => value.cast<Business>();
-JsonMapper.registerValueDecorator<List<Business>>(
-    iterableBusinessDecorator);
-final String json = JsonMapper.serialize(jack);
-final Stakeholder target = JsonMapper.deserialize(json);
-
-expect(target.businesses[0], TypeMatcher<Startup>());
-expect(target.businesses[1], TypeMatcher<Hotel>());
-```
-
-With setting `JsonMapper.typeNameProperty` you can specify the name of the json property, who will contain the object type:
-
-``` dart
-JsonMapper.typeNameProperty = "objectType";
-```
-
-And this is it, you are all set and ready to go. Happy coding!
-
 
 [1]: https://github.com/flutter/flutter/issues/1150
 [3]: https://pub.dartlang.org/packages/reflectable

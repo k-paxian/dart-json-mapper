@@ -5,8 +5,20 @@ import "package:reflectable/reflectable.dart";
 
 typedef ValueDecoratorFunction = dynamic Function(dynamic value);
 
-/// [JsonProperty] is used as metadata, marking individual class fields for
-/// fine tuned configuration parameters.
+final String DEFAULT_TYPE_NAME_PROPERTY = '@@type';
+
+/// [Json] is used as metadata, to annotate Dart class as top level Json object
+class Json {
+  /// Declares necessity for annotated class to dump type name to
+  /// special json property. Please use [JsonMapper.typeNameProperty] to
+  /// setup suitable json property name. [DEFAULT_TYPE_NAME_PROPERTY] by default.
+  final bool includeTypeName;
+
+  const Json({this.includeTypeName});
+}
+
+/// [JsonProperty] is used as metadata, for annotation of individual class fields
+/// to fine tune Json property level.
 class JsonProperty {
   /// Denotes the json property name to be used for mapping to the annotated field
   final String name;
@@ -39,29 +51,11 @@ class JsonProperty {
       this.converter,
       this.enumValues,
       this.converterParams});
-
-  @override
-  String toString() {
-    return "JsonProperty name: ${name}, "
-        "ignore: ${ignore}, "
-        "enumValues: ${enumValues}, "
-        "converterParams: ${converterParams}, "
-        "converter: ${converter}";
-  }
 }
 
-/// [jsonSerializable] is used as shorthand metadata, marking classes for
+/// [jsonSerializable] is used as shorthand metadata, marking classes targeted for
 /// serialization / deserialization, w/o "()"
 const jsonSerializable = JsonSerializable();
-
-final String DEFAULT_TYPE_NAME_PROPERTY = '@@type';
-
-class JsonObject {
-  /// Declares necessity for annotated class to dump type name to json property
-  final bool includeTypeName;
-
-  const JsonObject({this.includeTypeName});
-}
 
 /// [JsonSerializable] is used as metadata, marking classes as
 /// serialization / deserialization capable targets

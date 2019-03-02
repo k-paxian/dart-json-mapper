@@ -179,8 +179,11 @@ testConstructors() {
       user.email = 'a@a.com';
       // when
       final json = JsonMapper.serialize(user, '');
+      final User target = JsonMapper.deserialize(json);
       // then
       expect(json, '{"email":"a@a.com"}');
+      expect(target, TypeMatcher<User>());
+      expect(target.email, 'a@a.com');
     });
 
     test("StringListClass class", () {
