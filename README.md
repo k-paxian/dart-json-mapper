@@ -231,6 +231,56 @@ OR use it individually on selected class fields, via `@JsonProperty` annotation
 String title;
 ```
 
+## Typenamehandling
+
+With setting the `includeTypeName` property to `true` _dart-json-mapper_ will dump the object type to the JSON output. This ensures, that _dart-json-mapper_ can reconstruct the object with the right type when deserializing.
+
+``` dart
+@jsonSerializable
+abstract class Business {
+  String name;
+}
+
+@JsonSerializable(includeTypeName: true)
+class Hotel extends Business {
+  int stars;
+
+  Hotel(this.stars);
+}
+
+@JsonSerializable(includeTypeName: true)
+class Startup extends Business {
+  int userCount;
+
+  Startup(this.userCount);
+}
+
+@jsonSerializable
+class Stakeholder {
+  String fullName;
+  List<Business> businesses;
+
+  Stakeholder(this.fullName, this.businesses);
+}
+
+final jack = Stakeholder("Jack", [Startup(10), Hotel(4)]);
+
+final iterableBusinessDecorator = (value) => value.cast<Business>();
+JsonMapper.registerValueDecorator<List<Business>>(
+    iterableBusinessDecorator);
+final String json = JsonMapper.serialize(jack);
+final Stakeholder target = JsonMapper.deserialize(json);
+
+expect(target.businesses[0], TypeMatcher<Startup>());
+expect(target.businesses[1], TypeMatcher<Hotel>());
+```
+
+With setting `JsonMapper.typeNameProperty` you can specify the name of the json property, who will contain the object type:
+
+``` dart
+JsonMapper.typeNameProperty = "objectType";
+```
+
 And this is it, you are all set and ready to go. Happy coding!
 
 
