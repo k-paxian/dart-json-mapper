@@ -54,6 +54,16 @@ class JsonMapper {
     return instance.deserializeObject(jsonValue, T);
   }
 
+  /// Converts Dart object to Map<String, dynamic>
+  static Map<String, dynamic> toMap(Object object) {
+    return deserialize(serialize(object));
+  }
+
+  /// Converts Map<String, dynamic> to Dart object instance
+  static T fromMap<T>(Map<String, dynamic> map) {
+    return deserialize<T>(instance.jsonEncoder.convert(map));
+  }
+
   factory JsonMapper() => instance;
 
   JsonMapper._internal() {
@@ -133,7 +143,7 @@ class JsonMapper {
       return (method.isGetter &&
           (method.isSynthetic || isGetterAndSetter)) &&
           !method.isPrivate;
-        })
+    })
         .map((MethodMirror method) => method.simpleName)
         .toList();
   }
@@ -184,10 +194,10 @@ class JsonMapper {
     return type;
   }
 
-  ValueDecoratorFunction getValueDecorator(
-      JsonProperty jsonProperty, Type type) {
+  ValueDecoratorFunction getValueDecorator(JsonProperty jsonProperty,
+      Type type) {
     ValueDecoratorFunction result =
-        jsonProperty != null ? jsonProperty.valueDecoratorFunction : null;
+    jsonProperty != null ? jsonProperty.valueDecoratorFunction : null;
     if (result == null && valueDecorators[type] != null) {
       result = valueDecorators[type];
     }
@@ -207,7 +217,7 @@ class JsonMapper {
     try {
       method = mirror as MethodMirror;
       result =
-          method.hasReflectedReturnType ? method.reflectedReturnType : null;
+      method.hasReflectedReturnType ? method.reflectedReturnType : null;
     } catch (error) {}
 
     if (result == null) {
@@ -236,7 +246,7 @@ class JsonMapper {
       [Type valueType]) {
     TypeInfo declarationTypeInfo = TypeInfo(declarationType);
     ICustomConverter result =
-        jsonProperty != null ? jsonProperty.converter : null;
+    jsonProperty != null ? jsonProperty.converter : null;
     if (jsonProperty != null &&
         jsonProperty.enumValues != null &&
         result == null) {
@@ -260,7 +270,7 @@ class JsonMapper {
   dynamic applyValueDecorator(dynamic value, TypeInfo typeInfo,
       [JsonProperty meta]) {
     ValueDecoratorFunction valueDecoratorFunction =
-        getValueDecorator(meta, typeInfo.type);
+    getValueDecorator(meta, typeInfo.type);
     if (typeInfo.isSet && value is! Set && value is Iterable) {
       value = Set.from(value);
     }
@@ -274,12 +284,12 @@ class JsonMapper {
     for (String name in getPublicFieldNames(classMirror)) {
       String jsonName = name;
       DeclarationMirror declarationMirror =
-          getDeclarationMirror(classMirror, name);
+      getDeclarationMirror(classMirror, name);
       if (declarationMirror == null) {
         continue;
       }
       Type variableScalarType =
-          getScalarType(getDeclarationType(declarationMirror));
+      getScalarType(getDeclarationType(declarationMirror));
       bool isGetterOnly = classMirror.instanceMembers[name + '='] == null;
       JsonProperty meta = declarationMirror.metadata
           .firstWhere((m) => m is JsonProperty, orElse: () => null);
@@ -311,7 +321,7 @@ class JsonMapper {
     methodMirror.parameters.forEach((ParameterMirror param) {
       String name = param.simpleName;
       DeclarationMirror declarationMirror =
-          getDeclarationMirror(classMirror, name);
+      getDeclarationMirror(classMirror, name);
       if (declarationMirror == null) {
         return;
       }
@@ -336,29 +346,29 @@ class JsonMapper {
     }
   }
 
-  Map<Symbol, dynamic> getNamedArguments(
-      ClassMirror cm, Map<String, dynamic> jsonMap) {
+  Map<Symbol, dynamic> getNamedArguments(ClassMirror cm,
+      Map<String, dynamic> jsonMap) {
     Map<Symbol, dynamic> result = Map();
 
     enumerateConstructorParameters(cm,
-        (param, name, jsonName, meta, TypeInfo typeInfo) {
-      if (meta != null && meta.ignore == true) {
-        return;
-      }
-      if (param.isNamed && jsonMap.containsKey(jsonName)) {
-        var value = jsonMap[jsonName];
-        TypeInfo valueTypeInfo = TypeInfo(value.runtimeType);
-        if (typeInfo.isIterable && valueTypeInfo.isIterable) {
-          value = (value as List)
-              .map((item) =>
+            (param, name, jsonName, meta, TypeInfo typeInfo) {
+          if (meta != null && meta.ignore == true) {
+            return;
+          }
+          if (param.isNamed && jsonMap.containsKey(jsonName)) {
+            var value = jsonMap[jsonName];
+            TypeInfo valueTypeInfo = TypeInfo(value.runtimeType);
+            if (typeInfo.isIterable && valueTypeInfo.isIterable) {
+              value = (value as List)
+                  .map((item) =>
                   deserializeObject(item, getScalarType(typeInfo.type), meta))
-              .toList();
-        } else {
-          value = deserializeObject(value, typeInfo.type, meta);
-        }
-        result[Symbol(name)] = applyValueDecorator(value, typeInfo, meta);
-      }
-    });
+                  .toList();
+            } else {
+              value = deserializeObject(value, typeInfo.type, meta);
+            }
+            result[Symbol(name)] = applyValueDecorator(value, typeInfo, meta);
+          }
+        });
 
     return result;
   }
@@ -367,27 +377,27 @@ class JsonMapper {
     List result = [];
 
     enumerateConstructorParameters(cm,
-        (param, name, jsonName, JsonProperty meta, TypeInfo typeInfo) {
-      if (!param.isOptional &&
-          !param.isNamed &&
-          jsonMap.containsKey(jsonName)) {
-        var value = jsonMap[jsonName];
-        TypeInfo valueTypeInfo = TypeInfo(value.runtimeType);
-        if (typeInfo.isIterable && valueTypeInfo.isIterable) {
-          value = (value as List)
-              .map((item) =>
+            (param, name, jsonName, JsonProperty meta, TypeInfo typeInfo) {
+          if (!param.isOptional &&
+              !param.isNamed &&
+              jsonMap.containsKey(jsonName)) {
+            var value = jsonMap[jsonName];
+            TypeInfo valueTypeInfo = TypeInfo(value.runtimeType);
+            if (typeInfo.isIterable && valueTypeInfo.isIterable) {
+              value = (value as List)
+                  .map((item) =>
                   deserializeObject(item, getScalarType(typeInfo.type), meta))
-              .toList();
-        } else {
-          value = deserializeObject(value, typeInfo.type, meta);
-        }
-        value = applyValueDecorator(value, typeInfo, meta);
-        if (meta != null && meta.ignore == true) {
-          value = null;
-        }
-        result.add(value);
-      }
-    });
+                  .toList();
+            } else {
+              value = deserializeObject(value, typeInfo.type, meta);
+            }
+            value = applyValueDecorator(value, typeInfo, meta);
+            if (meta != null && meta.ignore == true) {
+              value = null;
+            }
+            result.add(value);
+          }
+        });
 
     return result;
   }
@@ -451,7 +461,7 @@ class JsonMapper {
 
     if (typeInfo.isIterable) {
       List<dynamic> jsonList =
-          (jsonValue is String) ? jsonDecoder.convert(jsonValue) : jsonValue;
+      (jsonValue is String) ? jsonDecoder.convert(jsonValue) : jsonValue;
       var value = jsonList
           .map((item) => deserializeObject(item, getScalarType(typeInfo.type)))
           .toList();
@@ -459,7 +469,7 @@ class JsonMapper {
     }
 
     Map<String, dynamic> jsonMap =
-        (jsonValue is String) ? jsonDecoder.convert(jsonValue) : jsonValue;
+    (jsonValue is String) ? jsonDecoder.convert(jsonValue) : jsonValue;
     String typeName = jsonMap.containsKey(typeNameProperty)
         ? jsonMap[typeNameProperty]
         : typeInfo.typeName;
@@ -471,7 +481,7 @@ class JsonMapper {
     Object objectInstance = cm.isEnum
         ? null
         : cm.newInstance("", getPositionalArguments(cm, jsonMap),
-            getNamedArguments(cm, jsonMap));
+        getNamedArguments(cm, jsonMap));
     InstanceMirror im = safeGetInstanceMirror(objectInstance);
 
     enumeratePublicFields(im, (name, jsonName, value, isGetterOnly,

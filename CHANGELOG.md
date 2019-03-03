@@ -1,3 +1,7 @@
+## 1.1.5
+
+* Map<String, dynamic> easing methods toMap/fromMap introduced.
+
 ## 1.1.4
 
 * Issue #8 has been fixed
