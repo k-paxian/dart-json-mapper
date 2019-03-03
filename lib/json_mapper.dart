@@ -19,7 +19,7 @@ class JsonMapper {
   final Map<String, ClassMirror> classes = {};
   final Map<String, Object> processedObjects = {};
   final Map<Type, ICustomConverter> converters = {};
-  final Map<String, ValueDecoratorFunction> valueDecorators = {};
+  final Map<Type, ValueDecoratorFunction> valueDecorators = {};
 
   /// Customize name for Json property to store class type name
   static String typeNameProperty = DEFAULT_TYPE_NAME_PROPERTY;
@@ -31,7 +31,7 @@ class JsonMapper {
 
   /// Assign custom value decorator function for certain Type
   static void registerValueDecorator<T>(ValueDecoratorFunction valueDecorator) {
-    instance.valueDecorators[T.toString()] = valueDecorator;
+    instance.valueDecorators[T] = valueDecorator;
   }
 
   /// Converts Dart object to JSON string, indented by `indent`
@@ -64,38 +64,36 @@ class JsonMapper {
     registerDefaultValueDecorators();
   }
 
+  Type _typeOf<T>() {
+    return T;
+  }
+
   void registerDefaultValueDecorators() {
     // Dart built-in types
     // List
-    valueDecorators[List<String>().runtimeType.toString()] =
-        (value) => value.cast<String>();
-    valueDecorators[List<DateTime>().runtimeType.toString()] =
+    valueDecorators[_typeOf<List<String>>()] = (value) => value.cast<String>();
+    valueDecorators[_typeOf<List<DateTime>>()] =
         (value) => value.cast<DateTime>();
-    valueDecorators[List<num>().runtimeType.toString()] =
-        (value) => value.cast<num>();
-    valueDecorators[List<int>().runtimeType.toString()] =
-        (value) => value.cast<int>();
-    valueDecorators[List<double>().runtimeType.toString()] =
-        (value) => value.cast<double>();
-    valueDecorators[List<bool>().runtimeType.toString()] =
-        (value) => value.cast<bool>();
-    valueDecorators[List<Symbol>().runtimeType.toString()] =
-        (value) => value.cast<Symbol>();
-    valueDecorators[List<BigInt>().runtimeType.toString()] =
-        (value) => value.cast<BigInt>();
+    valueDecorators[_typeOf<List<num>>()] = (value) => value.cast<num>();
+    valueDecorators[_typeOf<List<int>>()] = (value) => value.cast<int>();
+    valueDecorators[_typeOf<List<double>>()] = (value) => value.cast<double>();
+    valueDecorators[_typeOf<List<bool>>()] = (value) => value.cast<bool>();
+    valueDecorators[_typeOf<List<Symbol>>()] = (value) => value.cast<Symbol>();
+    valueDecorators[_typeOf<List<BigInt>>()] = (value) => value.cast<BigInt>();
 
     // Set
-    valueDecorators['Set<String>'] = (value) => value.cast<String>();
-    valueDecorators['Set<DateTime>'] = (value) => value.cast<DateTime>();
-    valueDecorators['Set<num>'] = (value) => value.cast<num>();
-    valueDecorators['Set<int>'] = (value) => value.cast<int>();
-    valueDecorators['Set<double>'] = (value) => value.cast<double>();
-    valueDecorators['Set<bool>'] = (value) => value.cast<bool>();
-    valueDecorators['Set<Symbol>'] = (value) => value.cast<Symbol>();
-    valueDecorators['Set<BigInt>'] = (value) => value.cast<BigInt>();
+    valueDecorators[_typeOf<Set<String>>()] = (value) => value.cast<String>();
+    valueDecorators[_typeOf<Set<DateTime>>()] =
+        (value) => value.cast<DateTime>();
+    valueDecorators[_typeOf<Set<num>>()] = (value) => value.cast<num>();
+    valueDecorators[_typeOf<Set<int>>()] = (value) => value.cast<int>();
+    valueDecorators[_typeOf<Set<double>>()] = (value) => value.cast<double>();
+    valueDecorators[_typeOf<Set<bool>>()] = (value) => value.cast<bool>();
+    valueDecorators[_typeOf<Set<Symbol>>()] = (value) => value.cast<Symbol>();
+    valueDecorators[_typeOf<Set<BigInt>>()] = (value) => value.cast<BigInt>();
 
     // Typed data
-    valueDecorators[Uint8List(0).runtimeType.toString()] =
+    valueDecorators[_typeOf<Uint8List>()] =
         (value) => Uint8List.fromList(value.cast<int>());
   }
 
@@ -110,6 +108,7 @@ class JsonMapper {
     converters[int] = numberConverter;
     converters[double] = numberConverter;
     converters[BigInt] = bigIntConverter;
+    converters[_typeOf<Map<String, dynamic>>()] = mapStringDynamicConverter;
 
     // Typed data
     converters[Uint8List] = uint8ListConverter;
@@ -189,9 +188,8 @@ class JsonMapper {
       JsonProperty jsonProperty, Type type) {
     ValueDecoratorFunction result =
         jsonProperty != null ? jsonProperty.valueDecoratorFunction : null;
-    String typeId = type.toString();
-    if (result == null && valueDecorators[typeId] != null) {
-      result = valueDecorators[typeId];
+    if (result == null && valueDecorators[type] != null) {
+      result = valueDecorators[type];
     }
     return result;
   }
@@ -330,8 +328,8 @@ class JsonMapper {
   }
 
   dumpTypeNameToObjectProperty(dynamic object, ClassMirror classMirror) {
-    final Json meta = classMirror.metadata
-        .firstWhere((m) => m is Json, orElse: () => null);
+    final Json meta =
+    classMirror.metadata.firstWhere((m) => m is Json, orElse: () => null);
     if (meta != null && meta.includeTypeName == true) {
       final typeInfo = TypeInfo(classMirror.reflectedType);
       object[typeNameProperty] = typeInfo.typeName;

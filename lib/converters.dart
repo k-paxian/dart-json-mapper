@@ -1,6 +1,7 @@
 library json_mapper.converters;
 
 import 'dart:convert' show base64Decode, base64Encode;
+import 'dart:convert' show JsonDecoder;
 import 'dart:typed_data' show Uint8List;
 
 import 'package:dart_json_mapper/annotations.dart';
@@ -207,6 +208,27 @@ class Int64Converter implements ICustomConverter {
   @override
   dynamic toJSON(Object object, [JsonProperty jsonProperty]) {
     return object is Int64 ? object.toString() : object;
+  }
+}
+
+const mapStringDynamicConverter = MapStringDynamicConverter();
+
+/// [Map<String, dynamic>] converter
+class MapStringDynamicConverter
+    implements ICustomConverter<Map<String, dynamic>> {
+  const MapStringDynamicConverter() : super();
+
+  static JsonDecoder jsonDecoder = JsonDecoder();
+
+  @override
+  Map<String, dynamic> fromJSON(dynamic jsonValue,
+      [JsonProperty jsonProperty]) {
+    return (jsonValue is String) ? jsonDecoder.convert(jsonValue) : jsonValue;
+  }
+
+  @override
+  dynamic toJSON(Map<String, dynamic> object, [JsonProperty jsonProperty]) {
+    return object;
   }
 }
 
