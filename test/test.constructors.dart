@@ -39,6 +39,7 @@ class Derived extends Base<String> {
 }
 
 @jsonSerializable
+@Json(includeTypeName: true)
 class Pt {
   Pt();
 }
@@ -167,10 +168,12 @@ testConstructors() {
       Derived instance = JsonMapper.deserialize(json);
       String targetJson = JsonMapper.serialize(target, '');
       String pTargetJson = JsonMapper.serialize(pTarget, '');
+      PtDerived pTargetBack = JsonMapper.deserialize(pTargetJson);
       // then
       expect(instance.value, "Bob");
       expect(targetJson, json);
-      expect(pTargetJson, '{"value":{}}');
+      expect(pTargetBack.value, TypeMatcher<Pt>());
+      expect(pTargetJson, '{"value":{"@@type":"Pt"}}');
     });
 
     test("User class, getter/setter property w/o constructor", () {

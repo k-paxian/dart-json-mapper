@@ -346,6 +346,23 @@ class JsonMapper {
     }
   }
 
+  TypeInfo detectObjectType(dynamic objectInstance, Type objectType,
+      Map<String, dynamic> objectJsonMap) {
+    if (objectInstance is Map<String, dynamic>) {
+      objectJsonMap = objectInstance;
+    }
+    TypeInfo typeInfo =
+    TypeInfo(objectType != null ? objectType : objectInstance.runtimeType);
+    String typeName =
+    objectJsonMap != null && objectJsonMap.containsKey(typeNameProperty)
+        ? objectJsonMap[typeNameProperty]
+        : typeInfo.typeName;
+    Type type = classes[typeName] != null
+        ? classes[typeName].reflectedType
+        : typeInfo.type;
+    return TypeInfo(type);
+  }
+
   Map<Symbol, dynamic> getNamedArguments(ClassMirror cm,
       Map<String, dynamic> jsonMap) {
     Map<Symbol, dynamic> result = Map();
@@ -357,16 +374,19 @@ class JsonMapper {
           }
           if (param.isNamed && jsonMap.containsKey(jsonName)) {
             var value = jsonMap[jsonName];
-            TypeInfo valueTypeInfo = TypeInfo(value.runtimeType);
-            if (typeInfo.isIterable && valueTypeInfo.isIterable) {
+            TypeInfo parameterTypeInfo =
+            detectObjectType(value, typeInfo.type, null);
+            if (parameterTypeInfo.isIterable) {
               value = (value as List)
                   .map((item) =>
-                  deserializeObject(item, getScalarType(typeInfo.type), meta))
+                  deserializeObject(
+                      item, getScalarType(parameterTypeInfo.type), meta))
                   .toList();
             } else {
-              value = deserializeObject(value, typeInfo.type, meta);
+              value = deserializeObject(value, parameterTypeInfo.type, meta);
             }
-            result[Symbol(name)] = applyValueDecorator(value, typeInfo, meta);
+            result[Symbol(name)] =
+                applyValueDecorator(value, parameterTypeInfo, meta);
           }
         });
 
@@ -382,16 +402,18 @@ class JsonMapper {
               !param.isNamed &&
               jsonMap.containsKey(jsonName)) {
             var value = jsonMap[jsonName];
-            TypeInfo valueTypeInfo = TypeInfo(value.runtimeType);
-            if (typeInfo.isIterable && valueTypeInfo.isIterable) {
+            TypeInfo parameterTypeInfo =
+            detectObjectType(value, typeInfo.type, null);
+            if (parameterTypeInfo.isIterable) {
               value = (value as List)
                   .map((item) =>
-                  deserializeObject(item, getScalarType(typeInfo.type), meta))
+                  deserializeObject(
+                      item, getScalarType(parameterTypeInfo.type), meta))
                   .toList();
             } else {
-              value = deserializeObject(value, typeInfo.type, meta);
+              value = deserializeObject(value, parameterTypeInfo.type, meta);
             }
-            value = applyValueDecorator(value, typeInfo, meta);
+            value = applyValueDecorator(value, parameterTypeInfo, meta);
             if (meta != null && meta.ignore == true) {
               value = null;
             }
@@ -470,10 +492,8 @@ class JsonMapper {
 
     Map<String, dynamic> jsonMap =
     (jsonValue is String) ? jsonDecoder.convert(jsonValue) : jsonValue;
-    String typeName = jsonMap.containsKey(typeNameProperty)
-        ? jsonMap[typeNameProperty]
-        : typeInfo.typeName;
-    ClassMirror cm = classes[typeName];
+    typeInfo = detectObjectType(null, instanceType, jsonMap);
+    ClassMirror cm = classes[typeInfo.typeName];
     if (cm == null) {
       throw MissingAnnotationOnTypeError(typeInfo.type);
     }
