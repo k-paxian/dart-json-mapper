@@ -1,34 +1,5 @@
 part of json_mapper.test;
 
-@jsonSerializable
-abstract class Business {
-  String name;
-}
-
-@jsonSerializable
-@Json(includeTypeName: true)
-class Hotel extends Business {
-  int stars;
-
-  Hotel(this.stars);
-}
-
-@jsonSerializable
-@Json(includeTypeName: true)
-class Startup extends Business {
-  int userCount;
-
-  Startup(this.userCount);
-}
-
-@jsonSerializable
-class Stakeholder {
-  String fullName;
-  List<Business> businesses;
-
-  Stakeholder(this.fullName, this.businesses);
-}
-
 testValueDecorators() {
   final String carListJson = '[{"modelName":"Audi","color":"Color.Green"}]';
   final String intListJson = '[1,3,5]';

@@ -279,6 +279,29 @@ class JsonMapper {
         : value;
   }
 
+  ClassMirror safeGetParentClassMirror(DeclarationMirror declarationMirror) {
+    ClassMirror result;
+    try {
+      result = declarationMirror.owner;
+    } catch (error) {}
+    return result;
+  }
+
+  List<Object> lookupMetaData(DeclarationMirror declarationMirror) {
+    final result = []..addAll(declarationMirror.metadata);
+    final ClassMirror parentClassMirror =
+        safeGetParentClassMirror(declarationMirror);
+    if (parentClassMirror == null) {
+      return result;
+    }
+    final DeclarationMirror parentDeclarationMirror =
+        getDeclarationMirror(parentClassMirror, declarationMirror.simpleName);
+    result.addAll(parentClassMirror.isTopLevel
+        ? parentDeclarationMirror.metadata
+        : lookupMetaData(parentDeclarationMirror));
+    return result;
+  }
+
   enumeratePublicFields(InstanceMirror instanceMirror, Function visitor) {
     ClassMirror classMirror = instanceMirror.type;
     for (String name in getPublicFieldNames(classMirror)) {
@@ -291,7 +314,7 @@ class JsonMapper {
       Type variableScalarType =
           getScalarType(getDeclarationType(declarationMirror));
       bool isGetterOnly = classMirror.instanceMembers[name + '='] == null;
-      JsonProperty meta = declarationMirror.metadata
+      JsonProperty meta = lookupMetaData(declarationMirror)
           .firstWhere((m) => m is JsonProperty, orElse: () => null);
       dynamic value = instanceMirror.invokeGetter(name);
       if (meta != null && meta.ignore == true) {

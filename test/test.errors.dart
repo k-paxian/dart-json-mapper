@@ -59,7 +59,7 @@ testErrorHandling() {
           TypeMatcher<MissingEnumValuesError>());
     });
 
-    test("Wrong annotation on Enum field", () {
+    test("Wrong enumValues in annotation on Enum field", () {
       final json = '{"sex":"Sex.Female"}';
       expect(catchError(() {
         WrongAnnotatedEnumField target = JsonMapper.deserialize(json);
