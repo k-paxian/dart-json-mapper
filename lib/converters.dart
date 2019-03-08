@@ -5,6 +5,7 @@ import 'dart:convert' show JsonDecoder;
 import 'dart:typed_data' show Uint8List;
 
 import 'package:dart_json_mapper/annotations.dart';
+import 'package:dart_json_mapper/errors.dart';
 import 'package:fixnum/fixnum.dart' show Int32, Int64;
 import 'package:intl/intl.dart';
 
@@ -94,6 +95,9 @@ class EnumConverter implements ICustomConverter {
 
   @override
   Object fromJSON(dynamic jsonValue, [JsonProperty jsonProperty]) {
+    if (jsonProperty.isEnumValuesValid(jsonValue) != true) {
+      throw MissingEnumValuesError(jsonValue.runtimeType);
+    }
     return jsonProperty.enumValues.firstWhere(
         (eValue) => eValue.toString() == jsonValue.toString(),
         orElse: () => null);

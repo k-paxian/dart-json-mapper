@@ -51,6 +51,16 @@ class JsonProperty {
       this.converter,
       this.enumValues,
       this.converterParams});
+
+  /// Validate provided enum values [enumValues] against provided value
+  bool isEnumValuesValid(dynamic enumValue) {
+    final getEnumTypeNameFromString =
+        (value) => value.toString().split('.').first;
+    final String enumValueTypeName = getEnumTypeNameFromString(enumValue);
+    return this
+        .enumValues
+        .every((item) => getEnumTypeNameFromString(item) == enumValueTypeName);
+  }
 }
 
 /// [jsonSerializable] is used as shorthand metadata, marking classes targeted for
