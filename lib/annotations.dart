@@ -40,6 +40,10 @@ class JsonProperty {
   /// serialization / deserialization process
   final bool ignore;
 
+  /// Declares annotated field as ignored if it's value is null so it will be excluded from
+  /// serialization / deserialization process
+  final bool ignoreIfNull;
+
   /// Provides a way to specify enum values, via Dart built in
   /// capability for all Enum instances. `Enum.values`
   final List<dynamic> enumValues;
@@ -48,6 +52,7 @@ class JsonProperty {
       {this.name,
       this.valueDecoratorFunction,
       this.ignore,
+      this.ignoreIfNull,
       this.converter,
       this.enumValues,
       this.converterParams});

@@ -16,19 +16,6 @@ class WrongAnnotatedEnumField {
   Sex sex = Sex.Female;
 }
 
-@jsonSerializable
-class MyCar {
-  @JsonProperty(name: 'modelName')
-  String model;
-
-  @JsonProperty(enumValues: Color.values)
-  Color color;
-
-  MyCar replacement;
-
-  MyCar(this.model, this.color);
-}
-
 typedef ErrorGeneratorFunction = dynamic Function();
 dynamic catchError(ErrorGeneratorFunction errorGenerator) {
   var targetError;
@@ -43,7 +30,7 @@ dynamic catchError(ErrorGeneratorFunction errorGenerator) {
 testErrorHandling() {
   group("[Verify error handling]", () {
     test("Circular reference detection during serialization", () {
-      final MyCar car = MyCar('VW', Color.Blue);
+      final Car car = Car('VW', Color.Blue);
       car.replacement = car;
       expect(catchError(() => JsonMapper.serialize(car)),
           TypeMatcher<CircularReferenceError>());
@@ -62,7 +49,7 @@ testErrorHandling() {
     test("Wrong enumValues in annotation on Enum field", () {
       final json = '{"sex":"Sex.Female"}';
       expect(catchError(() {
-        WrongAnnotatedEnumField target = JsonMapper.deserialize(json);
+        JsonMapper.deserialize<WrongAnnotatedEnumField>(json);
       }), TypeMatcher<MissingEnumValuesError>());
     });
 

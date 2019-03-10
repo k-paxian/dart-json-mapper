@@ -1,5 +1,3 @@
-# dart-json-mapper
-
 [![Build Status][travis-badge]][travis-badge-url]
 [![pub package](https://img.shields.io/pub/v/dart_json_mapper.svg)](https://pub.dartlang.org/packages/dart_json_mapper)
 
@@ -96,6 +94,38 @@ So for development time, use `watch` like this
 Each time you modify your project code, all *.reflectable.dart files will be updated as well.
 - Next step is to add "*.reflectable.dart" to your .gitignore
 - And this is it, you are all set and ready to go. Happy coding!
+
+## Format date / number types
+
+In order to format `DateTime` or `num` instance as a JSON string, it is possible to
+provide [intl][2] based formatting patterns.
+
+**DateTime**
+```dart
+  @JsonProperty(converterParams: {'format': 'MM-dd-yyyy H:m:s'})
+  DateTime lastPromotionDate = DateTime(2008, 05, 13, 22, 33, 44);
+
+  @JsonProperty(converterParams: {'format': 'MM/dd/yyyy'})
+  DateTime hireDate = DateTime(2003, 02, 28);
+```
+
+```json
+"lastPromotionDate": "05-13-2008 22:33:44",
+"hireDate": "02/28/2003"
+```
+
+**num**
+```dart
+  @JsonProperty(converterParams: {'format': '##.##'})
+  num salary = 1200000.246;
+```
+
+```json
+"salary": "1200000.25"
+```
+
+As well, it is possible to utilize `converterParams` map to provide custom
+parameters to your [custom converters](#custom-based-types-handling).
 
 ## Example with immutable class
 
@@ -290,6 +320,7 @@ String title;
 ```
 
 [1]: https://github.com/flutter/flutter/issues/1150
+[2]: https://pub.dartlang.org/packages/intl
 [3]: https://pub.dartlang.org/packages/reflectable
 
 [travis-badge]: https://travis-ci.org/k-paxian/dart-json-mapper.svg?branch=master

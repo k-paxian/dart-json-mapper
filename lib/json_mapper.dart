@@ -302,6 +302,11 @@ class JsonMapper {
     return result;
   }
 
+  bool isFieldIgnored(JsonProperty meta, dynamic value) {
+    return meta != null &&
+        (meta.ignore == true || meta.ignoreIfNull == true && value == null);
+  }
+
   enumeratePublicFields(InstanceMirror instanceMirror, Function visitor) {
     ClassMirror classMirror = instanceMirror.type;
     for (String name in getPublicFieldNames(classMirror)) {
@@ -317,7 +322,7 @@ class JsonMapper {
       JsonProperty meta = lookupMetaData(declarationMirror)
           .firstWhere((m) => m is JsonProperty, orElse: () => null);
       dynamic value = instanceMirror.invokeGetter(name);
-      if (meta != null && meta.ignore == true) {
+      if (isFieldIgnored(meta, value)) {
         continue;
       }
       if (meta != null && meta.name != null) {
@@ -392,11 +397,11 @@ class JsonMapper {
 
     enumerateConstructorParameters(cm,
         (param, name, jsonName, meta, TypeInfo typeInfo) {
-      if (meta != null && meta.ignore == true) {
-        return;
-      }
       if (param.isNamed && jsonMap.containsKey(jsonName)) {
         var value = jsonMap[jsonName];
+        if (isFieldIgnored(meta, value)) {
+          return;
+        }
         TypeInfo parameterTypeInfo =
             detectObjectType(value, typeInfo.type, null);
         if (parameterTypeInfo.isIterable) {
@@ -435,7 +440,7 @@ class JsonMapper {
           value = deserializeObject(value, parameterTypeInfo.type, meta);
         }
         value = applyValueDecorator(value, parameterTypeInfo, meta);
-        if (meta != null && meta.ignore == true) {
+        if (isFieldIgnored(meta, value)) {
           value = null;
         }
         result.add(value);

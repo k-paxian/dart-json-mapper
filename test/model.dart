@@ -10,7 +10,7 @@ class Car {
   @JsonProperty(enumValues: Color.values)
   Color color;
 
-  @JsonProperty(ignore: true)
+  @JsonProperty(ignoreIfNull: true)
   Car replacement;
 
   Car(this.model, this.color);
