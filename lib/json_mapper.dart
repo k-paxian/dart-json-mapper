@@ -551,12 +551,7 @@ class JsonMapper {
       }
       if (!isGetterOnly) {
         fieldValue = applyValueDecorator(fieldValue, typeInfo, meta);
-        var l = im.invokeGetter(name);
-        if (l is List && fieldValue is List) {
-          fieldValue.map((item) => l.add(item));
-        } else {
-          im.invokeSetter(name, fieldValue);
-        }
+        im.invokeSetter(name, fieldValue);
       }
     });
     return objectInstance;

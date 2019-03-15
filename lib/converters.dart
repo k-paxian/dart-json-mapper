@@ -50,7 +50,9 @@ class DateConverter extends BaseCustomConverter implements ICustomConverter {
     DateFormat format = getDateFormat(jsonProperty);
     return format != null && !(object is String)
         ? format.format(object)
-        : object.toString();
+        : (object is List)
+            ? object.map((item) => item.toString()).toList()
+            : object.toString();
   }
 
   DateFormat getDateFormat([JsonProperty jsonProperty]) {
@@ -105,7 +107,9 @@ class EnumConverter implements ICustomConverter {
 
   @override
   dynamic toJSON(Object object, [JsonProperty jsonProperty]) {
-    return object.toString();
+    return (object is List)
+        ? object.map((item) => item.toString()).toList()
+        : object.toString();
   }
 }
 

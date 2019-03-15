@@ -29,6 +29,8 @@ testIntegration() {
 
     test("Serialization <=> Deserialization", () {
       // given
+      JsonMapper.registerValueDecorator<List<Color>>(
+          (value) => value.cast<Color>());
       // when
       Stopwatch stopwatch = Stopwatch()..start();
       final Person person = JsonMapper.deserialize(personJson);
