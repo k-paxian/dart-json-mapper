@@ -68,7 +68,7 @@ class JsonMapper {
 
   JsonMapper._internal() {
     for (ClassMirror classMirror in serializable.annotatedClasses) {
-      classes[classMirror.simpleName] = classMirror;
+      classes[classMirror.reflectedType.toString()] = classMirror;
     }
     registerDefaultConverters();
     registerDefaultValueDecorators();
