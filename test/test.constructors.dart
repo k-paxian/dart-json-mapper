@@ -39,7 +39,6 @@ class Derived extends Base<String> {
 }
 
 @jsonSerializable
-@Json(includeTypeName: true)
 class Pt {
   Pt();
 }
@@ -47,6 +46,12 @@ class Pt {
 @jsonSerializable
 class PtDerived extends Base<Pt> {
   PtDerived(Pt value) : super(value);
+}
+
+@jsonSerializable
+class PtDerived2 extends Base<Pt> {
+  final Pt pt;
+  PtDerived2(this.pt) : super(null);
 }
 
 @jsonSerializable
@@ -164,16 +169,22 @@ testConstructors() {
       final String json = '{"value":"Bob"}';
       final Derived target = Derived("Bob");
       final PtDerived pTarget = PtDerived(Pt());
+      final PtDerived2 ptTarget2 = PtDerived2(Pt());
       // when
       Derived instance = JsonMapper.deserialize(json);
       String targetJson = JsonMapper.serialize(target, '');
       String pTargetJson = JsonMapper.serialize(pTarget, '');
+      String ptTarget2Json = JsonMapper.serialize(ptTarget2, '');
       PtDerived pTargetBack = JsonMapper.deserialize(pTargetJson);
+      PtDerived2 ptTarget2Back = JsonMapper.deserialize(ptTarget2Json);
       // then
       expect(instance.value, "Bob");
       expect(targetJson, json);
       expect(pTargetBack.value, TypeMatcher<Pt>());
-      expect(pTargetJson, '{"value":{"@@type":"Pt"}}');
+      expect(pTargetJson, '{"value":{}}');
+      expect(ptTarget2Json, '{"value":null,"pt":{}}');
+      expect(ptTarget2Back.pt, TypeMatcher<Pt>());
+      expect(ptTarget2Back.value, null);
     });
 
     test("User class, getter/setter property w/o constructor", () {

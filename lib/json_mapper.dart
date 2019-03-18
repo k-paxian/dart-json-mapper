@@ -350,9 +350,13 @@ class JsonMapper {
       String name = param.simpleName;
       DeclarationMirror declarationMirror =
           getDeclarationMirror(classMirror, name);
+      TypeInfo paramTypeInfo = TypeInfo(param.reflectedType);
       if (declarationMirror == null) {
         return;
       }
+      paramTypeInfo = paramTypeInfo.isDynamic
+          ? TypeInfo(getDeclarationType(declarationMirror))
+          : paramTypeInfo;
       String jsonName = name;
       JsonProperty meta = declarationMirror.metadata
           .firstWhere((m) => m is JsonProperty, orElse: () => null);
@@ -360,8 +364,7 @@ class JsonMapper {
         jsonName = meta.name;
       }
 
-      visitor(param, name, jsonName, meta,
-          TypeInfo(getDeclarationType(declarationMirror)));
+      visitor(param, name, jsonName, meta, paramTypeInfo);
     });
   }
 
@@ -568,6 +571,10 @@ class TypeInfo {
     return type != null ? type.toString() : '';
   }
 
+  bool get isDynamic {
+    return typeName == "dynamic";
+  }
+
   bool get isIterable {
     return isList || isSet;
   }
@@ -639,6 +646,6 @@ class TypeInfo {
 
   @override
   String toString() {
-    return 'TypeInfo{scalarTypeName: $scalarTypeName}';
+    return 'TypeInfo{typeName: $typeName, scalarTypeName: $scalarTypeName}';
   }
 }

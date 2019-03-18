@@ -7,7 +7,7 @@ class Customer {
   @JsonProperty(name: 'Name')
   final String name;
 
-  const Customer({this.id, this.name});
+  const Customer(this.id, this.name);
 }
 
 @JsonSerializable()
@@ -59,7 +59,7 @@ class ServiceOrderModel {
 
 testValueDecorators() {
   final String carListJson = '[{"modelName":"Audi","color":"Color.Green"}]';
-  final String customersListJson = '''[  
+  final String ordersListJson = '''[  
   {
     "Id": 96,
     "Number": 96,
@@ -157,7 +157,7 @@ testValueDecorators() {
 
       // when
       List<ServiceOrderModel> target =
-          JsonMapper.deserialize(customersListJson);
+          JsonMapper.deserialize(ordersListJson);
 
       // then
       expect(target.length, 1);
