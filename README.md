@@ -6,11 +6,18 @@ This package allows programmers to annotate Dart classes in order to
   
 ## Why?
 
-* Compatible with **all** Dart platforms, including **Flutter** and **Web** platforms
+* Compatible with **all** Dart platforms, including [Flutter](https://pub.dartlang.org/flutter/packages) and [Web](https://pub.dartlang.org/web/packages) platforms
 * No need to extend your classes from **any** mixins/base/abstract classes to keep code leaner
 * Clean and simple setup, transparent and straightforward usage with **no heavy maintenance**
 * **No extra boilerplate** involved, 100% generated only
-* **Custom converters** support per each class field
+* **Custom converters** per each class field, full control over the process
+* **NO** dependency on `dart:mirrors`, one of the reasons is described [here][1].
+
+Dart classes reflection mechanism is based on [reflectable][3] library. 
+This means "extended types information" is auto-generated out of existing Dart program 
+guided by the annotated classes only, as the result types information is accesible at runtime, at a reduced cost.
+
+Typical `Flutter.io project integration` sample can be found [here][4]
   
 ## Basic setup
 
@@ -20,13 +27,8 @@ Please add the following dependencies to your `pubspec.yaml`:
 dependencies:
   dart_json_mapper: any
 dev_dependencies:
-  reflectable: ^2.0.8
-  build_runner: ^1.1.2
+  build_runner: any
 ```
-
-Library has **NO** dependency on `dart:mirrors`, one of the reasons is described [here][1].
-
-Dart classes reflection mechanism is based on [reflectable][3] library. This means "extended types information" is auto-generated out of existing Dart program guided by the annotated classes only, as the result types information is accesible at runtime, at a reduced cost.
 
 Say, you have a dart program *main.dart* having some classes intended to be traveling to JSON and back.
 - First thing you should do is to put `@jsonSerializable` annotation on each of those classes
@@ -56,10 +58,13 @@ main() {
   initializeReflectable(); // Imported from main.reflectable.dart
   
   print(JsonMapper.serialize(MyData(456, true, "yes")));
-  // { 
-  //  "a": 456,
-  //  "d": "yes"
-  // }
+}
+```
+
+```json
+{ 
+  "a": 456,
+  "d": "yes"
 }
 ```
 
@@ -110,8 +115,10 @@ provide [intl][2] based formatting patterns.
 ```
 
 ```json
+{
 "lastPromotionDate": "05-13-2008 22:33:44",
 "hireDate": "02/28/2003"
+}
 ```
 
 **num**
@@ -121,7 +128,9 @@ provide [intl][2] based formatting patterns.
 ```
 
 ```json
+{
 "salary": "1200000.25"
+}
 ```
 
 As well, it is possible to utilize `converterParams` map to provide custom
@@ -322,6 +331,7 @@ String title;
 [1]: https://github.com/flutter/flutter/issues/1150
 [2]: https://pub.dartlang.org/packages/intl
 [3]: https://pub.dartlang.org/packages/reflectable
+[4]: https://github.com/k-paxian/samples/tree/master/jsonexample
 
 [travis-badge]: https://travis-ci.org/k-paxian/dart-json-mapper.svg?branch=master
 [travis-badge-url]: https://travis-ci.org/k-paxian/dart-json-mapper

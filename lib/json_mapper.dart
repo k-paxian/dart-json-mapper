@@ -128,26 +128,6 @@ class JsonMapper {
     converters[Int64] = int64Converter;
   }
 
-  MethodMirror getPublicConstructor(ClassMirror classMirror) {
-    return classMirror.declarations.values.where((DeclarationMirror dm) {
-      return !dm.isPrivate && dm is MethodMirror && dm.isConstructor;
-    }).first;
-  }
-
-  List<String> getPublicFieldNames(ClassMirror classMirror) {
-    Map<String, MethodMirror> instanceMembers = classMirror.instanceMembers;
-    return instanceMembers.values
-        .where((MethodMirror method) {
-          final isGetterAndSetter = method.isGetter &&
-              classMirror.instanceMembers[method.simpleName + '='] != null;
-          return (method.isGetter &&
-                  (method.isSynthetic || isGetterAndSetter)) &&
-              !method.isPrivate;
-        })
-        .map((MethodMirror method) => method.simpleName)
-        .toList();
-  }
-
   InstanceMirror safeGetInstanceMirror(Object object) {
     InstanceMirror result;
     try {
@@ -226,22 +206,6 @@ class JsonMapper {
     return result;
   }
 
-  DeclarationMirror getDeclarationMirror(ClassMirror classMirror, String name) {
-    DeclarationMirror result;
-    try {
-      result = classMirror.declarations[name] as VariableMirror;
-    } catch (error) {}
-    if (result == null) {
-      classMirror.instanceMembers
-          .forEach((memberName, MethodMirror methodMirror) {
-        if (memberName == name) {
-          result = methodMirror;
-        }
-      });
-    }
-    return result;
-  }
-
   ICustomConverter getConverter(JsonProperty jsonProperty, Type declarationType,
       [Type valueType]) {
     ICustomConverter result =
@@ -279,47 +243,25 @@ class JsonMapper {
         : value;
   }
 
-  ClassMirror safeGetParentClassMirror(DeclarationMirror declarationMirror) {
-    ClassMirror result;
-    try {
-      result = declarationMirror.owner;
-    } catch (error) {}
-    return result;
-  }
-
-  List<Object> lookupMetaData(DeclarationMirror declarationMirror) {
-    final result = []..addAll(declarationMirror.metadata);
-    final ClassMirror parentClassMirror =
-        safeGetParentClassMirror(declarationMirror);
-    if (parentClassMirror == null) {
-      return result;
-    }
-    final DeclarationMirror parentDeclarationMirror =
-        getDeclarationMirror(parentClassMirror, declarationMirror.simpleName);
-    result.addAll(parentClassMirror.isTopLevel
-        ? parentDeclarationMirror.metadata
-        : lookupMetaData(parentDeclarationMirror));
-    return result;
-  }
-
   bool isFieldIgnored(JsonProperty meta, dynamic value) {
     return meta != null &&
         (meta.ignore == true || meta.ignoreIfNull == true && value == null);
   }
 
   enumeratePublicFields(InstanceMirror instanceMirror, Function visitor) {
-    ClassMirror classMirror = instanceMirror.type;
-    for (String name in getPublicFieldNames(classMirror)) {
+    ClassInfo classInfo = ClassInfo(instanceMirror.type);
+    for (String name in classInfo.publicFieldNames) {
       String jsonName = name;
       DeclarationMirror declarationMirror =
-          getDeclarationMirror(classMirror, name);
+          classInfo.getDeclarationMirror(name);
       if (declarationMirror == null) {
         continue;
       }
       Type variableScalarType =
           getScalarType(getDeclarationType(declarationMirror));
-      bool isGetterOnly = classMirror.instanceMembers[name + '='] == null;
-      JsonProperty meta = lookupMetaData(declarationMirror)
+      bool isGetterOnly = classInfo.isGetterOnly(name);
+      JsonProperty meta = classInfo
+          .lookupMetaData(declarationMirror)
           .firstWhere((m) => m is JsonProperty, orElse: () => null);
       dynamic value = instanceMirror.invokeGetter(name);
       if (isFieldIgnored(meta, value)) {
@@ -342,14 +284,15 @@ class JsonMapper {
   }
 
   enumerateConstructorParameters(ClassMirror classMirror, Function visitor) {
-    MethodMirror methodMirror = getPublicConstructor(classMirror);
+    ClassInfo classInfo = ClassInfo(classMirror);
+    MethodMirror methodMirror = classInfo.publicConstructor;
     if (methodMirror == null) {
       return;
     }
     methodMirror.parameters.forEach((ParameterMirror param) {
       String name = param.simpleName;
       DeclarationMirror declarationMirror =
-          getDeclarationMirror(classMirror, name);
+          ClassInfo(classMirror).getDeclarationMirror(name);
       TypeInfo paramTypeInfo = TypeInfo(param.reflectedType);
       if (declarationMirror == null) {
         return;
@@ -561,6 +504,77 @@ class JsonMapper {
   }
 }
 
+/// Provides unified access to class information based on [ClassMirror]
+class ClassInfo {
+  ClassMirror classMirror;
+
+  ClassInfo(this.classMirror);
+
+  MethodMirror get publicConstructor {
+    return classMirror.declarations.values.where((DeclarationMirror dm) {
+      return !dm.isPrivate && dm is MethodMirror && dm.isConstructor;
+    }).first;
+  }
+
+  List<String> get publicFieldNames {
+    Map<String, MethodMirror> instanceMembers = classMirror.instanceMembers;
+    return instanceMembers.values
+        .where((MethodMirror method) {
+          final isGetterAndSetter = method.isGetter &&
+              classMirror.instanceMembers[method.simpleName + '='] != null;
+          return (method.isGetter &&
+                  (method.isSynthetic || isGetterAndSetter)) &&
+              !method.isPrivate;
+        })
+        .map((MethodMirror method) => method.simpleName)
+        .toList();
+  }
+
+  ClassMirror _safeGetParentClassMirror(DeclarationMirror declarationMirror) {
+    ClassMirror result;
+    try {
+      result = declarationMirror.owner;
+    } catch (error) {}
+    return result;
+  }
+
+  List<Object> lookupMetaData(DeclarationMirror declarationMirror) {
+    final result = []..addAll(declarationMirror.metadata);
+    final ClassMirror parentClassMirror =
+        _safeGetParentClassMirror(declarationMirror);
+    if (parentClassMirror == null) {
+      return result;
+    }
+    final DeclarationMirror parentDeclarationMirror =
+        ClassInfo(parentClassMirror)
+            .getDeclarationMirror(declarationMirror.simpleName);
+    result.addAll(parentClassMirror.isTopLevel
+        ? parentDeclarationMirror.metadata
+        : lookupMetaData(parentDeclarationMirror));
+    return result;
+  }
+
+  bool isGetterOnly(String name) {
+    return classMirror.instanceMembers[name + '='] == null;
+  }
+
+  DeclarationMirror getDeclarationMirror(String name) {
+    DeclarationMirror result;
+    try {
+      result = classMirror.declarations[name] as VariableMirror;
+    } catch (error) {}
+    if (result == null) {
+      classMirror.instanceMembers
+          .forEach((memberName, MethodMirror methodMirror) {
+        if (memberName == name) {
+          result = methodMirror;
+        }
+      });
+    }
+    return result;
+  }
+}
+
 /// Provides enhanced type information based on `Type.toString()` value
 class TypeInfo {
   Type type;
@@ -624,7 +638,7 @@ class TypeInfo {
     if (typeName == "Symbol") {
       return Symbol;
     }
-    if (typeName == "dynamic") {
+    if (isDynamic) {
       return dynamic;
     }
     return null;

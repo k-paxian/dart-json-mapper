@@ -1,3 +1,8 @@
+## 1.1.9
+
+* proper fix for issue #9
+* refactoring
+
 ## 1.1.8
 
 * @JsonProperty.ignoreIfNull introduced, to skip null properties from processing
