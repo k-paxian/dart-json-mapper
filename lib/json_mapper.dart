@@ -248,7 +248,8 @@ class JsonMapper {
         (meta.ignore == true || meta.ignoreIfNull == true && value == null);
   }
 
-  enumeratePublicFields(InstanceMirror instanceMirror, Function visitor) {
+  enumeratePublicFields(InstanceMirror instanceMirror,
+      Map<String, dynamic> jsonMap, Function visitor) {
     ClassInfo classInfo = ClassInfo(instanceMirror.type);
     for (String name in classInfo.publicFieldNames) {
       String jsonName = name;
@@ -263,12 +264,18 @@ class JsonMapper {
       JsonProperty meta = classInfo
           .lookupMetaData(declarationMirror)
           .firstWhere((m) => m is JsonProperty, orElse: () => null);
-      dynamic value = instanceMirror.invokeGetter(name);
-      if (isFieldIgnored(meta, value)) {
-        continue;
-      }
       if (meta != null && meta.name != null) {
         jsonName = meta.name;
+      }
+      dynamic value = instanceMirror.invokeGetter(name);
+      if (value == null && jsonMap != null) {
+        if (isFieldIgnored(meta, jsonMap[jsonName])) {
+          continue;
+        }
+      } else {
+        if (isFieldIgnored(meta, value)) {
+          continue;
+        }
       }
       visitor(
           name,
@@ -425,7 +432,7 @@ class JsonMapper {
 
     Map result = {};
     dumpTypeNameToObjectProperty(result, im.type);
-    enumeratePublicFields(im, (name, jsonName, value, isGetterOnly, meta,
+    enumeratePublicFields(im, null, (name, jsonName, value, isGetterOnly, meta,
         converter, scalarType, TypeInfo typeInfo) {
       if (converter != null) {
         TypeInfo valueTypeInfo = TypeInfo(value.runtimeType);
@@ -476,7 +483,7 @@ class JsonMapper {
             getNamedArguments(cm, jsonMap));
     InstanceMirror im = safeGetInstanceMirror(objectInstance);
 
-    enumeratePublicFields(im, (name, jsonName, value, isGetterOnly,
+    enumeratePublicFields(im, jsonMap, (name, jsonName, value, isGetterOnly,
         JsonProperty meta, converter, scalarType, TypeInfo typeInfo) {
       var fieldValue = jsonMap[jsonName];
       if (fieldValue is List) {

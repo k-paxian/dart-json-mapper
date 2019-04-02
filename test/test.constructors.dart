@@ -100,7 +100,21 @@ class IgnoredFieldClass {
   @JsonProperty(ignore: true)
   String lastName;
 
-  IgnoredFieldClass(this.firstName, this.lastName);
+  @JsonProperty(ignoreIfNull: true)
+  String middleName;
+
+  IgnoredFieldClass({this.firstName, this.middleName, this.lastName});
+}
+
+@jsonSerializable
+class IgnoredFieldClassWoConstructor {
+  String firstName;
+
+  @JsonProperty(ignore: true)
+  String lastName;
+
+  @JsonProperty(ignoreIfNull: true)
+  String middleName;
 }
 
 @jsonSerializable
@@ -211,7 +225,10 @@ testConstructors() {
 
     test("IgnoredFieldClass class", () {
       // given
-      var instance = IgnoredFieldClass("Bob", "Marley");
+      final String json =
+          '{"firstName":"Bob","middleName":"Jr","lastName":"Marley"}';
+      var instance = IgnoredFieldClass(
+          firstName: "Bob", middleName: null, lastName: "Marley");
       // when
       var target = JsonMapper.serialize(instance, '');
       // then
@@ -219,9 +236,16 @@ testConstructors() {
 
       // when
       IgnoredFieldClass instance2 = JsonMapper.deserialize(json);
+      IgnoredFieldClassWoConstructor instance3 = JsonMapper.deserialize(json);
+
       // then
       expect(instance2.firstName, "Bob");
+      expect(instance2.middleName, "Jr");
       expect(instance2.lastName, null);
+
+      expect(instance3.firstName, "Bob");
+      expect(instance3.middleName, "Jr");
+      expect(instance3.lastName, null);
     });
 
     test("Immutable class", () {

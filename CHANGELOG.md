@@ -1,3 +1,7 @@
+## 1.1.10
+
+* fix for issue #15
+
 ## 1.1.9
 
 * proper fix for issue #9
