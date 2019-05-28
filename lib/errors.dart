@@ -51,6 +51,8 @@ class _MissingTypeForDeserializationErrorImpl extends Error
   _MissingTypeForDeserializationErrorImpl() : super();
 
   toString() => "It seems you've omitted target Type for deserialization.\n"
-      "You should call it like this: JsonMapper.deserialize<TargetType>(jsonString)\n"
-      "OR Infere type via result variable like: TargetType target = JsonMapper.deserialize(jsonString)";
+      "You should call it like this: JsonMapper.deserialize<TargetType>"
+      "(jsonString)\n"
+      "OR Infere type via result variable like: TargetType target = "
+      "JsonMapper.deserialize(jsonString)";
 }

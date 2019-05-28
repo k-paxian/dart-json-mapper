@@ -132,7 +132,9 @@ class JsonMapper {
     InstanceMirror result;
     try {
       result = serializable.reflect(object);
-    } catch (error) {}
+    } catch (error) {
+      return result;
+    }
     return result;
   }
 
@@ -185,20 +187,24 @@ class JsonMapper {
   }
 
   Type getDeclarationType(DeclarationMirror mirror) {
-    Type result;
+    Type result = dynamic;
     VariableMirror variable;
     MethodMirror method;
 
     try {
       variable = mirror as VariableMirror;
       result = variable.hasReflectedType ? variable.reflectedType : null;
-    } catch (error) {}
+    } catch (error) {
+      return result;
+    }
 
     try {
       method = mirror as MethodMirror;
       result =
           method.hasReflectedReturnType ? method.reflectedReturnType : null;
-    } catch (error) {}
+    } catch (error) {
+      return result;
+    }
 
     if (result == null) {
       result = dynamic;
@@ -541,7 +547,9 @@ class ClassInfo {
     ClassMirror result;
     try {
       result = declarationMirror.owner;
-    } catch (error) {}
+    } catch (error) {
+      return result;
+    }
     return result;
   }
 
@@ -569,7 +577,9 @@ class ClassInfo {
     DeclarationMirror result;
     try {
       result = classMirror.declarations[name] as VariableMirror;
-    } catch (error) {}
+    } catch (error) {
+      result = null;
+    }
     if (result == null) {
       classMirror.instanceMembers
           .forEach((memberName, MethodMirror methodMirror) {

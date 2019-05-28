@@ -1,3 +1,7 @@
+## 1.1.11
+
+* fix lint errors, update dependencies
+
 ## 1.1.10
 
 * fix for issue #15

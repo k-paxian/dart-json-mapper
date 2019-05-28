@@ -40,8 +40,8 @@ class JsonProperty {
   /// serialization / deserialization process
   final bool ignore;
 
-  /// Declares annotated field as ignored if it's value is null so it will be excluded from
-  /// serialization / deserialization process
+  /// Declares annotated field as ignored if it's value is null so it
+  /// will be excluded from serialization / deserialization process
   final bool ignoreIfNull;
 
   /// Provides a way to specify enum values, via Dart built in
@@ -68,8 +68,8 @@ class JsonProperty {
   }
 }
 
-/// [jsonSerializable] is used as shorthand metadata, marking classes targeted for
-/// serialization / deserialization, w/o "()"
+/// [jsonSerializable] is used as shorthand metadata, marking classes targeted
+/// for serialization / deserialization, w/o "()"
 const jsonSerializable = JsonSerializable();
 
 /// [JsonSerializable] is used as metadata, marking classes as

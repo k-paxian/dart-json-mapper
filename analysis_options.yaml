@@ -18,3 +18,4 @@ linter:
     - close_sinks
     - unnecessary_const
     - unnecessary_new
+    - empty_catches
