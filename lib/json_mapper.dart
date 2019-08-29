@@ -35,6 +35,11 @@ class JsonMapper {
   }
 
   /// Converts Dart object to JSON string, indented by `indent`
+  static String toJson(Object object, [String indent]) {
+    return serialize(object, indent);
+  }
+
+  /// Converts Dart object to JSON string, indented by `indent`
   static String serialize(Object object, [String indent]) {
     instance.processedObjects.clear();
     JsonEncoder encoder = instance.jsonEncoder;
@@ -52,6 +57,11 @@ class JsonMapper {
   static T deserialize<T>(String jsonValue) {
     assert(T != dynamic ? true : throw MissingTypeForDeserializationError());
     return instance.deserializeObject(jsonValue, T);
+  }
+
+  /// Converts JSON string to Dart object of type T
+  static T fromJson<T>(String jsonValue) {
+    return deserialize<T>(jsonValue);
   }
 
   /// Converts Dart object to Map<String, dynamic>

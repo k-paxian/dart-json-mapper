@@ -1,3 +1,7 @@
+## 1.1.12
+
+* A convenience toJson/fromJson methods introduced
+
 ## 1.1.11
 
 * fix lint errors, update dependencies
