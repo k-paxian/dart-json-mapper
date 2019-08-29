@@ -107,11 +107,11 @@ provide [intl][2] based formatting patterns.
 
 **DateTime**
 ```dart
-  @JsonProperty(converterParams: {'format': 'MM-dd-yyyy H:m:s'})
-  DateTime lastPromotionDate = DateTime(2008, 05, 13, 22, 33, 44);
+@JsonProperty(converterParams: {'format': 'MM-dd-yyyy H:m:s'})
+DateTime lastPromotionDate = DateTime(2008, 05, 13, 22, 33, 44);
 
-  @JsonProperty(converterParams: {'format': 'MM/dd/yyyy'})
-  DateTime hireDate = DateTime(2003, 02, 28);
+@JsonProperty(converterParams: {'format': 'MM/dd/yyyy'})
+DateTime hireDate = DateTime(2003, 02, 28);
 ```
 
 ```json
@@ -123,8 +123,8 @@ provide [intl][2] based formatting patterns.
 
 **num**
 ```dart
-  @JsonProperty(converterParams: {'format': '##.##'})
-  num salary = 1200000.246;
+@JsonProperty(converterParams: {'format': '##.##'})
+num salary = 1200000.246;
 ```
 
 ```json
@@ -196,10 +196,11 @@ In order to do so, we'll use Value Decorator Function inspired by Decorator patt
 ```dart
 final iterableCarDecorator = (value) => value.cast<Car>();
 final String json = '[{"modelName": "Audi", "color": "Color.Green"}]';
-JsonMapper.registerValueDecorator<List<Car>>(iterableCarDecorator);
-JsonMapper.registerValueDecorator<Set<Car>>(iterableCarDecorator);
 
+JsonMapper.registerValueDecorator<List<Car>>(iterableCarDecorator);
 List<Car> myCarsList = JsonMapper.deserialize(json);
+...
+JsonMapper.registerValueDecorator<Set<Car>>(iterableCarDecorator);
 Set<Car> myCarsSet = JsonMapper.deserialize(json);
 ```
 
