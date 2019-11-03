@@ -81,6 +81,7 @@ class Person {
 enum BusinessType { Private, Public }
 
 @jsonSerializable
+@Json(typeNameProperty: 'typeName')
 abstract class Business {
   String name;
   @JsonProperty(enumValues: BusinessType.values)
@@ -88,7 +89,6 @@ abstract class Business {
 }
 
 @jsonSerializable
-@Json(includeTypeName: true)
 class Hotel extends Business {
   int stars;
 
@@ -96,7 +96,6 @@ class Hotel extends Business {
 }
 
 @jsonSerializable
-@Json(includeTypeName: true)
 class Startup extends Business {
   int userCount;
 

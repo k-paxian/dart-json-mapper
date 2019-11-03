@@ -219,6 +219,8 @@ Enum declarations should not be annotated with `@jsonSerializable`, since they a
 technically, but a special built in types.
 
 ```dart
+enum Color { Red, Blue, Green, Brown, Yellow, Black, White }
+...
 @JsonProperty(enumValues: Color.values)
 Color color;
 ```
@@ -229,7 +231,7 @@ enum based types. Without providing all values it's not possible to traverse it'
 
 ## Inherited classes derived from abstract / base class
 
-Please use complementary `@Json(includeTypeName: true)` annotation for subclasses
+Please use complementary `@Json(typeNameProperty: 'typeName')` annotation for subclasses
 derived from abstract or base class. This way _dart-json-mapper_
 will dump the concrete object type to the JSON output during serialization process.
 This ensures, that _dart-json-mapper_ will be able to reconstruct the object with
@@ -237,12 +239,12 @@ the proper type during deserialization process.
 
 ``` dart
 @jsonSerializable
+@Json(typeNameProperty: 'typeName')
 abstract class Business {
   String name;
 }
 
 @jsonSerializable
-@Json(includeTypeName: true)
 class Hotel extends Business {
   int stars;
 
@@ -250,7 +252,6 @@ class Hotel extends Business {
 }
 
 @jsonSerializable
-@Json(includeTypeName: true)
 class Startup extends Business {
   int userCount;
 
@@ -276,13 +277,6 @@ final Stakeholder target = JsonMapper.deserialize(json);
 // then
 expect(target.businesses[0], TypeMatcher<Startup>());
 expect(target.businesses[1], TypeMatcher<Hotel>());
-```
-
-Using static `JsonMapper.typeNameProperty` you can specify suitable name
-for the json property, which will contain the object type:
-
-``` dart
-JsonMapper.typeNameProperty = "objectType";
 ```
 
 ## Custom based types handling

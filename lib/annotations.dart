@@ -5,16 +5,17 @@ import "package:reflectable/reflectable.dart";
 
 typedef ValueDecoratorFunction = dynamic Function(dynamic value);
 
-final String DEFAULT_TYPE_NAME_PROPERTY = '@@type';
-
 /// [Json] is used as metadata, to annotate Dart class as top level Json object
 class Json {
-  /// Declares necessity for annotated class to dump type name to
-  /// special json property. Please use [JsonMapper.typeNameProperty] to
-  /// setup suitable json property name. [DEFAULT_TYPE_NAME_PROPERTY] by default.
-  final bool includeTypeName;
+  /// Declares necessity for annotated class and all it's subclasses to dump type name to
+  /// custom named json property.
+  final String typeNameProperty;
 
-  const Json({this.includeTypeName});
+  /// Null class members
+  /// will be excluded from serialization process
+  final bool ignoreNullMembers;
+
+  const Json({this.typeNameProperty, this.ignoreNullMembers});
 }
 
 /// [JsonProperty] is used as metadata, for annotation of individual class fields
@@ -30,12 +31,6 @@ class JsonProperty {
   /// Map of named parameters to be passed to the custom converter instance
   final Map<String, dynamic> converterParams;
 
-  /// Decorate value before setting it to the new instance field during
-  /// deserialization process.
-  ///
-  /// Most commonly used for casting List<dynamic> to List<T>
-  final ValueDecoratorFunction valueDecoratorFunction;
-
   /// Declares annotated field as ignored so it will be excluded from
   /// serialization / deserialization process
   final bool ignore;
@@ -50,7 +45,6 @@ class JsonProperty {
 
   const JsonProperty(
       {this.name,
-      this.valueDecoratorFunction,
       this.ignore,
       this.ignoreIfNull,
       this.converter,
@@ -81,5 +75,6 @@ class JsonSerializable extends Reflectable {
             metadataCapability,
             reflectedTypeCapability,
             newInstanceCapability,
+            typeRelationsCapability,
             declarationsCapability);
 }

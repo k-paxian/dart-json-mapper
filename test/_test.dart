@@ -17,6 +17,7 @@ part 'test.constructors.dart';
 part 'test.converters.dart';
 part 'test.errors.dart';
 part 'test.integration.dart';
+part 'test.partial.deserialization.dart';
 part 'test.value.decorators.dart';
 
 void main() {
@@ -26,5 +27,6 @@ void main() {
   testConverters();
   testValueDecorators();
   testConstructors();
+  testPartialDeserialization();
   testIntegration();
 }

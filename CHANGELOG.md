@@ -1,3 +1,8 @@
+## 1.2.0
+
+* Improved configuration for class hierarchies processing. [breaking change]
+* fix for issues #19, #18
+
 ## 1.1.12
 
 * A convenience toJson/fromJson methods introduced

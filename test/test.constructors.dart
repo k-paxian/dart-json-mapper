@@ -94,6 +94,16 @@ class NamedParametersClass {
 }
 
 @jsonSerializable
+@Json(ignoreNullMembers: true)
+class IgnoreNullMembersClass {
+  String firstName;
+  String lastName;
+  String middleName;
+
+  IgnoreNullMembersClass({this.firstName, this.middleName, this.lastName});
+}
+
+@jsonSerializable
 class IgnoredFieldClass {
   String firstName;
 
@@ -221,6 +231,15 @@ testConstructors() {
           JsonMapper.deserialize('{"list":["Bob","Marley"]}');
       // then
       expect(instance.list.length, 2);
+    });
+
+    test("IgnoreNullMembers class", () {
+      // given
+      final instance = IgnoreNullMembersClass(firstName: "Bob");
+      // when
+      final target = JsonMapper.serialize(instance, '');
+      // then
+      expect(target, '{"firstName":"Bob"}');
     });
 
     test("IgnoredFieldClass class", () {

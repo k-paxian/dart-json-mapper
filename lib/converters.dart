@@ -48,7 +48,7 @@ class DateConverter extends BaseCustomConverter implements ICustomConverter {
   @override
   dynamic toJSON(Object object, [JsonProperty jsonProperty]) {
     DateFormat format = getDateFormat(jsonProperty);
-    return format != null && !(object is String)
+    return format != null && object != null && !(object is String)
         ? format.format(object)
         : (object is List)
             ? object.map((item) => item.toString()).toList()
@@ -97,7 +97,8 @@ class EnumConverter implements ICustomConverter {
 
   @override
   Object fromJSON(dynamic jsonValue, [JsonProperty jsonProperty]) {
-    if (jsonProperty.isEnumValuesValid(jsonValue) != true) {
+    if (jsonValue != null &&
+        jsonProperty.isEnumValuesValid(jsonValue) != true) {
       throw MissingEnumValuesError(jsonValue.runtimeType);
     }
     return jsonProperty.enumValues.firstWhere(
@@ -143,11 +144,13 @@ class SymbolConverter implements ICustomConverter {
 
   @override
   dynamic toJSON(Object object, [JsonProperty jsonProperty]) {
-    return RegExp('"(.+)"')
-        .allMatches(object.toString())
-        .first
-        .group(0)
-        .replaceAll("\"", '');
+    return object != null
+        ? RegExp('"(.+)"')
+            .allMatches(object.toString())
+            .first
+            .group(0)
+            .replaceAll("\"", '')
+        : null;
   }
 }
 

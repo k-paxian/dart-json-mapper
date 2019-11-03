@@ -156,8 +156,7 @@ testValueDecorators() {
           (value) => value.cast<ServiceOrderItemModel>());
 
       // when
-      List<ServiceOrderModel> target =
-          JsonMapper.deserialize(ordersListJson);
+      List<ServiceOrderModel> target = JsonMapper.deserialize(ordersListJson);
 
       // then
       expect(target.length, 1);
@@ -168,7 +167,7 @@ testValueDecorators() {
 
     test(
         "Should dump typeName to json property when"
-        " @Json(includeTypeName: true)", () {
+        " @Json(typeNameProperty: 'typeName')", () {
       // given
       final jack = Stakeholder("Jack", [Startup(10), Hotel(4)]);
 

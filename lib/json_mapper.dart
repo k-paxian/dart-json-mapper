@@ -21,9 +21,6 @@ class JsonMapper {
   final Map<Type, ICustomConverter> converters = {};
   final Map<Type, ValueDecoratorFunction> valueDecorators = {};
 
-  /// Customize name for Json property to store class type name
-  static String typeNameProperty = DEFAULT_TYPE_NAME_PROPERTY;
-
   /// Assign custom converter instance for certain Type
   static void registerConverter<T>(ICustomConverter converter) {
     instance.converters[T] = converter;
@@ -188,8 +185,7 @@ class JsonMapper {
 
   ValueDecoratorFunction getValueDecorator(
       JsonProperty jsonProperty, Type type) {
-    ValueDecoratorFunction result =
-        jsonProperty != null ? jsonProperty.valueDecoratorFunction : null;
+    ValueDecoratorFunction result;
     if (result == null && valueDecorators[type] != null) {
       result = valueDecorators[type];
     }
@@ -254,14 +250,18 @@ class JsonMapper {
     if (typeInfo.isSet && value is! Set && value is Iterable) {
       value = Set.from(value);
     }
-    return valueDecoratorFunction != null
+    return valueDecoratorFunction != null && value != null
         ? valueDecoratorFunction(value)
         : value;
   }
 
-  bool isFieldIgnored(JsonProperty meta, dynamic value) {
-    return meta != null &&
-        (meta.ignore == true || meta.ignoreIfNull == true && value == null);
+  bool isFieldIgnored(Json classMeta, JsonProperty meta, dynamic value) {
+    return (meta != null &&
+            (meta.ignore == true ||
+                meta.ignoreIfNull == true && value == null)) ||
+        (classMeta != null &&
+            classMeta.ignoreNullMembers == true &&
+            value == null);
   }
 
   enumeratePublicFields(InstanceMirror instanceMirror,
@@ -278,18 +278,20 @@ class JsonMapper {
           getScalarType(getDeclarationType(declarationMirror));
       bool isGetterOnly = classInfo.isGetterOnly(name);
       JsonProperty meta = classInfo
-          .lookupMetaData(declarationMirror)
+          .lookupDeclarationMetaData(declarationMirror)
           .firstWhere((m) => m is JsonProperty, orElse: () => null);
+      Json classMeta =
+          classInfo.metaData.firstWhere((m) => m is Json, orElse: () => null);
       if (meta != null && meta.name != null) {
         jsonName = meta.name;
       }
       dynamic value = instanceMirror.invokeGetter(name);
       if (value == null && jsonMap != null) {
-        if (isFieldIgnored(meta, jsonMap[jsonName])) {
+        if (isFieldIgnored(classMeta, meta, jsonMap[jsonName])) {
           continue;
         }
       } else {
-        if (isFieldIgnored(meta, value)) {
+        if (isFieldIgnored(classMeta, meta, value)) {
           continue;
         }
       }
@@ -308,6 +310,8 @@ class JsonMapper {
 
   enumerateConstructorParameters(ClassMirror classMirror, Function visitor) {
     ClassInfo classInfo = ClassInfo(classMirror);
+    Json classMeta =
+        classInfo.metaData.firstWhere((m) => m is Json, orElse: () => null);
     MethodMirror methodMirror = classInfo.publicConstructor;
     if (methodMirror == null) {
       return;
@@ -330,31 +334,41 @@ class JsonMapper {
         jsonName = meta.name;
       }
 
-      visitor(param, name, jsonName, meta, paramTypeInfo);
+      visitor(param, name, jsonName, classMeta, meta, paramTypeInfo);
     });
   }
 
   dumpTypeNameToObjectProperty(dynamic object, ClassMirror classMirror) {
+    ClassInfo classInfo = ClassInfo(classMirror);
     final Json meta =
-        classMirror.metadata.firstWhere((m) => m is Json, orElse: () => null);
-    if (meta != null && meta.includeTypeName == true) {
+        classInfo.metaData.firstWhere((m) => m is Json, orElse: () => null);
+    if (meta != null && meta.typeNameProperty != null) {
       final typeInfo = TypeInfo(classMirror.reflectedType);
-      object[typeNameProperty] = typeInfo.typeName;
+      object[meta.typeNameProperty] = typeInfo.typeName;
     }
   }
 
   TypeInfo detectObjectType(dynamic objectInstance, Type objectType,
       Map<String, dynamic> objectJsonMap) {
+    final ClassMirror objectClassMirror = classes[objectType.toString()];
+    final ClassInfo objectClassInfo = ClassInfo(objectClassMirror);
+    final Json meta = objectClassInfo.metaData
+        .firstWhere((m) => m is Json, orElse: () => null);
+
     if (objectInstance is Map<String, dynamic>) {
       objectJsonMap = objectInstance;
     }
-    TypeInfo typeInfo =
+    final TypeInfo typeInfo =
         TypeInfo(objectType != null ? objectType : objectInstance.runtimeType);
-    String typeName =
-        objectJsonMap != null && objectJsonMap.containsKey(typeNameProperty)
-            ? objectJsonMap[typeNameProperty]
-            : typeInfo.typeName;
-    Type type = classes[typeName] != null
+
+    final String typeName = objectJsonMap != null &&
+            meta != null &&
+            meta.typeNameProperty != null &&
+            objectJsonMap.containsKey(meta.typeNameProperty)
+        ? objectJsonMap[meta.typeNameProperty]
+        : typeInfo.typeName;
+
+    final Type type = classes[typeName] != null
         ? classes[typeName].reflectedType
         : typeInfo.type;
     return TypeInfo(type);
@@ -365,10 +379,10 @@ class JsonMapper {
     Map<Symbol, dynamic> result = Map();
 
     enumerateConstructorParameters(cm,
-        (param, name, jsonName, meta, TypeInfo typeInfo) {
+        (param, name, jsonName, classMeta, meta, TypeInfo typeInfo) {
       if (param.isNamed && jsonMap.containsKey(jsonName)) {
         var value = jsonMap[jsonName];
-        if (isFieldIgnored(meta, value)) {
+        if (isFieldIgnored(classMeta, meta, value)) {
           return;
         }
         TypeInfo parameterTypeInfo =
@@ -392,8 +406,8 @@ class JsonMapper {
   List getPositionalArguments(ClassMirror cm, Map<String, dynamic> jsonMap) {
     List result = [];
 
-    enumerateConstructorParameters(cm,
-        (param, name, jsonName, JsonProperty meta, TypeInfo typeInfo) {
+    enumerateConstructorParameters(cm, (param, name, jsonName, classMeta,
+        JsonProperty meta, TypeInfo typeInfo) {
       if (!param.isOptional &&
           !param.isNamed &&
           jsonMap.containsKey(jsonName)) {
@@ -409,7 +423,7 @@ class JsonMapper {
           value = deserializeObject(value, parameterTypeInfo.type, meta);
         }
         value = applyValueDecorator(value, parameterTypeInfo, meta);
-        if (isFieldIgnored(meta, value)) {
+        if (isFieldIgnored(classMeta, meta, value)) {
           value = null;
         }
         result.add(value);
@@ -501,6 +515,9 @@ class JsonMapper {
 
     enumeratePublicFields(im, jsonMap, (name, jsonName, value, isGetterOnly,
         JsonProperty meta, converter, scalarType, TypeInfo typeInfo) {
+      if (!jsonMap.containsKey(jsonName)) {
+        return;
+      }
       var fieldValue = jsonMap[jsonName];
       if (fieldValue is List) {
         fieldValue = fieldValue
@@ -533,6 +550,10 @@ class ClassInfo {
 
   ClassInfo(this.classMirror);
 
+  List<Object> get metaData {
+    return lookupClassMetaData(classMirror);
+  }
+
   MethodMirror get publicConstructor {
     return classMirror.declarations.values.where((DeclarationMirror dm) {
       return !dm.isPrivate && dm is MethodMirror && dm.isConstructor;
@@ -563,7 +584,29 @@ class ClassInfo {
     return result;
   }
 
-  List<Object> lookupMetaData(DeclarationMirror declarationMirror) {
+  ClassMirror _safeGetSuperClassMirror(ClassMirror classMirror) {
+    ClassMirror result;
+    try {
+      result = classMirror.superclass;
+    } catch (error) {
+      return result;
+    }
+    return result;
+  }
+
+  List<Object> lookupClassMetaData(ClassMirror classMirror) {
+    if (classMirror == null) {
+      return [];
+    }
+    final result = []..addAll(classMirror.metadata);
+    result.addAll(lookupClassMetaData(_safeGetSuperClassMirror(classMirror)));
+    return result;
+  }
+
+  List<Object> lookupDeclarationMetaData(DeclarationMirror declarationMirror) {
+    if (declarationMirror == null) {
+      return [];
+    }
     final result = []..addAll(declarationMirror.metadata);
     final ClassMirror parentClassMirror =
         _safeGetParentClassMirror(declarationMirror);
@@ -575,7 +618,7 @@ class ClassInfo {
             .getDeclarationMirror(declarationMirror.simpleName);
     result.addAll(parentClassMirror.isTopLevel
         ? parentDeclarationMirror.metadata
-        : lookupMetaData(parentDeclarationMirror));
+        : lookupDeclarationMetaData(parentDeclarationMirror));
     return result;
   }
 
