@@ -1,3 +1,7 @@
+## 1.2.1
+
+* fix for issue #20
+
 ## 1.2.0
 
 * Improved configuration for class hierarchies processing. [breaking change]

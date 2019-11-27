@@ -201,7 +201,7 @@ class JsonMapper {
       variable = mirror as VariableMirror;
       result = variable.hasReflectedType ? variable.reflectedType : null;
     } catch (error) {
-      return result;
+      result = result;
     }
 
     try {
@@ -209,7 +209,7 @@ class JsonMapper {
       result =
           method.hasReflectedReturnType ? method.reflectedReturnType : null;
     } catch (error) {
-      return result;
+      result = result;
     }
 
     if (result == null) {

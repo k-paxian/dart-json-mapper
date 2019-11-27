@@ -1,6 +1,14 @@
 part of json_mapper.test;
 
-@JsonSerializable()
+@jsonSerializable
+class TestChain extends _TestChain {}
+
+@jsonSerializable
+abstract class _TestChain {
+  List<String> mailingList = List<String>();
+}
+
+@jsonSerializable
 class Customer {
   @JsonProperty(name: 'Id')
   final int id;
@@ -10,7 +18,7 @@ class Customer {
   const Customer(this.id, this.name);
 }
 
-@JsonSerializable()
+@jsonSerializable
 class ServiceOrderItemModel {
   @JsonProperty(name: 'Id')
   final int id;
@@ -22,7 +30,7 @@ class ServiceOrderItemModel {
   const ServiceOrderItemModel({this.id, this.sequence, this.description});
 }
 
-@JsonSerializable()
+@jsonSerializable
 class ServiceOrderModel {
   @JsonProperty(name: 'Id')
   int id;
@@ -96,6 +104,22 @@ testValueDecorators() {
   final iterableCustomerDecorator = (value) => value.cast<Customer>();
 
   group("[Verify value decorators]", () {
+    test("Inherited List<String> property", () {
+      // given
+      final test = TestChain();
+      test.mailingList.add("test12345@test.com");
+      test.mailingList.add("test2222@test.com");
+      test.mailingList.add("test33333@test.com");
+      // when
+      final json = JsonMapper.serialize(test, '');
+      final instance = JsonMapper.deserialize<TestChain>(json);
+      // then
+      expect(json,
+          '''{"mailingList":["test12345@test.com","test2222@test.com","test33333@test.com"]}''');
+      expect(instance, TypeMatcher<TestChain>());
+      expect(instance.mailingList.length, 3);
+    });
+
     test("Set<int> / List<int> using default value decorators", () {
       // when
       Set<int> targetSet = JsonMapper.deserialize(intListJson);
