@@ -1,3 +1,7 @@
+## 1.2.2
+
+* proper fix for issue #20, support for complementary "adapter" libraries added
+
 ## 1.2.1
 
 * fix for issue #20
