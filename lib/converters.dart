@@ -6,7 +6,6 @@ import 'dart:typed_data' show Uint8List;
 
 import 'package:dart_json_mapper/annotations.dart';
 import 'package:dart_json_mapper/errors.dart';
-import 'package:fixnum/fixnum.dart' show Int32, Int64;
 import 'package:intl/intl.dart';
 
 /// Abstract class for custom converters implementations
@@ -185,40 +184,6 @@ class BigIntConverter implements ICustomConverter {
   @override
   dynamic toJSON(Object object, [JsonProperty jsonProperty]) {
     return object is BigInt ? object.toString() : object;
-  }
-}
-
-const int32Converter = Int32Converter();
-
-/// [Int32] converter
-class Int32Converter implements ICustomConverter {
-  const Int32Converter() : super();
-
-  @override
-  Object fromJSON(dynamic jsonValue, [JsonProperty jsonProperty]) {
-    return jsonValue is String ? Int32.parseInt(jsonValue) : jsonValue;
-  }
-
-  @override
-  dynamic toJSON(Object object, [JsonProperty jsonProperty]) {
-    return object is Int32 ? object.toString() : object;
-  }
-}
-
-const int64Converter = Int64Converter();
-
-/// [Int64] converter
-class Int64Converter implements ICustomConverter {
-  const Int64Converter() : super();
-
-  @override
-  Object fromJSON(dynamic jsonValue, [JsonProperty jsonProperty]) {
-    return jsonValue is String ? Int64.parseInt(jsonValue) : jsonValue;
-  }
-
-  @override
-  dynamic toJSON(Object object, [JsonProperty jsonProperty]) {
-    return object is Int64 ? object.toString() : object;
   }
 }
 
