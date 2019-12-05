@@ -1,5 +1,3 @@
-import "package:fixnum/fixnum.dart" show Int32, Int64;
-
 /// Provides enhanced type information based on `Type.toString()` value
 class TypeInfo {
   Type type;
@@ -64,10 +62,6 @@ class DefaultTypeInfoDecorator implements ITypeInfoDecorator {
         return double;
       case "BigInt":
         return BigInt;
-      case "Int32":
-        return Int32;
-      case "Int64":
-        return Int64;
       case "bool":
         return bool;
       case "String":

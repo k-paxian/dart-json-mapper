@@ -323,10 +323,31 @@ OR use it individually on selected class fields, via `@JsonProperty` annotation
 String title;
 ```
 
+## Complementary adapter libraries
+
+For seamless integration with popular use cases, feel free to pick an 
+existing adapter, or create one for your use case. 
+
+| Name        | Bages | Use case |
+| ----------- |:-----------------------:|:-----------|  
+|[dart-json-mapper-mobx][5]| [![Build Status][mobx-travis-badge]][mobx-travis-badge-url] [![pub package](https://img.shields.io/pub/v/dart_json_mapper_mobx.svg)](https://pub.dartlang.org/packages/dart_json_mapper_mobx) | [MobX][7] |
+|[dart-json-mapper-fixnum][6]| [![Build Status][fixnum-travis-badge]][fixnum-travis-badge-url] [![pub package](https://img.shields.io/pub/v/dart_json_mapper_fixnum.svg)](https://pub.dartlang.org/packages/dart_json_mapper_fixnum) | [Fixnum][8] |
+
+
 [1]: https://github.com/flutter/flutter/issues/1150
 [2]: https://pub.dartlang.org/packages/intl
 [3]: https://pub.dartlang.org/packages/reflectable
 [4]: https://github.com/k-paxian/samples/tree/master/jsonexample
+[5]: https://github.com/k-paxian/dart-json-mapper-mobx
+[6]: https://github.com/k-paxian/dart-json-mapper-fixnum
+[7]: https://mobx.pub
+[8]: https://github.com/dart-lang/fixnum
+
+[mobx-travis-badge]: https://travis-ci.org/k-paxian/dart-json-mapper-mobx.svg?branch=master
+[mobx-travis-badge-url]: https://travis-ci.org/k-paxian/dart-json-mapper-mobx
+
+[fixnum-travis-badge]: https://travis-ci.org/k-paxian/dart-json-mapper-fixnum.svg?branch=master
+[fixnum-travis-badge-url]: https://travis-ci.org/k-paxian/dart-json-mapper-fixnum
 
 [travis-badge]: https://travis-ci.org/k-paxian/dart-json-mapper.svg?branch=master
 [travis-badge-url]: https://travis-ci.org/k-paxian/dart-json-mapper

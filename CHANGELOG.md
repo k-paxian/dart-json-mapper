@@ -1,3 +1,7 @@
+## 1.2.3
+
+* Fixnum support extracted as a standalone adapter library
+
 ## 1.2.2
 
 * proper fix for issue #20, support for complementary "adapter" libraries added

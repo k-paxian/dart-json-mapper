@@ -28,20 +28,6 @@ class BigIntData {
   BigIntData(this.bigInt);
 }
 
-@jsonSerializable
-class Int32IntData {
-  Int32 int32;
-
-  Int32IntData(this.int32);
-}
-
-@jsonSerializable
-class Int64IntData {
-  Int64 int64;
-
-  Int64IntData(this.int64);
-}
-
 testConverters() {
   group("[Verify converters]", () {
     test("Map<String, dynamic> converter", () {
@@ -57,40 +43,6 @@ testConverters() {
       expect(target['b'], TypeMatcher<num>());
     });
 
-    test("Fixnum Int32 converter", () {
-      // given
-      final String rawString = "1234567890";
-      final String json = '{"int32":"${rawString}"}';
-
-      // when
-      String targetJson =
-      JsonMapper.serialize(Int32IntData(Int32.parseInt(rawString)), '');
-      // then
-      expect(targetJson, json);
-
-      // when
-      Int32IntData target = JsonMapper.deserialize(json);
-      // then
-      expect(rawString, target.int32.toString());
-    });
-
-    test("Fixnum Int64 converter", () {
-      // given
-      final String rawString = "1234567890123456789";
-      final String json = '{"int64":"${rawString}"}';
-
-      // when
-      String targetJson =
-      JsonMapper.serialize(Int64IntData(Int64.parseInt(rawString)), '');
-      // then
-      expect(targetJson, json);
-
-      // when
-      Int64IntData target = JsonMapper.deserialize(json);
-      // then
-      expect(rawString, target.int64.toString());
-    });
-
     test("BigInt converter", () {
       // given
       final String rawString = "1234567890000000012345678900";
@@ -98,7 +50,7 @@ testConverters() {
 
       // when
       String targetJson =
-      JsonMapper.serialize(BigIntData(BigInt.parse(rawString)), '');
+          JsonMapper.serialize(BigIntData(BigInt.parse(rawString)), '');
       // then
       expect(targetJson, json);
 
