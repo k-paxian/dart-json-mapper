@@ -319,8 +319,7 @@ class JsonMapper {
       if (declarationMirror == null) {
         continue;
       }
-      Type variableScalarType =
-          getScalarType(getDeclarationType(declarationMirror));
+      Type declarationType = getDeclarationType(declarationMirror);
       bool isGetterOnly = classInfo.isGetterOnly(name);
       JsonProperty meta = classInfo
           .lookupDeclarationMetaData(declarationMirror)
@@ -346,10 +345,10 @@ class JsonMapper {
           value,
           isGetterOnly,
           meta,
-          getConverter(meta, variableScalarType,
-              value != null ? value.runtimeType : null),
-          variableScalarType,
-          getTypeInfo(getDeclarationType(declarationMirror)));
+          getConverter(
+              meta, declarationType, value != null ? value.runtimeType : null),
+          getScalarType(declarationType),
+          getTypeInfo(declarationType));
     }
   }
 

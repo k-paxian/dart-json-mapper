@@ -1,3 +1,7 @@
+## 1.2.4
+
+* fix converter resolution logic
+
 ## 1.2.3
 
 * Fixnum support extracted as a standalone adapter library
