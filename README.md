@@ -1,4 +1,4 @@
-[![Build Status][travis-badge]][travis-badge-url]
+[![Build Status][ci-badge]][ci-badge-url]
 [![pub package](https://img.shields.io/pub/v/dart_json_mapper.svg)](https://pub.dartlang.org/packages/dart_json_mapper)
 
 This package allows programmers to annotate Dart classes in order to
@@ -349,5 +349,5 @@ existing adapter, or create one for your use case.
 [fixnum-travis-badge]: https://travis-ci.org/k-paxian/dart-json-mapper-fixnum.svg?branch=master
 [fixnum-travis-badge-url]: https://travis-ci.org/k-paxian/dart-json-mapper-fixnum
 
-[travis-badge]: https://travis-ci.org/k-paxian/dart-json-mapper.svg?branch=master
-[travis-badge-url]: https://travis-ci.org/k-paxian/dart-json-mapper
+[ci-badge]: https://github.com/k-paxian/dart-json-mapper/workflows/Dart%20CI/badge.svg
+[ci-badge-url]: https://github.com/k-paxian/dart-json-mapper/actions
