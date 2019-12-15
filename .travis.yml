@@ -1,6 +1,0 @@
-language: dart
-xvfb: false
-dart:
-  - stable
-script:
-  - pub run build_runner test
