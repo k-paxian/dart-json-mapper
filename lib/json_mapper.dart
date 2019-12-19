@@ -75,6 +75,11 @@ class JsonMapper {
     return deserialize<T>(jsonValue);
   }
 
+  /// Clone Dart object of type T
+  static T clone<T>(T object) {
+    return fromJson<T>(toJson(object));
+  }
+
   /// Converts Dart object to Map<String, dynamic>
   static Map<String, dynamic> toMap(Object object) {
     return deserialize(serialize(object));
@@ -265,11 +270,11 @@ class JsonMapper {
   }
 
   ICustomConverter getConverter(JsonProperty jsonProperty, Type declarationType,
-      [Type valueType]) {
+      [Type valueType, InstanceMirror im]) {
     ICustomConverter result =
         jsonProperty != null ? jsonProperty.converter : null;
-    if (jsonProperty != null &&
-        jsonProperty.enumValues != null &&
+    if ((jsonProperty != null && jsonProperty.enumValues != null ||
+            isEnumInstance(im)) &&
         result == null) {
       result = enumConverter;
     }
@@ -460,7 +465,10 @@ class JsonMapper {
       throw CircularReferenceError(object);
     }
 
-    ICustomConverter converter = getConverter(null, object.runtimeType);
+    InstanceMirror im = safeGetInstanceMirror(object);
+
+    ICustomConverter converter =
+        getConverter(null, object.runtimeType, null, im);
     if (converter != null) {
       return converter.toJSON(object, null);
     }
@@ -468,7 +476,6 @@ class JsonMapper {
     if (object is Iterable) {
       return object.map(serializeObject).toList();
     }
-    InstanceMirror im = safeGetInstanceMirror(object);
 
     if (im == null || im.type == null) {
       if (im != null) {
@@ -517,8 +524,13 @@ class JsonMapper {
       return applyValueDecorator(value, typeInfo, parentMeta);
     }
 
-    Map<String, dynamic> jsonMap =
-        (jsonValue is String) ? jsonDecoder.convert(jsonValue) : jsonValue;
+    Map<String, dynamic> jsonMap;
+    try {
+      jsonMap =
+          (jsonValue is String) ? jsonDecoder.convert(jsonValue) : jsonValue;
+    } on FormatException {
+      throw MissingEnumValuesError(typeInfo.type);
+    }
     typeInfo = detectObjectType(null, instanceType, jsonMap);
     ClassMirror cm = classes[typeInfo.typeName];
     if (cm == null) {

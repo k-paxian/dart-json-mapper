@@ -19,6 +19,18 @@ testIntegration() {
       expect(targetCar.color, Color.Black);
     });
 
+    test("Object clone", () {
+      // given
+      final car = Car('Tesla S3', Color.Black);
+      // when
+      final clone = JsonMapper.clone(car);
+
+      // then
+      expect(clone == car, false);
+      expect(clone.color == car.color, true);
+      expect(clone.model == car.model, true);
+    });
+
     test("Serialization", () {
       // given
       // when

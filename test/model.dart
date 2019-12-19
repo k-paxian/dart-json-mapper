@@ -1,6 +1,17 @@
 part of json_mapper.test;
 
-enum Color { Red, Blue, Green, Brown, Yellow, Black, White }
+enum Color { Red, Blue, Gray, GrayMetallic, Green, Brown, Yellow, Black, White }
+
+extension ColorModifier on Color {
+  Color get metallic {
+    switch (this) {
+      case Color.Gray:
+        return Color.GrayMetallic;
+      default:
+        return this;
+    }
+  }
+}
 
 @jsonSerializable
 class Car {
@@ -14,6 +25,10 @@ class Car {
   Car replacement;
 
   Car(this.model, this.color);
+}
+
+extension TitledCar on Car {
+  String get title => "${this.model}-${this.color}";
 }
 
 @jsonSerializable
@@ -108,4 +123,11 @@ class Stakeholder {
   List<Business> businesses;
 
   Stakeholder(this.fullName, this.businesses);
+}
+
+@jsonSerializable
+class GettersOnly {
+  int _nextId = 0;
+  String get nextCatId => "c${_nextId++}";
+  String get nextDogId => "h${_nextId++}";
 }

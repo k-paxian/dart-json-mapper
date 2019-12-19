@@ -42,7 +42,13 @@ testErrorHandling() {
     });
 
     test("Missing annotation on Enum field", () {
-      expect(catchError(() => JsonMapper.serialize(UnAnnotatedEnumField())),
+      // Serialize unannotated enum should be fine
+      final json = '''{"sex":"Sex.Female"}''';
+      expect(json, JsonMapper.serialize(UnAnnotatedEnumField(), ''));
+
+      // Deserialize unannotated enum should NOT be fine
+      expect(
+          catchError(() => JsonMapper.deserialize<UnAnnotatedEnumField>(json)),
           TypeMatcher<MissingEnumValuesError>());
     });
 

@@ -1,7 +1,7 @@
 part of json_mapper.test;
 
 testPartialDeserialization() {
-  group("[Verify partial deserialization]", () {
+  group("[Verify partial processing]", () {
     test("Person deserialization", () {
       // given
       final String partialPersonJson = '''{
@@ -16,6 +16,15 @@ testPartialDeserialization() {
       expect(target.fullName, "Bob Marley"); // set from JSON
       expect(target.skills, ['Go', 'Dart', 'Flutter']); // default value
       expect(target.sym, Symbol('foo')); // default value
+    });
+
+    test("Getters only serialization", () {
+      // given
+      final instance = GettersOnly();
+      // when
+      final json = JsonMapper.serialize(instance, '');
+      // then
+      expect(json, '''{"nextCatId":"c0","nextDogId":"h1"}''');
     });
   });
 }

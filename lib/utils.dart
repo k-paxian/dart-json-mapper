@@ -1,5 +1,10 @@
 import 'package:reflectable/reflectable.dart';
 
+bool isEnumInstance(InstanceMirror instanceMirror) =>
+    (instanceMirror != null && instanceMirror.hasReflectee)
+        ? instanceMirror.reflectee.toString().split('.').length == 2
+        : false;
+
 /// Provides unified access to class information based on [ClassMirror]
 class ClassInfo {
   ClassMirror classMirror;
@@ -22,8 +27,12 @@ class ClassInfo {
         .where((MethodMirror method) {
           final isGetterAndSetter = method.isGetter &&
               classMirror.instanceMembers[method.simpleName + '='] != null;
+          final isPublicGetter = method.isGetter &&
+              !method.isRegularMethod &&
+              ['hashCode', 'runtimeType'].indexOf(method.simpleName) < 0;
           return (method.isGetter &&
-                  (method.isSynthetic || isGetterAndSetter)) &&
+                  (method.isSynthetic ||
+                      (isGetterAndSetter || isPublicGetter))) &&
               !method.isPrivate;
         })
         .map((MethodMirror method) => method.simpleName)

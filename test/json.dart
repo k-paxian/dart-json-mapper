@@ -38,7 +38,7 @@ final String personJson = '''{
   "Color.White"
  ],
  "eye_color": "Color.Blue",
- "hairColor": 3,
+ "hairColor": 5,
  "vehicles": [
   {
    "modelName": "Tesla",
@@ -48,5 +48,6 @@ final String personJson = '''{
    "modelName": "BMW",
    "color": "Color.Red"
   }
- ]
+ ],
+ "fullName": "Forest Gump"
 }''';

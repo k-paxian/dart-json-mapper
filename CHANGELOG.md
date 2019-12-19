@@ -1,3 +1,10 @@
+## 1.2.5
+
+* Introduced clone util method. Clone Dart objects made simple!
+* Introduced support for public getters-only serialization
+* Enum fields *serialization* will work w/o `@JsonProperty(enumValues: T.values)` annotation.
+But *deserialization* w/o `@JsonProperty(enumValues: T.values)` annotation will throw an error 
+
 ## 1.2.4
 
 * fix converter resolution logic
