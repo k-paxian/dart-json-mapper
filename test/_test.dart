@@ -17,6 +17,7 @@ part 'test.converters.dart';
 part 'test.errors.dart';
 part 'test.extensions.dart';
 part 'test.integration.dart';
+part 'test.name.path.dart';
 part 'test.partial.deserialization.dart';
 part 'test.value.decorators.dart';
 
@@ -30,4 +31,5 @@ void main() {
   testPartialDeserialization();
   testIntegration();
   testExtensions();
+  testNamePath();
 }

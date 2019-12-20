@@ -9,9 +9,10 @@ This package allows programmers to annotate Dart classes in order to
 * Compatible with **all** Dart platforms, including [Flutter](https://pub.dartlang.org/flutter/packages) and [Web](https://pub.dartlang.org/web/packages) platforms
 * No need to extend your classes from **any** mixins/base/abstract classes to keep code leaner
 * Clean and simple setup, transparent and straightforward usage with **no heavy maintenance**
-* **No extra boilerplate** involved, 100% generated only
+* **No extra boilerplate**, 100% generated code, which you'll *never* see.
 * **Custom converters** per each class field, full control over the process
 * **NO** dependency on `dart:mirrors`, one of the reasons is described [here][1].
+* Because Serialization/Deserialization is **NOT** a responsibility of your Model classes.
 
 Dart classes reflection mechanism is based on [reflectable][3] library. 
 This means "extended types information" is auto-generated out of existing Dart program 
@@ -278,6 +279,56 @@ final Stakeholder target = JsonMapper.deserialize(json);
 expect(target.businesses[0], TypeMatcher<Startup>());
 expect(target.businesses[1], TypeMatcher<Hotel>());
 ```
+
+## Nesting configuration
+
+In case if you need to operate on particular portions of huge JSON object and 
+you don't have a true desire to reconstruct the same deep nested JSON objects 
+hierarchy with corresponding Dart classes. This section is for you!
+
+Say, you have a json similar to this one
+```json
+{
+  "root": {
+    "foo": {
+      "bar": {
+        "baz": {
+          "items": [
+            "a",
+            "b",
+            "c"
+          ]
+        }
+      }
+    }
+  }
+}          
+```
+
+And with code similar to this one
+
+``` dart
+@jsonSerializable
+@Json(name: 'root/foo/bar')
+class RootObject {
+  @JsonProperty(name: 'baz/items')
+  List<String> items;
+
+  RootObject({this.items});
+}
+
+// when
+final RootObject instance = JsonMapper.deserialize(json);
+// then
+expect(instance.items.length, 3);
+expect(instance.items, ['a', 'b', 'c']);
+```  
+you'll have it done nice and quick.
+
+`@Json(name: 'root/foo/bar')` provides a *root nesting* for the entire annotated class,
+this means all class fields will be nested under this 'root/foo/bar' path in Json.
+
+`@JsonProperty(name: 'baz/items')` provides a field nesting relative to the class *root nesting* 
 
 ## Custom based types handling
 

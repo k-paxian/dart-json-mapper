@@ -7,6 +7,12 @@ typedef ValueDecoratorFunction = dynamic Function(dynamic value);
 
 /// [Json] is used as metadata, to annotate Dart class as top level Json object
 class Json {
+  /// Denotes the json Object root name/path to be used for mapping
+  /// Example:  name: 'foo'
+  ///           name: 'bar'
+  ///           name: 'foo/bar/baz'
+  final String name;
+
   /// Declares necessity for annotated class and all it's subclasses to dump type name to
   /// custom named json property.
   final String typeNameProperty;
@@ -15,13 +21,16 @@ class Json {
   /// will be excluded from serialization process
   final bool ignoreNullMembers;
 
-  const Json({this.typeNameProperty, this.ignoreNullMembers});
+  const Json({this.typeNameProperty, this.ignoreNullMembers, this.name});
 }
 
 /// [JsonProperty] is used as metadata, for annotation of individual class fields
 /// to fine tune Json property level.
 class JsonProperty {
-  /// Denotes the json property name to be used for mapping to the annotated field
+  /// Denotes the json property name/path to be used for mapping to the annotated field
+  /// Example:  name: 'foo'
+  ///           name: 'bar'
+  ///           name: 'foo/bar/baz'
   final String name;
 
   /// Declares custom converter instance, to be used for annotated field

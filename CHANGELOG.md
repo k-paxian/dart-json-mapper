@@ -1,3 +1,7 @@
+## 1.2.6
+
+* Introduced deep nesting for property names
+
 ## 1.2.5
 
 * Introduced clone util method. Clone Dart objects made simple!

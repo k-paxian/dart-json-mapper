@@ -191,15 +191,15 @@ class JsonMapper {
     return result;
   }
 
-  TypeInfo detectObjectType(dynamic objectInstance, Type objectType,
-      Map<String, dynamic> objectJsonMap) {
+  TypeInfo detectObjectType(
+      dynamic objectInstance, Type objectType, JsonMap objectJsonMap) {
     final ClassMirror objectClassMirror = classes[objectType.toString()];
     final ClassInfo objectClassInfo = ClassInfo(objectClassMirror);
     final Json meta = objectClassInfo.metaData
         .firstWhere((m) => m is Json, orElse: () => null);
 
     if (objectInstance is Map<String, dynamic>) {
-      objectJsonMap = objectInstance;
+      objectJsonMap = JsonMap(objectInstance, meta);
     }
     final TypeInfo typeInfo = getTypeInfo(
         objectType != null ? objectType : objectInstance.runtimeType);
@@ -207,8 +207,8 @@ class JsonMapper {
     final String typeName = objectJsonMap != null &&
             meta != null &&
             meta.typeNameProperty != null &&
-            objectJsonMap.containsKey(meta.typeNameProperty)
-        ? objectJsonMap[meta.typeNameProperty]
+            objectJsonMap.hasProperty(meta.typeNameProperty)
+        ? objectJsonMap.getPropertyValue(meta.typeNameProperty)
         : typeInfo.typeName;
 
     final Type type = classes[typeName] != null
@@ -314,8 +314,8 @@ class JsonMapper {
           classMeta.ignoreNullMembers == true &&
           value == null);
 
-  enumeratePublicFields(InstanceMirror instanceMirror,
-      Map<String, dynamic> jsonMap, Function visitor) {
+  enumeratePublicFields(
+      InstanceMirror instanceMirror, JsonMap jsonMap, Function visitor) {
     ClassInfo classInfo = ClassInfo(instanceMirror.type);
     for (String name in classInfo.publicFieldNames) {
       String jsonName = name;
@@ -336,7 +336,8 @@ class JsonMapper {
       }
       dynamic value = instanceMirror.invokeGetter(name);
       if (value == null && jsonMap != null) {
-        if (isFieldIgnored(classMeta, meta, jsonMap[jsonName])) {
+        if (isFieldIgnored(
+            classMeta, meta, jsonMap.getPropertyValue(jsonName))) {
           continue;
         }
       } else {
@@ -387,24 +388,23 @@ class JsonMapper {
     });
   }
 
-  dumpTypeNameToObjectProperty(dynamic object, ClassMirror classMirror) {
+  dumpTypeNameToObjectProperty(JsonMap object, ClassMirror classMirror) {
     ClassInfo classInfo = ClassInfo(classMirror);
     final Json meta =
         classInfo.metaData.firstWhere((m) => m is Json, orElse: () => null);
     if (meta != null && meta.typeNameProperty != null) {
       final typeInfo = getTypeInfo(classMirror.reflectedType);
-      object[meta.typeNameProperty] = typeInfo.typeName;
+      object.setPropertyValue(meta.typeNameProperty, typeInfo.typeName);
     }
   }
 
-  Map<Symbol, dynamic> getNamedArguments(
-      ClassMirror cm, Map<String, dynamic> jsonMap) {
+  Map<Symbol, dynamic> getNamedArguments(ClassMirror cm, JsonMap jsonMap) {
     Map<Symbol, dynamic> result = Map();
 
     enumerateConstructorParameters(cm,
         (param, name, jsonName, classMeta, meta, TypeInfo typeInfo) {
-      if (param.isNamed && jsonMap.containsKey(jsonName)) {
-        var value = jsonMap[jsonName];
+      if (param.isNamed && jsonMap.hasProperty(jsonName)) {
+        var value = jsonMap.getPropertyValue(jsonName);
         if (isFieldIgnored(classMeta, meta, value)) {
           return;
         }
@@ -426,15 +426,15 @@ class JsonMapper {
     return result;
   }
 
-  List getPositionalArguments(ClassMirror cm, Map<String, dynamic> jsonMap) {
+  List getPositionalArguments(ClassMirror cm, JsonMap jsonMap) {
     List result = [];
 
     enumerateConstructorParameters(cm, (param, name, jsonName, classMeta,
         JsonProperty meta, TypeInfo typeInfo) {
       if (!param.isOptional &&
           !param.isNamed &&
-          jsonMap.containsKey(jsonName)) {
-        var value = jsonMap[jsonName];
+          jsonMap.hasProperty(jsonName)) {
+        var value = jsonMap.getPropertyValue(jsonName);
         TypeInfo parameterTypeInfo =
             detectObjectType(value, typeInfo.type, null);
         if (parameterTypeInfo.isIterable) {
@@ -485,7 +485,11 @@ class JsonMapper {
       }
     }
 
-    Map result = {};
+    JsonMap result = JsonMap(
+        {},
+        ClassInfo(im.type)
+            .metaData
+            .firstWhere((m) => m is Json, orElse: () => null));
     dumpTypeNameToObjectProperty(result, im.type);
     enumeratePublicFields(im, null, (name, jsonName, value, isGetterOnly, meta,
         converter, scalarType, TypeInfo typeInfo) {
@@ -493,15 +497,15 @@ class JsonMapper {
         TypeInfo valueTypeInfo = getTypeInfo(value.runtimeType);
         convert(item) => converter.toJSON(item, meta);
         if (valueTypeInfo.isList) {
-          result[jsonName] = value.map(convert).toList();
+          result.setPropertyValue(jsonName, value.map(convert).toList());
         } else {
-          result[jsonName] = convert(value);
+          result.setPropertyValue(jsonName, convert(value));
         }
       } else {
-        result[jsonName] = serializeObject(value);
+        result.setPropertyValue(jsonName, serializeObject(value));
       }
     });
-    return result;
+    return result.map;
   }
 
   Object deserializeObject(dynamic jsonValue, Type instanceType,
@@ -524,10 +528,10 @@ class JsonMapper {
       return applyValueDecorator(value, typeInfo, parentMeta);
     }
 
-    Map<String, dynamic> jsonMap;
+    JsonMap jsonMap;
     try {
-      jsonMap =
-          (jsonValue is String) ? jsonDecoder.convert(jsonValue) : jsonValue;
+      jsonMap = JsonMap(
+          (jsonValue is String) ? jsonDecoder.convert(jsonValue) : jsonValue);
     } on FormatException {
       throw MissingEnumValuesError(typeInfo.type);
     }
@@ -536,6 +540,8 @@ class JsonMapper {
     if (cm == null) {
       throw MissingAnnotationOnTypeError(typeInfo.type);
     }
+    jsonMap.jsonMeta =
+        ClassInfo(cm).metaData.firstWhere((m) => m is Json, orElse: () => null);
 
     Object objectInstance = cm.isEnum
         ? null
@@ -545,10 +551,10 @@ class JsonMapper {
 
     enumeratePublicFields(im, jsonMap, (name, jsonName, value, isGetterOnly,
         JsonProperty meta, converter, scalarType, TypeInfo typeInfo) {
-      if (!jsonMap.containsKey(jsonName)) {
+      if (!jsonMap.hasProperty(jsonName)) {
         return;
       }
-      var fieldValue = jsonMap[jsonName];
+      var fieldValue = jsonMap.getPropertyValue(jsonName);
       if (fieldValue is List) {
         fieldValue = fieldValue
             .map((item) => deserializeObject(item, scalarType, meta))
