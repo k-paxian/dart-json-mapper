@@ -21,12 +21,19 @@ class Json {
   /// will be excluded from serialization process
   final bool ignoreNullMembers;
 
-  const Json({this.typeNameProperty, this.ignoreNullMembers, this.name});
+  /// Scheme marker to associate this meta information with particular mapping scheme
+  final dynamic scheme;
+
+  const Json(
+      {this.scheme, this.typeNameProperty, this.ignoreNullMembers, this.name});
 }
 
 /// [JsonProperty] is used as metadata, for annotation of individual class fields
 /// to fine tune Json property level.
 class JsonProperty {
+  /// Scheme marker to associate this meta information with particular mapping scheme
+  final dynamic scheme;
+
   /// Denotes the json property name/path to be used for mapping to the annotated field
   /// Example:  name: 'foo'
   ///           name: 'bar'
@@ -53,7 +60,8 @@ class JsonProperty {
   final List<dynamic> enumValues;
 
   const JsonProperty(
-      {this.name,
+      {this.scheme,
+      this.name,
       this.ignore,
       this.ignoreIfNull,
       this.converter,

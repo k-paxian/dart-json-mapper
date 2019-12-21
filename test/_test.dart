@@ -19,11 +19,13 @@ part 'test.extensions.dart';
 part 'test.integration.dart';
 part 'test.name.path.dart';
 part 'test.partial.deserialization.dart';
+part 'test.scheme.dart';
 part 'test.value.decorators.dart';
 
 void main() {
   initializeReflectable();
 
+  testScheme();
   testErrorHandling();
   testConverters();
   testValueDecorators();

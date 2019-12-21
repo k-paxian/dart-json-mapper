@@ -6,10 +6,8 @@ void testIntegration() {
       // given
       final car = Car('Tesla S3', Color.Black);
       // when
-      // ignore: omit_local_variable_types
-      final Map<String, dynamic> targetMap = JsonMapper.toMap(car);
-      // ignore: omit_local_variable_types
-      final Car targetCar = JsonMapper.fromMap(targetMap);
+      final targetMap = JsonMapper.toMap(car);
+      final targetCar = JsonMapper.fromMap<Car>(targetMap);
 
       // then
       expect(targetMap, TypeMatcher<Map<String, dynamic>>());

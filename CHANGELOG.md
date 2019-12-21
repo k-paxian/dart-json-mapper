@@ -1,3 +1,8 @@
+## 1.2.8
+
+* Schemes introduced. Scheme - is a set of meta annotations associated with common scheme id.
+This enables the possibility to map *single* Dart class to *many* JSON structures.   
+
 ## 1.2.7
 
 * adopt pedantic for code style lints

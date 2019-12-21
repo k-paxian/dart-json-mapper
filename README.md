@@ -184,7 +184,7 @@ Output:
 }
 ```
 
-## Iterable based types handling
+## Iterable types
 
 Since Dart language has no possibility to create typed iterables dynamically, it's a bit of a challenge
 to create exact typed lists/sets/etc via reflection approach. Those types has to be declared explicitly.
@@ -213,7 +213,7 @@ For custom iterable types like `List<Car> / Set<Car>` you have to register value
 as showed in a code snippet above before using deserialization. This function will have explicit 
 cast to concrete iterable type.
 
-## Enum based types handling
+## Enum types
 
 Enum construction in Dart has a specific meaning, and has to be treated accordingly.
 
@@ -331,7 +331,51 @@ this means all class fields will be nested under this 'root/foo/bar' path in Jso
 
 `@JsonProperty(name: 'baz/items')` provides a field nesting relative to the class *root nesting* 
 
-## Custom based types handling
+## Schemes
+
+Scheme - is a set of annotations associated with common scheme id.
+This enables the possibility to map a **single** Dart class to **many** different JSON structures.
+
+This approach usually useful for distinguishing [DEV, PROD, TEST, ...] environments, w/o producing separate 
+Dart classes for each environment.  
+
+``` dart
+enum Scheme { A, B }
+
+@jsonSerializable
+@Json(name: 'default')
+@Json(name: '_', scheme: Scheme.B)
+@Json(name: 'root', scheme: Scheme.A)
+class Object {
+  @JsonProperty(name: 'title_test', scheme: Scheme.B)
+  String title;
+
+  Object(this.title);
+}
+
+// given
+final instance = Object('Scheme A');
+// when
+final json = JsonMapper.serialize(instance, '', Scheme.A);
+// then
+expect(json, '''{"root":{"title":"Scheme A"}}''');
+
+// given
+final instance = Object('Scheme B');
+// when
+final json = JsonMapper.serialize(instance, '', Scheme.B);
+// then
+expect(json, '''{"_":{"title_test":"Scheme B"}}''');
+
+// given
+final instance = Object('No Scheme');
+// when
+final json = JsonMapper.serialize(instance, '');
+// then
+expect(json, '''{"default":{"title":"No Scheme"}}''');
+```
+
+## Custom based types
 
 For the very custom types, specific ones, or doesn't currently supported by this library, you can 
 provide your own custom Converter class per each custom runtimeType.

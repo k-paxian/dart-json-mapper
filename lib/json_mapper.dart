@@ -44,13 +44,13 @@ class JsonMapper {
     instance.typeInfoDecorators[nextPriority] = decorator;
   }
 
-  /// Converts Dart object to JSON string, indented by `indent`
-  static String toJson(Object object, [String indent]) {
-    return serialize(object, indent);
+  /// Converts Dart object to JSON string, indented by `indent`, according to specified `scheme`
+  static String toJson(Object object, [String indent, dynamic scheme]) {
+    return serialize(object, indent, scheme);
   }
 
-  /// Converts Dart object to JSON string, indented by `indent`
-  static String serialize(Object object, [String indent]) {
+  /// Converts Dart object to JSON string, indented by `indent`, according to specified `scheme`
+  static String serialize(Object object, [String indent, dynamic scheme]) {
     instance.processedObjects.clear();
     var encoder = instance.jsonEncoder;
     if (indent != null && indent.isEmpty) {
@@ -60,33 +60,34 @@ class JsonMapper {
         encoder = JsonEncoder.withIndent(indent);
       }
     }
-    return encoder.convert(instance.serializeObject(object));
+    return encoder.convert(instance.serializeObject(object, scheme));
   }
 
-  /// Converts JSON string to Dart object of type T
-  static T deserialize<T>(String jsonValue) {
+  /// Converts JSON string to Dart object of type T, according to specified `scheme`
+  static T deserialize<T>(dynamic jsonValue, [dynamic scheme]) {
     assert(T != dynamic ? true : throw MissingTypeForDeserializationError());
-    return instance.deserializeObject(jsonValue, T);
+    return instance.deserializeObject(jsonValue, T, null, scheme);
   }
 
-  /// Converts JSON string to Dart object of type T
-  static T fromJson<T>(String jsonValue) {
-    return deserialize<T>(jsonValue);
+  /// Converts JSON string to Dart object of type T, according to specified `scheme`
+  static T fromJson<T>(dynamic jsonValue, [dynamic scheme]) {
+    return deserialize<T>(jsonValue, scheme);
   }
 
   /// Clone Dart object of type T
-  static T clone<T>(T object) {
-    return fromJson<T>(toJson(object));
+  static T clone<T>(T object, [dynamic scheme]) {
+    return fromJson<T>(toJson(object, null, scheme), scheme);
   }
 
-  /// Converts Dart object to Map<String, dynamic>
-  static Map<String, dynamic> toMap(Object object) {
-    return deserialize(serialize(object));
+  /// Converts Dart object to Map<String, dynamic>, according to specified `scheme`
+  static Map<String, dynamic> toMap(Object object, [dynamic scheme]) {
+    return deserialize<Map<String, dynamic>>(
+        serialize(object, null, scheme), scheme);
   }
 
-  /// Converts Map<String, dynamic> to Dart object instance
-  static T fromMap<T>(Map<String, dynamic> map) {
-    return deserialize<T>(instance.jsonEncoder.convert(map));
+  /// Converts Map<String, dynamic> to Dart object instance, according to specified `scheme`
+  static T fromMap<T>(Map<String, dynamic> map, [dynamic scheme]) {
+    return deserialize<T>(instance.jsonEncoder.convert(map), scheme);
   }
 
   factory JsonMapper() => instance;
@@ -307,8 +308,8 @@ class JsonMapper {
           classMeta.ignoreNullMembers == true &&
           value == null);
 
-  void enumeratePublicFields(
-      InstanceMirror instanceMirror, JsonMap jsonMap, Function visitor) {
+  void enumeratePublicFields(InstanceMirror instanceMirror, JsonMap jsonMap,
+      dynamic scheme, Function visitor) {
     final classInfo = ClassInfo(instanceMirror.type);
     for (var name in classInfo.publicFieldNames) {
       var jsonName = name;
@@ -318,11 +319,8 @@ class JsonMapper {
       }
       final declarationType = getDeclarationType(declarationMirror);
       final isGetterOnly = classInfo.isGetterOnly(name);
-      JsonProperty meta = classInfo
-          .lookupDeclarationMetaData(declarationMirror)
-          .firstWhere((m) => m is JsonProperty, orElse: () => null);
-      Json classMeta =
-          classInfo.metaData.firstWhere((m) => m is Json, orElse: () => null);
+      final meta = classInfo.getDeclarationMeta(declarationMirror, scheme);
+      final classMeta = classInfo.getMeta(scheme);
       if (meta != null && meta.name != null) {
         jsonName = meta.name;
       }
@@ -351,18 +349,16 @@ class JsonMapper {
   }
 
   void enumerateConstructorParameters(
-      ClassMirror classMirror, Function visitor) {
+      ClassMirror classMirror, dynamic scheme, Function visitor) {
     final classInfo = ClassInfo(classMirror);
-    Json classMeta =
-        classInfo.metaData.firstWhere((m) => m is Json, orElse: () => null);
+    final classMeta = classInfo.getMeta(scheme);
     final methodMirror = classInfo.publicConstructor;
     if (methodMirror == null) {
       return;
     }
     methodMirror.parameters.forEach((ParameterMirror param) {
       final name = param.simpleName;
-      final declarationMirror =
-          ClassInfo(classMirror).getDeclarationMirror(name);
+      final declarationMirror = classInfo.getDeclarationMirror(name);
       var paramTypeInfo = getTypeInfo(param.reflectedType);
       if (declarationMirror == null) {
         return;
@@ -371,8 +367,7 @@ class JsonMapper {
           ? getTypeInfo(getDeclarationType(declarationMirror))
           : paramTypeInfo;
       var jsonName = name;
-      JsonProperty meta = declarationMirror.metadata
-          .firstWhere((m) => m is JsonProperty, orElse: () => null);
+      final meta = classInfo.getDeclarationMeta(declarationMirror, scheme);
       if (meta != null && meta.name != null) {
         jsonName = meta.name;
       }
@@ -391,10 +386,11 @@ class JsonMapper {
     }
   }
 
-  Map<Symbol, dynamic> getNamedArguments(ClassMirror cm, JsonMap jsonMap) {
+  Map<Symbol, dynamic> getNamedArguments(ClassMirror cm, JsonMap jsonMap,
+      [dynamic scheme]) {
     final result = <Symbol, dynamic>{};
 
-    enumerateConstructorParameters(cm,
+    enumerateConstructorParameters(cm, scheme,
         (param, name, jsonName, classMeta, meta, TypeInfo typeInfo) {
       if (param.isNamed && jsonMap.hasProperty(jsonName)) {
         var value = jsonMap.getPropertyValue(jsonName);
@@ -418,11 +414,12 @@ class JsonMapper {
     return result;
   }
 
-  List getPositionalArguments(ClassMirror cm, JsonMap jsonMap) {
+  List getPositionalArguments(ClassMirror cm, JsonMap jsonMap,
+      [dynamic scheme]) {
     final result = [];
 
-    enumerateConstructorParameters(cm, (param, name, jsonName, classMeta,
-        JsonProperty meta, TypeInfo typeInfo) {
+    enumerateConstructorParameters(cm, scheme, (param, name, jsonName,
+        classMeta, JsonProperty meta, TypeInfo typeInfo) {
       if (!param.isOptional &&
           !param.isNamed &&
           jsonMap.hasProperty(jsonName)) {
@@ -447,7 +444,7 @@ class JsonMapper {
     return result;
   }
 
-  dynamic serializeObject(Object object) {
+  dynamic serializeObject(Object object, [dynamic scheme]) {
     if (object == null) {
       return object;
     }
@@ -464,7 +461,7 @@ class JsonMapper {
     }
 
     if (object is Iterable) {
-      return object.map(serializeObject).toList();
+      return object.map((item) => serializeObject(item, scheme)).toList();
     }
 
     if (im == null || im.type == null) {
@@ -475,14 +472,10 @@ class JsonMapper {
       }
     }
 
-    final result = JsonMap(
-        {},
-        ClassInfo(im.type)
-            .metaData
-            .firstWhere((m) => m is Json, orElse: () => null));
+    final result = JsonMap({}, ClassInfo(im.type).getMeta(scheme));
     dumpTypeNameToObjectProperty(result, im.type);
-    enumeratePublicFields(im, null, (name, jsonName, value, isGetterOnly, meta,
-        converter, scalarType, TypeInfo typeInfo) {
+    enumeratePublicFields(im, null, scheme, (name, jsonName, value,
+        isGetterOnly, meta, converter, scalarType, TypeInfo typeInfo) {
       if (converter != null) {
         final valueTypeInfo = getTypeInfo(value.runtimeType);
         dynamic convert(item) => converter.toJSON(item, meta);
@@ -492,14 +485,14 @@ class JsonMapper {
           result.setPropertyValue(jsonName, convert(value));
         }
       } else {
-        result.setPropertyValue(jsonName, serializeObject(value));
+        result.setPropertyValue(jsonName, serializeObject(value, scheme));
       }
     });
     return result.map;
   }
 
   Object deserializeObject(dynamic jsonValue, Type instanceType,
-      [JsonProperty parentMeta]) {
+      [JsonProperty parentMeta, dynamic scheme]) {
     if (jsonValue == null) {
       return null;
     }
@@ -513,7 +506,8 @@ class JsonMapper {
       List<dynamic> jsonList =
           (jsonValue is String) ? jsonDecoder.convert(jsonValue) : jsonValue;
       var value = jsonList
-          .map((item) => deserializeObject(item, getScalarType(typeInfo.type)))
+          .map((item) => deserializeObject(
+              item, getScalarType(typeInfo.type), null, scheme))
           .toList();
       return applyValueDecorator(value, typeInfo, parentMeta);
     }
@@ -530,27 +524,32 @@ class JsonMapper {
     if (cm == null) {
       throw MissingAnnotationOnTypeError(typeInfo.type);
     }
-    jsonMap.jsonMeta =
-        ClassInfo(cm).metaData.firstWhere((m) => m is Json, orElse: () => null);
+    jsonMap.jsonMeta = ClassInfo(cm).getMeta(scheme);
 
     final objectInstance = cm.isEnum
         ? null
-        : cm.newInstance('', getPositionalArguments(cm, jsonMap),
-            getNamedArguments(cm, jsonMap));
+        : cm.newInstance('', getPositionalArguments(cm, jsonMap, scheme),
+            getNamedArguments(cm, jsonMap, scheme));
     final im = safeGetInstanceMirror(objectInstance);
 
-    enumeratePublicFields(im, jsonMap, (name, jsonName, value, isGetterOnly,
-        JsonProperty meta, converter, scalarType, TypeInfo typeInfo) {
+    enumeratePublicFields(im, jsonMap, scheme, (name,
+        jsonName,
+        value,
+        isGetterOnly,
+        JsonProperty meta,
+        converter,
+        scalarType,
+        TypeInfo typeInfo) {
       if (!jsonMap.hasProperty(jsonName)) {
         return;
       }
       var fieldValue = jsonMap.getPropertyValue(jsonName);
       if (fieldValue is List) {
         fieldValue = fieldValue
-            .map((item) => deserializeObject(item, scalarType, meta))
+            .map((item) => deserializeObject(item, scalarType, meta, scheme))
             .toList();
       } else {
-        fieldValue = deserializeObject(fieldValue, typeInfo.type, meta);
+        fieldValue = deserializeObject(fieldValue, typeInfo.type, meta, scheme);
       }
       if (converter != null) {
         dynamic convert(item) => converter.fromJSON(item, meta);
