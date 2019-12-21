@@ -28,14 +28,14 @@ class BigIntData {
   BigIntData(this.bigInt);
 }
 
-testConverters() {
-  group("[Verify converters]", () {
-    test("Map<String, dynamic> converter", () {
+void testConverters() {
+  group('[Verify converters]', () {
+    test('Map<String, dynamic> converter', () {
       // given
-      final String json = '{"a":"abc","b":3}';
+      final json = '{"a":"abc","b":3}';
 
       // when
-      final Map<String, dynamic> target = JsonMapper.deserialize(json);
+      final target = JsonMapper.deserialize<Map<String, dynamic>>(json);
 
       // then
       expect(target, TypeMatcher<Map<String, dynamic>>());
@@ -43,43 +43,43 @@ testConverters() {
       expect(target['b'], TypeMatcher<num>());
     });
 
-    test("BigInt converter", () {
+    test('BigInt converter', () {
       // given
-      final String rawString = "1234567890000000012345678900";
-      final String json = '{"bigInt":"${rawString}"}';
+      final rawString = '1234567890000000012345678900';
+      final json = '{"bigInt":"${rawString}"}';
 
       // when
-      String targetJson =
+      final targetJson =
           JsonMapper.serialize(BigIntData(BigInt.parse(rawString)), '');
       // then
       expect(targetJson, json);
 
       // when
-      BigIntData target = JsonMapper.deserialize(json);
+      final target = JsonMapper.deserialize<BigIntData>(json);
       // then
       expect(rawString, target.bigInt.toString());
     });
 
-    test("Uint8List converter", () {
+    test('Uint8List converter', () {
       // given
-      final String json = '{"data":"QmFzZTY0IGlzIHdvcmtpbmch"}';
-      final String rawString = "Base64 is working!";
+      final json = '{"data":"QmFzZTY0IGlzIHdvcmtpbmch"}';
+      final rawString = 'Base64 is working!';
 
       // when
-      String targetJson = JsonMapper.serialize(
+      final targetJson = JsonMapper.serialize(
           BinaryData(Uint8List.fromList(rawString.codeUnits)), '');
       // then
       expect(targetJson, json);
 
       // when
-      BinaryData target = JsonMapper.deserialize(json);
+      final target = JsonMapper.deserialize<BinaryData>(json);
       // then
       expect(rawString, String.fromCharCodes(target.data));
     });
 
-    test("Custom String converter", () {
+    test('Custom String converter', () {
       // given
-      final String json = '''{
+      final json = '''{
  "id": 1,
  "name": "_Bob_",
  "car": {
@@ -89,9 +89,9 @@ testConverters() {
 }''';
       JsonMapper.registerConverter<String>(CustomStringConverter());
 
-      Immutable i = Immutable(1, 'Bob', Car('Audi', Color.Green));
+      final i = Immutable(1, 'Bob', Car('Audi', Color.Green));
       // when
-      final String target = JsonMapper.serialize(i);
+      final target = JsonMapper.serialize(i);
       // then
       expect(target, json);
 

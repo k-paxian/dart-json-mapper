@@ -1,8 +1,8 @@
 part of json_mapper.test;
 
-testExtensions() {
-  group("[Verify extensions processing]", () {
-    test("Color extension ColorModifier", () {
+void testExtensions() {
+  group('[Verify extensions processing]', () {
+    test('Color extension ColorModifier', () {
       // given
       final color = Color.Gray;
       // when

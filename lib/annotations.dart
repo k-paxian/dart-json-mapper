@@ -1,7 +1,7 @@
 library json_mapper.annotations;
 
 import 'package:dart_json_mapper/converters.dart';
-import "package:reflectable/reflectable.dart";
+import 'package:reflectable/reflectable.dart';
 
 typedef ValueDecoratorFunction = dynamic Function(dynamic value);
 
@@ -64,9 +64,8 @@ class JsonProperty {
   bool isEnumValuesValid(dynamic enumValue) {
     final getEnumTypeNameFromString =
         (value) => value.toString().split('.').first;
-    final String enumValueTypeName = getEnumTypeNameFromString(enumValue);
-    return this
-        .enumValues
+    final enumValueTypeName = getEnumTypeNameFromString(enumValue);
+    return enumValues
         .every((item) => getEnumTypeNameFromString(item) == enumValueTypeName);
   }
 }

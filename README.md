@@ -1,5 +1,6 @@
 [![Build Status][ci-badge]][ci-badge-url]
 [![pub package](https://img.shields.io/pub/v/dart_json_mapper.svg)](https://pub.dartlang.org/packages/dart_json_mapper)
+[![Build Status][pedantic-badge]][pedantic-url]
 
 This package allows programmers to annotate Dart classes in order to
   Serialize / Deserialize them to / from JSON.
@@ -402,3 +403,6 @@ existing adapter, or create one for your use case.
 
 [ci-badge]: https://github.com/k-paxian/dart-json-mapper/workflows/Dart%20CI/badge.svg
 [ci-badge-url]: https://github.com/k-paxian/dart-json-mapper/actions
+
+[pedantic-badge]: https://dart-lang.github.io/linter/lints/style-pedantic.svg
+[pedantic-url]: https://github.com/dart-lang/pedantic

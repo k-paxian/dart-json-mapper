@@ -25,9 +25,9 @@ class DeepNestedInt {
   DeepNestedInt({this.count});
 }
 
-testNamePath() {
-  group("[Verify name path processing]", () {
-    test("Verify root nested list deserialization", () {
+void testNamePath() {
+  group('[Verify name path processing]', () {
+    test('Verify root nested list deserialization', () {
       // given
       final json = '''{
           "root": {
@@ -45,13 +45,13 @@ testNamePath() {
           }
       }''';
       // when
-      final RootObject instance = JsonMapper.deserialize(json);
+      final instance = JsonMapper.deserialize<RootObject>(json);
       // then
       expect(instance.items.length, 3);
       expect(instance.items, ['a', 'b', 'c']);
     });
 
-    test("Verify deep nested list deserialization", () {
+    test('Verify deep nested list deserialization', () {
       // given
       final json = '''{
       "root": {
@@ -67,13 +67,13 @@ testNamePath() {
       }
       }''';
       // when
-      final DeepNestedList instance = JsonMapper.deserialize(json);
+      final instance = JsonMapper.deserialize<DeepNestedList>(json);
       // then
       expect(instance.items.length, 3);
       expect(instance.items, ['a', 'b', 'c']);
     });
 
-    test("Verify deep nested list serialization", () {
+    test('Verify deep nested list serialization', () {
       // given
       final instance = DeepNestedList(items: ['1', '2', '3']);
       final json = '''{"root":{"foo":{"bar":{"items":["1","2","3"]}}}}''';
@@ -83,7 +83,7 @@ testNamePath() {
       expect(targetJson, json);
     });
 
-    test("Verify deep nested int deserialization", () {
+    test('Verify deep nested int deserialization', () {
       // given
       final json = '''{
       "root": {
@@ -95,7 +95,7 @@ testNamePath() {
       }
       }''';
       // when
-      final DeepNestedInt instance = JsonMapper.deserialize(json);
+      final instance = JsonMapper.deserialize<DeepNestedInt>(json);
       // then
       expect(instance.count, 33);
     });

@@ -27,7 +27,7 @@ class JsonMap {
     return result;
   }
 
-  setPropertyValue(String name, dynamic value) {
+  void setPropertyValue(String name, dynamic value) {
     _isPathExists(_getPath(name), (m, k) {}, true, value);
   }
 
@@ -45,7 +45,7 @@ class JsonMap {
       [Function propertyVisitor, bool autoCreate, dynamic autoValue]) {
     final segments = path.split(PATH_DELIMITER);
     dynamic current = map;
-    int existingSegmentsCount = 0;
+    var existingSegmentsCount = 0;
     segments.forEach((key) {
       if (current is Map && current.containsKey(key)) {
         current = current[key];
@@ -84,7 +84,7 @@ class ClassInfo {
   }
 
   List<String> get publicFieldNames {
-    Map<String, MethodMirror> instanceMembers = classMirror.instanceMembers;
+    final instanceMembers = classMirror.instanceMembers;
     return instanceMembers.values
         .where((MethodMirror method) {
           final isGetterAndSetter = method.isGetter &&
@@ -125,7 +125,7 @@ class ClassInfo {
     if (classMirror == null) {
       return [];
     }
-    final result = []..addAll(classMirror.metadata);
+    final result = [...classMirror.metadata];
     result.addAll(lookupClassMetaData(_safeGetSuperClassMirror(classMirror)));
     return result;
   }
@@ -134,15 +134,13 @@ class ClassInfo {
     if (declarationMirror == null) {
       return [];
     }
-    final result = []..addAll(declarationMirror.metadata);
-    final ClassMirror parentClassMirror =
-        _safeGetParentClassMirror(declarationMirror);
+    final result = [...declarationMirror.metadata];
+    final parentClassMirror = _safeGetParentClassMirror(declarationMirror);
     if (parentClassMirror == null) {
       return result;
     }
-    final DeclarationMirror parentDeclarationMirror =
-        ClassInfo(parentClassMirror)
-            .getDeclarationMirror(declarationMirror.simpleName);
+    final parentDeclarationMirror = ClassInfo(parentClassMirror)
+        .getDeclarationMirror(declarationMirror.simpleName);
     result.addAll(parentClassMirror.isTopLevel
         ? parentDeclarationMirror.metadata
         : lookupDeclarationMetaData(parentDeclarationMirror));

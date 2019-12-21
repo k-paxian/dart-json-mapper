@@ -1,12 +1,14 @@
 part of json_mapper.test;
 
-testIntegration() {
-  group("[Verify end to end serialization <=> deserialization]", () {
-    test("toMap/fromMap", () {
+void testIntegration() {
+  group('[Verify end to end serialization <=> deserialization]', () {
+    test('toMap/fromMap', () {
       // given
       final car = Car('Tesla S3', Color.Black);
       // when
+      // ignore: omit_local_variable_types
       final Map<String, dynamic> targetMap = JsonMapper.toMap(car);
+      // ignore: omit_local_variable_types
       final Car targetCar = JsonMapper.fromMap(targetMap);
 
       // then
@@ -19,7 +21,7 @@ testIntegration() {
       expect(targetCar.color, Color.Black);
     });
 
-    test("Object clone", () {
+    test('Object clone', () {
       // given
       final car = Car('Tesla S3', Color.Black);
       // when
@@ -31,21 +33,21 @@ testIntegration() {
       expect(clone.model == car.model, true);
     });
 
-    test("Serialization", () {
+    test('Serialization', () {
       // given
       // when
-      final String json = JsonMapper.serialize(Person());
+      final json = JsonMapper.serialize(Person());
       // then
       expect(json, personJson);
     });
 
-    test("Serialization <=> Deserialization", () {
+    test('Serialization <=> Deserialization', () {
       // given
       JsonMapper.registerValueDecorator<List<Color>>(
           (value) => value.cast<Color>());
       // when
-      Stopwatch stopwatch = Stopwatch()..start();
-      final Person person = JsonMapper.deserialize(personJson);
+      final stopwatch = Stopwatch()..start();
+      final person = JsonMapper.deserialize<Person>(personJson);
       final deserializationMs = stopwatch.elapsedMilliseconds;
       final json = JsonMapper.serialize(person);
       print('Deserialization executed in ${deserializationMs} ms');

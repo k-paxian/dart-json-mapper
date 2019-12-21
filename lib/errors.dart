@@ -8,7 +8,8 @@ class _CircularReferenceErrorImpl extends Error
 
   _CircularReferenceErrorImpl(Object object) : _object = object;
 
-  toString() => "Circular reference detected. ${_object.toString()}";
+  @override
+  String toString() => 'Circular reference detected. ${_object.toString()}';
 }
 
 abstract class MissingAnnotationOnTypeError extends Error {
@@ -22,9 +23,10 @@ class _MissingAnnotationOnTypeErrorImpl extends Error
 
   _MissingAnnotationOnTypeErrorImpl(Type type) : _type = type;
 
-  toString() =>
+  @override
+  String toString() =>
       "It seems your class '${_type.toString()}' has not been annotated "
-      "with @jsonSerializable";
+      'with @jsonSerializable';
 }
 
 abstract class MissingEnumValuesError extends Error {
@@ -37,8 +39,9 @@ class _MissingEnumValuesErrorImpl extends Error
 
   _MissingEnumValuesErrorImpl(Type type) : _type = type;
 
-  toString() => "It seems your Enum class field is missing annotation:\n"
-      "@JsonProperty(enumValues: ${_type.toString()}.values)";
+  @override
+  String toString() => 'It seems your Enum class field is missing annotation:\n'
+      '@JsonProperty(enumValues: ${_type.toString()}.values)';
 }
 
 abstract class MissingTypeForDeserializationError extends Error {
@@ -50,9 +53,11 @@ class _MissingTypeForDeserializationErrorImpl extends Error
     implements MissingTypeForDeserializationError {
   _MissingTypeForDeserializationErrorImpl() : super();
 
-  toString() => "It seems you've omitted target Type for deserialization.\n"
-      "You should call it like this: JsonMapper.deserialize<TargetType>"
-      "(jsonString)\n"
-      "OR Infere type via result variable like: TargetType target = "
-      "JsonMapper.deserialize(jsonString)";
+  @override
+  String toString() =>
+      "It seems you've omitted target Type for deserialization.\n"
+      'You should call it like this: JsonMapper.deserialize<TargetType>'
+      '(jsonString)\n'
+      'OR Infere type via result variable like: TargetType target = '
+      'JsonMapper.deserialize(jsonString)';
 }

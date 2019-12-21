@@ -136,73 +136,73 @@ class Immutable {
   const Immutable(this.id, this.name, this.car);
 }
 
-testConstructors() {
-  group("[Verify class constructors support]", () {
-    final String json = '{"firstName":"Bob","lastName":"Marley"}';
+void testConstructors() {
+  group('[Verify class constructors support]', () {
+    final json = '{"firstName":"Bob","lastName":"Marley"}';
 
-    test("NamedParametersClass class", () {
+    test('NamedParametersClass class', () {
       // given
-      var instance = NamedParametersClass(firstName: "Bob", lastName: "Marley");
+      var instance = NamedParametersClass(firstName: 'Bob', lastName: 'Marley');
       // when
-      final String target = JsonMapper.serialize(instance, '');
+      final target = JsonMapper.serialize(instance, '');
       // then
       expect(target, json);
     });
 
-    test("PartiallyOptionalParametersClass class", () {
+    test('PartiallyOptionalParametersClass class', () {
       // given
-      var instance = PartiallyOptionalParametersClass("Bob", "Marley");
+      var instance = PartiallyOptionalParametersClass('Bob', 'Marley');
       // when
-      final String target = JsonMapper.serialize(instance, '');
+      final target = JsonMapper.serialize(instance, '');
       // then
       expect(target, json);
     });
 
-    test("OptionalParametersClass class", () {
+    test('OptionalParametersClass class', () {
       // given
-      var instance = OptionalParametersClass("Bob", "Marley");
+      var instance = OptionalParametersClass('Bob', 'Marley');
       // when
-      final String target = JsonMapper.serialize(instance, '');
+      final target = JsonMapper.serialize(instance, '');
       // then
       expect(target, json);
     });
 
-    test("PositionalParametersClass class", () {
+    test('PositionalParametersClass class', () {
       // given
-      var instance = PositionalParametersClass("Bob", "Marley");
+      var instance = PositionalParametersClass('Bob', 'Marley');
       // when
-      final String target = JsonMapper.serialize(instance, '');
+      final target = JsonMapper.serialize(instance, '');
       // then
       expect(target, json);
     });
 
-    test("Nested null value object should be null w/o NPE", () {
+    test('Nested null value object should be null w/o NPE', () {
       // given
-      final String json = '{"bar":null,"message":"hello world"}';
-      final Foo target = Foo(null, "hello world");
+      final json = '{"bar":null,"message":"hello world"}';
+      final target = Foo(null, 'hello world');
       // when
-      Foo instance = JsonMapper.deserialize(json);
-      String targetJson = JsonMapper.serialize(target, '');
+      final instance = JsonMapper.deserialize<Foo>(json);
+      final targetJson = JsonMapper.serialize(target, '');
       // then
-      expect(instance.message, "hello world");
+      expect(instance.message, 'hello world');
       expect(targetJson, json);
     });
 
-    test("Derived class", () {
+    test('Derived class', () {
       // given
-      final String json = '{"value":"Bob"}';
-      final Derived target = Derived("Bob");
-      final PtDerived pTarget = PtDerived(Pt());
-      final PtDerived2 ptTarget2 = PtDerived2(Pt());
+      final json = '{"value":"Bob"}';
+      final target = Derived('Bob');
+      final pTarget = PtDerived(Pt());
+      final ptTarget2 = PtDerived2(Pt());
       // when
-      Derived instance = JsonMapper.deserialize(json);
-      String targetJson = JsonMapper.serialize(target, '');
-      String pTargetJson = JsonMapper.serialize(pTarget, '');
-      String ptTarget2Json = JsonMapper.serialize(ptTarget2, '');
-      PtDerived pTargetBack = JsonMapper.deserialize(pTargetJson);
-      PtDerived2 ptTarget2Back = JsonMapper.deserialize(ptTarget2Json);
+      final instance = JsonMapper.deserialize<Derived>(json);
+      final targetJson = JsonMapper.serialize(target, '');
+      final pTargetJson = JsonMapper.serialize(pTarget, '');
+      final ptTarget2Json = JsonMapper.serialize(ptTarget2, '');
+      final pTargetBack = JsonMapper.deserialize<PtDerived>(pTargetJson);
+      final ptTarget2Back = JsonMapper.deserialize<PtDerived2>(ptTarget2Json);
       // then
-      expect(instance.value, "Bob");
+      expect(instance.value, 'Bob');
       expect(targetJson, json);
       expect(pTargetBack.value, TypeMatcher<Pt>());
       expect(pTargetJson, '{"value":{}}');
@@ -211,65 +211,65 @@ testConstructors() {
       expect(ptTarget2Back.value, null);
     });
 
-    test("User class, getter/setter property w/o constructor", () {
+    test('User class, getter/setter property w/o constructor', () {
       // given
-      final User user = User();
+      final user = User();
       user.email = 'a@a.com';
       // when
       final json = JsonMapper.serialize(user, '');
-      final User target = JsonMapper.deserialize(json);
+      final target = JsonMapper.deserialize<User>(json);
       // then
       expect(json, '{"email":"a@a.com"}');
       expect(target, TypeMatcher<User>());
       expect(target.email, 'a@a.com');
     });
 
-    test("StringListClass class", () {
+    test('StringListClass class', () {
       // given
       // when
-      StringListClass instance =
-          JsonMapper.deserialize('{"list":["Bob","Marley"]}');
+      final instance =
+          JsonMapper.deserialize<StringListClass>('{"list":["Bob","Marley"]}');
       // then
       expect(instance.list.length, 2);
     });
 
-    test("IgnoreNullMembers class", () {
+    test('IgnoreNullMembers class', () {
       // given
-      final instance = IgnoreNullMembersClass(firstName: "Bob");
+      final instance = IgnoreNullMembersClass(firstName: 'Bob');
       // when
       final target = JsonMapper.serialize(instance, '');
       // then
       expect(target, '{"firstName":"Bob"}');
     });
 
-    test("IgnoredFieldClass class", () {
+    test('IgnoredFieldClass class', () {
       // given
-      final String json =
-          '{"firstName":"Bob","middleName":"Jr","lastName":"Marley"}';
+      final json = '{"firstName":"Bob","middleName":"Jr","lastName":"Marley"}';
       var instance = IgnoredFieldClass(
-          firstName: "Bob", middleName: null, lastName: "Marley");
+          firstName: 'Bob', middleName: null, lastName: 'Marley');
       // when
       var target = JsonMapper.serialize(instance, '');
       // then
       expect(target, '{"firstName":"Bob"}');
 
       // when
-      IgnoredFieldClass instance2 = JsonMapper.deserialize(json);
-      IgnoredFieldClassWoConstructor instance3 = JsonMapper.deserialize(json);
+      final instance2 = JsonMapper.deserialize<IgnoredFieldClass>(json);
+      final instance3 =
+          JsonMapper.deserialize<IgnoredFieldClassWoConstructor>(json);
 
       // then
-      expect(instance2.firstName, "Bob");
-      expect(instance2.middleName, "Jr");
+      expect(instance2.firstName, 'Bob');
+      expect(instance2.middleName, 'Jr');
       expect(instance2.lastName, null);
 
-      expect(instance3.firstName, "Bob");
-      expect(instance3.middleName, "Jr");
+      expect(instance3.firstName, 'Bob');
+      expect(instance3.middleName, 'Jr');
       expect(instance3.lastName, null);
     });
 
-    test("Immutable class", () {
+    test('Immutable class', () {
       // given
-      final String immutableJson = '''{
+      final immutableJson = '''{
  "id": 1,
  "name": "Bob",
  "car": {
@@ -277,14 +277,14 @@ testConstructors() {
   "color": "Color.Green"
  }
 }''';
-      Immutable i = Immutable(1, 'Bob', Car('Audi', Color.Green));
+      final i = Immutable(1, 'Bob', Car('Audi', Color.Green));
       // when
-      final String target = JsonMapper.serialize(i);
+      final target = JsonMapper.serialize(i);
       // then
       expect(target, immutableJson);
 
       // when
-      final Immutable ic = JsonMapper.deserialize(immutableJson);
+      final ic = JsonMapper.deserialize<Immutable>(immutableJson);
       // then
       expect(JsonMapper.serialize(ic), immutableJson);
     });

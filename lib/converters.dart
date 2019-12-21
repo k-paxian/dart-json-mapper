@@ -33,7 +33,7 @@ class DateConverter extends BaseCustomConverter implements ICustomConverter {
 
   @override
   Object fromJSON(dynamic jsonValue, [JsonProperty jsonProperty]) {
-    DateFormat format = getDateFormat(jsonProperty);
+    final format = getDateFormat(jsonProperty);
 
     if (jsonValue is String) {
       return format != null
@@ -46,7 +46,7 @@ class DateConverter extends BaseCustomConverter implements ICustomConverter {
 
   @override
   dynamic toJSON(Object object, [JsonProperty jsonProperty]) {
-    DateFormat format = getDateFormat(jsonProperty);
+    final format = getDateFormat(jsonProperty);
     return format != null && object != null && !(object is String)
         ? format.format(object)
         : (object is List)
@@ -68,7 +68,7 @@ class NumberConverter extends BaseCustomConverter implements ICustomConverter {
 
   @override
   Object fromJSON(dynamic jsonValue, [JsonProperty jsonProperty]) {
-    NumberFormat format = getNumberFormat(jsonProperty);
+    final format = getNumberFormat(jsonProperty);
     return format != null && (jsonValue is String)
         ? getNumberFormat(jsonProperty).parse(jsonValue)
         : jsonValue;
@@ -76,7 +76,7 @@ class NumberConverter extends BaseCustomConverter implements ICustomConverter {
 
   @override
   dynamic toJSON(Object object, [JsonProperty jsonProperty]) {
-    NumberFormat format = getNumberFormat(jsonProperty);
+    final format = getNumberFormat(jsonProperty);
     return object != null && format != null
         ? getNumberFormat(jsonProperty).format(object)
         : object;
@@ -148,7 +148,7 @@ class SymbolConverter implements ICustomConverter {
             .allMatches(object.toString())
             .first
             .group(0)
-            .replaceAll("\"", '')
+            .replaceAll('\"', '')
         : null;
   }
 }

@@ -1,3 +1,7 @@
+## 1.2.7
+
+* adopt pedantic for code style lints
+
 ## 1.2.6
 
 * Introduced deep nesting for property names

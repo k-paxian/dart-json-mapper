@@ -3,7 +3,7 @@ part of json_mapper.test;
 class UnAnnotated {}
 
 enum Sex { Male, Female }
-const sexTypeValues = ["__female", "__male"];
+const sexTypeValues = ['__female', '__male'];
 
 @jsonSerializable
 class UnAnnotatedEnumField {
@@ -27,21 +27,21 @@ dynamic catchError(ErrorGeneratorFunction errorGenerator) {
   return targetError;
 }
 
-testErrorHandling() {
-  group("[Verify error handling]", () {
-    test("Circular reference detection during serialization", () {
-      final Car car = Car('VW', Color.Blue);
+void testErrorHandling() {
+  group('[Verify error handling]', () {
+    test('Circular reference detection during serialization', () {
+      final car = Car('VW', Color.Blue);
       car.replacement = car;
       expect(catchError(() => JsonMapper.serialize(car)),
           TypeMatcher<CircularReferenceError>());
     });
 
-    test("Missing annotation on class", () {
+    test('Missing annotation on class', () {
       expect(catchError(() => JsonMapper.serialize(UnAnnotated())),
           TypeMatcher<MissingAnnotationOnTypeError>());
     });
 
-    test("Missing annotation on Enum field", () {
+    test('Missing annotation on Enum field', () {
       // Serialize unannotated enum should be fine
       final json = '''{"sex":"Sex.Female"}''';
       expect(JsonMapper.serialize(UnAnnotatedEnumField(), ''), json);
@@ -52,15 +52,15 @@ testErrorHandling() {
           TypeMatcher<MissingEnumValuesError>());
     });
 
-    test("Wrong enumValues in annotation on Enum field", () {
+    test('Wrong enumValues in annotation on Enum field', () {
       final json = '{"sex":"Sex.Female"}';
       expect(catchError(() {
         JsonMapper.deserialize<WrongAnnotatedEnumField>(json);
       }), TypeMatcher<MissingEnumValuesError>());
     });
 
-    test("Missing target type for deserialization", () {
-      expect(catchError(() => JsonMapper.deserialize("{}")),
+    test('Missing target type for deserialization', () {
+      expect(catchError(() => JsonMapper.deserialize('{}')),
           TypeMatcher<MissingTypeForDeserializationError>());
     });
   });

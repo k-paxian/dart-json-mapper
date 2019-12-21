@@ -28,7 +28,7 @@ class Car {
 }
 
 extension TitledCar on Car {
-  String get title => "${this.model}-${this.color}";
+  String get title => '${model}-${color}';
 }
 
 @jsonSerializable
@@ -54,16 +54,16 @@ class Person {
 
   bool active = true;
 
-  String name = "Forest";
+  String name = 'Forest';
 
   @JsonProperty(converterParams: {'format': '##.##'})
   num salary = 1200000.246;
   num dob;
   num age = 36;
 
-  var lastName = "Gump";
+  var lastName = 'Gump';
 
-  dynamic dyn = "dyn";
+  dynamic dyn = 'dyn';
   dynamic dynNum = 9;
   dynamic dynBool = false;
 
@@ -86,9 +86,9 @@ class Person {
   @JsonProperty(enumValues: Color.values, converter: enumConverterNumeric)
   Color hairColor = Color.Brown;
 
-  List<Car> vehicles = [Car("Tesla", Color.Black), Car("BMW", Color.Red)];
+  List<Car> vehicles = [Car('Tesla', Color.Black), Car('BMW', Color.Red)];
 
-  String get fullName => "${name} ${lastName}";
+  String get fullName => '${name} ${lastName}';
 
   Person();
 }
@@ -128,6 +128,6 @@ class Stakeholder {
 @jsonSerializable
 class GettersOnly {
   int _nextId = 0;
-  String get nextCatId => "c${_nextId++}";
-  String get nextDogId => "h${_nextId++}";
+  String get nextCatId => 'c${_nextId++}';
+  String get nextDogId => 'h${_nextId++}';
 }

@@ -1,21 +1,10 @@
+include: package:pedantic/analysis_options.yaml
+linter:
+  rules:
+    - await_only_futures
 analyzer:
-  errors:
-    todo: ignore
   exclude:
     - example/*.reflectable.dart
     - test/*.reflectable.dart
-
-linter:
-  rules:
-    - camel_case_types
-    - hash_and_equals
-    - iterable_contains_unrelated_type
-    - list_remove_unrelated_type
-    - unrelated_type_equality_checks
-    - valid_regexps
-    - avoid_empty_else
-    - cancel_subscriptions
-    - close_sinks
-    - unnecessary_const
-    - unnecessary_new
-    - empty_catches
+  strong-mode:
+    implicit-casts: true

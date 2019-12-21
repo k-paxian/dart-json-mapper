@@ -5,7 +5,7 @@ class TestChain extends _TestChain {}
 
 @jsonSerializable
 abstract class _TestChain {
-  List<String> mailingList = List<String>();
+  List<String> mailingList = <String>[];
 }
 
 @jsonSerializable
@@ -65,9 +65,9 @@ class ServiceOrderModel {
   });
 }
 
-testValueDecorators() {
-  final String carListJson = '[{"modelName":"Audi","color":"Color.Green"}]';
-  final String ordersListJson = '''[  
+void testValueDecorators() {
+  final carListJson = '[{"modelName":"Audi","color":"Color.Green"}]';
+  final ordersListJson = '''[  
   {
     "Id": 96,
     "Number": 96,
@@ -99,17 +99,17 @@ testValueDecorators() {
     "Items": []
   }
   ]''';
-  final String intListJson = '[1,3,5]';
+  final intListJson = '[1,3,5]';
   final iterableCarDecorator = (value) => value.cast<Car>();
   final iterableCustomerDecorator = (value) => value.cast<Customer>();
 
-  group("[Verify value decorators]", () {
-    test("Inherited List<String> property", () {
+  group('[Verify value decorators]', () {
+    test('Inherited List<String> property', () {
       // given
       final test = TestChain();
-      test.mailingList.add("test12345@test.com");
-      test.mailingList.add("test2222@test.com");
-      test.mailingList.add("test33333@test.com");
+      test.mailingList.add('test12345@test.com');
+      test.mailingList.add('test2222@test.com');
+      test.mailingList.add('test33333@test.com');
       // when
       final json = JsonMapper.serialize(test, '');
       final instance = JsonMapper.deserialize<TestChain>(json);
@@ -120,10 +120,10 @@ testValueDecorators() {
       expect(instance.mailingList.length, 3);
     });
 
-    test("Set<int> / List<int> using default value decorators", () {
+    test('Set<int> / List<int> using default value decorators', () {
       // when
-      Set<int> targetSet = JsonMapper.deserialize(intListJson);
-      List<int> targetList = JsonMapper.deserialize(intListJson);
+      final targetSet = JsonMapper.deserialize<Set<int>>(intListJson);
+      final targetList = JsonMapper.deserialize<List<int>>(intListJson);
 
       // then
       expect(targetSet.length, 3);
@@ -132,13 +132,13 @@ testValueDecorators() {
       expect(targetList.first, TypeMatcher<int>());
     });
 
-    test("Custom Set<Car> value decorator", () {
+    test('Custom Set<Car> value decorator', () {
       // given
-      final Set<Car> set = Set<Car>();
-      set.add(Car("Audi", Color.Green));
+      final set = <Car>{};
+      set.add(Car('Audi', Color.Green));
 
       // when
-      String json = JsonMapper.serialize(set, '');
+      final json = JsonMapper.serialize(set, '');
 
       // then
       expect(json, carListJson);
@@ -147,30 +147,30 @@ testValueDecorators() {
       JsonMapper.registerValueDecorator<Set<Car>>(iterableCarDecorator);
 
       // when
-      Set<Car> target = JsonMapper.deserialize(carListJson);
+      final target = JsonMapper.deserialize<Set<Car>>(carListJson);
 
       // then
       expect(target.length, 1);
       expect(target.first, TypeMatcher<Car>());
-      expect(target.first.model, "Audi");
+      expect(target.first.model, 'Audi');
       expect(target.first.color, Color.Green);
     });
 
-    test("Custom List<Car> value decorator", () {
+    test('Custom List<Car> value decorator', () {
       // given
       JsonMapper.registerValueDecorator<List<Car>>(iterableCarDecorator);
 
       // when
-      List<Car> target = JsonMapper.deserialize(carListJson);
+      final target = JsonMapper.deserialize<List<Car>>(carListJson);
 
       // then
       expect(target.length, 1);
       expect(target[0], TypeMatcher<Car>());
-      expect(target[0].model, "Audi");
+      expect(target[0].model, 'Audi');
       expect(target[0].color, Color.Green);
     });
 
-    test("Custom List<ServiceOrderModel> value decorator", () {
+    test('Custom List<ServiceOrderModel> value decorator', () {
       // given
       JsonMapper.registerValueDecorator<List<Customer>>(
           iterableCustomerDecorator);
@@ -180,7 +180,8 @@ testValueDecorators() {
           (value) => value.cast<ServiceOrderItemModel>());
 
       // when
-      List<ServiceOrderModel> target = JsonMapper.deserialize(ordersListJson);
+      final target =
+          JsonMapper.deserialize<List<ServiceOrderModel>>(ordersListJson);
 
       // then
       expect(target.length, 1);
@@ -190,16 +191,16 @@ testValueDecorators() {
     });
 
     test(
-        "Should dump typeName to json property when"
+        'Should dump typeName to json property when'
         " @Json(typeNameProperty: 'typeName')", () {
       // given
-      final jack = Stakeholder("Jack", [Startup(10), Hotel(4)]);
+      final jack = Stakeholder('Jack', [Startup(10), Hotel(4)]);
 
       // when
       JsonMapper.registerValueDecorator<List<Business>>(
           (value) => value.cast<Business>());
-      final String json = JsonMapper.serialize(jack);
-      final Stakeholder target = JsonMapper.deserialize(json);
+      final json = JsonMapper.serialize(jack);
+      final target = JsonMapper.deserialize<Stakeholder>(json);
 
       // then
       expect(target.businesses[0], TypeMatcher<Startup>());

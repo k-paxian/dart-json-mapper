@@ -9,13 +9,13 @@ import 'package:dart_json_mapper/converters.dart';
 import 'package:dart_json_mapper/errors.dart';
 import 'package:dart_json_mapper/type_info.dart';
 import 'package:dart_json_mapper/utils.dart';
-import "package:reflectable/reflectable.dart";
+import 'package:reflectable/reflectable.dart';
 
 /// Singleton class providing static methods for Dart objects conversion
 /// from / to JSON string
 class JsonMapper {
   static final JsonMapper instance = JsonMapper._internal();
-  final JsonEncoder jsonEncoder = JsonEncoder.withIndent(" ");
+  final JsonEncoder jsonEncoder = JsonEncoder.withIndent(' ');
   final JsonDecoder jsonDecoder = JsonDecoder();
   final serializable = const JsonSerializable();
   final Map<String, ClassMirror> classes = {};
@@ -37,9 +37,8 @@ class JsonMapper {
   /// Add custom typeInfo decorator
   static void registerTypeInfoDecorator(ITypeInfoDecorator decorator,
       [int priority]) {
-    int nextPriority = priority != null
-        ? priority
-        : instance.typeInfoDecorators.keys
+    final nextPriority = priority ??
+        instance.typeInfoDecorators.keys
                 .reduce((value, item) => max(value, item)) +
             1;
     instance.typeInfoDecorators[nextPriority] = decorator;
@@ -53,7 +52,7 @@ class JsonMapper {
   /// Converts Dart object to JSON string, indented by `indent`
   static String serialize(Object object, [String indent]) {
     instance.processedObjects.clear();
-    JsonEncoder encoder = instance.jsonEncoder;
+    var encoder = instance.jsonEncoder;
     if (indent != null && indent.isEmpty) {
       encoder = JsonEncoder();
     } else {
@@ -93,7 +92,7 @@ class JsonMapper {
   factory JsonMapper() => instance;
 
   JsonMapper._internal() {
-    for (ClassMirror classMirror in serializable.annotatedClasses) {
+    for (var classMirror in serializable.annotatedClasses) {
       classes[classMirror.reflectedType.toString()] = classMirror;
     }
     registerDefaultConverters();
@@ -167,14 +166,14 @@ class JsonMapper {
       '${object.runtimeType}-${object.hashCode}';
 
   bool isObjectAlreadyProcessed(Object object) {
-    bool result = false;
+    var result = false;
 
     if (object.runtimeType.toString() == 'Null' ||
         object.runtimeType.toString() == 'bool') {
       return result;
     }
 
-    String key = getObjectKey(object);
+    final key = getObjectKey(object);
     if (processedObjects.containsKey(key)) {
       result = true;
     } else {
@@ -193,16 +192,15 @@ class JsonMapper {
 
   TypeInfo detectObjectType(
       dynamic objectInstance, Type objectType, JsonMap objectJsonMap) {
-    final ClassMirror objectClassMirror = classes[objectType.toString()];
-    final ClassInfo objectClassInfo = ClassInfo(objectClassMirror);
+    final objectClassMirror = classes[objectType.toString()];
+    final objectClassInfo = ClassInfo(objectClassMirror);
     final Json meta = objectClassInfo.metaData
         .firstWhere((m) => m is Json, orElse: () => null);
 
     if (objectInstance is Map<String, dynamic>) {
       objectJsonMap = JsonMap(objectInstance, meta);
     }
-    final TypeInfo typeInfo = getTypeInfo(
-        objectType != null ? objectType : objectInstance.runtimeType);
+    final typeInfo = getTypeInfo(objectType ?? objectInstance.runtimeType);
 
     final String typeName = objectJsonMap != null &&
             meta != null &&
@@ -211,15 +209,15 @@ class JsonMapper {
         ? objectJsonMap.getPropertyValue(meta.typeNameProperty)
         : typeInfo.typeName;
 
-    final Type type = classes[typeName] != null
+    final type = classes[typeName] != null
         ? classes[typeName].reflectedType
         : typeInfo.type;
     return getTypeInfo(type);
   }
 
   Type getScalarType(Type type) {
-    TypeInfo typeInfo = getTypeInfo(type);
-    String scalarTypeName = typeInfo.scalarTypeName;
+    final typeInfo = getTypeInfo(type);
+    final scalarTypeName = typeInfo.scalarTypeName;
 
     /// Known Types
     if (typeInfo.scalarType != null) {
@@ -244,7 +242,7 @@ class JsonMapper {
   }
 
   Type getDeclarationType(DeclarationMirror mirror) {
-    Type result = dynamic;
+    var result = dynamic;
     VariableMirror variable;
     MethodMirror method;
 
@@ -263,28 +261,24 @@ class JsonMapper {
       result = result;
     }
 
-    if (result == null) {
-      result = dynamic;
-    }
-    return result;
+    return result ??= dynamic;
   }
 
   ICustomConverter getConverter(JsonProperty jsonProperty, Type declarationType,
       [Type valueType, InstanceMirror im]) {
-    ICustomConverter result =
-        jsonProperty != null ? jsonProperty.converter : null;
+    var result = jsonProperty != null ? jsonProperty.converter : null;
     if ((jsonProperty != null && jsonProperty.enumValues != null ||
             isEnumInstance(im)) &&
         result == null) {
       result = enumConverter;
     }
 
-    Type targetType = declarationType;
+    var targetType = declarationType;
     if (declarationType == dynamic && valueType != null) {
       targetType = valueType;
     }
 
-    TypeInfo typeInfo = getTypeInfo(targetType);
+    final typeInfo = getTypeInfo(targetType);
     if (result == null && converters[targetType] != null) {
       result = converters[targetType];
     }
@@ -296,8 +290,7 @@ class JsonMapper {
 
   dynamic applyValueDecorator(dynamic value, TypeInfo typeInfo,
       [JsonProperty meta]) {
-    ValueDecoratorFunction valueDecoratorFunction =
-        getValueDecorator(meta, typeInfo.type);
+    final valueDecoratorFunction = getValueDecorator(meta, typeInfo.type);
     if (typeInfo.isSet && value is! Set && value is Iterable) {
       value = Set.from(value);
     }
@@ -314,18 +307,17 @@ class JsonMapper {
           classMeta.ignoreNullMembers == true &&
           value == null);
 
-  enumeratePublicFields(
+  void enumeratePublicFields(
       InstanceMirror instanceMirror, JsonMap jsonMap, Function visitor) {
-    ClassInfo classInfo = ClassInfo(instanceMirror.type);
-    for (String name in classInfo.publicFieldNames) {
-      String jsonName = name;
-      DeclarationMirror declarationMirror =
-          classInfo.getDeclarationMirror(name);
+    final classInfo = ClassInfo(instanceMirror.type);
+    for (var name in classInfo.publicFieldNames) {
+      var jsonName = name;
+      final declarationMirror = classInfo.getDeclarationMirror(name);
       if (declarationMirror == null) {
         continue;
       }
-      Type declarationType = getDeclarationType(declarationMirror);
-      bool isGetterOnly = classInfo.isGetterOnly(name);
+      final declarationType = getDeclarationType(declarationMirror);
+      final isGetterOnly = classInfo.isGetterOnly(name);
       JsonProperty meta = classInfo
           .lookupDeclarationMetaData(declarationMirror)
           .firstWhere((m) => m is JsonProperty, orElse: () => null);
@@ -358,26 +350,27 @@ class JsonMapper {
     }
   }
 
-  enumerateConstructorParameters(ClassMirror classMirror, Function visitor) {
-    ClassInfo classInfo = ClassInfo(classMirror);
+  void enumerateConstructorParameters(
+      ClassMirror classMirror, Function visitor) {
+    final classInfo = ClassInfo(classMirror);
     Json classMeta =
         classInfo.metaData.firstWhere((m) => m is Json, orElse: () => null);
-    MethodMirror methodMirror = classInfo.publicConstructor;
+    final methodMirror = classInfo.publicConstructor;
     if (methodMirror == null) {
       return;
     }
     methodMirror.parameters.forEach((ParameterMirror param) {
-      String name = param.simpleName;
-      DeclarationMirror declarationMirror =
+      final name = param.simpleName;
+      final declarationMirror =
           ClassInfo(classMirror).getDeclarationMirror(name);
-      TypeInfo paramTypeInfo = getTypeInfo(param.reflectedType);
+      var paramTypeInfo = getTypeInfo(param.reflectedType);
       if (declarationMirror == null) {
         return;
       }
       paramTypeInfo = paramTypeInfo.isDynamic
           ? getTypeInfo(getDeclarationType(declarationMirror))
           : paramTypeInfo;
-      String jsonName = name;
+      var jsonName = name;
       JsonProperty meta = declarationMirror.metadata
           .firstWhere((m) => m is JsonProperty, orElse: () => null);
       if (meta != null && meta.name != null) {
@@ -388,8 +381,8 @@ class JsonMapper {
     });
   }
 
-  dumpTypeNameToObjectProperty(JsonMap object, ClassMirror classMirror) {
-    ClassInfo classInfo = ClassInfo(classMirror);
+  void dumpTypeNameToObjectProperty(JsonMap object, ClassMirror classMirror) {
+    final classInfo = ClassInfo(classMirror);
     final Json meta =
         classInfo.metaData.firstWhere((m) => m is Json, orElse: () => null);
     if (meta != null && meta.typeNameProperty != null) {
@@ -399,7 +392,7 @@ class JsonMapper {
   }
 
   Map<Symbol, dynamic> getNamedArguments(ClassMirror cm, JsonMap jsonMap) {
-    Map<Symbol, dynamic> result = Map();
+    final result = <Symbol, dynamic>{};
 
     enumerateConstructorParameters(cm,
         (param, name, jsonName, classMeta, meta, TypeInfo typeInfo) {
@@ -408,8 +401,7 @@ class JsonMapper {
         if (isFieldIgnored(classMeta, meta, value)) {
           return;
         }
-        TypeInfo parameterTypeInfo =
-            detectObjectType(value, typeInfo.type, null);
+        final parameterTypeInfo = detectObjectType(value, typeInfo.type, null);
         if (parameterTypeInfo.isIterable) {
           value = (value as List)
               .map((item) => deserializeObject(
@@ -427,7 +419,7 @@ class JsonMapper {
   }
 
   List getPositionalArguments(ClassMirror cm, JsonMap jsonMap) {
-    List result = [];
+    final result = [];
 
     enumerateConstructorParameters(cm, (param, name, jsonName, classMeta,
         JsonProperty meta, TypeInfo typeInfo) {
@@ -435,8 +427,7 @@ class JsonMapper {
           !param.isNamed &&
           jsonMap.hasProperty(jsonName)) {
         var value = jsonMap.getPropertyValue(jsonName);
-        TypeInfo parameterTypeInfo =
-            detectObjectType(value, typeInfo.type, null);
+        final parameterTypeInfo = detectObjectType(value, typeInfo.type, null);
         if (parameterTypeInfo.isIterable) {
           value = (value as List)
               .map((item) => deserializeObject(
@@ -465,10 +456,9 @@ class JsonMapper {
       throw CircularReferenceError(object);
     }
 
-    InstanceMirror im = safeGetInstanceMirror(object);
+    final im = safeGetInstanceMirror(object);
 
-    ICustomConverter converter =
-        getConverter(null, object.runtimeType, null, im);
+    final converter = getConverter(null, object.runtimeType, null, im);
     if (converter != null) {
       return converter.toJSON(object, null);
     }
@@ -485,7 +475,7 @@ class JsonMapper {
       }
     }
 
-    JsonMap result = JsonMap(
+    final result = JsonMap(
         {},
         ClassInfo(im.type)
             .metaData
@@ -494,8 +484,8 @@ class JsonMapper {
     enumeratePublicFields(im, null, (name, jsonName, value, isGetterOnly, meta,
         converter, scalarType, TypeInfo typeInfo) {
       if (converter != null) {
-        TypeInfo valueTypeInfo = getTypeInfo(value.runtimeType);
-        convert(item) => converter.toJSON(item, meta);
+        final valueTypeInfo = getTypeInfo(value.runtimeType);
+        dynamic convert(item) => converter.toJSON(item, meta);
         if (valueTypeInfo.isList) {
           result.setPropertyValue(jsonName, value.map(convert).toList());
         } else {
@@ -513,8 +503,8 @@ class JsonMapper {
     if (jsonValue == null) {
       return null;
     }
-    TypeInfo typeInfo = getTypeInfo(instanceType);
-    ICustomConverter converter = getConverter(parentMeta, typeInfo.type);
+    var typeInfo = getTypeInfo(instanceType);
+    final converter = getConverter(parentMeta, typeInfo.type);
     if (converter != null) {
       return converter.fromJSON(jsonValue, parentMeta);
     }
@@ -536,18 +526,18 @@ class JsonMapper {
       throw MissingEnumValuesError(typeInfo.type);
     }
     typeInfo = detectObjectType(null, instanceType, jsonMap);
-    ClassMirror cm = classes[typeInfo.typeName];
+    final cm = classes[typeInfo.typeName];
     if (cm == null) {
       throw MissingAnnotationOnTypeError(typeInfo.type);
     }
     jsonMap.jsonMeta =
         ClassInfo(cm).metaData.firstWhere((m) => m is Json, orElse: () => null);
 
-    Object objectInstance = cm.isEnum
+    final objectInstance = cm.isEnum
         ? null
-        : cm.newInstance("", getPositionalArguments(cm, jsonMap),
+        : cm.newInstance('', getPositionalArguments(cm, jsonMap),
             getNamedArguments(cm, jsonMap));
-    InstanceMirror im = safeGetInstanceMirror(objectInstance);
+    final im = safeGetInstanceMirror(objectInstance);
 
     enumeratePublicFields(im, jsonMap, (name, jsonName, value, isGetterOnly,
         JsonProperty meta, converter, scalarType, TypeInfo typeInfo) {
@@ -563,8 +553,8 @@ class JsonMapper {
         fieldValue = deserializeObject(fieldValue, typeInfo.type, meta);
       }
       if (converter != null) {
-        convert(item) => converter.fromJSON(item, meta);
-        TypeInfo valueTypeInfo = getTypeInfo(fieldValue.runtimeType);
+        dynamic convert(item) => converter.fromJSON(item, meta);
+        final valueTypeInfo = getTypeInfo(fieldValue.runtimeType);
         if (valueTypeInfo.isList) {
           fieldValue = fieldValue.map(convert).toList();
         } else {

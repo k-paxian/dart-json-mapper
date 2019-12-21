@@ -35,14 +35,14 @@ class Person {
   DateTime hireDate = DateTime(2003, 02, 28);
 
   bool married = true;
-  String name = "Forest";
+  String name = 'Forest';
 
   @JsonProperty(ignore: true)
   num salary;
 
   num dob;
   num age = 36;
-  var lastName = "Gump";
+  var lastName = 'Gump';
 
   @JsonProperty(name: 'eye_color', enumValues: Color.values)
   Color eyeColor = Color.Blue;
@@ -50,9 +50,9 @@ class Person {
   @JsonProperty(enumValues: Color.values, converter: enumConverterNumeric)
   Color hairColor = Color.Brown;
 
-  List<Car> vehicles = [Car("Tesla", Color.Black), Car("BMW", Color.Red)];
+  List<Car> vehicles = [Car('Tesla', Color.Black), Car('BMW', Color.Red)];
 
-  String get fullName => "${name} ${lastName}";
+  String get fullName => '${name} ${lastName}';
 
   Person();
 
@@ -68,7 +68,7 @@ class Person {
 void main() {
   initializeReflectable();
 
-  final String personJson = '''{
+  final personJson = '''{
  "skills": [
   "Go",
   "Dart",

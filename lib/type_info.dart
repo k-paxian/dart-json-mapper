@@ -29,10 +29,10 @@ class DefaultTypeInfoDecorator implements ITypeInfoDecorator {
     final typeName = type != null ? type.toString() : '';
 
     typeInfo.typeName = typeName;
-    typeInfo.isDynamic = typeName == "dynamic";
-    typeInfo.isList = typeName.indexOf("List<") == 0;
-    typeInfo.isSet = typeName.indexOf("Set<") == 0;
-    typeInfo.isMap = typeName.indexOf("Map<") == 0;
+    typeInfo.isDynamic = typeName == 'dynamic';
+    typeInfo.isList = typeName.indexOf('List<') == 0;
+    typeInfo.isSet = typeName.indexOf('Set<') == 0;
+    typeInfo.isMap = typeName.indexOf('Map<') == 0;
     typeInfo.isIterable = typeInfo.isList || typeInfo.isSet;
     typeInfo.scalarType = detectScalarType(typeInfo);
 
@@ -44,29 +44,29 @@ class DefaultTypeInfoDecorator implements ITypeInfoDecorator {
           .allMatches(typeInfo.typeName)
           .first
           .group(0)
-          .replaceAll("<", '')
-          .replaceAll(">", '')
+          .replaceAll('<', '')
+          .replaceAll('>', '')
       : null;
 
   Type detectScalarType(TypeInfo typeInfo) {
     typeInfo.scalarTypeName = detectScalarTypeName(typeInfo);
     if (typeInfo.isDynamic) return dynamic;
     switch (typeInfo.scalarTypeName) {
-      case "DateTime":
+      case 'DateTime':
         return DateTime;
-      case "num":
+      case 'num':
         return num;
-      case "int":
+      case 'int':
         return int;
-      case "double":
+      case 'double':
         return double;
-      case "BigInt":
+      case 'BigInt':
         return BigInt;
-      case "bool":
+      case 'bool':
         return bool;
-      case "String":
+      case 'String':
         return String;
-      case "Symbol":
+      case 'Symbol':
         return Symbol;
       default:
         return null;
