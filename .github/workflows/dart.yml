@@ -11,8 +11,31 @@ jobs:
       image:  google/dart:latest
 
     steps:
-    - uses: actions/checkout@v1
-    - name: Install dependencies
-      run: pub get
-    - name: Run tests
-      run: pub run build_runner test
+      - uses: actions/checkout@v1
+      # Build & test mapper
+      - name: Go to mapper folder
+        run: cd mapper
+      - name: Install dependencies
+        run: pub get
+      - name: Run tests
+        run: pub run build_runner test
+      - name: Go to root folder
+        run: cd ..
+      # Build & test mobx adapter
+      - name: Go to adapter folder
+        run: cd adapters/mobx
+      - name: Install dependencies
+        run: pub get
+      - name: Run tests
+        run: pub run build_runner test
+      - name: Go to root folder
+        run: cd ..
+      # Build & test fixnum adapter
+      - name: Go to adapter folder
+        run: cd adapters/fixnum
+      - name: Install dependencies
+        run: pub get
+      - name: Run tests
+        run: pub run build_runner test
+      - name: Go to root folder
+        run: cd ..

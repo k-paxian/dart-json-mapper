@@ -17,7 +17,7 @@ This package allows programmers to annotate Dart classes in order to
 
 Dart classes reflection mechanism is based on [reflectable][3] library. 
 This means "extended types information" is auto-generated out of existing Dart program 
-guided by the annotated classes only, as the result types information is accesible at runtime, at a reduced cost.
+guided by the annotated classes only, as the result types information is accessible at runtime, at a reduced cost.
 
 Typical `Flutter.io project integration` sample can be found [here][4]
   
@@ -375,7 +375,7 @@ final json = JsonMapper.serialize(instance, '');
 expect(json, '''{"default":{"title":"No Scheme"}}''');
 ```
 
-## Custom based types
+## Custom types
 
 For the very custom types, specific ones, or doesn't currently supported by this library, you can 
 provide your own custom Converter class per each custom runtimeType.
@@ -426,24 +426,18 @@ existing adapter, or create one for your use case.
 
 | Name        | Bages | Use case |
 | ----------- |:-----------------------:|:-----------|  
-|[dart-json-mapper-mobx][5]| [![Build Status][mobx-travis-badge]][mobx-travis-badge-url] [![pub package](https://img.shields.io/pub/v/dart_json_mapper_mobx.svg)](https://pub.dartlang.org/packages/dart_json_mapper_mobx) | [MobX][7] |
-|[dart-json-mapper-fixnum][6]| [![Build Status][fixnum-travis-badge]][fixnum-travis-badge-url] [![pub package](https://img.shields.io/pub/v/dart_json_mapper_fixnum.svg)](https://pub.dartlang.org/packages/dart_json_mapper_fixnum) | [Fixnum][8] |
+|[dart-json-mapper-mobx][5]| [![pub package](https://img.shields.io/pub/v/dart_json_mapper_mobx.svg)](https://pub.dartlang.org/packages/dart_json_mapper_mobx) | [MobX][7] |
+|[dart-json-mapper-fixnum][6]| [![pub package](https://img.shields.io/pub/v/dart_json_mapper_fixnum.svg)](https://pub.dartlang.org/packages/dart_json_mapper_fixnum) | [Fixnum][8] |
 
 
 [1]: https://github.com/flutter/flutter/issues/1150
 [2]: https://pub.dartlang.org/packages/intl
 [3]: https://pub.dartlang.org/packages/reflectable
 [4]: https://github.com/k-paxian/samples/tree/master/jsonexample
-[5]: https://github.com/k-paxian/dart-json-mapper-mobx
-[6]: https://github.com/k-paxian/dart-json-mapper-fixnum
+[5]: adapters/mobx
+[6]: adapters/fixnum
 [7]: https://mobx.pub
 [8]: https://github.com/dart-lang/fixnum
-
-[mobx-travis-badge]: https://travis-ci.org/k-paxian/dart-json-mapper-mobx.svg?branch=master
-[mobx-travis-badge-url]: https://travis-ci.org/k-paxian/dart-json-mapper-mobx
-
-[fixnum-travis-badge]: https://travis-ci.org/k-paxian/dart-json-mapper-fixnum.svg?branch=master
-[fixnum-travis-badge-url]: https://travis-ci.org/k-paxian/dart-json-mapper-fixnum
 
 [ci-badge]: https://github.com/k-paxian/dart-json-mapper/workflows/Dart%20CI/badge.svg
 [ci-badge-url]: https://github.com/k-paxian/dart-json-mapper/actions

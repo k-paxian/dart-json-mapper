@@ -24,12 +24,12 @@ class JsonMapper {
   final Map<Type, ValueDecoratorFunction> valueDecorators = {};
   final Map<int, ITypeInfoDecorator> typeInfoDecorators = {};
 
-  /// Assign custom converter instance for certain Type
+  /// Assign custom converter instance for certain type T
   static void registerConverter<T>(ICustomConverter converter) {
     instance.converters[T] = converter;
   }
 
-  /// Assign custom value decorator function for certain Type
+  /// Assign custom value decorator function for certain type T
   static void registerValueDecorator<T>(ValueDecoratorFunction decorator) {
     instance.valueDecorators[T] = decorator;
   }
@@ -75,8 +75,8 @@ class JsonMapper {
   }
 
   /// Clone Dart object of type T
-  static T clone<T>(T object, [dynamic scheme]) {
-    return fromJson<T>(toJson(object, null, scheme), scheme);
+  static T clone<T>(T object) {
+    return fromJson<T>(toJson(object));
   }
 
   /// Converts Dart object to Map<String, dynamic>, according to specified `scheme`
