@@ -12,9 +12,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v1
-      - name: Copy required files
+      - name: Publish to pub.dev
         run:  |
           cp ../README.md README.md
-          cp ../LICENSE LICENCE
           pub publish --dry-run
         working-directory: ./mapper
