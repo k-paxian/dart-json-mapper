@@ -440,7 +440,7 @@ existing adapter, or create one for your use case.
 [8]: https://github.com/dart-lang/fixnum
 
 [ci-badge]: https://github.com/k-paxian/dart-json-mapper/workflows/Unit%20Tests/badge.svg
-[ci-badge-url]: https://github.com/k-paxian/dart-json-mapper/actions
+[ci-badge-url]: https://github.com/k-paxian/dart-json-mapper/actions?query=workflow%3A%22Unit+Tests%22
 
 [pedantic-badge]: https://dart-lang.github.io/linter/lints/style-pedantic.svg
 [pedantic-url]: https://github.com/dart-lang/pedantic
