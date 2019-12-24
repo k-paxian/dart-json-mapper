@@ -1,0 +1,24 @@
+name: Publish to Pub.dev
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    container:
+      image:  google/dart:latest
+
+    steps:
+      - uses: actions/checkout@v1
+      - name: Copy required files
+        run:  |
+          cp README.md mapper/README.md
+          cp LICENSE mapper/LICENCE
+      - name: Publish mapper to pub.dev
+        run:  |
+          pub publish --dry-run
+        working-directory: ./mapper

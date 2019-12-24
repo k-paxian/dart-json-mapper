@@ -9,7 +9,7 @@ This package allows programmers to annotate Dart classes in order to
 
 * Compatible with **all** Dart platforms, including [Flutter](https://pub.dartlang.org/flutter/packages) and [Web](https://pub.dartlang.org/web/packages) platforms
 * No need to extend your classes from **any** mixins/base/abstract classes to keep code leaner
-* Clean and simple setup, transparent and straightforward usage with **no heavy maintenance**
+* Clean and simple setup, transparent and straight-forward usage with **no heavy maintenance**
 * **No extra boilerplate**, 100% generated code, which you'll *never* see.
 * **Custom converters** per each class field, full control over the process
 * **NO** dependency on `dart:mirrors`, one of the reasons is described [here][1].
@@ -439,7 +439,7 @@ existing adapter, or create one for your use case.
 [7]: https://mobx.pub
 [8]: https://github.com/dart-lang/fixnum
 
-[ci-badge]: https://github.com/k-paxian/dart-json-mapper/workflows/Dart%20CI/badge.svg
+[ci-badge]: https://github.com/k-paxian/dart-json-mapper/workflows/Unit%20Tests/badge.svg
 [ci-badge-url]: https://github.com/k-paxian/dart-json-mapper/actions
 
 [pedantic-badge]: https://dart-lang.github.io/linter/lints/style-pedantic.svg

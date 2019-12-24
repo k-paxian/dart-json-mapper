@@ -1,4 +1,4 @@
-name: Dart CI
+name: Unit Tests
 
 on: [push]
 
@@ -12,19 +12,16 @@ jobs:
 
     steps:
       - uses: actions/checkout@v1
-      # Check mapper
       - name: Run mapper tests
         run:  |
           pub get
           pub run build_runner test
         working-directory: ./mapper
-      # Check mobx adapter
       - name: Run mobx adapter tests
         run:  |
           pub get
           pub run build_runner test
         working-directory: ./adapters/mobx
-      # Check fixnum adapter
       - name: Run fixnum adapter tests
         run:  |
           pub get
