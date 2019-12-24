@@ -179,11 +179,11 @@ void initializeJsonMapperForMobX() {
   JsonMapper.registerValueDecorator<ObservableSet<bool>>(
       (value) => ObservableSet<bool>.of(value.cast<bool>()));
 
-  // Value decorators for ObservableMap variations
+  // Value converters for ObservableMap variations
   JsonMapper.registerConverter<ObservableMap<String, dynamic>>(
       observableMapConverter);
 
-  // Value decorators for Observable variations
+  // Value converters for Observable variations
   JsonMapper.registerConverter<Observable<String>>(observableStringConverter);
   JsonMapper.registerConverter<Observable<DateTime>>(
       observableDateTimeConverter);

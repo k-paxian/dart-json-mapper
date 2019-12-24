@@ -21,11 +21,19 @@ class Json {
   /// will be excluded from serialization process
   final bool ignoreNullMembers;
 
+  /// Allow circular object references during serialization
+  /// for annotated class. Presume You know what you are doing
+  final int allowCircularReferences;
+
   /// Scheme marker to associate this meta information with particular mapping scheme
   final dynamic scheme;
 
   const Json(
-      {this.scheme, this.typeNameProperty, this.ignoreNullMembers, this.name});
+      {this.allowCircularReferences,
+      this.scheme,
+      this.typeNameProperty,
+      this.ignoreNullMembers,
+      this.name});
 }
 
 /// [JsonProperty] is used as metadata, for annotation of individual class fields

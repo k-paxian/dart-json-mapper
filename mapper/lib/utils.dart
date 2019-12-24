@@ -1,10 +1,12 @@
 import 'package:dart_json_mapper/annotations.dart';
 import 'package:reflectable/reflectable.dart';
 
-bool isEnumInstance(InstanceMirror instanceMirror) =>
-    (instanceMirror != null && instanceMirror.hasReflectee)
-        ? instanceMirror.reflectee.toString().split('.').length == 2
-        : false;
+class ProcessedObjectDescriptor {
+  dynamic object;
+  int times = 0;
+
+  ProcessedObjectDescriptor(this.object);
+}
 
 /// Provides logic for traversing Json object tree
 class JsonMap {

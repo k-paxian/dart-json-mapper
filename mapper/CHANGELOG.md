@@ -1,3 +1,7 @@
+## 1.2.9
+
+* Introduced possibility to specify number of allowed circular references `@Json(allowCircularReferences: 1)`   
+
 ## 1.2.8
 
 * Schemes introduced. Scheme - is a set of meta annotations associated with common scheme id.
@@ -15,8 +19,6 @@ This enables the possibility to map *single* Dart class to *many* JSON structure
 
 * Introduced clone util method. Clone Dart objects made simple!
 * Introduced support for public getters-only serialization
-* Enum fields *serialization* will work w/o `@JsonProperty(enumValues: T.values)` annotation.
-But *deserialization* w/o `@JsonProperty(enumValues: T.values)` annotation will throw an error 
 
 ## 1.2.4
 

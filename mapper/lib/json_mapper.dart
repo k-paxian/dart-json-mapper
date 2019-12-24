@@ -19,7 +19,7 @@ class JsonMapper {
   final JsonDecoder jsonDecoder = JsonDecoder();
   final serializable = const JsonSerializable();
   final Map<String, ClassMirror> classes = {};
-  final Map<String, Object> processedObjects = {};
+  final Map<String, ProcessedObjectDescriptor> processedObjects = {};
   final Map<Type, ICustomConverter> converters = {};
   final Map<Type, ValueDecoratorFunction> valueDecorators = {};
   final Map<int, ITypeInfoDecorator> typeInfoDecorators = {};
@@ -166,8 +166,8 @@ class JsonMapper {
   String getObjectKey(Object object) =>
       '${object.runtimeType}-${object.hashCode}';
 
-  bool isObjectAlreadyProcessed(Object object) {
-    var result = false;
+  ProcessedObjectDescriptor getObjectProcessed(Object object) {
+    ProcessedObjectDescriptor result;
 
     if (object.runtimeType.toString() == 'Null' ||
         object.runtimeType.toString() == 'bool') {
@@ -176,9 +176,10 @@ class JsonMapper {
 
     final key = getObjectKey(object);
     if (processedObjects.containsKey(key)) {
-      result = true;
+      result = processedObjects[key];
+      result.times++;
     } else {
-      processedObjects[key] = object;
+      result = processedObjects[key] = ProcessedObjectDescriptor(object);
     }
     return result;
   }
@@ -268,8 +269,7 @@ class JsonMapper {
   ICustomConverter getConverter(JsonProperty jsonProperty, Type declarationType,
       [Type valueType, InstanceMirror im]) {
     var result = jsonProperty != null ? jsonProperty.converter : null;
-    if ((jsonProperty != null && jsonProperty.enumValues != null ||
-            isEnumInstance(im)) &&
+    if ((jsonProperty != null && jsonProperty.enumValues != null) &&
         result == null) {
       result = enumConverter;
     }
@@ -449,12 +449,7 @@ class JsonMapper {
       return object;
     }
 
-    if (isObjectAlreadyProcessed(object)) {
-      throw CircularReferenceError(object);
-    }
-
     final im = safeGetInstanceMirror(object);
-
     final converter = getConverter(null, object.runtimeType, null, im);
     if (converter != null) {
       return converter.toJSON(object, null);
@@ -472,7 +467,25 @@ class JsonMapper {
       }
     }
 
-    final result = JsonMap({}, ClassInfo(im.type).getMeta(scheme));
+    final jsonMeta = ClassInfo(im.type).getMeta(scheme);
+    final result = JsonMap({}, jsonMeta);
+    final processedObjectDescriptor = getObjectProcessed(object);
+    if (processedObjectDescriptor != null &&
+        processedObjectDescriptor.times >= 1) {
+      final allowanceIsSet =
+          (jsonMeta != null && jsonMeta.allowCircularReferences > 0);
+      final allowanceExceeded = (allowanceIsSet &&
+              processedObjectDescriptor.times >
+                  jsonMeta.allowCircularReferences)
+          ? true
+          : null;
+      if (allowanceExceeded == true) {
+        return null;
+      }
+      if (allowanceIsSet == false) {
+        throw CircularReferenceError(object);
+      }
+    }
     dumpTypeNameToObjectProperty(result, im.type);
     enumeratePublicFields(im, null, scheme, (name, jsonName, value,
         isGetterOnly, meta, converter, scalarType, TypeInfo typeInfo) {

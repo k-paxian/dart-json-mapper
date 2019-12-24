@@ -12,24 +12,21 @@ jobs:
 
     steps:
       - uses: actions/checkout@v1
-      # Build & test mapper
-      - name: Install dependencies
-        run: pub get
+      # Check mapper
+      - name: Run mapper tests
+        run:  |
+          pub get
+          pub run build_runner test
         working-directory: ./mapper
-      - name: Run tests
-        run: pub run build_runner test
-        working-directory: ./mapper
-      # Build & test mobx adapter
-      - name: Install dependencies
-        run: pub get
+      # Check mobx adapter
+      - name: Run mobx adapter tests
+        run:  |
+          pub get
+          pub run build_runner test
         working-directory: ./adapters/mobx
-      - name: Run tests
-        run: pub run build_runner test
-        working-directory: ./adapters/mobx
-      # Build & test fixnum adapter
-      - name: Install dependencies
-        run: pub get
-        working-directory: ./adapters/fixnum
-      - name: Run tests
-        run: pub run build_runner test
+      # Check fixnum adapter
+      - name: Run fixnum adapter tests
+        run:  |
+          pub get
+          pub run build_runner test
         working-directory: ./adapters/fixnum

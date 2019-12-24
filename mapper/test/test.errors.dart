@@ -6,6 +6,12 @@ enum Sex { Male, Female }
 const sexTypeValues = ['__female', '__male'];
 
 @jsonSerializable
+@Json(allowCircularReferences: 1)
+class MyCar extends Car {
+  MyCar(model, color) : super(model, color);
+}
+
+@jsonSerializable
 class UnAnnotatedEnumField {
   Sex sex = Sex.Female;
 }
@@ -36,16 +42,19 @@ void testErrorHandling() {
           TypeMatcher<CircularReferenceError>());
     });
 
+    test('[Suppress] Circular reference detection during serialization', () {
+      final car = MyCar('VW', Color.Blue);
+      car.replacement = car;
+      expect(catchError(() => JsonMapper.serialize(car, '')), null);
+    });
+
     test('Missing annotation on class', () {
       expect(catchError(() => JsonMapper.serialize(UnAnnotated())),
           TypeMatcher<MissingAnnotationOnTypeError>());
     });
 
     test('Missing annotation on Enum field', () {
-      // Serialize unannotated enum should be fine
       final json = '''{"sex":"Sex.Female"}''';
-      expect(JsonMapper.serialize(UnAnnotatedEnumField(), ''), json);
-
       // Deserialize unannotated enum should NOT be fine
       expect(
           catchError(() => JsonMapper.deserialize<UnAnnotatedEnumField>(json)),

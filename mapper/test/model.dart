@@ -2,17 +2,6 @@ part of json_mapper.test;
 
 enum Color { Red, Blue, Gray, GrayMetallic, Green, Brown, Yellow, Black, White }
 
-extension ColorModifier on Color {
-  Color get metallic {
-    switch (this) {
-      case Color.Gray:
-        return Color.GrayMetallic;
-      default:
-        return this;
-    }
-  }
-}
-
 @jsonSerializable
 class Car {
   @JsonProperty(name: 'modelName')
