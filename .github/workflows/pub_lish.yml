@@ -15,5 +15,7 @@ jobs:
       - name: Publish to pub.dev
         run:  |
           cp ../README.md README.md
+          cp -f ../LICENSE LICENSE
           pub publish --dry-run
+          pub lish -f
         working-directory: ./mapper
