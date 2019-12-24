@@ -22,7 +22,7 @@ void testPartialDeserialization() {
       // given
       final instance = GettersOnly();
       // when
-      final json = JsonMapper.serialize(instance, '');
+      final json = JsonMapper.serialize(instance, compactOptions);
       // then
       expect(json, '''{"nextCatId":"c0","nextDogId":"h1"}''');
     });

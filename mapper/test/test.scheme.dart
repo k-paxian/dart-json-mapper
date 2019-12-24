@@ -19,7 +19,8 @@ void testScheme() {
       // given
       final instance = Object('Scheme A');
       // when
-      final json = JsonMapper.serialize(instance, '', Scheme.A);
+      final json = JsonMapper.serialize(
+          instance, SerializationOptions(indent: '', scheme: Scheme.A));
       // then
       expect(json, '''{"root":{"title":"Scheme A"}}''');
     });
@@ -28,7 +29,8 @@ void testScheme() {
       // given
       final json = '''{"root":{"title":"Scheme A"}}''';
       // when
-      final instance = JsonMapper.deserialize<Object>(json, Scheme.A);
+      final instance = JsonMapper.deserialize<Object>(
+          json, DeserializationOptions(scheme: Scheme.A));
       // then
       expect(instance, TypeMatcher<Object>());
       expect(instance.title, 'Scheme A');
@@ -38,7 +40,8 @@ void testScheme() {
       // given
       final instance = Object('Scheme B');
       // when
-      final json = JsonMapper.serialize(instance, '', Scheme.B);
+      final json = JsonMapper.serialize(
+          instance, SerializationOptions(indent: '', scheme: Scheme.B));
       // then
       expect(json, '''{"_":{"title_test":"Scheme B"}}''');
     });
@@ -47,7 +50,8 @@ void testScheme() {
       // given
       final json = '''{"_":{"title_test":"Scheme B"}}''';
       // when
-      final instance = JsonMapper.deserialize<Object>(json, Scheme.B);
+      final instance = JsonMapper.deserialize<Object>(
+          json, DeserializationOptions(scheme: Scheme.B));
       // then
       expect(instance, TypeMatcher<Object>());
       expect(instance.title, 'Scheme B');
@@ -57,7 +61,7 @@ void testScheme() {
       // given
       final instance = Object('No Scheme');
       // when
-      final json = JsonMapper.serialize(instance, '');
+      final json = JsonMapper.serialize(instance, compactOptions);
       // then
       expect(json, '''{"default":{"title":"No Scheme"}}''');
     });

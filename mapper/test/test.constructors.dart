@@ -144,7 +144,7 @@ void testConstructors() {
       // given
       var instance = NamedParametersClass(firstName: 'Bob', lastName: 'Marley');
       // when
-      final target = JsonMapper.serialize(instance, '');
+      final target = JsonMapper.serialize(instance, compactOptions);
       // then
       expect(target, json);
     });
@@ -153,7 +153,7 @@ void testConstructors() {
       // given
       var instance = PartiallyOptionalParametersClass('Bob', 'Marley');
       // when
-      final target = JsonMapper.serialize(instance, '');
+      final target = JsonMapper.serialize(instance, compactOptions);
       // then
       expect(target, json);
     });
@@ -162,7 +162,7 @@ void testConstructors() {
       // given
       var instance = OptionalParametersClass('Bob', 'Marley');
       // when
-      final target = JsonMapper.serialize(instance, '');
+      final target = JsonMapper.serialize(instance, compactOptions);
       // then
       expect(target, json);
     });
@@ -171,7 +171,7 @@ void testConstructors() {
       // given
       var instance = PositionalParametersClass('Bob', 'Marley');
       // when
-      final target = JsonMapper.serialize(instance, '');
+      final target = JsonMapper.serialize(instance, compactOptions);
       // then
       expect(target, json);
     });
@@ -182,7 +182,7 @@ void testConstructors() {
       final target = Foo(null, 'hello world');
       // when
       final instance = JsonMapper.deserialize<Foo>(json);
-      final targetJson = JsonMapper.serialize(target, '');
+      final targetJson = JsonMapper.serialize(target, compactOptions);
       // then
       expect(instance.message, 'hello world');
       expect(targetJson, json);
@@ -196,9 +196,9 @@ void testConstructors() {
       final ptTarget2 = PtDerived2(Pt());
       // when
       final instance = JsonMapper.deserialize<Derived>(json);
-      final targetJson = JsonMapper.serialize(target, '');
-      final pTargetJson = JsonMapper.serialize(pTarget, '');
-      final ptTarget2Json = JsonMapper.serialize(ptTarget2, '');
+      final targetJson = JsonMapper.serialize(target, compactOptions);
+      final pTargetJson = JsonMapper.serialize(pTarget, compactOptions);
+      final ptTarget2Json = JsonMapper.serialize(ptTarget2, compactOptions);
       final pTargetBack = JsonMapper.deserialize<PtDerived>(pTargetJson);
       final ptTarget2Back = JsonMapper.deserialize<PtDerived2>(ptTarget2Json);
       // then
@@ -216,7 +216,7 @@ void testConstructors() {
       final user = User();
       user.email = 'a@a.com';
       // when
-      final json = JsonMapper.serialize(user, '');
+      final json = JsonMapper.serialize(user, compactOptions);
       final target = JsonMapper.deserialize<User>(json);
       // then
       expect(json, '{"email":"a@a.com"}');
@@ -237,7 +237,7 @@ void testConstructors() {
       // given
       final instance = IgnoreNullMembersClass(firstName: 'Bob');
       // when
-      final target = JsonMapper.serialize(instance, '');
+      final target = JsonMapper.serialize(instance, compactOptions);
       // then
       expect(target, '{"firstName":"Bob"}');
     });
@@ -248,7 +248,7 @@ void testConstructors() {
       var instance = IgnoredFieldClass(
           firstName: 'Bob', middleName: null, lastName: 'Marley');
       // when
-      var target = JsonMapper.serialize(instance, '');
+      var target = JsonMapper.serialize(instance, compactOptions);
       // then
       expect(target, '{"firstName":"Bob"}');
 

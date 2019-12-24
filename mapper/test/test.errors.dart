@@ -45,7 +45,7 @@ void testErrorHandling() {
     test('[Suppress] Circular reference detection during serialization', () {
       final car = MyCar('VW', Color.Blue);
       car.replacement = car;
-      expect(catchError(() => JsonMapper.serialize(car, '')), null);
+      expect(catchError(() => JsonMapper.serialize(car, compactOptions)), null);
     });
 
     test('Missing annotation on class', () {

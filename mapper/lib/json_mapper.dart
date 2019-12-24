@@ -11,6 +11,27 @@ import 'package:dart_json_mapper/type_info.dart';
 import 'package:dart_json_mapper/utils.dart';
 import 'package:reflectable/reflectable.dart';
 
+class DeserializationOptions {
+  /// Scheme to be used
+  final dynamic scheme;
+
+  const DeserializationOptions({this.scheme});
+}
+
+class SerializationOptions extends DeserializationOptions {
+  /// Indentation
+  final String indent;
+
+  /// Template
+  final Map<String, dynamic> template;
+
+  const SerializationOptions({scheme, this.indent, this.template})
+      : super(scheme: scheme);
+}
+
+const defaultSerializationOptions = SerializationOptions();
+const defaultDeserializationOptions = DeserializationOptions();
+
 /// Singleton class providing static methods for Dart objects conversion
 /// from / to JSON string
 class JsonMapper {
@@ -44,54 +65,56 @@ class JsonMapper {
     instance.typeInfoDecorators[nextPriority] = decorator;
   }
 
-  /// Converts Dart object to JSON string, indented by `indent`, according to specified `scheme`
-  static String toJson(Object object, [String indent, dynamic scheme]) {
-    return serialize(object, indent, scheme);
+  /// Converts Dart object to JSON string
+  static String toJson(Object object,
+      [SerializationOptions options = defaultSerializationOptions]) {
+    return serialize(object, options);
   }
 
   /// Converts Dart object to JSON string,
-  /// indented by `indent`,
-  /// according to specified `scheme`
-  /// using `template` map
   static String serialize(Object object,
-      [String indent, dynamic scheme, Map<String, dynamic> template]) {
+      [SerializationOptions options = defaultSerializationOptions]) {
     instance.processedObjects.clear();
     var encoder = instance.jsonEncoder;
-    if (indent != null && indent.isEmpty) {
+    if (options.indent != null && options.indent.isEmpty) {
       encoder = JsonEncoder();
     } else {
-      if (indent != null && indent.isNotEmpty) {
-        encoder = JsonEncoder.withIndent(indent);
+      if (options.indent != null && options.indent.isNotEmpty) {
+        encoder = JsonEncoder.withIndent(options.indent);
       }
     }
-    return encoder.convert(instance.serializeObject(object, scheme, template));
+    return encoder.convert(instance.serializeObject(object, options));
   }
 
-  /// Converts JSON string to Dart object of type T, according to specified `scheme`
-  static T deserialize<T>(dynamic jsonValue, [dynamic scheme]) {
+  /// Converts JSON string to Dart object of type T
+  static T deserialize<T>(dynamic jsonValue,
+      [DeserializationOptions options = defaultDeserializationOptions]) {
     assert(T != dynamic ? true : throw MissingTypeForDeserializationError());
-    return instance.deserializeObject(jsonValue, T, null, scheme);
+    return instance.deserializeObject(jsonValue, T, null, options);
   }
 
-  /// Converts JSON string to Dart object of type T, according to specified `scheme`
-  static T fromJson<T>(dynamic jsonValue, [dynamic scheme]) {
-    return deserialize<T>(jsonValue, scheme);
+  /// Converts JSON string to Dart object of type T
+  static T fromJson<T>(dynamic jsonValue,
+      [DeserializationOptions options = defaultDeserializationOptions]) {
+    return deserialize<T>(jsonValue, options);
+  }
+
+  /// Converts Dart object to Map<String, dynamic>
+  static Map<String, dynamic> toMap(Object object,
+      [SerializationOptions options = defaultSerializationOptions]) {
+    return deserialize<Map<String, dynamic>>(
+        serialize(object, options), options);
+  }
+
+  /// Converts Map<String, dynamic> to Dart object instance
+  static T fromMap<T>(Map<String, dynamic> map,
+      [DeserializationOptions options = defaultDeserializationOptions]) {
+    return deserialize<T>(instance.jsonEncoder.convert(map), options);
   }
 
   /// Clone Dart object of type T
   static T clone<T>(T object) {
     return fromJson<T>(toJson(object));
-  }
-
-  /// Converts Dart object to Map<String, dynamic>, according to specified `scheme`
-  static Map<String, dynamic> toMap(Object object, [dynamic scheme]) {
-    return deserialize<Map<String, dynamic>>(
-        serialize(object, null, scheme), scheme);
-  }
-
-  /// Converts Map<String, dynamic> to Dart object instance, according to specified `scheme`
-  static T fromMap<T>(Map<String, dynamic> map, [dynamic scheme]) {
-    return deserialize<T>(instance.jsonEncoder.convert(map), scheme);
   }
 
   factory JsonMapper() => instance;
@@ -391,10 +414,10 @@ class JsonMapper {
   }
 
   Map<Symbol, dynamic> getNamedArguments(ClassMirror cm, JsonMap jsonMap,
-      [dynamic scheme]) {
+      [DeserializationOptions options]) {
     final result = <Symbol, dynamic>{};
 
-    enumerateConstructorParameters(cm, scheme,
+    enumerateConstructorParameters(cm, options.scheme,
         (param, name, jsonName, classMeta, meta, TypeInfo typeInfo) {
       if (param.isNamed && jsonMap.hasProperty(jsonName)) {
         var value = jsonMap.getPropertyValue(jsonName);
@@ -405,10 +428,11 @@ class JsonMapper {
         if (parameterTypeInfo.isIterable) {
           value = (value as List)
               .map((item) => deserializeObject(
-                  item, getScalarType(parameterTypeInfo.type), meta))
+                  item, getScalarType(parameterTypeInfo.type), meta, options))
               .toList();
         } else {
-          value = deserializeObject(value, parameterTypeInfo.type, meta);
+          value =
+              deserializeObject(value, parameterTypeInfo.type, meta, options);
         }
         result[Symbol(name)] =
             applyValueDecorator(value, parameterTypeInfo, meta);
@@ -419,10 +443,10 @@ class JsonMapper {
   }
 
   List getPositionalArguments(ClassMirror cm, JsonMap jsonMap,
-      [dynamic scheme]) {
+      [DeserializationOptions options]) {
     final result = [];
 
-    enumerateConstructorParameters(cm, scheme, (param, name, jsonName,
+    enumerateConstructorParameters(cm, options.scheme, (param, name, jsonName,
         classMeta, JsonProperty meta, TypeInfo typeInfo) {
       if (!param.isOptional &&
           !param.isNamed &&
@@ -432,10 +456,11 @@ class JsonMapper {
         if (parameterTypeInfo.isIterable) {
           value = (value as List)
               .map((item) => deserializeObject(
-                  item, getScalarType(parameterTypeInfo.type), meta))
+                  item, getScalarType(parameterTypeInfo.type), meta, options))
               .toList();
         } else {
-          value = deserializeObject(value, parameterTypeInfo.type, meta);
+          value =
+              deserializeObject(value, parameterTypeInfo.type, meta, options);
         }
         value = applyValueDecorator(value, parameterTypeInfo, meta);
         if (isFieldIgnored(classMeta, meta, value)) {
@@ -448,8 +473,7 @@ class JsonMapper {
     return result;
   }
 
-  dynamic serializeObject(Object object,
-      [dynamic scheme, Map<String, dynamic> template]) {
+  dynamic serializeObject(Object object, [SerializationOptions options]) {
     if (object == null) {
       return object;
     }
@@ -461,9 +485,7 @@ class JsonMapper {
     }
 
     if (object is Iterable) {
-      return object
-          .map((item) => serializeObject(item, scheme, template))
-          .toList();
+      return object.map((item) => serializeObject(item, options)).toList();
     }
 
     if (im == null || im.type == null) {
@@ -474,8 +496,8 @@ class JsonMapper {
       }
     }
 
-    final jsonMeta = ClassInfo(im.type).getMeta(scheme);
-    final result = JsonMap(template ?? {}, jsonMeta);
+    final jsonMeta = ClassInfo(im.type).getMeta(options.scheme);
+    final result = JsonMap(options.template ?? {}, jsonMeta);
     final processedObjectDescriptor = getObjectProcessed(object);
     if (processedObjectDescriptor != null &&
         processedObjectDescriptor.times >= 1) {
@@ -494,7 +516,7 @@ class JsonMapper {
       }
     }
     dumpTypeNameToObjectProperty(result, im.type);
-    enumeratePublicFields(im, null, scheme, (name, jsonName, value,
+    enumeratePublicFields(im, null, options.scheme, (name, jsonName, value,
         isGetterOnly, meta, converter, scalarType, TypeInfo typeInfo) {
       if (converter != null) {
         final valueTypeInfo = getTypeInfo(value.runtimeType);
@@ -505,15 +527,14 @@ class JsonMapper {
           result.setPropertyValue(jsonName, convert(value));
         }
       } else {
-        result.setPropertyValue(
-            jsonName, serializeObject(value, scheme, template));
+        result.setPropertyValue(jsonName, serializeObject(value, options));
       }
     });
     return result.map;
   }
 
   Object deserializeObject(dynamic jsonValue, Type instanceType,
-      [JsonProperty parentMeta, dynamic scheme]) {
+      [JsonProperty parentMeta, DeserializationOptions options]) {
     if (jsonValue == null) {
       return null;
     }
@@ -528,7 +549,7 @@ class JsonMapper {
           (jsonValue is String) ? jsonDecoder.convert(jsonValue) : jsonValue;
       var value = jsonList
           .map((item) => deserializeObject(
-              item, getScalarType(typeInfo.type), null, scheme))
+              item, getScalarType(typeInfo.type), null, options))
           .toList();
       return applyValueDecorator(value, typeInfo, parentMeta);
     }
@@ -545,15 +566,15 @@ class JsonMapper {
     if (cm == null) {
       throw MissingAnnotationOnTypeError(typeInfo.type);
     }
-    jsonMap.jsonMeta = ClassInfo(cm).getMeta(scheme);
+    jsonMap.jsonMeta = ClassInfo(cm).getMeta(options.scheme);
 
     final objectInstance = cm.isEnum
         ? null
-        : cm.newInstance('', getPositionalArguments(cm, jsonMap, scheme),
-            getNamedArguments(cm, jsonMap, scheme));
+        : cm.newInstance('', getPositionalArguments(cm, jsonMap, options),
+            getNamedArguments(cm, jsonMap, options));
     final im = safeGetInstanceMirror(objectInstance);
 
-    enumeratePublicFields(im, jsonMap, scheme, (name,
+    enumeratePublicFields(im, jsonMap, options.scheme, (name,
         jsonName,
         value,
         isGetterOnly,
@@ -567,10 +588,11 @@ class JsonMapper {
       var fieldValue = jsonMap.getPropertyValue(jsonName);
       if (fieldValue is List) {
         fieldValue = fieldValue
-            .map((item) => deserializeObject(item, scalarType, meta, scheme))
+            .map((item) => deserializeObject(item, scalarType, meta, options))
             .toList();
       } else {
-        fieldValue = deserializeObject(fieldValue, typeInfo.type, meta, scheme);
+        fieldValue =
+            deserializeObject(fieldValue, typeInfo.type, meta, options);
       }
       if (converter != null) {
         dynamic convert(item) => converter.fromJSON(item, meta);

@@ -49,8 +49,8 @@ void testConverters() {
       final json = '{"bigInt":"${rawString}"}';
 
       // when
-      final targetJson =
-          JsonMapper.serialize(BigIntData(BigInt.parse(rawString)), '');
+      final targetJson = JsonMapper.serialize(
+          BigIntData(BigInt.parse(rawString)), compactOptions);
       // then
       expect(targetJson, json);
 
@@ -67,7 +67,7 @@ void testConverters() {
 
       // when
       final targetJson = JsonMapper.serialize(
-          BinaryData(Uint8List.fromList(rawString.codeUnits)), '');
+          BinaryData(Uint8List.fromList(rawString.codeUnits)), compactOptions);
       // then
       expect(targetJson, json);
 

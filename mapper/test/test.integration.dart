@@ -35,8 +35,8 @@ void testIntegration() {
       // given
       final template = {'a': 'a', 'b': true};
       // when
-      final json = JsonMapper.serialize(
-          Car('Tesla S3', Color.Black), '', null, template);
+      final json = JsonMapper.serialize(Car('Tesla S3', Color.Black),
+          SerializationOptions(indent: '', template: template));
 
       // then
       expect(json,

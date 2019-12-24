@@ -78,7 +78,7 @@ void testNamePath() {
       final instance = DeepNestedList(items: ['1', '2', '3']);
       final json = '''{"root":{"foo":{"bar":{"items":["1","2","3"]}}}}''';
       // when
-      final targetJson = JsonMapper.serialize(instance, '');
+      final targetJson = JsonMapper.serialize(instance, compactOptions);
       // then
       expect(targetJson, json);
     });
