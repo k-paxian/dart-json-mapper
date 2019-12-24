@@ -49,8 +49,12 @@ class JsonMapper {
     return serialize(object, indent, scheme);
   }
 
-  /// Converts Dart object to JSON string, indented by `indent`, according to specified `scheme`
-  static String serialize(Object object, [String indent, dynamic scheme]) {
+  /// Converts Dart object to JSON string,
+  /// indented by `indent`,
+  /// according to specified `scheme`
+  /// using `template` map
+  static String serialize(Object object,
+      [String indent, dynamic scheme, Map<String, dynamic> template]) {
     instance.processedObjects.clear();
     var encoder = instance.jsonEncoder;
     if (indent != null && indent.isEmpty) {
@@ -60,7 +64,7 @@ class JsonMapper {
         encoder = JsonEncoder.withIndent(indent);
       }
     }
-    return encoder.convert(instance.serializeObject(object, scheme));
+    return encoder.convert(instance.serializeObject(object, scheme, template));
   }
 
   /// Converts JSON string to Dart object of type T, according to specified `scheme`
@@ -444,7 +448,8 @@ class JsonMapper {
     return result;
   }
 
-  dynamic serializeObject(Object object, [dynamic scheme]) {
+  dynamic serializeObject(Object object,
+      [dynamic scheme, Map<String, dynamic> template]) {
     if (object == null) {
       return object;
     }
@@ -456,7 +461,9 @@ class JsonMapper {
     }
 
     if (object is Iterable) {
-      return object.map((item) => serializeObject(item, scheme)).toList();
+      return object
+          .map((item) => serializeObject(item, scheme, template))
+          .toList();
     }
 
     if (im == null || im.type == null) {
@@ -468,7 +475,7 @@ class JsonMapper {
     }
 
     final jsonMeta = ClassInfo(im.type).getMeta(scheme);
-    final result = JsonMap({}, jsonMeta);
+    final result = JsonMap(template ?? {}, jsonMeta);
     final processedObjectDescriptor = getObjectProcessed(object);
     if (processedObjectDescriptor != null &&
         processedObjectDescriptor.times >= 1) {
@@ -498,7 +505,8 @@ class JsonMapper {
           result.setPropertyValue(jsonName, convert(value));
         }
       } else {
-        result.setPropertyValue(jsonName, serializeObject(value, scheme));
+        result.setPropertyValue(
+            jsonName, serializeObject(value, scheme, template));
       }
     });
     return result.map;

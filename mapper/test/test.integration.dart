@@ -31,6 +31,18 @@ void testIntegration() {
       expect(clone.model == car.model, true);
     });
 
+    test('Serialize to target template map', () {
+      // given
+      final template = {'a': 'a', 'b': true};
+      // when
+      final json = JsonMapper.serialize(
+          Car('Tesla S3', Color.Black), '', null, template);
+
+      // then
+      expect(json,
+          '''{"a":"a","b":true,"modelName":"Tesla S3","color":"Color.Black"}''');
+    });
+
     test('Serialization', () {
       // given
       // when

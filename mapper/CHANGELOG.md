@@ -1,3 +1,7 @@
+## 1.2.10
+
+* Optional `template` parameter added to .serialize method. Allows to render JSON on top of existing template map object.
+
 ## 1.2.9
 
 * Introduced possibility to specify number of allowed circular references `@Json(allowCircularReferences: 1)`   
