@@ -38,7 +38,6 @@ Say, you have a dart program *main.dart* having some classes intended to be trav
 
 **lib/main.dart**
 ```dart
-import 'package:dart_json_mapper/annotations.dart';
 import 'package:dart_json_mapper/json_mapper.dart';
 
 import 'main.reflectable.dart'; // Import generated code.

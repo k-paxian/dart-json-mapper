@@ -1,12 +1,11 @@
-library json_mapper.converters;
-
 import 'dart:convert' show base64Decode, base64Encode;
 import 'dart:convert' show JsonDecoder;
 import 'dart:typed_data' show Uint8List;
 
-import 'package:dart_json_mapper/annotations.dart';
-import 'package:dart_json_mapper/errors.dart';
 import 'package:intl/intl.dart';
+
+import 'annotations.dart';
+import 'errors.dart';
 
 /// Abstract class for custom converters implementations
 abstract class ICustomConverter<T> {

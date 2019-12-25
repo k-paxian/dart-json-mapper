@@ -1,5 +1,6 @@
-import 'package:dart_json_mapper/annotations.dart';
 import 'package:reflectable/reflectable.dart';
+
+import 'annotations.dart';
 
 class ProcessedObjectDescriptor {
   dynamic object;

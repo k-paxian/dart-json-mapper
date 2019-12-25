@@ -1,6 +1,5 @@
 library json_mapper_mobx.example;
 
-import 'package:dart_json_mapper/annotations.dart';
 import 'package:dart_json_mapper/json_mapper.dart';
 import 'package:dart_json_mapper_mobx/dart_json_mapper_mobx.dart';
 import 'package:mobx/mobx.dart';

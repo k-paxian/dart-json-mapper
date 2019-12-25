@@ -1,7 +1,6 @@
-library json_mapper.annotations;
-
-import 'package:dart_json_mapper/converters.dart';
 import 'package:reflectable/reflectable.dart';
+
+import 'converters.dart';
 
 typedef ValueDecoratorFunction = dynamic Function(dynamic value);
 

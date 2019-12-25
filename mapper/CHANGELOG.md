@@ -1,3 +1,8 @@
+## 1.3.0
+
+* Imports refactored, from now on *everything* is imported from a single
+`import 'package:dart_json_mapper/json_mapper.dart';` instead of several imports
+
 ## 1.2.10
 
 * Optional `template` parameter added to `SerializationOptions`. Allows to render JSON on top of existing template map object.
