@@ -1,6 +1,6 @@
 ## 1.2.10
 
-* Optional `template` parameter added to .serialize method. Allows to render JSON on top of existing template map object.
+* Optional `template` parameter added to `SerializationOptions`. Allows to render JSON on top of existing template map object.
 
 ## 1.2.9
 

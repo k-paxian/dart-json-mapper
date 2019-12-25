@@ -356,21 +356,21 @@ class Object {
 // given
 final instance = Object('Scheme A');
 // when
-final json = JsonMapper.serialize(instance, '', Scheme.A);
+final json = JsonMapper.serialize(instance, SerializationOptions(indent: '', scheme: Scheme.A));
 // then
 expect(json, '''{"root":{"title":"Scheme A"}}''');
 
 // given
 final instance = Object('Scheme B');
 // when
-final json = JsonMapper.serialize(instance, '', Scheme.B);
+final json = JsonMapper.serialize(instance, SerializationOptions(indent: '', scheme: Scheme.B));
 // then
 expect(json, '''{"_":{"title_test":"Scheme B"}}''');
 
 // given
 final instance = Object('No Scheme');
 // when
-final json = JsonMapper.serialize(instance, '');
+final json = JsonMapper.serialize(instance, SerializationOptions(indent: ''));
 // then
 expect(json, '''{"default":{"title":"No Scheme"}}''');
 ```
