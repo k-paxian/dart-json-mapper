@@ -23,8 +23,8 @@ void testBasics() {
     final json = '{"int32":"${rawString}"}';
 
     // when
-    final targetJson =
-        JsonMapper.serialize(Int32IntData(Int32.parseInt(rawString)), compactOptions);
+    final targetJson = JsonMapper.serialize(
+        Int32IntData(Int32.parseInt(rawString)), compactOptions);
     // then
     expect(targetJson, json);
 
@@ -40,8 +40,8 @@ void testBasics() {
     final json = '{"int64":"${rawString}"}';
 
     // when
-    final targetJson =
-        JsonMapper.serialize(Int64IntData(Int64.parseInt(rawString)), compactOptions);
+    final targetJson = JsonMapper.serialize(
+        Int64IntData(Int64.parseInt(rawString)), compactOptions);
     // then
     expect(targetJson, json);
 
