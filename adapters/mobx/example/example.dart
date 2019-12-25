@@ -20,7 +20,7 @@ void main() {
 
   final m = MobX(
       ObservableList<String>.of(['aa@test.com', 'bb@test.com', 'cc@test.com']));
-  final targetJson = JsonMapper.serialize(m, '');
+  final targetJson = JsonMapper.serialize(m, SerializationOptions(indent: ''));
   final instance = JsonMapper.deserialize<MobX>(targetJson);
 
   // Serialized object

@@ -49,6 +49,8 @@ class MobX {
       this.map});
 }
 
+final compactOptions = SerializationOptions(indent: '');
+
 void testObservables() {
   group('[Verify ObservableList]', () {
     test('ObservableList<String>', () {
@@ -59,7 +61,7 @@ void testObservables() {
           stringList: ObservableList<String>.of(
               ['aa@test.com', 'bb@test.com', 'cc@test.com']));
       // when
-      final targetJson = JsonMapper.serialize(m, '');
+      final targetJson = JsonMapper.serialize(m, compactOptions);
       final instance = JsonMapper.deserialize<MobX>(targetJson);
       // then
       expect(targetJson, json);
@@ -72,7 +74,7 @@ void testObservables() {
       final json = '''{"numList":[1,2.1,3]}''';
       final m = MobX(numList: ObservableList<num>.of([1, 2.1, 3]));
       // when
-      final targetJson = JsonMapper.serialize(m, '');
+      final targetJson = JsonMapper.serialize(m, compactOptions);
       final instance = JsonMapper.deserialize<MobX>(targetJson);
       // then
       expect(targetJson, json);
@@ -85,7 +87,7 @@ void testObservables() {
       final json = '''{"intList":[1,2,3]}''';
       final m = MobX(intList: ObservableList<int>.of([1, 2, 3]));
       // when
-      final targetJson = JsonMapper.serialize(m, '');
+      final targetJson = JsonMapper.serialize(m, compactOptions);
       final instance = JsonMapper.deserialize<MobX>(targetJson);
       // then
       expect(targetJson, json);
@@ -98,7 +100,7 @@ void testObservables() {
       final json = '''{"doubleList":[1.0003,2.0,3.0]}''';
       final m = MobX(doubleList: ObservableList<double>.of([1.0003, 2, 3]));
       // when
-      final targetJson = JsonMapper.serialize(m, '');
+      final targetJson = JsonMapper.serialize(m, compactOptions);
       final instance = JsonMapper.deserialize<MobX>(targetJson);
       // then
       expect(targetJson, json);
@@ -111,7 +113,7 @@ void testObservables() {
       final json = '''{"boolList":[true,false,true]}''';
       final m = MobX(boolList: ObservableList<bool>.of([true, false, true]));
       // when
-      final targetJson = JsonMapper.serialize(m, '');
+      final targetJson = JsonMapper.serialize(m, compactOptions);
       final instance = JsonMapper.deserialize<MobX>(targetJson);
       // then
       expect(targetJson, json);
@@ -130,7 +132,7 @@ void testObservables() {
         DateTime.parse('2014-02-20 00:00:00.000')
       ]));
       // when
-      final targetJson = JsonMapper.serialize(m, '');
+      final targetJson = JsonMapper.serialize(m, compactOptions);
       final instance = JsonMapper.deserialize<MobX>(targetJson);
       // then
       expect(targetJson, json);
@@ -148,7 +150,7 @@ void testObservables() {
           stringSet: ObservableSet<String>.of(
               ['aa@test.com', 'bb@test.com', 'cc@test.com']));
       // when
-      final targetJson = JsonMapper.serialize(m, '');
+      final targetJson = JsonMapper.serialize(m, compactOptions);
       final instance = JsonMapper.deserialize<MobX>(targetJson);
       // then
       expect(targetJson, json);
@@ -161,7 +163,7 @@ void testObservables() {
       final json = '''{"numSet":[2.1,1,3]}''';
       final m = MobX(numSet: ObservableSet<num>.of([1, 2.1, 3]));
       // when
-      final targetJson = JsonMapper.serialize(m, '');
+      final targetJson = JsonMapper.serialize(m, compactOptions);
       final instance = JsonMapper.deserialize<MobX>(targetJson);
       // then
       expect(targetJson, json);
@@ -174,7 +176,7 @@ void testObservables() {
       final json = '''{"intSet":[1,2,3]}''';
       final m = MobX(intSet: ObservableSet<int>.of([1, 2, 3]));
       // when
-      final targetJson = JsonMapper.serialize(m, '');
+      final targetJson = JsonMapper.serialize(m, compactOptions);
       final instance = JsonMapper.deserialize<MobX>(targetJson);
       // then
       expect(targetJson, json);
@@ -187,7 +189,7 @@ void testObservables() {
       final json = '''{"doubleSet":[1.0003,2.0,3.0]}''';
       final m = MobX(doubleSet: ObservableSet<double>.of([1.0003, 2, 3]));
       // when
-      final targetJson = JsonMapper.serialize(m, '');
+      final targetJson = JsonMapper.serialize(m, compactOptions);
       final instance = JsonMapper.deserialize<MobX>(targetJson);
       // then
       expect(targetJson, json);
@@ -200,7 +202,7 @@ void testObservables() {
       final json = '''{"boolSet":[false,true]}''';
       final m = MobX(boolSet: ObservableSet<bool>.of([true, false, true]));
       // when
-      final targetJson = JsonMapper.serialize(m, '');
+      final targetJson = JsonMapper.serialize(m, compactOptions);
       final instance = JsonMapper.deserialize<MobX>(targetJson);
       // then
       expect(targetJson, json);
@@ -219,7 +221,7 @@ void testObservables() {
         DateTime.parse('2014-02-20 00:00:00.000')
       ]));
       // when
-      final targetJson = JsonMapper.serialize(m, '');
+      final targetJson = JsonMapper.serialize(m, compactOptions);
       final instance = JsonMapper.deserialize<MobX>(targetJson);
       // then
       expect(targetJson, json);
@@ -235,7 +237,7 @@ void testObservables() {
       final m =
           MobX(map: ObservableMap<String, dynamic>.of({'x': 'xx', 'y': 'yy'}));
       // when
-      final targetJson = JsonMapper.serialize(m, '');
+      final targetJson = JsonMapper.serialize(m, compactOptions);
       final instance = JsonMapper.deserialize<MobX>(targetJson);
       // then
       expect(targetJson, json);
@@ -250,7 +252,7 @@ void testObservables() {
       final json = '''{"stringObservable":"xxx"}''';
       final m = MobX(stringObservable: Observable<String>('xxx'));
       // when
-      final targetJson = JsonMapper.serialize(m, '');
+      final targetJson = JsonMapper.serialize(m, compactOptions);
       final instance = JsonMapper.deserialize<MobX>(targetJson);
       // then
       expect(targetJson, json);
@@ -265,7 +267,7 @@ void testObservables() {
           dateTimeObservable:
               Observable<DateTime>(DateTime.parse('2014-02-20 00:00:00.000')));
       // when
-      final targetJson = JsonMapper.serialize(m, '');
+      final targetJson = JsonMapper.serialize(m, compactOptions);
       final instance = JsonMapper.deserialize<MobX>(targetJson);
       // then
       expect(targetJson, json);
@@ -278,7 +280,7 @@ void testObservables() {
       final json = '''{"numObservable":5}''';
       final m = MobX(numObservable: Observable<num>(5));
       // when
-      final targetJson = JsonMapper.serialize(m, '');
+      final targetJson = JsonMapper.serialize(m, compactOptions);
       final instance = JsonMapper.deserialize<MobX>(targetJson);
       // then
       expect(targetJson, json);
@@ -291,7 +293,7 @@ void testObservables() {
       final json = '''{"intObservable":5}''';
       final m = MobX(intObservable: Observable<int>(5));
       // when
-      final targetJson = JsonMapper.serialize(m, '');
+      final targetJson = JsonMapper.serialize(m, compactOptions);
       final instance = JsonMapper.deserialize<MobX>(targetJson);
       // then
       expect(targetJson, json);
@@ -304,7 +306,7 @@ void testObservables() {
       final json = '''{"doubleObservable":5.3}''';
       final m = MobX(doubleObservable: Observable<double>(5.3));
       // when
-      final targetJson = JsonMapper.serialize(m, '');
+      final targetJson = JsonMapper.serialize(m, compactOptions);
       final instance = JsonMapper.deserialize<MobX>(targetJson);
       // then
       expect(targetJson, json);
@@ -317,7 +319,7 @@ void testObservables() {
       final json = '''{"boolObservable":true}''';
       final m = MobX(boolObservable: Observable<bool>(true));
       // when
-      final targetJson = JsonMapper.serialize(m, '');
+      final targetJson = JsonMapper.serialize(m, compactOptions);
       final instance = JsonMapper.deserialize<MobX>(targetJson);
       // then
       expect(targetJson, json);

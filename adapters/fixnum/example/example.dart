@@ -24,7 +24,7 @@ void main() {
 
   // when
   final targetJson =
-      JsonMapper.serialize(Int32IntData(Int32.parseInt(rawString)), '');
+      JsonMapper.serialize(Int32IntData(Int32.parseInt(rawString)), SerializationOptions(indent: ''));
 
   // Serialized object
   print(targetJson);

@@ -14,6 +14,8 @@ class Int64IntData {
   Int64IntData(this.int64);
 }
 
+final compactOptions = SerializationOptions(indent: '');
+
 void testBasics() {
   test('Int32 converter', () {
     // given
@@ -22,7 +24,7 @@ void testBasics() {
 
     // when
     final targetJson =
-        JsonMapper.serialize(Int32IntData(Int32.parseInt(rawString)), '');
+        JsonMapper.serialize(Int32IntData(Int32.parseInt(rawString)), compactOptions);
     // then
     expect(targetJson, json);
 
@@ -39,7 +41,7 @@ void testBasics() {
 
     // when
     final targetJson =
-        JsonMapper.serialize(Int64IntData(Int64.parseInt(rawString)), '');
+        JsonMapper.serialize(Int64IntData(Int64.parseInt(rawString)), compactOptions);
     // then
     expect(targetJson, json);
 
@@ -61,7 +63,7 @@ void testBasics() {
     expect(instance[1], Int32(2112454934));
 
     // when
-    final targetJson = JsonMapper.serialize(instance, '');
+    final targetJson = JsonMapper.serialize(instance, compactOptions);
     // then
     expect(targetJson, json);
   });
@@ -78,7 +80,7 @@ void testBasics() {
     expect(instance.elementAt(1), Int32(2112454934));
 
     // when
-    final targetJson = JsonMapper.serialize(instance, '');
+    final targetJson = JsonMapper.serialize(instance, compactOptions);
     // then
     expect(targetJson, json);
   });
@@ -95,7 +97,7 @@ void testBasics() {
     expect(instance[1], Int64(1234567890123456787));
 
     // when
-    final targetJson = JsonMapper.serialize(instance, '');
+    final targetJson = JsonMapper.serialize(instance, compactOptions);
     // then
     expect(targetJson, json);
   });
@@ -112,7 +114,7 @@ void testBasics() {
     expect(instance.elementAt(1), Int64(1234567890123456787));
 
     // when
-    final targetJson = JsonMapper.serialize(instance, '');
+    final targetJson = JsonMapper.serialize(instance, compactOptions);
     // then
     expect(targetJson, json);
   });
