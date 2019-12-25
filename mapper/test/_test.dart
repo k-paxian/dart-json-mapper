@@ -2,7 +2,7 @@ library json_mapper.test;
 
 import 'dart:typed_data';
 
-import 'package:dart_json_mapper/json_mapper.dart';
+import 'package:dart_json_mapper/dart_json_mapper.dart';
 import 'package:test/test.dart';
 
 import '_test.reflectable.dart';

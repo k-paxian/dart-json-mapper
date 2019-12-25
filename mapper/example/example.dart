@@ -1,4 +1,4 @@
-import 'package:dart_json_mapper/json_mapper.dart';
+import 'package:dart_json_mapper/dart_json_mapper.dart';
 
 import 'example.reflectable.dart'; // Import generated code.
 

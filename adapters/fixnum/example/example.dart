@@ -1,6 +1,6 @@
 library json_mapper_fixnum.example;
 
-import 'package:dart_json_mapper/json_mapper.dart';
+import 'package:dart_json_mapper/dart_json_mapper.dart';
 import 'package:dart_json_mapper_fixnum/dart_json_mapper_fixnum.dart';
 import 'package:fixnum/fixnum.dart' show Int32;
 

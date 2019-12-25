@@ -1,7 +1,7 @@
-## 1.3.0
+## 1.3.1
 
 * Imports refactored, from now on *everything* is imported from a single
-`import 'package:dart_json_mapper/json_mapper.dart';` instead of several imports
+`import 'package:dart_json_mapper/dart_json_mapper.dart';` instead of several imports
 
 ## 1.2.10
 
