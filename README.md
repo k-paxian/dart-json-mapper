@@ -20,7 +20,20 @@ This means "extended types information" is auto-generated out of existing Dart p
 guided by the annotated classes only, as the result types information is accessible at runtime, at a reduced cost.
 
 Typical `Flutter.io project integration` sample can be found [here][4]
-  
+
+* [Basic setup](#basic-setup)
+* [Configuration use cases](#format-date--number-types)
+    * [DateTime / num types formatting](#format-date--number-types)
+    * [Immutable classes](#example-with-immutable-class)
+    * [Iterable types](#iterable-types)
+    * [Enum types](#enum-types)
+    * [Extended classes](#inherited-classes-derived-from-abstract--base-class)
+    * [Nesting](#nesting-configuration)
+    * [Schemes](#schemes)
+    * [Custom types](#custom-types)
+* [Annotations](#annotations)
+* [Complementary adapters](#complementary-adapter-libraries)
+
 ## Basic setup
 
 Please add the following dependencies to your `pubspec.yaml`:
@@ -38,7 +51,7 @@ Say, you have a dart program *main.dart* having some classes intended to be trav
 
 **lib/main.dart**
 ```dart
-import 'package:dart_json_mapper/json_mapper.dart';
+import 'package:dart_json_mapper/dart_json_mapper.dart';
 
 import 'main.reflectable.dart'; // Import generated code.
 
@@ -101,7 +114,7 @@ Each time you modify your project code, all *.reflectable.dart files will be upd
 - Next step is to add "*.reflectable.dart" to your .gitignore
 - And this is it, you are all set and ready to go. Happy coding!
 
-## Format date / number types
+## Format DateTime / num types
 
 In order to format `DateTime` or `num` instance as a JSON string, it is possible to
 provide [intl][2] based formatting patterns.
