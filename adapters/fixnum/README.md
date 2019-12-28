@@ -19,9 +19,8 @@ dev_dependencies:
 Usage example
 **lib/main.dart**
 ```dart
-import 'package:dart_json_mapper/annotations.dart';
-import 'package:dart_json_mapper/json_mapper.dart';
 import 'package:fixnum/fixnum.dart' show Int32;
+import 'package:dart_json_mapper/dart_json_mapper.dart';
 import 'package:dart_json_mapper_fixnum/dart_json_mapper_fixnum.dart';
 
 import 'main.reflectable.dart'; // Import generated code.

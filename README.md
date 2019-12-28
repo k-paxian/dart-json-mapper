@@ -22,23 +22,26 @@ guided by the annotated classes only, as the result types information is accessi
 Typical `Flutter.io project integration` sample can be found [here][4]
 
 * [Basic setup](#basic-setup)
-* [Configuration use cases](#format-date--number-types)
-    * [DateTime / num types formatting](#format-date--number-types)
-    * [Immutable classes](#example-with-immutable-class)
-    * [Iterable types](#iterable-types)
-    * [Enum types](#enum-types)
+* [Configuration use cases](#format-datetime--num-types)
     * [Extended classes](#inherited-classes-derived-from-abstract--base-class)
-    * [Nesting](#nesting-configuration)
-    * [Schemes](#schemes)
+    * [Immutable classes](#example-with-immutable-class)
+    * [DateTime / num types](#format-datetime--num-types)
+    * [Iterable types](#iterable-types)
+    * [Enum types](#enum-types)    
     * [Custom types](#custom-types)
+    * [Nesting](#nesting-configuration)
+    * [Schemes](#schemes)    
 * [Annotations](#annotations)
-* [Complementary adapters](#complementary-adapter-libraries)
+* [Adapters](#complementary-adapter-libraries)
+    * [How to use adapter?](#complementary-adapter-libraries)
+    * [![pub package](https://img.shields.io/pub/v/dart_json_mapper_mobx.svg)](https://pub.dartlang.org/packages/dart_json_mapper_mobx) | [dart_json_mapper_mobx](#adapters/mobx) | [MobX][7]
+    * [![pub package](https://img.shields.io/pub/v/dart_json_mapper_fixnum.svg)](https://pub.dartlang.org/packages/dart_json_mapper_fixnum) | [dart_json_mapper_fixnum](#adapters/fixnum) | [Fixnum][8]
 
 ## Basic setup
 
 Please add the following dependencies to your `pubspec.yaml`:
 
-```
+```yaml
 dependencies:
   dart_json_mapper: any
 dev_dependencies:
@@ -74,7 +77,7 @@ main() {
   print(JsonMapper.serialize(MyData(456, true, "yes")));
 }
 ```
-
+output:
 ```json
 { 
   "a": 456,
@@ -85,7 +88,7 @@ main() {
 Go ahead and create a `build.yaml` file in your project root directory. Then add the
 following content:
 
-```
+```yaml
 targets:
   $default:
     builders:
@@ -127,7 +130,7 @@ DateTime lastPromotionDate = DateTime(2008, 05, 13, 22, 33, 44);
 @JsonProperty(converterParams: {'format': 'MM/dd/yyyy'})
 DateTime hireDate = DateTime(2003, 02, 28);
 ```
-
+output:
 ```json
 {
 "lastPromotionDate": "05-13-2008 22:33:44",
@@ -140,7 +143,7 @@ DateTime hireDate = DateTime(2003, 02, 28);
 @JsonProperty(converterParams: {'format': '##.##'})
 num salary = 1200000.246;
 ```
-
+output:
 ```json
 {
 "salary": "1200000.25"
@@ -184,7 +187,7 @@ print(
   )
 );
 ``` 
-Output:
+output:
 ```json
 {
  "id": 1,
@@ -433,21 +436,64 @@ String title;
 
 ## Complementary adapter libraries
 
-For seamless integration with popular use cases, feel free to pick an 
-existing adapter, or create one for your use case. 
+If you want a seamless integration with popular use cases, feel free to pick an 
+existing adapter or create one for your use case and make a PR to this repo.
 
-| Name        | Bages | Use case |
-| ----------- |:-----------------------:|:-----------|  
-|[dart-json-mapper-mobx][5]| [![pub package](https://img.shields.io/pub/v/dart_json_mapper_mobx.svg)](https://pub.dartlang.org/packages/dart_json_mapper_mobx) | [MobX][7] |
-|[dart-json-mapper-fixnum][6]| [![pub package](https://img.shields.io/pub/v/dart_json_mapper_fixnum.svg)](https://pub.dartlang.org/packages/dart_json_mapper_fixnum) | [Fixnum][8] |
+**Adapter** - is a library which contains a bundle of pre-configured:
 
+* custom converters
+* custom typeInfo decorators
+* custom value decorators
+ 
+For example, you would like to use `Int32` type provided by [Fixnum][8] library
+in your app. 
+
+* Make sure you have following dependencies in your `pubspec.yaml`:
+
+    ```yaml
+    dependencies:
+      fixnum: any
+      dart_json_mapper: any
+      dart_json_mapper_fixnum: any
+    dev_dependencies:
+      build_runner: any
+    ```
+* Usually, adapter library contains a single global function to invoke in your `main.dart`, so
+
+    ```dart
+    import 'package:fixnum/fixnum.dart' show Int32;
+    import 'package:dart_json_mapper/dart_json_mapper.dart';
+    import 'package:dart_json_mapper_fixnum/dart_json_mapper_fixnum.dart';
+    
+    import 'main.reflectable.dart'; // Import generated code.
+    
+    @jsonSerializable
+    class FixnumExample {
+      Int32 integer32;
+    
+      FixnumExample(this.integer32);
+    }
+    
+    main() {
+      initializeReflectable(); // Imported from main.reflectable.dart
+      initializeJsonMapperForFixnum(); // Imported from dart_json_mapper_fixnum
+      
+      print(JsonMapper.serialize(
+         FixnumExample(Int32(1234567890))
+      ));
+    }
+    ```
+    output:
+    ```json
+    {
+      "integer32": "1234567890"
+    }
+    ```
 
 [1]: https://github.com/flutter/flutter/issues/1150
 [2]: https://pub.dartlang.org/packages/intl
 [3]: https://pub.dartlang.org/packages/reflectable
 [4]: https://github.com/k-paxian/samples/tree/master/jsonexample
-[5]: adapters/mobx
-[6]: adapters/fixnum
 [7]: https://mobx.pub
 [8]: https://github.com/dart-lang/fixnum
 
