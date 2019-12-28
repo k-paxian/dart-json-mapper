@@ -12,7 +12,7 @@ class Json {
   ///           name: 'foo/bar/baz'
   final String name;
 
-  /// Declares necessity for annotated class and all it's subclasses to dump type name to
+  /// Declares necessity for annotated class and all its subclasses to dump their own type name to the
   /// custom named json property.
   final String typeNameProperty;
 

@@ -34,8 +34,8 @@ Typical `Flutter.io project integration` sample can be found [here][4]
 * [Annotations](#annotations)
 * [Adapters](#complementary-adapter-libraries)
     * [How to use adapter?](#complementary-adapter-libraries)
-    * [![pub package](https://img.shields.io/pub/v/dart_json_mapper_mobx.svg)](https://pub.dartlang.org/packages/dart_json_mapper_mobx) | [dart_json_mapper_mobx](#adapters/mobx) | [MobX][7]
-    * [![pub package](https://img.shields.io/pub/v/dart_json_mapper_fixnum.svg)](https://pub.dartlang.org/packages/dart_json_mapper_fixnum) | [dart_json_mapper_fixnum](#adapters/fixnum) | [Fixnum][8]
+    * [![pub package](https://img.shields.io/pub/v/dart_json_mapper_mobx.svg)](https://pub.dartlang.org/packages/dart_json_mapper_mobx) | [dart_json_mapper_mobx](adapters/mobx) | [MobX][7]
+    * [![pub package](https://img.shields.io/pub/v/dart_json_mapper_fixnum.svg)](https://pub.dartlang.org/packages/dart_json_mapper_fixnum) | [dart_json_mapper_fixnum](adapters/fixnum) | [Fixnum][8]
 
 ## Basic setup
 
@@ -434,6 +434,30 @@ OR use it individually on selected class fields, via `@JsonProperty` annotation
 String title;
 ```
 
+## Annotations
+
+* `@JsonSerializable()` or `@jsonSerializable` for short, It's a **required** class only marker annotation. 
+Use it to mark all the Dart classes you'd like to be traveling to / from JSON   
+    * Has **NO** params
+* `@Json(...)` It's an *optional* class only annotation, describes a Dart class to JSON Object mapping.
+Why it's not a `@JsonObject()`? just for you to type less characters :smile:
+    * *name* parameter denotes the json Object root name/path to be used for mapping.
+Example: `'foo', 'bar', 'foo/bar/baz'`
+    * *typeNameProperty* declares the necessity for annotated class and all it's subclasses to dump their own type name to
+the property named as this param value
+    * *ignoreNullMembers* If set to `true` Null class members will be excluded from serialization process
+    * *allowCircularReferences* As of `int` type. Allows certain number of circular object references during serialization.
+    * *scheme* dynamic [Scheme](#schemes) marker to associate this meta information with particular mapping scheme
+* `@JsonProperty(...)` It's an *optional* class member annotation, describes JSON Object property mapping.
+    * *name* parameter denotes the name/path to be used for property mapping relative to the class *root nesting*
+Example: `'foo', 'bar', 'foo/bar/baz'`
+    * *scheme* dynamic [Scheme](#schemes) marker to associate this meta information with particular mapping scheme
+    * *converter* Declares custom converter instance, to be used for annotated field serialization / deserialization 
+    * *converterParams* A `Map<String, dynamic>` of named parameters to be passed to the converter instance
+    * *ignore* A bool declares annotated field as ignored so it will be excluded from serialization / deserialization process
+    * *ignoreIfNull* A bool declares annotated field as ignored if it's value is null so it will be excluded from serialization / deserialization process
+    * *enumValues* Provides a way to specify enum values, via Dart built in capability for all Enum instances. `Enum.values`
+
 ## Complementary adapter libraries
 
 If you want a seamless integration with popular use cases, feel free to pick an 
@@ -441,9 +465,9 @@ existing adapter or create one for your use case and make a PR to this repo.
 
 **Adapter** - is a library which contains a bundle of pre-configured:
 
-* custom converters
+* custom [converters](#custom-types)
+* custom [value decorators](#iterable-types)
 * custom typeInfo decorators
-* custom value decorators
  
 For example, you would like to use `Int32` type provided by [Fixnum][8] library
 in your app. 
