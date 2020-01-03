@@ -8,7 +8,7 @@ Beforehand please consult with basic setup section from [dart-json-mapper][1] pa
 
 Please add the following dependencies to your `pubspec.yaml`:
 
-```
+```yaml
 dependencies:
   dart_json_mapper: any
   dart_json_mapper_mobx: any

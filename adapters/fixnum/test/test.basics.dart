@@ -20,7 +20,7 @@ void testBasics() {
   test('Int32 converter', () {
     // given
     final rawString = '1234567890';
-    final json = '{"int32":"${rawString}"}';
+    final json = '{"int32":${rawString}}';
 
     // when
     final targetJson = JsonMapper.serialize(
@@ -37,7 +37,7 @@ void testBasics() {
   test('Int64 converter', () {
     // given
     final rawString = '1234567890123456789';
-    final json = '{"int64":"${rawString}"}';
+    final json = '{"int64":${rawString}}';
 
     // when
     final targetJson = JsonMapper.serialize(
@@ -53,7 +53,7 @@ void testBasics() {
 
   test('List<Int32>', () {
     // given
-    final json = '["2112454933","2112454934"]';
+    final json = '[2112454933,2112454934]';
 
     // when
     final instance = JsonMapper.deserialize<List<Int32>>(json);
@@ -70,7 +70,7 @@ void testBasics() {
 
   test('Set<Int32>', () {
     // given
-    final json = '["2112454933","2112454934"]';
+    final json = '[2112454933,2112454934]';
 
     // when
     final instance = JsonMapper.deserialize<Set<Int32>>(json);
@@ -87,7 +87,7 @@ void testBasics() {
 
   test('List<Int64>', () {
     // given
-    final json = '["1234567890123456789","1234567890123456787"]';
+    final json = '[1234567890123456789,1234567890123456787]';
 
     // when
     final instance = JsonMapper.deserialize<List<Int64>>(json);
@@ -104,7 +104,7 @@ void testBasics() {
 
   test('Set<Int64>', () {
     // given
-    final json = '["1234567890123456789","1234567890123456787"]';
+    final json = '[1234567890123456789,1234567890123456787]';
 
     // when
     final instance = JsonMapper.deserialize<Set<Int64>>(json);

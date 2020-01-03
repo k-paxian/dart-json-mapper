@@ -26,34 +26,38 @@ class FixnumTypeInfoDecorator extends DefaultTypeInfoDecorator {
 final int32Converter = Int32Converter();
 
 /// [Int32] converter
-class Int32Converter implements ICustomConverter {
+class Int32Converter implements ICustomConverter<Int32> {
   const Int32Converter() : super();
 
   @override
-  Object fromJSON(dynamic jsonValue, [JsonProperty jsonProperty]) {
-    return jsonValue is String ? Int32.parseInt(jsonValue) : jsonValue;
+  Int32 fromJSON(dynamic jsonValue, [JsonProperty jsonProperty]) {
+    return jsonValue is Int32
+        ? jsonValue
+        : jsonValue is String ? Int32.parseInt(jsonValue) : Int32(jsonValue);
   }
 
   @override
-  dynamic toJSON(Object object, [JsonProperty jsonProperty]) {
-    return object is Int32 ? object.toString() : object;
+  dynamic toJSON(Int32 object, [JsonProperty jsonProperty]) {
+    return object is Int32 ? object.toInt() : object;
   }
 }
 
 final int64Converter = Int64Converter();
 
 /// [Int64] converter
-class Int64Converter implements ICustomConverter {
+class Int64Converter implements ICustomConverter<Int64> {
   const Int64Converter() : super();
 
   @override
-  Object fromJSON(dynamic jsonValue, [JsonProperty jsonProperty]) {
-    return jsonValue is String ? Int64.parseInt(jsonValue) : jsonValue;
+  Int64 fromJSON(dynamic jsonValue, [JsonProperty jsonProperty]) {
+    return jsonValue is Int64
+        ? jsonValue
+        : jsonValue is String ? Int64.parseInt(jsonValue) : Int64(jsonValue);
   }
 
   @override
-  dynamic toJSON(Object object, [JsonProperty jsonProperty]) {
-    return object is Int64 ? object.toString() : object;
+  dynamic toJSON(Int64 object, [JsonProperty jsonProperty]) {
+    return object is Int64 ? object.toInt() : object;
   }
 }
 

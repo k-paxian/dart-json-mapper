@@ -15,6 +15,7 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - name: Publish mapper to pub.dev
+        if: always()
         run:  |
           cp ../README.md README.md
           cp -f ../LICENSE LICENSE
@@ -33,6 +34,7 @@ jobs:
         working-directory: ./mapper
 
       - name: Publish mobx adapter to pub.dev
+        if: always()
         run:  |
           cp -f ../../LICENSE LICENSE
           mkdir -p ~/.pub-cache
@@ -50,6 +52,7 @@ jobs:
         working-directory: ./adapters/mobx
 
       - name: Publish fixnum adapter to pub.dev
+        if: always()
         run:  |
           cp -f ../../LICENSE LICENSE
           mkdir -p ~/.pub-cache

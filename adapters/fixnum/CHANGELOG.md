@@ -1,3 +1,7 @@
+## 1.0.1
+
+* Serialize to JSON number instead of string
+
 ## 1.0.0
 
 * Support for [Int32, Int64, List<Int32>, Set<Int32>, List<Int64>, Set<Int64> ] types
