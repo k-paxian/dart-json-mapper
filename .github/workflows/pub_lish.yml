@@ -15,7 +15,7 @@ jobs:
         with:
           accessToken: ${{ secrets.OAUTH_ACCESS_TOKEN }}
           refreshToken: ${{ secrets.OAUTH_REFRESH_TOKEN }}
-          relativePath: ${{ github.workspace }}/mapper
+          relativePath: mapper
 
       - name: Publish mobx adapter to pub.dev
         run:  |
