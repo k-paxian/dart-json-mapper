@@ -18,7 +18,7 @@ jobs:
           # Required:
           refreshToken: ${{ secrets.OAUTH_REFRESH_TOKEN }}
           # Optional:
-          relativePath: ./mapper
+          relativePath: mapper
 
       - name: Publish mobx adapter to pub.dev
         run:  |
