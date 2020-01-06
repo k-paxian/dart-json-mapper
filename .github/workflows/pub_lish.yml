@@ -14,7 +14,6 @@ jobs:
       - uses: k-paxian/dart-package-publisher@master
         with:
           accessToken: ${{ secrets.OAUTH_ACCESS_TOKEN }}
-          # Required:
           refreshToken: ${{ secrets.OAUTH_REFRESH_TOKEN }}
           # Optional:
           relativePath: mapper
