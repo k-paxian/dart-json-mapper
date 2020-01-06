@@ -1,3 +1,7 @@
+## 1.0.1
+
+* mobx version bump
+
 ## 1.0.0
 
 * pedantic linter adopted
