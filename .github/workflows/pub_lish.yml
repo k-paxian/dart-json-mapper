@@ -8,31 +8,29 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Copy extra files        
+        
+      - name: '>> mapper <<'
         run: |
           cp README.md ./mapper/README.md
           cp -f LICENSE ./mapper/LICENSE
-      - name: Publish mapper to pub.dev          
-        uses: k-paxian/dart-package-publisher@master
+      - uses: k-paxian/dart-package-publisher@master
         with:
           accessToken: ${{ secrets.OAUTH_ACCESS_TOKEN }}
           refreshToken: ${{ secrets.OAUTH_REFRESH_TOKEN }}
           relativePath: mapper
 
-      - name: Publish mobx adapter to pub.dev
+      - name: '>> adapters/mobx <<'
         run:  |
-          cp -f ../../LICENSE LICENSE
-        working-directory: ./adapters/mobx
+          cp -f LICENSE ./adapters/mobx/LICENSE
       - uses: k-paxian/dart-package-publisher@master
         with:
           accessToken: ${{ secrets.OAUTH_ACCESS_TOKEN }}
           refreshToken: ${{ secrets.OAUTH_REFRESH_TOKEN }}
           relativePath: adapters/mobx
           
-      - name: Publish fixnum adapter to pub.dev
+      - name: '>> adapters/fixnum <<'
         run:  |
-          cp -f ../../LICENSE LICENSE
-        working-directory: ./adapters/fixnum
+          cp -f LICENSE ./adapters/fixnum/LICENSE
       - uses: k-paxian/dart-package-publisher@master
         with:
           accessToken: ${{ secrets.OAUTH_ACCESS_TOKEN }}
