@@ -27,7 +27,7 @@ jobs:
         with:
           accessToken: ${{ secrets.OAUTH_ACCESS_TOKEN }}
           refreshToken: ${{ secrets.OAUTH_REFRESH_TOKEN }}
-          relativePath: ./adapters/mobx
+          relativePath: adapters/mobx
           
       - name: Publish fixnum adapter to pub.dev
         run:  |
@@ -35,9 +35,6 @@ jobs:
         working-directory: ./adapters/fixnum
       - uses: k-paxian/dart-package-publisher@master
         with:
-          # Required:
           accessToken: ${{ secrets.OAUTH_ACCESS_TOKEN }}
-          # Required:
           refreshToken: ${{ secrets.OAUTH_REFRESH_TOKEN }}
-          # Optional:
-          relativePath: ./adapters/fixnum          
+          relativePath: adapters/fixnum          
