@@ -1,5 +1,5 @@
 name: dart_json_mapper_mobx
-version: 1.0.0
+version: 1.0.1
 description: >
   This is a dart-json-mapper complementary package
   provides support for http://mobx.pub classes in order to
