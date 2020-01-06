@@ -1,70 +1,48 @@
 name: Publish to Pub.dev
 
-on:
-  release:
-    types: [published]
+on: push
 
 jobs:
-  build:
-
+  publishing:
     runs-on: ubuntu-latest
-
-    container:
-      image:  google/dart:latest
-
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
       - name: Publish mapper to pub.dev
-        if: always()
         run:  |
           cp ../README.md README.md
-          cp -f ../LICENSE LICENSE
-          mkdir -p ~/.pub-cache
-          cat <<EOF > ~/.pub-cache/credentials.json
-          {
-            "accessToken":"${{ secrets.OAUTH_ACCESS_TOKEN }}",
-            "refreshToken":"${{ secrets.OAUTH_REFRESH_TOKEN }}",
-            "tokenEndpoint":"https://accounts.google.com/o/oauth2/token",
-            "scopes": [ "openid", "https://www.googleapis.com/auth/userinfo.email" ],
-            "expiration": 1577149838000
-          }
-          EOF
-          pub publish --dry-run
-          pub lish -f
+          cp -f ../LICENSE LICENSE        
         working-directory: ./mapper
+      - uses: k-paxian/dart-package-publisher@master
+        with:
+          # Required:
+          accessToken: ${{ secrets.OAUTH_ACCESS_TOKEN }}
+          # Required:
+          refreshToken: ${{ secrets.OAUTH_REFRESH_TOKEN }}
+          # Optional:
+          relativePath: ./mapper
 
       - name: Publish mobx adapter to pub.dev
-        if: always()
         run:  |
           cp -f ../../LICENSE LICENSE
-          mkdir -p ~/.pub-cache
-          cat <<EOF > ~/.pub-cache/credentials.json
-          {
-            "accessToken":"${{ secrets.OAUTH_ACCESS_TOKEN }}",
-            "refreshToken":"${{ secrets.OAUTH_REFRESH_TOKEN }}",
-            "tokenEndpoint":"https://accounts.google.com/o/oauth2/token",
-            "scopes": [ "openid", "https://www.googleapis.com/auth/userinfo.email" ],
-            "expiration": 1577149838000
-          }
-          EOF
-          pub publish --dry-run
-          pub lish -f
         working-directory: ./adapters/mobx
-
+      - uses: k-paxian/dart-package-publisher@master
+        with:
+          # Required:
+          accessToken: ${{ secrets.OAUTH_ACCESS_TOKEN }}
+          # Required:
+          refreshToken: ${{ secrets.OAUTH_REFRESH_TOKEN }}
+          # Optional:
+          relativePath: ./adapters/mobx
+          
       - name: Publish fixnum adapter to pub.dev
-        if: always()
         run:  |
           cp -f ../../LICENSE LICENSE
-          mkdir -p ~/.pub-cache
-          cat <<EOF > ~/.pub-cache/credentials.json
-          {
-            "accessToken":"${{ secrets.OAUTH_ACCESS_TOKEN }}",
-            "refreshToken":"${{ secrets.OAUTH_REFRESH_TOKEN }}",
-            "tokenEndpoint":"https://accounts.google.com/o/oauth2/token",
-            "scopes": [ "openid", "https://www.googleapis.com/auth/userinfo.email" ],
-            "expiration": 1577149838000
-          }
-          EOF
-          pub publish --dry-run
-          pub lish -f
         working-directory: ./adapters/fixnum
+      - uses: k-paxian/dart-package-publisher@master
+        with:
+          # Required:
+          accessToken: ${{ secrets.OAUTH_ACCESS_TOKEN }}
+          # Required:
+          refreshToken: ${{ secrets.OAUTH_REFRESH_TOKEN }}
+          # Optional:
+          relativePath: ./adapters/fixnum          
