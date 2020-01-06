@@ -13,7 +13,6 @@ jobs:
           cp -f LICENSE ./mapper/LICENSE
       - uses: k-paxian/dart-package-publisher@master
         with:
-          # Required:
           accessToken: ${{ secrets.OAUTH_ACCESS_TOKEN }}
           # Required:
           refreshToken: ${{ secrets.OAUTH_REFRESH_TOKEN }}
