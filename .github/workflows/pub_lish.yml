@@ -11,7 +11,6 @@ jobs:
         run:  |
           cp README.md ./mapper/README.md
           cp -f LICENSE ./mapper/LICENSE
-          echo "current dir: $PWD"
       - uses: k-paxian/dart-package-publisher@master
         with:
           # Required:
