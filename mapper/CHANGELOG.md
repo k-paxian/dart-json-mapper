@@ -1,3 +1,7 @@
+## 1.3.2
+
+* Fix special A/B inception case for #25
+
 ## 1.3.1
 
 * Imports refactored, from now on *everything* is imported from a single

@@ -24,8 +24,9 @@ class JsonMap {
 
   dynamic getPropertyValue(String name) {
     dynamic result;
-    _isPathExists(_getPath(name), (m, k) {
-      result = (m is Map && m.containsKey(k)) ? m[k] : m;
+    final path = _getPath(name);
+    _isPathExists(path, (m, k) {
+      result = (m is Map && m.containsKey(k) && k != path) ? m[k] : m;
     });
     return result;
   }

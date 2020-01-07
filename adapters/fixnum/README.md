@@ -44,7 +44,7 @@ main() {
 output:
 ```json
 {
-  "integer32": "1234567890"
+  "integer32": 1234567890
 }
 ```
 
