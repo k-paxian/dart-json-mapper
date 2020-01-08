@@ -1,35 +1,11 @@
 import 'dart:convert' show JsonEncoder, JsonDecoder;
 import 'dart:math';
-import 'dart:typed_data' show Uint8List;
 
 import 'package:reflectable/reflectable.dart';
 
-import 'annotations.dart';
-import 'converters.dart';
 import 'errors.dart';
-import 'type_info.dart';
+import 'model/index.dart';
 import 'utils.dart';
-
-class DeserializationOptions {
-  /// Scheme to be used
-  final dynamic scheme;
-
-  const DeserializationOptions({this.scheme});
-}
-
-class SerializationOptions extends DeserializationOptions {
-  /// Indentation
-  final String indent;
-
-  /// Template
-  final Map<String, dynamic> template;
-
-  const SerializationOptions({scheme, this.indent, this.template})
-      : super(scheme: scheme);
-}
-
-const defaultSerializationOptions = SerializationOptions();
-const defaultDeserializationOptions = DeserializationOptions();
 
 /// Singleton class providing static methods for Dart objects conversion
 /// from / to JSON string
@@ -40,8 +16,9 @@ class JsonMapper {
   final serializable = const JsonSerializable();
   final Map<String, ClassMirror> classes = {};
   final Map<String, ProcessedObjectDescriptor> processedObjects = {};
-  final Map<Type, ICustomConverter> converters = {};
-  final Map<Type, ValueDecoratorFunction> valueDecorators = {};
+  final Map<Type, ICustomConverter> converters = getDefaultConverters();
+  final Map<Type, ValueDecoratorFunction> valueDecorators =
+      getDefaultValueDecorators();
   final Map<int, ITypeInfoDecorator> typeInfoDecorators = {};
 
   /// Assign custom converter instance for certain type T
@@ -122,61 +99,12 @@ class JsonMapper {
     for (var classMirror in serializable.annotatedClasses) {
       classes[classMirror.reflectedType.toString()] = classMirror;
     }
-    registerDefaultConverters();
-    registerDefaultValueDecorators();
+
     registerDefaultTypeInfoDecorators();
   }
 
-  Type _typeOf<T>() => T;
-
   void registerDefaultTypeInfoDecorators() {
     typeInfoDecorators[0] = defaultTypeInfoDecorator;
-  }
-
-  void registerDefaultValueDecorators() {
-    // Dart built-in types
-    // List
-    valueDecorators[_typeOf<List<String>>()] = (value) => value.cast<String>();
-    valueDecorators[_typeOf<List<DateTime>>()] =
-        (value) => value.cast<DateTime>();
-    valueDecorators[_typeOf<List<num>>()] = (value) => value.cast<num>();
-    valueDecorators[_typeOf<List<int>>()] = (value) => value.cast<int>();
-    valueDecorators[_typeOf<List<double>>()] = (value) => value.cast<double>();
-    valueDecorators[_typeOf<List<bool>>()] = (value) => value.cast<bool>();
-    valueDecorators[_typeOf<List<Symbol>>()] = (value) => value.cast<Symbol>();
-    valueDecorators[_typeOf<List<BigInt>>()] = (value) => value.cast<BigInt>();
-
-    // Set
-    valueDecorators[_typeOf<Set<String>>()] = (value) => value.cast<String>();
-    valueDecorators[_typeOf<Set<DateTime>>()] =
-        (value) => value.cast<DateTime>();
-    valueDecorators[_typeOf<Set<num>>()] = (value) => value.cast<num>();
-    valueDecorators[_typeOf<Set<int>>()] = (value) => value.cast<int>();
-    valueDecorators[_typeOf<Set<double>>()] = (value) => value.cast<double>();
-    valueDecorators[_typeOf<Set<bool>>()] = (value) => value.cast<bool>();
-    valueDecorators[_typeOf<Set<Symbol>>()] = (value) => value.cast<Symbol>();
-    valueDecorators[_typeOf<Set<BigInt>>()] = (value) => value.cast<BigInt>();
-
-    // Typed data
-    valueDecorators[_typeOf<Uint8List>()] =
-        (value) => Uint8List.fromList(value.cast<int>());
-  }
-
-  void registerDefaultConverters() {
-    // Built-in types
-    converters[dynamic] = defaultConverter;
-    converters[String] = defaultConverter;
-    converters[bool] = defaultConverter;
-    converters[Symbol] = symbolConverter;
-    converters[DateTime] = dateConverter;
-    converters[num] = numberConverter;
-    converters[int] = numberConverter;
-    converters[double] = numberConverter;
-    converters[BigInt] = bigIntConverter;
-    converters[_typeOf<Map<String, dynamic>>()] = mapStringDynamicConverter;
-
-    // Typed data
-    converters[Uint8List] = uint8ListConverter;
   }
 
   InstanceMirror safeGetInstanceMirror(Object object) {

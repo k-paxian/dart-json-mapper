@@ -2,8 +2,6 @@ import 'package:reflectable/reflectable.dart';
 
 import 'converters.dart';
 
-typedef ValueDecoratorFunction = dynamic Function(dynamic value);
-
 /// [Json] is used as metadata, to annotate Dart class as top level Json object
 class Json {
   /// Denotes the json Object root name/path to be used for mapping

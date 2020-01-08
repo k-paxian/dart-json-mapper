@@ -1,13 +1,8 @@
 import 'package:reflectable/reflectable.dart';
 
-import 'annotations.dart';
+import 'model/index.dart';
 
-class ProcessedObjectDescriptor {
-  dynamic object;
-  int times = 0;
-
-  ProcessedObjectDescriptor(this.object);
-}
+Type typeOf<T>() => T;
 
 /// Provides logic for traversing Json object tree
 class JsonMap {

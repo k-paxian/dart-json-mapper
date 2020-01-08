@@ -1,8 +1,10 @@
-abstract class CircularReferenceError extends Error {
+abstract class JsonMapperError extends Error {}
+
+abstract class CircularReferenceError extends JsonMapperError {
   factory CircularReferenceError(Object object) = _CircularReferenceErrorImpl;
 }
 
-class _CircularReferenceErrorImpl extends Error
+class _CircularReferenceErrorImpl extends JsonMapperError
     implements CircularReferenceError {
   final Object _object;
 
@@ -12,12 +14,12 @@ class _CircularReferenceErrorImpl extends Error
   String toString() => 'Circular reference detected. ${_object.toString()}';
 }
 
-abstract class MissingAnnotationOnTypeError extends Error {
+abstract class MissingAnnotationOnTypeError extends JsonMapperError {
   factory MissingAnnotationOnTypeError(Type type) =
       _MissingAnnotationOnTypeErrorImpl;
 }
 
-class _MissingAnnotationOnTypeErrorImpl extends Error
+class _MissingAnnotationOnTypeErrorImpl extends JsonMapperError
     implements MissingAnnotationOnTypeError {
   final Type _type;
 
@@ -29,11 +31,11 @@ class _MissingAnnotationOnTypeErrorImpl extends Error
       'with @jsonSerializable';
 }
 
-abstract class MissingEnumValuesError extends Error {
+abstract class MissingEnumValuesError extends JsonMapperError {
   factory MissingEnumValuesError(Type type) = _MissingEnumValuesErrorImpl;
 }
 
-class _MissingEnumValuesErrorImpl extends Error
+class _MissingEnumValuesErrorImpl extends JsonMapperError
     implements MissingEnumValuesError {
   final Type _type;
 
@@ -44,12 +46,12 @@ class _MissingEnumValuesErrorImpl extends Error
       '@JsonProperty(enumValues: ${_type.toString()}.values)';
 }
 
-abstract class MissingTypeForDeserializationError extends Error {
+abstract class MissingTypeForDeserializationError extends JsonMapperError {
   factory MissingTypeForDeserializationError() =
       _MissingTypeForDeserializationErrorImpl;
 }
 
-class _MissingTypeForDeserializationErrorImpl extends Error
+class _MissingTypeForDeserializationErrorImpl extends JsonMapperError
     implements MissingTypeForDeserializationError {
   _MissingTypeForDeserializationErrorImpl() : super();
 
