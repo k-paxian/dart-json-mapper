@@ -521,8 +521,8 @@ in your app.
 [7]: https://mobx.pub
 [8]: https://github.com/dart-lang/fixnum
 
-[ci-badge]: https://github.com/k-paxian/dart-json-mapper/workflows/pipeline/badge.svg
-[ci-badge-url]: https://github.com/k-paxian/dart-json-mapper/actions?query=workflow%3A%22pipeline%22
+[ci-badge]: https://github.com/k-paxian/dart-json-mapper/workflows/Pipeline/badge.svg
+[ci-badge-url]: https://github.com/k-paxian/dart-json-mapper/actions?query=workflow%3A%22Pipeline%22
 
 [pedantic-badge]: https://dart-lang.github.io/linter/lints/style-pedantic.svg
 [pedantic-url]: https://github.com/dart-lang/pedantic
