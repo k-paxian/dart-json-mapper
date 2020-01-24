@@ -17,7 +17,6 @@ jobs:
         with:
           githubToken: ${{ secrets.GITHUB_TOKEN }}
           relativePath: mapper
-          minAnnotationLevel: info          
       - uses: k-paxian/dart-package-publisher@master
         with:
           accessToken: ${{ secrets.OAUTH_ACCESS_TOKEN }}
