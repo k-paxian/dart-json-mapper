@@ -13,6 +13,11 @@ jobs:
         run: |
           cp README.md ./mapper/README.md
           cp -f LICENSE ./mapper/LICENSE
+      - uses: axel-op/dart-package-analyzer@stable
+        with:
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
+          relativePath: mapper
+          minAnnotationLevel: info          
       - uses: k-paxian/dart-package-publisher@master
         with:
           accessToken: ${{ secrets.OAUTH_ACCESS_TOKEN }}
