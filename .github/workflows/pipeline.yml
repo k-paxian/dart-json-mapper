@@ -26,6 +26,10 @@ jobs:
       - name: '>> adapters/mobx <<'
         run:  |
           cp -f LICENSE ./adapters/mobx/LICENSE
+      - uses: axel-op/dart-package-analyzer@stable
+        with:
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
+          relativePath: adapters/mobx          
       - uses: k-paxian/dart-package-publisher@master
         with:
           accessToken: ${{ secrets.OAUTH_ACCESS_TOKEN }}
