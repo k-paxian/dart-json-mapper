@@ -1,3 +1,11 @@
+## 1.3.4
+
+* Bump reflectable dependency to the latest stable
+
+## 1.3.3
+
+* Fix issue #26
+
 ## 1.3.2
 
 * Fix special A/B inception case for #25
