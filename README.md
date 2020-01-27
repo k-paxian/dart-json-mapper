@@ -25,12 +25,13 @@ Typical `Flutter.io project integration` sample can be found [here][4]
 * [Configuration use cases](#format-datetime--num-types)
     * [Extended classes](#inherited-classes-derived-from-abstract--base-class)
     * [Immutable classes](#example-with-immutable-class)
+    * [Constructor parameters annotation](#constructor-parameters-annotation)
     * [DateTime / num types](#format-datetime--num-types)
     * [Iterable types](#iterable-types)
-    * [Enum types](#enum-types)    
+    * [Enum types](#enum-types)
     * [Custom types](#custom-types)
     * [Nesting](#nesting-configuration)
-    * [Schemes](#schemes)    
+    * [Schemes](#schemes)
 * [Annotations](#annotations)
 * [Adapters](#complementary-adapter-libraries)
     * [How to use adapter?](#complementary-adapter-libraries)
@@ -196,6 +197,30 @@ output:
   "modelName": "Audi",
   "color": "Color.Green"
  }
+}
+```
+
+## Constructor parameters annotation
+
+Sometimes you don't really care or don't want to store some json property as a dedicated class field,
+but instead, you would like to use it's value in constructor to calculate other class properties.
+This way you don't have a convenience to annotate a class field, but you could utilize constructor parameter for that.    
+
+With the input JSON like this:
+```json
+{"LogistikTeileInOrdnung":"true"}
+```
+
+You could potentially have a class like this:
+```dart
+@jsonSerializable
+class LogisticsItem {
+  final bool logisticsChecked;
+  final bool logisticsOK;
+
+  LogisticsItem(@JsonProperty(name: 'LogistikTeileInOrdnung') String processed)
+      : logisticsChecked = processed != null && processed != 'null',
+        logisticsOK = processed == 'true';
 }
 ```
 

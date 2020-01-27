@@ -312,11 +312,8 @@ class JsonMapper {
     }
     methodMirror.parameters.forEach((ParameterMirror param) {
       final name = param.simpleName;
-      final declarationMirror = classInfo.getDeclarationMirror(name);
+      final declarationMirror = classInfo.getDeclarationMirror(name) ?? param;
       var paramTypeInfo = getTypeInfo(param.reflectedType);
-      if (declarationMirror == null) {
-        return;
-      }
       paramTypeInfo = paramTypeInfo.isDynamic
           ? getTypeInfo(getDeclarationType(declarationMirror))
           : paramTypeInfo;
@@ -325,7 +322,6 @@ class JsonMapper {
       if (meta != null && meta.name != null) {
         jsonName = meta.name;
       }
-
       visitor(param, name, jsonName, classMeta, meta, paramTypeInfo);
     });
   }

@@ -1,6 +1,16 @@
 part of json_mapper.test;
 
 @jsonSerializable
+class LogisticsItem {
+  final bool logisticsChecked;
+  final bool logisticsOK;
+
+  LogisticsItem(@JsonProperty(name: 'LogistikTeileInOrdnung') String processed)
+      : logisticsChecked = processed != null && processed != 'null',
+        logisticsOK = processed == 'true';
+}
+
+@jsonSerializable
 class User {
   String _email;
 
@@ -222,6 +232,16 @@ void testConstructors() {
       expect(json, '{"email":"a@a.com"}');
       expect(target, TypeMatcher<User>());
       expect(target.email, 'a@a.com');
+    });
+
+    test('Annotate constructor params', () {
+      // given
+      final json = '{"LogistikTeileInOrdnung":"true"}';
+      // when
+      final instance = JsonMapper.deserialize<LogisticsItem>(json);
+      // then
+      expect(instance.logisticsOK, true);
+      expect(instance.logisticsChecked, true);
     });
 
     test('StringListClass class', () {

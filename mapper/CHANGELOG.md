@@ -1,3 +1,8 @@
+## 1.3.5
+
+* fix for #28
+* Enhancement #22 implemented, support @JsonProperty annotation on constructor params when there is no associated field.
+
 ## 1.3.4
 
 * Bump reflectable dependency to the latest stable
