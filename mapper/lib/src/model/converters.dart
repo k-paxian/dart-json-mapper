@@ -51,7 +51,7 @@ class DateConverter extends BaseCustomConverter implements ICustomConverter {
         ? format.format(object)
         : (object is List)
             ? object.map((item) => item.toString()).toList()
-            : object.toString();
+            : object != null ? object.toString() : null;
   }
 
   DateFormat getDateFormat([JsonProperty jsonProperty]) {

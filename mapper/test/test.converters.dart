@@ -28,6 +28,11 @@ class BigIntData {
   BigIntData(this.bigInt);
 }
 
+@jsonSerializable
+class Model {
+  DateTime data;
+}
+
 void testConverters() {
   group('[Verify converters]', () {
     test('Map<String, dynamic> converter', () {
@@ -41,6 +46,18 @@ void testConverters() {
       expect(target, TypeMatcher<Map<String, dynamic>>());
       expect(target['a'], TypeMatcher<String>());
       expect(target['b'], TypeMatcher<num>());
+    });
+
+    test('DateConverter', () {
+      // given
+      final instance = Model();
+
+      // when
+      final json = JsonMapper.toJson(instance);
+      final target = JsonMapper.fromJson<Model>(json);
+
+      // then
+      expect(target.data, instance.data);
     });
 
     test('BigInt converter', () {
