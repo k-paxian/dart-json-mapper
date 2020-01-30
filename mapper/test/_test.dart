@@ -13,6 +13,7 @@ part 'test.constructors.dart';
 part 'test.converters.dart';
 part 'test.errors.dart';
 part 'test.integration.dart';
+part 'test.name.casing.dart';
 part 'test.name.path.dart';
 part 'test.partial.deserialization.dart';
 part 'test.scheme.dart';
@@ -23,6 +24,7 @@ void main() {
   initializeReflectable();
 
   testScheme();
+  testNameCasing();
   testErrorHandling();
   testConverters();
   testValueDecorators();

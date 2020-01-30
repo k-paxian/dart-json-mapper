@@ -25,7 +25,7 @@ Typical `Flutter.io project integration` sample can be found [here][4]
 * [Configuration use cases](#format-datetime--num-types)
     * [Extended classes](#inherited-classes-derived-from-abstract--base-class)
     * [Immutable classes](#example-with-immutable-class)
-    * [Constructor parameters](#constructor-parameters-annotation)
+    * [Constructor parameters](#constructor-parameters)
     * [DateTime / num types](#format-datetime--num-types)
     * [Iterable types](#iterable-types)
     * [Enum types](#enum-types)

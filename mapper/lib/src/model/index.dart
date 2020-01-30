@@ -3,13 +3,19 @@ export 'converters.dart';
 export 'type_info.dart';
 export 'value_decorators.dart';
 
+enum CaseStyle { Camel, Pascal, Kebab, Snake, SnakeAllCaps }
+
 const defaultDeserializationOptions = DeserializationOptions();
 
 class DeserializationOptions {
+  /// The most popular ways to combine words into a single string
+  /// Based on assumption: That all Dart class fields initially given as CaseStyle.Camel
+  final CaseStyle caseStyle;
+
   /// Scheme to be used
   final dynamic scheme;
 
-  const DeserializationOptions({this.scheme});
+  const DeserializationOptions({this.scheme, this.caseStyle});
 }
 
 const defaultSerializationOptions = SerializationOptions();
@@ -21,8 +27,8 @@ class SerializationOptions extends DeserializationOptions {
   /// Template
   final Map<String, dynamic> template;
 
-  const SerializationOptions({scheme, this.indent, this.template})
-      : super(scheme: scheme);
+  const SerializationOptions({scheme, caseStyle, this.indent, this.template})
+      : super(scheme: scheme, caseStyle: caseStyle);
 }
 
 class ProcessedObjectDescriptor {

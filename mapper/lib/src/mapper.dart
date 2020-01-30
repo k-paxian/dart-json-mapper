@@ -263,7 +263,7 @@ class JsonMapper {
           value == null);
 
   void enumeratePublicFields(InstanceMirror instanceMirror, JsonMap jsonMap,
-      dynamic scheme, Function visitor) {
+      DeserializationOptions options, Function visitor) {
     final classInfo = ClassInfo(instanceMirror.type);
     for (var name in classInfo.publicFieldNames) {
       var jsonName = name;
@@ -273,11 +273,14 @@ class JsonMapper {
       }
       final declarationType = getDeclarationType(declarationMirror);
       final isGetterOnly = classInfo.isGetterOnly(name);
-      final meta = classInfo.getDeclarationMeta(declarationMirror, scheme);
-      final classMeta = classInfo.getMeta(scheme);
+      final meta =
+          classInfo.getDeclarationMeta(declarationMirror, options.scheme);
+      final classMeta = classInfo.getMeta(options.scheme);
       if (meta != null && meta.name != null) {
         jsonName = meta.name;
       }
+      jsonName = transformFieldName(jsonName, options.caseStyle);
+
       dynamic value = instanceMirror.invokeGetter(name);
       if (value == null && jsonMap != null) {
         if (isFieldIgnored(
@@ -440,7 +443,7 @@ class JsonMapper {
       }
     }
     dumpTypeNameToObjectProperty(result, im.type);
-    enumeratePublicFields(im, null, options.scheme, (name, jsonName, value,
+    enumeratePublicFields(im, null, options, (name, jsonName, value,
         isGetterOnly, meta, converter, scalarType, TypeInfo typeInfo) {
       if (converter != null) {
         final valueTypeInfo = getTypeInfo(value.runtimeType);
@@ -501,7 +504,7 @@ class JsonMapper {
             getNamedArguments(cm, jsonMap, options));
     final im = safeGetInstanceMirror(objectInstance);
 
-    enumeratePublicFields(im, jsonMap, options.scheme, (name,
+    enumeratePublicFields(im, jsonMap, options, (name,
         jsonName,
         value,
         isGetterOnly,

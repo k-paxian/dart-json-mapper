@@ -2,6 +2,7 @@
 
 * Enhancement #21 implemented, support @JsonConstructor to pick appropriate 
 constructor for deserialization.
+* Enhancement #23 implemented, support for field names casing options for serialization. [Pascal, Kebab, Snake, SnakeAllCaps]
 
 ## 1.3.5
 
