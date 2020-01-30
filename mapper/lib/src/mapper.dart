@@ -306,7 +306,8 @@ class JsonMapper {
       ClassMirror classMirror, dynamic scheme, Function visitor) {
     final classInfo = ClassInfo(classMirror);
     final classMeta = classInfo.getMeta(scheme);
-    final methodMirror = classInfo.publicConstructor;
+    final methodMirror = classInfo
+        .getJsonConstructor(classMeta != null ? classMeta.scheme : null);
     if (methodMirror == null) {
       return;
     }
@@ -489,11 +490,14 @@ class JsonMapper {
     if (cm == null) {
       throw MissingAnnotationOnTypeError(typeInfo.type);
     }
-    jsonMap.jsonMeta = ClassInfo(cm).getMeta(options.scheme);
+    final classInfo = ClassInfo(cm);
+    jsonMap.jsonMeta = classInfo.getMeta(options.scheme);
 
     final objectInstance = cm.isEnum
         ? null
-        : cm.newInstance('', getPositionalArguments(cm, jsonMap, options),
+        : cm.newInstance(
+            classInfo.getJsonConstructor(options.scheme).constructorName,
+            getPositionalArguments(cm, jsonMap, options),
             getNamedArguments(cm, jsonMap, options));
     final im = safeGetInstanceMirror(objectInstance);
 

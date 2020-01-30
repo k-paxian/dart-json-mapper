@@ -85,14 +85,35 @@ class ClassInfo {
                   (scheme == null && m.scheme == null))),
           orElse: () => null);
 
+  JsonConstructor hasConstructorMeta(DeclarationMirror dm, [dynamic scheme]) =>
+      lookupDeclarationMetaData(dm).firstWhere(
+          (m) => (m is JsonConstructor &&
+              ((scheme != null && m.scheme == scheme) ||
+                  (scheme == null && m.scheme == null))),
+          orElse: () => null);
+
   List<Object> get metaData {
     return lookupClassMetaData(classMirror);
   }
 
-  MethodMirror get publicConstructor {
-    return classMirror.declarations.values.where((DeclarationMirror dm) {
-      return !dm.isPrivate && dm is MethodMirror && dm.isConstructor;
-    }).first;
+  MethodMirror getJsonConstructor([dynamic scheme]) {
+    MethodMirror result;
+    try {
+      result =
+          classMirror.declarations.values.firstWhere((DeclarationMirror dm) {
+        return !dm.isPrivate &&
+            dm is MethodMirror &&
+            dm.isConstructor &&
+            hasConstructorMeta(dm, scheme) != null;
+      });
+    } catch (error) {
+      result = null;
+    }
+
+    return result ??
+        classMirror.declarations.values.firstWhere((DeclarationMirror dm) {
+          return !dm.isPrivate && dm is MethodMirror && dm.isConstructor;
+        });
   }
 
   List<String> get publicFieldNames {
@@ -154,7 +175,9 @@ class ClassInfo {
     final parentDeclarationMirror = ClassInfo(parentClassMirror)
         .getDeclarationMirror(declarationMirror.simpleName);
     result.addAll(parentClassMirror.isTopLevel
-        ? parentDeclarationMirror.metadata
+        ? parentDeclarationMirror != null
+            ? parentDeclarationMirror.metadata
+            : []
         : lookupDeclarationMetaData(parentDeclarationMirror));
     return result;
   }

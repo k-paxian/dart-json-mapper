@@ -1,6 +1,22 @@
 part of json_mapper.test;
 
 @jsonSerializable
+class BusinessObject {
+  final bool logisticsChecked;
+  final bool logisticsOK;
+
+  BusinessObject()
+      : logisticsChecked = false,
+        logisticsOK = true;
+
+  @jsonConstructor
+  BusinessObject.fromJson(
+      @JsonProperty(name: 'LogistikTeileInOrdnung') String processed)
+      : logisticsChecked = processed != null && processed != 'null',
+        logisticsOK = processed == 'true';
+}
+
+@jsonSerializable
 class LogisticsItem {
   final bool logisticsChecked;
   final bool logisticsOK;
@@ -239,6 +255,16 @@ void testConstructors() {
       final json = '{"LogistikTeileInOrdnung":"true"}';
       // when
       final instance = JsonMapper.deserialize<LogisticsItem>(json);
+      // then
+      expect(instance.logisticsOK, true);
+      expect(instance.logisticsChecked, true);
+    });
+
+    test('Annotate json constructor', () {
+      // given
+      final json = '{"LogistikTeileInOrdnung":"true"}';
+      // when
+      final instance = JsonMapper.deserialize<BusinessObject>(json);
       // then
       expect(instance.logisticsOK, true);
       expect(instance.logisticsChecked, true);

@@ -25,7 +25,7 @@ Typical `Flutter.io project integration` sample can be found [here][4]
 * [Configuration use cases](#format-datetime--num-types)
     * [Extended classes](#inherited-classes-derived-from-abstract--base-class)
     * [Immutable classes](#example-with-immutable-class)
-    * [Constructor parameters annotation](#constructor-parameters-annotation)
+    * [Constructor parameters](#constructor-parameters-annotation)
     * [DateTime / num types](#format-datetime--num-types)
     * [Iterable types](#iterable-types)
     * [Enum types](#enum-types)
@@ -200,7 +200,7 @@ output:
 }
 ```
 
-## Constructor parameters annotation
+## Constructor parameters
 
 Sometimes you don't really care or don't want to store some json property as a dedicated class field,
 but instead, you would like to use it's value in constructor to calculate other class properties.
@@ -214,11 +214,17 @@ With the input JSON like this:
 You could potentially have a class like this:
 ```dart
 @jsonSerializable
-class LogisticsItem {
+class BusinessObject {
   final bool logisticsChecked;
   final bool logisticsOK;
 
-  LogisticsItem(@JsonProperty(name: 'LogistikTeileInOrdnung') String processed)
+  BusinessObject()
+      : logisticsChecked = false,
+        logisticsOK = true;
+
+  @jsonConstructor
+  BusinessObject.fromJson(
+      @JsonProperty(name: 'LogistikTeileInOrdnung') String processed)
       : logisticsChecked = processed != null && processed != 'null',
         logisticsOK = processed == 'true';
 }
@@ -464,6 +470,9 @@ String title;
 * `@JsonSerializable()` or `@jsonSerializable` for short, It's a **required** class only marker annotation. 
 Use it to mark all the Dart classes you'd like to be traveling to / from JSON   
     * Has **NO** params
+* `@JsonConstructor()` or `@jsonConstructor` for short, It's an **optional** constructor only marker annotation. 
+Use it to mark specific Dart class constructor you'd like to be used during deserialization.    
+    * *scheme* dynamic [Scheme](#schemes) marker to associate this meta information with particular mapping scheme
 * `@Json(...)` It's an *optional* class only annotation, describes a Dart class to JSON Object mapping.
 Why it's not a `@JsonObject()`? just for you to type less characters :smile:
     * *name* parameter denotes the json Object root name/path to be used for mapping.

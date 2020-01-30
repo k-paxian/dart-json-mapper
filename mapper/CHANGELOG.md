@@ -1,3 +1,8 @@
+## 1.4.0
+
+* Enhancement #21 implemented, support @JsonConstructor to pick appropriate 
+constructor for deserialization.
+
 ## 1.3.5
 
 * fix for #28

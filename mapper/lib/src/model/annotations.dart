@@ -2,6 +2,18 @@ import 'package:reflectable/reflectable.dart';
 
 import 'converters.dart';
 
+/// [jsonConstructor] is used as a shorthand metadata w/o "()"
+const jsonConstructor = JsonConstructor();
+
+/// [JsonConstructor] is used as metadata, to annotate specific Dart class constructor
+/// being used for deserialization
+class JsonConstructor {
+  /// Scheme marker to associate this meta information with particular mapping scheme
+  final dynamic scheme;
+
+  const JsonConstructor({this.scheme});
+}
+
 /// [Json] is used as metadata, to annotate Dart class as top level Json object
 class Json {
   /// Denotes the json Object root name/path to be used for mapping
