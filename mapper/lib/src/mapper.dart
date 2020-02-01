@@ -305,10 +305,10 @@ class JsonMapper {
     }
   }
 
-  void enumerateConstructorParameters(
-      ClassMirror classMirror, dynamic scheme, Function visitor) {
+  void enumerateConstructorParameters(ClassMirror classMirror,
+      DeserializationOptions options, Function visitor) {
     final classInfo = ClassInfo(classMirror);
-    final classMeta = classInfo.getMeta(scheme);
+    final classMeta = classInfo.getMeta(options.scheme);
     final methodMirror = classInfo
         .getJsonConstructor(classMeta != null ? classMeta.scheme : null);
     if (methodMirror == null) {
@@ -322,10 +322,12 @@ class JsonMapper {
           ? getTypeInfo(getDeclarationType(declarationMirror))
           : paramTypeInfo;
       var jsonName = name;
-      final meta = classInfo.getDeclarationMeta(declarationMirror, scheme);
+      final meta =
+          classInfo.getDeclarationMeta(declarationMirror, options.scheme);
       if (meta != null && meta.name != null) {
         jsonName = meta.name;
       }
+      jsonName = transformFieldName(jsonName, options.caseStyle);
       visitor(param, name, jsonName, classMeta, meta, paramTypeInfo);
     });
   }
@@ -344,7 +346,7 @@ class JsonMapper {
       [DeserializationOptions options]) {
     final result = <Symbol, dynamic>{};
 
-    enumerateConstructorParameters(cm, options.scheme,
+    enumerateConstructorParameters(cm, options,
         (param, name, jsonName, classMeta, meta, TypeInfo typeInfo) {
       if (param.isNamed && jsonMap.hasProperty(jsonName)) {
         var value = jsonMap.getPropertyValue(jsonName);
@@ -373,7 +375,7 @@ class JsonMapper {
       [DeserializationOptions options]) {
     final result = [];
 
-    enumerateConstructorParameters(cm, options.scheme, (param, name, jsonName,
+    enumerateConstructorParameters(cm, options, (param, name, jsonName,
         classMeta, JsonProperty meta, TypeInfo typeInfo) {
       if (!param.isOptional &&
           !param.isNamed &&
