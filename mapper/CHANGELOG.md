@@ -1,3 +1,7 @@
+## 1.4.1
+
+* #29, List of Lists use case covered.
+
 ## 1.4.0
 
 * Enhancement #21 implemented, support @JsonConstructor to pick appropriate 

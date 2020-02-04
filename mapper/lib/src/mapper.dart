@@ -172,6 +172,7 @@ class JsonMapper {
   }
 
   Type getScalarType(Type type) {
+    var result = dynamic;
     final typeInfo = getTypeInfo(type);
     final scalarTypeName = typeInfo.scalarTypeName;
 
@@ -185,7 +186,14 @@ class JsonMapper {
       return classes[scalarTypeName].reflectedType;
     }
 
-    return type;
+    /// Search through value decorators for scalarType match
+    valueDecorators.keys.forEach((Type type) {
+      if (type.toString() == scalarTypeName) {
+        result = type;
+      }
+    });
+
+    return result;
   }
 
   ValueDecoratorFunction getValueDecorator(

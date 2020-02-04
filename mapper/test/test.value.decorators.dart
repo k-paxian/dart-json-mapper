@@ -65,6 +65,14 @@ class ServiceOrderModel {
   });
 }
 
+@jsonSerializable
+class Item {}
+
+@jsonSerializable
+class ListOfLists {
+  List<List<Item>> lists;
+}
+
 void testValueDecorators() {
   final carListJson = '[{"modelName":"Audi","color":"Color.Green"}]';
   final ordersListJson = '''[  
@@ -205,6 +213,29 @@ void testValueDecorators() {
       // then
       expect(target.businesses[0], TypeMatcher<Startup>());
       expect(target.businesses[1], TypeMatcher<Hotel>());
+    });
+
+    test('List of Lists', () {
+      // given
+      final json = '''{
+ "lists": [
+   [{}, {}],
+   [{}, {}, {}]
+ ]
+}''';
+
+      // when
+      JsonMapper.registerValueDecorator<List<List<Item>>>(
+          (value) => value.cast<List<Item>>());
+      JsonMapper.registerValueDecorator<List<Item>>(
+          (value) => value.cast<Item>());
+      final target = JsonMapper.deserialize<ListOfLists>(json);
+      // then
+      expect(target.lists.length, 2);
+      expect(target.lists.first.length, 2);
+      expect(target.lists.last.length, 3);
+      expect(target.lists.first.first, TypeMatcher<Item>());
+      expect(target.lists.last.first, TypeMatcher<Item>());
     });
   });
 }

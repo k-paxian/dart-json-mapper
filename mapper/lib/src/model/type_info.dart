@@ -40,12 +40,7 @@ class DefaultTypeInfoDecorator implements ITypeInfoDecorator {
   }
 
   String detectScalarTypeName(TypeInfo typeInfo) => typeInfo.isIterable
-      ? RegExp('<(.+)>')
-          .allMatches(typeInfo.typeName)
-          .first
-          .group(0)
-          .replaceAll('<', '')
-          .replaceAll('>', '')
+      ? RegExp('<(.+)>').allMatches(typeInfo.typeName).first.group(1)
       : null;
 
   Type detectScalarType(TypeInfo typeInfo) {
