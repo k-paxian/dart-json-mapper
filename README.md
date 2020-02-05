@@ -29,6 +29,7 @@ Typical `Flutter.io project integration` sample can be found [here][4]
     * [DateTime / num types](#format-datetime--num-types)
     * [Iterable types](#iterable-types)
     * [Enum types](#enum-types)
+    * [Name casing styles](#name-casing-styles-pascal-kebab-snake-snakeallcaps)
     * [Custom types](#custom-types)
     * [Nesting](#nesting-configuration)
     * [Schemes](#schemes)
@@ -259,6 +260,40 @@ For custom iterable types like `List<Car> / Set<Car>` you have to register value
 as showed in a code snippet above before using deserialization. This function will have explicit 
 cast to concrete iterable type.
 
+### List of Lists of Lists ...
+
+Using value decorators, it's possible to configure nested lists of
+virtually any depth.
+
+```dart
+@jsonSerializable
+class Item {}
+
+@jsonSerializable
+class ListOfLists {
+  List<List<Item>> lists;
+}
+
+// given
+final json = '''{
+ "lists": [
+   [{}, {}],
+   [{}, {}, {}]
+ ]
+}''';
+
+// when
+JsonMapper.registerValueDecorator<List<List<Item>>>((value) => value.cast<List<Item>>());
+JsonMapper.registerValueDecorator<List<Item>>((value) => value.cast<Item>());
+final target = JsonMapper.deserialize<ListOfLists>(json);
+// then
+expect(target.lists.length, 2);
+expect(target.lists.first.length, 2);
+expect(target.lists.last.length, 3);
+expect(target.lists.first.first, TypeMatcher<Item>());
+expect(target.lists.last.first, TypeMatcher<Item>());
+```
+
 ## Enum types
 
 Enum construction in Dart has a specific meaning, and has to be treated accordingly.
@@ -325,6 +360,50 @@ final Stakeholder target = JsonMapper.deserialize(json);
 // then
 expect(target.businesses[0], TypeMatcher<Startup>());
 expect(target.businesses[1], TypeMatcher<Hotel>());
+```
+
+## Name casing styles [Pascal, Kebab, Snake, SnakeAllCaps]
+
+Assuming your Dart code is following [Camel case style][9], but that is not 
+always `true` for JSON models, they could follow 
+[one of those popular - Pascal, Kebab, Snake, SnakeAllCaps][10] styles, right? 
+
+That's why we need a way to manage that in an organized way, instead of
+hand coding each property using @JsonProperty(name: ...) it is possible to pass
+`CaseStyle` parameter to serialization / deserialization methods. 
+
+```dart
+@jsonSerializable
+class NameCaseObject {
+  String mainTitle;
+  String description;
+  bool hasMainProperty;
+
+  NameCaseObject({this.mainTitle, this.description, this.hasMainProperty});
+}
+
+/// Serialization
+
+// given
+final instance = NameCaseObject(
+    mainTitle: 'title', description: 'desc', hasMainProperty: true);
+// when
+final json = JsonMapper.serialize(instance,
+    SerializationOptions(indent: '', caseStyle: CaseStyle.Kebab));
+// then
+expect(json, '''{"main-title":"title","description":"desc","has-main-property":true}''');
+
+/// Deserialization
+
+// given
+final json = '''{"main-title":"title","description":"desc","has-main-property":true}''';
+// when
+final instance = JsonMapper.deserialize<NameCaseObject>(
+    json, DeserializationOptions(caseStyle: CaseStyle.Kebab));
+// then
+expect(instance.mainTitle, 'title');
+expect(instance.description, 'desc');
+expect(instance.hasMainProperty, true);
 ```
 
 ## Nesting configuration
@@ -554,6 +633,8 @@ in your app.
 [4]: https://github.com/k-paxian/samples/tree/master/jsonexample
 [7]: https://mobx.pub
 [8]: https://github.com/dart-lang/fixnum
+[9]: https://en.wikipedia.org/wiki/Camel_case
+[10]: https://medium.com/better-programming/string-case-styles-camel-pascal-snake-and-kebab-case-981407998841
 
 [ci-badge]: https://github.com/k-paxian/dart-json-mapper/workflows/Pipeline/badge.svg
 [ci-badge-url]: https://github.com/k-paxian/dart-json-mapper/actions?query=workflow%3A%22Pipeline%22
