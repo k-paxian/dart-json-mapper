@@ -55,11 +55,18 @@ class JsonMap {
     _isPathExists(_getPath(name), (m, k) {}, true, value);
   }
 
+  String _decodePath(String path) {
+    if (path.startsWith('#')) {
+      path = Uri.decodeComponent(path).substring(1);
+    }
+    return path;
+  }
+
   String _getPath(String propertyName) {
     final rootObjectSegments = jsonMeta != null && jsonMeta.name != null
-        ? jsonMeta.name.split(PATH_DELIMITER)
+        ? _decodePath(jsonMeta.name).split(PATH_DELIMITER)
         : [];
-    final propertySegments = propertyName.split(PATH_DELIMITER);
+    final propertySegments = _decodePath(propertyName).split(PATH_DELIMITER);
     rootObjectSegments.addAll(propertySegments);
     rootObjectSegments.removeWhere((value) => value == '');
     return rootObjectSegments.join(PATH_DELIMITER);
@@ -67,19 +74,31 @@ class JsonMap {
 
   bool _isPathExists(String path,
       [Function propertyVisitor, bool autoCreate, dynamic autoValue]) {
-    final segments = path.split(PATH_DELIMITER);
+    final segments = path
+        .split(PATH_DELIMITER)
+        .map((p) => p.replaceAll('~1', PATH_DELIMITER).replaceAll('~0', '~'))
+        .toList();
     dynamic current = map;
     var existingSegmentsCount = 0;
-    segments.forEach((key) {
-      if (current is Map && current.containsKey(key)) {
-        current = current[key];
+    segments.forEach((segment) {
+      final idx = int.tryParse(segment);
+      if (current is List &&
+          idx != null &&
+          (current.length > idx) &&
+          (idx >= 0) &&
+          current.elementAt(idx) != null) {
+        current = current.elementAt(idx);
+        existingSegmentsCount++;
+      }
+      if (current is Map && current.containsKey(segment)) {
+        current = current[segment];
         existingSegmentsCount++;
       } else {
         if (autoCreate == true) {
           existingSegmentsCount++;
           final isLastSegment = segments.length == existingSegmentsCount;
-          current[key] = isLastSegment ? autoValue : {};
-          current = current[key];
+          current[segment] = isLastSegment ? autoValue : {};
+          current = current[segment];
         }
       }
     });

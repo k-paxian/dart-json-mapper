@@ -25,6 +25,23 @@ class DeepNestedInt {
   DeepNestedInt({this.count});
 }
 
+@jsonSerializable
+class NestedListItem {
+  @JsonProperty(name: 'root/0/bar')
+  int count;
+
+  @JsonProperty(name: 'root/1/bar')
+  int count2;
+
+  @JsonProperty(name: '#/root/2/c%25d')
+  int cd;
+
+  @JsonProperty(name: 'root/3/bar')
+  int count3;
+
+  NestedListItem({this.count, this.count2, this.count3, this.cd});
+}
+
 void testNamePath() {
   group('[Verify name path processing]', () {
     test('Verify root nested list deserialization', () {
@@ -98,6 +115,30 @@ void testNamePath() {
       final instance = JsonMapper.deserialize<DeepNestedInt>(json);
       // then
       expect(instance.count, 33);
+    });
+
+    test('Verify nested list item deserialization', () {
+      // given
+      final json = '''{
+        "root": [
+          {
+            "bar": 33
+          },
+          {
+            "bar": 22
+          },
+          {
+            "c%d": 42
+          }
+        ]
+      }''';
+      // when
+      final instance = JsonMapper.deserialize<NestedListItem>(json);
+      // then
+      expect(instance.count, 33);
+      expect(instance.count2, 22);
+      expect(instance.cd, 42);
+      expect(instance.count3, null);
     });
   });
 }

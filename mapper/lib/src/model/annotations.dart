@@ -16,10 +16,12 @@ class JsonConstructor {
 
 /// [Json] is used as metadata, to annotate Dart class as top level Json object
 class Json {
+  /// Defines RFC 6901 JSON [pointer]
   /// Denotes the json Object root name/path to be used for mapping
   /// Example:  name: 'foo'
   ///           name: 'bar'
   ///           name: 'foo/bar/baz'
+  ///           name: '#/foo/0/baz'
   final String name;
 
   /// Declares necessity for annotated class and all its subclasses to dump their own type name to the
@@ -51,6 +53,7 @@ class JsonProperty {
   /// Scheme marker to associate this meta information with particular mapping scheme
   final dynamic scheme;
 
+  /// Defines RFC 6901 JSON [pointer]
   /// Denotes the json property name/path to be used for mapping to the annotated field
   /// Example:  name: 'foo'
   ///           name: 'bar'

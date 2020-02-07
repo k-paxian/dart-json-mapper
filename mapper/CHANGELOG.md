@@ -1,3 +1,7 @@
+## 1.4.2
+
+* #30, Support for RFC 6901 JSON pointer for mapping names/paths
+
 ## 1.4.1
 
 * #29, List of Lists use case covered.

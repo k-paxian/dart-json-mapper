@@ -456,6 +456,8 @@ this means all class fields will be nested under this 'root/foo/bar' path in Jso
 
 `@JsonProperty(name: 'baz/items')` provides a field nesting relative to the class *root nesting* 
 
+`name` is compliant with [RFC 6901][rfc6901] JSON pointer
+
 ## Schemes
 
 Scheme - is a set of annotations associated with common scheme id.
@@ -635,6 +637,8 @@ in your app.
 [8]: https://github.com/dart-lang/fixnum
 [9]: https://en.wikipedia.org/wiki/Camel_case
 [10]: https://medium.com/better-programming/string-case-styles-camel-pascal-snake-and-kebab-case-981407998841
+
+[rfc6901]: https://tools.ietf.org/html/rfc6901
 
 [ci-badge]: https://github.com/k-paxian/dart-json-mapper/workflows/Pipeline/badge.svg
 [ci-badge-url]: https://github.com/k-paxian/dart-json-mapper/actions?query=workflow%3A%22Pipeline%22
