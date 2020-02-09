@@ -19,7 +19,8 @@ class JsonMapper {
   final Map<Type, ICustomConverter> converters = getDefaultConverters();
   final Map<Type, ValueDecoratorFunction> valueDecorators =
       getDefaultValueDecorators();
-  final Map<int, ITypeInfoDecorator> typeInfoDecorators = {};
+  final Map<int, ITypeInfoDecorator> typeInfoDecorators =
+      getDefaultTypeInfoDecorators();
 
   /// Assign custom converter instance for certain type T
   static void registerConverter<T>(ICustomConverter converter) {
@@ -99,12 +100,6 @@ class JsonMapper {
     for (var classMirror in serializable.annotatedClasses) {
       classes[classMirror.reflectedType.toString()] = classMirror;
     }
-
-    registerDefaultTypeInfoDecorators();
-  }
-
-  void registerDefaultTypeInfoDecorators() {
-    typeInfoDecorators[0] = defaultTypeInfoDecorator;
   }
 
   InstanceMirror safeGetInstanceMirror(Object object) {
@@ -433,8 +428,10 @@ class JsonMapper {
       }
     }
 
-    final jsonMeta = ClassInfo(im.type).getMeta(options.scheme);
-    final result = JsonMap(options.template ?? {}, jsonMeta);
+    final classInfo = ClassInfo(im.type);
+    final jsonMeta = classInfo.getMeta(options.scheme);
+    final initialMap = options.template ?? {};
+    final result = JsonMap(initialMap, jsonMeta);
     final processedObjectDescriptor = getObjectProcessed(object);
     if (processedObjectDescriptor != null &&
         processedObjectDescriptor.times >= 1) {
@@ -467,6 +464,13 @@ class JsonMapper {
         result.setPropertyValue(jsonName, serializeObject(value, options));
       }
     });
+
+    final jsonAnyGetter = classInfo.getJsonAnyGetter();
+    if (jsonAnyGetter != null) {
+      final anyMap = im.invoke(jsonAnyGetter.simpleName, []);
+      result.map.addAll(anyMap);
+    }
+
     return result.map;
   }
 
@@ -513,6 +517,7 @@ class JsonMapper {
             getPositionalArguments(cm, jsonMap, options),
             getNamedArguments(cm, jsonMap, options));
     final im = safeGetInstanceMirror(objectInstance);
+    final mappedFields = [];
 
     enumeratePublicFields(im, jsonMap, options, (name,
         jsonName,
@@ -546,8 +551,21 @@ class JsonMapper {
       if (!isGetterOnly) {
         fieldValue = applyValueDecorator(fieldValue, typeInfo, meta);
         im.invokeSetter(name, fieldValue);
+        mappedFields.add(jsonName);
       }
     });
+
+    final unmappedFields = jsonMap.map.keys
+        .where((field) => !mappedFields.contains(field))
+        .toList();
+    if (unmappedFields.isNotEmpty) {
+      final jsonAnySetter = classInfo.getJsonAnySetter();
+      if (jsonAnySetter != null) {
+        unmappedFields.forEach((field) =>
+            im.invoke(jsonAnySetter.simpleName, [field, jsonMap.map[field]]));
+      }
+    }
+
     return objectInstance;
   }
 }

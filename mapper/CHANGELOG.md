@@ -1,3 +1,7 @@
+## 1.4.3
+
+* #32, Collect Unmapped Properties implemented
+
 ## 1.4.2
 
 * #30, Support for RFC 6901 JSON pointer for mapping names/paths

@@ -47,6 +47,9 @@ class Json {
       this.name});
 }
 
+/// [jsonProperty] is used as a shorthand metadata w/o "()"
+const jsonProperty = JsonProperty();
+
 /// [JsonProperty] is used as metadata, for annotation of individual class fields
 /// to fine tune Json property level.
 class JsonProperty {
