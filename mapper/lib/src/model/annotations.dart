@@ -82,6 +82,9 @@ class JsonProperty {
   /// capability for all Enum instances. `Enum.values`
   final List<dynamic> enumValues;
 
+  /// Final field default value
+  final dynamic defaultValue;
+
   const JsonProperty(
       {this.scheme,
       this.name,
@@ -89,6 +92,7 @@ class JsonProperty {
       this.ignoreIfNull,
       this.converter,
       this.enumValues,
+      this.defaultValue,
       this.converterParams});
 
   /// Validate provided enum values [enumValues] against provided value

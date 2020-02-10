@@ -162,6 +162,16 @@ class Immutable {
   const Immutable(this.id, this.name, this.car);
 }
 
+@jsonSerializable
+class ImmutableDefault {
+  @JsonProperty(defaultValue: 1)
+  final int id;
+  final String name;
+  final Car car;
+
+  const ImmutableDefault({this.id, this.name, this.car});
+}
+
 void testConstructors() {
   group('[Verify class constructors support]', () {
     final json = '{"firstName":"Bob","lastName":"Marley"}';
@@ -333,6 +343,24 @@ void testConstructors() {
       final ic = JsonMapper.deserialize<Immutable>(immutableJson);
       // then
       expect(JsonMapper.serialize(ic), immutableJson);
+    });
+
+    test('Serialize Immutable class with DefaultValue provided', () {
+      // given
+      final immutableJson = '''{
+ "id": 1,
+ "name": "Bob",
+ "car": {
+  "modelName": "Audi",
+  "color": "Color.Green"
+ }
+}''';
+
+      final i = ImmutableDefault(name: 'Bob', car: Car('Audi', Color.Green));
+      // when
+      final target = JsonMapper.serialize(i);
+      // then
+      expect(target, immutableJson);
     });
   });
 }

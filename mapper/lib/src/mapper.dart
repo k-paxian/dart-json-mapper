@@ -450,18 +450,28 @@ class JsonMapper {
       }
     }
     dumpTypeNameToObjectProperty(result, im.type);
-    enumeratePublicFields(im, null, options, (name, jsonName, value,
-        isGetterOnly, meta, converter, scalarType, TypeInfo typeInfo) {
-      if (converter != null) {
-        final valueTypeInfo = getTypeInfo(value.runtimeType);
-        dynamic convert(item) => converter.toJSON(item, meta);
-        if (valueTypeInfo.isList) {
-          result.setPropertyValue(jsonName, value.map(convert).toList());
-        } else {
-          result.setPropertyValue(jsonName, convert(value));
-        }
+    enumeratePublicFields(im, null, options, (name,
+        jsonName,
+        value,
+        isGetterOnly,
+        JsonProperty meta,
+        converter,
+        scalarType,
+        TypeInfo typeInfo) {
+      if (value == null && meta != null && meta.defaultValue != null) {
+        result.setPropertyValue(jsonName, meta.defaultValue);
       } else {
-        result.setPropertyValue(jsonName, serializeObject(value, options));
+        if (converter != null) {
+          final valueTypeInfo = getTypeInfo(value.runtimeType);
+          dynamic convert(item) => converter.toJSON(item, meta);
+          if (valueTypeInfo.isList) {
+            result.setPropertyValue(jsonName, value.map(convert).toList());
+          } else {
+            result.setPropertyValue(jsonName, convert(value));
+          }
+        } else {
+          result.setPropertyValue(jsonName, serializeObject(value, options));
+        }
       }
     });
 
@@ -528,6 +538,9 @@ class JsonMapper {
         scalarType,
         TypeInfo typeInfo) {
       if (!jsonMap.hasProperty(jsonName)) {
+        if (meta != null && meta.defaultValue != null && !isGetterOnly) {
+          im.invokeSetter(name, meta.defaultValue);
+        }
         return;
       }
       var fieldValue = jsonMap.getPropertyValue(jsonName);

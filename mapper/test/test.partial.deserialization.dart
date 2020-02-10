@@ -16,8 +16,6 @@ class UnmappedProperties {
   Map<String, dynamic> unmappedGet() {
     return extraPropsMap;
   }
-
-  UnmappedProperties();
 }
 
 void testPartialDeserialization() {

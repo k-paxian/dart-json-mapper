@@ -26,6 +26,7 @@ Typical `Flutter.io project integration` sample can be found [here][4]
     * [Extended classes](#inherited-classes-derived-from-abstract--base-class)
     * [Immutable classes](#example-with-immutable-class)
     * [Constructor parameters](#constructor-parameters)
+    * [Unmapped properties](#unmapped-properties)
     * [DateTime / num types](#format-datetime--num-types)
     * [Iterable types](#iterable-types)
     * [Enum types](#enum-types)
@@ -229,6 +230,42 @@ class BusinessObject {
       : logisticsChecked = processed != null && processed != 'null',
         logisticsOK = processed == 'true';
 }
+```
+
+## Unmapped properties
+
+If you are looking for an alternative to Java Jackson `@JsonAnySetter / @JsonAnyGetter`
+It is possible to configure the same scenario as follows:
+
+```dart
+@jsonSerializable
+class UnmappedProperties {
+  String name;
+
+  Map<String, dynamic> _extraPropsMap = {};
+
+  @jsonProperty
+  void unmappedSet(String name, dynamic value) {
+    _extraPropsMap[name] = value;
+  }
+
+  @jsonProperty
+  Map<String, dynamic> unmappedGet() {
+    return _extraPropsMap;
+  }
+}
+
+// given
+final json = '''{"name":"Bob","extra1":1,"extra2":"xxx"}''';
+
+// when
+final instance = JsonMapper.deserialize<UnmappedProperties>(json);
+
+// then
+expect(instance.name, 'Bob');
+expect(instance._extraPropsMap['name'], null);
+expect(instance._extraPropsMap['extra1'], 1);
+expect(instance._extraPropsMap['extra2'], 'xxx');
 ```
 
 ## Iterable types
@@ -556,7 +593,7 @@ Use it to mark specific Dart class constructor you'd like to be used during dese
     * *scheme* dynamic [Scheme](#schemes) marker to associate this meta information with particular mapping scheme
 * `@Json(...)` It's an *optional* class only annotation, describes a Dart class to JSON Object mapping.
 Why it's not a `@JsonObject()`? just for you to type less characters :smile:
-    * *name* parameter denotes the json Object root name/path to be used for mapping.
+    * *name* Defines [RFC 6901][rfc6901] JSON pointer, denotes the json Object root name/path to be used for mapping.
 Example: `'foo', 'bar', 'foo/bar/baz'`
     * *typeNameProperty* declares the necessity for annotated class and all it's subclasses to dump their own type name to
 the property named as this param value
@@ -564,7 +601,7 @@ the property named as this param value
     * *allowCircularReferences* As of `int` type. Allows certain number of circular object references during serialization.
     * *scheme* dynamic [Scheme](#schemes) marker to associate this meta information with particular mapping scheme
 * `@JsonProperty(...)` It's an *optional* class member annotation, describes JSON Object property mapping.
-    * *name* parameter denotes the name/path to be used for property mapping relative to the class *root nesting*
+    * *name* Defines [RFC 6901][rfc6901] JSON pointer, denotes the name/path to be used for property mapping relative to the class *root nesting*
 Example: `'foo', 'bar', 'foo/bar/baz'`
     * *scheme* dynamic [Scheme](#schemes) marker to associate this meta information with particular mapping scheme
     * *converter* Declares custom converter instance, to be used for annotated field serialization / deserialization 
@@ -572,6 +609,7 @@ Example: `'foo', 'bar', 'foo/bar/baz'`
     * *ignore* A bool declares annotated field as ignored so it will be excluded from serialization / deserialization process
     * *ignoreIfNull* A bool declares annotated field as ignored if it's value is null so it will be excluded from serialization / deserialization process
     * *enumValues* Provides a way to specify enum values, via Dart built in capability for all Enum instances. `Enum.values`
+    * *defaultValue* Defines field default value
 
 ## Complementary adapter libraries
 

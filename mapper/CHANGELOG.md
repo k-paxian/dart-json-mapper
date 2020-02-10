@@ -1,3 +1,7 @@
+## 1.4.4
+
+* #33, Provide default values for `@JsonProperty(defaultValue: ...)`
+
 ## 1.4.3
 
 * #32, Collect Unmapped Properties implemented
