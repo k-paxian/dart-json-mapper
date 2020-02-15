@@ -1,6 +1,7 @@
 ## 1.4.4
 
 * #33, Provide default values for `@JsonProperty(defaultValue: ...)`
+* #35, SerializationOptions enriched with global `ignoreNullMembers` flag 
 
 ## 1.4.3
 

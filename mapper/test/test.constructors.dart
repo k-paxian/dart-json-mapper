@@ -130,6 +130,16 @@ class IgnoreNullMembersClass {
 }
 
 @jsonSerializable
+class IgnoreNullMembersFromOptionsClass {
+  String firstName;
+  String lastName;
+  String middleName;
+
+  IgnoreNullMembersFromOptionsClass(
+      {this.firstName, this.middleName, this.lastName});
+}
+
+@jsonSerializable
 class IgnoredFieldClass {
   String firstName;
 
@@ -294,6 +304,16 @@ void testConstructors() {
       final instance = IgnoreNullMembersClass(firstName: 'Bob');
       // when
       final target = JsonMapper.serialize(instance, compactOptions);
+      // then
+      expect(target, '{"firstName":"Bob"}');
+    });
+
+    test('IgnoreNullMembers as serialization option', () {
+      // given
+      final instance = IgnoreNullMembersFromOptionsClass(firstName: 'Bob');
+      // when
+      final target = JsonMapper.serialize(
+          instance, SerializationOptions(indent: '', ignoreNullMembers: true));
       // then
       expect(target, '{"firstName":"Bob"}');
     });

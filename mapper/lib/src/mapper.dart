@@ -257,12 +257,17 @@ class JsonMapper {
         : value;
   }
 
-  bool isFieldIgnored(Json classMeta, JsonProperty meta, dynamic value) =>
+  bool isFieldIgnored(
+          [dynamic value,
+          Json classMeta,
+          JsonProperty meta,
+          DeserializationOptions options]) =>
       (meta != null &&
           (meta.ignore == true ||
               meta.ignoreIfNull == true && value == null)) ||
-      (classMeta != null &&
-          classMeta.ignoreNullMembers == true &&
+      ((classMeta != null && classMeta.ignoreNullMembers == true ||
+              options is SerializationOptions &&
+                  options.ignoreNullMembers == true) &&
           value == null);
 
   void enumeratePublicFields(InstanceMirror instanceMirror, JsonMap jsonMap,
@@ -287,11 +292,11 @@ class JsonMapper {
       dynamic value = instanceMirror.invokeGetter(name);
       if (value == null && jsonMap != null) {
         if (isFieldIgnored(
-            classMeta, meta, jsonMap.getPropertyValue(jsonName))) {
+            jsonMap.getPropertyValue(jsonName), classMeta, meta, options)) {
           continue;
         }
       } else {
-        if (isFieldIgnored(classMeta, meta, value)) {
+        if (isFieldIgnored(value, classMeta, meta, options)) {
           continue;
         }
       }
@@ -353,7 +358,7 @@ class JsonMapper {
         (param, name, jsonName, classMeta, meta, TypeInfo typeInfo) {
       if (param.isNamed && jsonMap.hasProperty(jsonName)) {
         var value = jsonMap.getPropertyValue(jsonName);
-        if (isFieldIgnored(classMeta, meta, value)) {
+        if (isFieldIgnored(value, classMeta, meta, options)) {
           return;
         }
         final parameterTypeInfo = detectObjectType(value, typeInfo.type, null);
@@ -395,7 +400,7 @@ class JsonMapper {
               deserializeObject(value, parameterTypeInfo.type, meta, options);
         }
         value = applyValueDecorator(value, parameterTypeInfo, meta);
-        if (isFieldIgnored(classMeta, meta, value)) {
+        if (isFieldIgnored(value, classMeta, meta, options)) {
           value = null;
         }
         result.add(value);

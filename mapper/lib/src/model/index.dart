@@ -25,10 +25,15 @@ class SerializationOptions extends DeserializationOptions {
   /// Indentation
   final String indent;
 
+  /// Null class members
+  /// will be excluded from serialization process
+  final bool ignoreNullMembers;
+
   /// Template
   final Map<String, dynamic> template;
 
-  const SerializationOptions({scheme, caseStyle, this.indent, this.template})
+  const SerializationOptions(
+      {scheme, caseStyle, this.indent, this.template, this.ignoreNullMembers})
       : super(scheme: scheme, caseStyle: caseStyle);
 }
 
