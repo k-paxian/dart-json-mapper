@@ -6,6 +6,8 @@ class TypeInfo {
   Type scalarType;
   String scalarTypeName;
 
+  Type genericType;
+
   bool isDynamic;
   bool isMap;
   bool isList;
@@ -35,6 +37,7 @@ class DefaultTypeInfoDecorator implements ITypeInfoDecorator {
     typeInfo.isMap = typeName.indexOf('Map<') == 0;
     typeInfo.isIterable = typeInfo.isList || typeInfo.isSet;
     typeInfo.scalarType = detectScalarType(typeInfo);
+    typeInfo.genericType = detectGenericType(typeInfo);
 
     return typeInfo;
   }
@@ -42,6 +45,19 @@ class DefaultTypeInfoDecorator implements ITypeInfoDecorator {
   String detectScalarTypeName(TypeInfo typeInfo) => typeInfo.isIterable
       ? RegExp('<(.+)>').allMatches(typeInfo.typeName).first.group(1)
       : null;
+
+  Type detectGenericType(TypeInfo typeInfo) {
+    if (typeInfo.isList) {
+      return List;
+    }
+    if (typeInfo.isSet) {
+      return Set;
+    }
+    if (typeInfo.isMap) {
+      return Map;
+    }
+    return null;
+  }
 
   Type detectScalarType(TypeInfo typeInfo) {
     typeInfo.scalarTypeName = detectScalarTypeName(typeInfo);

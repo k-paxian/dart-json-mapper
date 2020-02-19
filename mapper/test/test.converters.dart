@@ -33,6 +33,15 @@ class Model {
   DateTime data;
 }
 
+@jsonSerializable
+class ListItem {}
+
+@jsonSerializable
+class CustomListContainer {
+  List<ListItem> list = [];
+  Set<ListItem> set = {};
+}
+
 void testConverters() {
   group('[Verify converters]', () {
     test('Map<String, dynamic> converter', () {
@@ -113,6 +122,23 @@ void testConverters() {
       expect(target, json);
 
       JsonMapper.registerConverter<String>(defaultConverter);
+    });
+
+    test('Custom Iterable converter', () {
+      // given
+      final json = '''{"list":[{}, {}],"set":[{}, {}]}''';
+
+      // when
+      final target = JsonMapper.deserialize<CustomListContainer>(json);
+
+      // then
+      expect(target.list, TypeMatcher<List<ListItem>>());
+      expect(target.list.first, TypeMatcher<ListItem>());
+      expect(target.list.length, 2);
+
+      expect(target.set, TypeMatcher<Set<ListItem>>());
+      expect(target.set.first, TypeMatcher<ListItem>());
+      expect(target.set.length, 2);
     });
   });
 }

@@ -240,6 +240,11 @@ class JsonMapper {
     if (result == null && converters[targetType] != null) {
       result = converters[targetType];
     }
+    if (result == null &&
+        converters[typeInfo.genericType] != null &&
+        getValueDecorator(jsonProperty, typeInfo.type) == null) {
+      result = converters[typeInfo.genericType];
+    }
     if (result == null && typeInfo.isMap) {
       result = defaultConverter;
     }
@@ -363,7 +368,7 @@ class JsonMapper {
         }
         final parameterTypeInfo = detectObjectType(value, typeInfo.type, null);
         if (parameterTypeInfo.isIterable) {
-          value = (value as List)
+          value = (value as Iterable)
               .map((item) => deserializeObject(
                   item, getScalarType(parameterTypeInfo.type), meta, options))
               .toList();
@@ -391,7 +396,7 @@ class JsonMapper {
         var value = jsonMap.getPropertyValue(jsonName);
         final parameterTypeInfo = detectObjectType(value, typeInfo.type, null);
         if (parameterTypeInfo.isIterable) {
-          value = (value as List)
+          value = (value as Iterable)
               .map((item) => deserializeObject(
                   item, getScalarType(parameterTypeInfo.type), meta, options))
               .toList();
@@ -410,6 +415,10 @@ class JsonMapper {
     return result;
   }
 
+  dynamic serializeIterable(Iterable object, [SerializationOptions options]) {
+    return object.map((item) => serializeObject(item, options)).toList();
+  }
+
   dynamic serializeObject(Object object, [SerializationOptions options]) {
     if (object == null) {
       return object;
@@ -418,11 +427,15 @@ class JsonMapper {
     final im = safeGetInstanceMirror(object);
     final converter = getConverter(null, object.runtimeType, null, im);
     if (converter != null) {
-      return converter.toJSON(object, null);
+      var convertedValue = converter.toJSON(object, null);
+      if (object is Iterable && convertedValue == object) {
+        convertedValue = serializeIterable(object, options);
+      }
+      return convertedValue;
     }
 
     if (object is Iterable) {
-      return object.map((item) => serializeObject(item, options)).toList();
+      return serializeIterable(object, options);
     }
 
     if (im == null || im.type == null) {
@@ -466,17 +479,22 @@ class JsonMapper {
       if (value == null && meta != null && meta.defaultValue != null) {
         result.setPropertyValue(jsonName, meta.defaultValue);
       } else {
+        var convertedValue;
         if (converter != null) {
           final valueTypeInfo = getTypeInfo(value.runtimeType);
           dynamic convert(item) => converter.toJSON(item, meta);
-          if (valueTypeInfo.isList) {
-            result.setPropertyValue(jsonName, value.map(convert).toList());
+          if (valueTypeInfo.isIterable) {
+            convertedValue = converter.toJSON(value, meta);
+            if (convertedValue == value) {
+              convertedValue = serializeIterable(value, options);
+            }
           } else {
-            result.setPropertyValue(jsonName, convert(value));
+            convertedValue = convert(value);
           }
         } else {
-          result.setPropertyValue(jsonName, serializeObject(value, options));
+          convertedValue = serializeObject(value, options);
         }
+        result.setPropertyValue(jsonName, convertedValue);
       }
     });
 
@@ -489,6 +507,17 @@ class JsonMapper {
     return result.map;
   }
 
+  Object deserializeIterable(dynamic jsonValue, TypeInfo typeInfo,
+      JsonProperty meta, DeserializationOptions options) {
+    List jsonList =
+        (jsonValue is String) ? jsonDecoder.convert(jsonValue) : jsonValue;
+    var value = jsonList
+        .map((item) => deserializeObject(
+            item, getScalarType(typeInfo.type), null, options))
+        .toList();
+    return applyValueDecorator(value, typeInfo, meta);
+  }
+
   Object deserializeObject(dynamic jsonValue, Type instanceType,
       [JsonProperty parentMeta, DeserializationOptions options]) {
     if (jsonValue == null) {
@@ -497,17 +526,16 @@ class JsonMapper {
     var typeInfo = getTypeInfo(instanceType);
     final converter = getConverter(parentMeta, typeInfo.type);
     if (converter != null) {
-      return converter.fromJSON(jsonValue, parentMeta);
+      var convertedValue = converter.fromJSON(jsonValue, parentMeta);
+      if (typeInfo.isIterable && jsonValue == convertedValue) {
+        convertedValue =
+            deserializeIterable(jsonValue, typeInfo, parentMeta, options);
+      }
+      return convertedValue;
     }
 
     if (typeInfo.isIterable) {
-      List<dynamic> jsonList =
-          (jsonValue is String) ? jsonDecoder.convert(jsonValue) : jsonValue;
-      var value = jsonList
-          .map((item) => deserializeObject(
-              item, getScalarType(typeInfo.type), null, options))
-          .toList();
-      return applyValueDecorator(value, typeInfo, parentMeta);
+      return deserializeIterable(jsonValue, typeInfo, parentMeta, options);
     }
 
     JsonMap jsonMap;
@@ -549,7 +577,7 @@ class JsonMapper {
         return;
       }
       var fieldValue = jsonMap.getPropertyValue(jsonName);
-      if (fieldValue is List) {
+      if (fieldValue is Iterable) {
         fieldValue = fieldValue
             .map((item) => deserializeObject(item, scalarType, meta, options))
             .toList();
@@ -558,13 +586,12 @@ class JsonMapper {
             deserializeObject(fieldValue, typeInfo.type, meta, options);
       }
       if (converter != null) {
-        dynamic convert(item) => converter.fromJSON(item, meta);
-        final valueTypeInfo = getTypeInfo(fieldValue.runtimeType);
-        if (valueTypeInfo.isList) {
-          fieldValue = fieldValue.map(convert).toList();
-        } else {
-          fieldValue = convert(fieldValue);
+        final originalValue = im.invokeGetter(name);
+        if (converter is ICustomIterableConverter &&
+            originalValue is Iterable) {
+          converter.setIterableInstance(originalValue);
         }
+        fieldValue = converter.fromJSON(fieldValue, meta);
       }
       if (!isGetterOnly) {
         fieldValue = applyValueDecorator(fieldValue, typeInfo, meta);

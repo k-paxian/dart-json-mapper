@@ -297,6 +297,37 @@ For custom iterable types like `List<Car> / Set<Car>` you have to register value
 as showed in a code snippet above before using deserialization. This function will have explicit 
 cast to concrete iterable type.
 
+### OR an *easy case* 
+
+When you are able to pre-initialize your Iterables with an empty instance,
+like on example below, you don't need to mess around with value decorators.
+
+```dart
+@jsonSerializable
+class ListItem {}
+
+@jsonSerializable
+class IterablesContainer {
+  List<ListItem> list = [];
+  Set<ListItem> set = {};
+}
+
+// given
+final json = '''{"list":[{}, {}],"set":[{}, {}]}''';
+
+// when
+final target = JsonMapper.deserialize<IterablesContainer>(json);
+
+// then
+expect(target.list, TypeMatcher<List<ListItem>>());
+expect(target.list.first, TypeMatcher<ListItem>());
+expect(target.list.length, 2);
+
+expect(target.set, TypeMatcher<Set<ListItem>>());
+expect(target.set.first, TypeMatcher<ListItem>());
+expect(target.set.length, 2);
+```
+
 ### List of Lists of Lists ...
 
 Using value decorators, it's possible to configure nested lists of

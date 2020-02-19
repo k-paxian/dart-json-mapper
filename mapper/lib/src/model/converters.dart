@@ -14,6 +14,11 @@ abstract class ICustomConverter<T> {
   T fromJSON(dynamic jsonValue, [JsonProperty jsonProperty]);
 }
 
+/// Abstract class for custom iterable converters implementations
+abstract class ICustomIterableConverter {
+  void setIterableInstance(Iterable instance);
+}
+
 /// Base class for custom type converter having access to parameters provided
 /// by the [JsonProperty] meta
 class BaseCustomConverter {
@@ -96,13 +101,15 @@ class EnumConverter implements ICustomConverter {
 
   @override
   Object fromJSON(dynamic jsonValue, [JsonProperty jsonProperty]) {
-    if (jsonValue != null &&
-        jsonProperty.isEnumValuesValid(jsonValue) != true) {
-      throw MissingEnumValuesError(jsonValue.runtimeType);
-    }
-    return jsonProperty.enumValues.firstWhere(
-        (eValue) => eValue.toString() == jsonValue.toString(),
-        orElse: () => null);
+    dynamic convert(value) => jsonProperty.enumValues.firstWhere((eValue) {
+          if (value != null && jsonProperty.isEnumValuesValid(value) != true) {
+            throw MissingEnumValuesError(value.runtimeType);
+          }
+          return eValue.toString() == value.toString();
+        }, orElse: () => null);
+    return jsonValue is Iterable
+        ? jsonValue.map(convert).toList()
+        : convert(jsonValue);
   }
 
   @override
@@ -144,11 +151,7 @@ class SymbolConverter implements ICustomConverter {
   @override
   dynamic toJSON(Object object, [JsonProperty jsonProperty]) {
     return object != null
-        ? RegExp('"(.+)"')
-            .allMatches(object.toString())
-            .first
-            .group(0)
-            .replaceAll('\"', '')
+        ? RegExp('"(.+)"').allMatches(object.toString()).first.group(1)
         : null;
   }
 }
@@ -208,6 +211,64 @@ class MapStringDynamicConverter
   }
 }
 
+const mapStringStringConverter = MapStringStringConverter();
+
+/// [Map<String, String>] converter
+class MapStringStringConverter
+    implements ICustomConverter<Map<String, String>> {
+  const MapStringStringConverter() : super();
+
+  static JsonDecoder jsonDecoder = JsonDecoder();
+
+  @override
+  Map<String, String> fromJSON(dynamic jsonValue, [JsonProperty jsonProperty]) {
+    return (jsonValue is String) ? jsonDecoder.convert(jsonValue) : jsonValue;
+  }
+
+  @override
+  dynamic toJSON(Map<String, String> object, [JsonProperty jsonProperty]) {
+    return object;
+  }
+}
+
+final defaultIterableConverter = DefaultIterableConverter();
+
+/// Default Iterable converter
+class DefaultIterableConverter
+    implements ICustomConverter, ICustomIterableConverter {
+  DefaultIterableConverter() : super();
+
+  static JsonDecoder jsonDecoder = JsonDecoder();
+
+  Iterable _instance;
+
+  @override
+  dynamic fromJSON(dynamic jsonValue, [JsonProperty jsonProperty]) {
+    if (_instance != null && jsonValue is Iterable) {
+      if (_instance is List) {
+        (_instance as List).clear();
+        jsonValue.forEach((item) => (_instance as List).add(item));
+      }
+      if (_instance is Set) {
+        (_instance as Set).clear();
+        jsonValue.forEach((item) => (_instance as Set).add(item));
+      }
+      return _instance;
+    }
+    return jsonValue;
+  }
+
+  @override
+  dynamic toJSON(dynamic object, [JsonProperty jsonProperty]) {
+    return object;
+  }
+
+  @override
+  void setIterableInstance(Iterable instance) {
+    _instance = instance;
+  }
+}
+
 const defaultConverter = DefaultConverter();
 
 /// Default converter for all types
@@ -238,6 +299,9 @@ Map<Type, ICustomConverter> getDefaultConverters() {
   result[double] = numberConverter;
   result[BigInt] = bigIntConverter;
   result[typeOf<Map<String, dynamic>>()] = mapStringDynamicConverter;
+  result[typeOf<Map<String, String>>()] = mapStringStringConverter;
+  result[List] = defaultIterableConverter;
+  result[Set] = defaultIterableConverter;
 
   // Typed data
   result[Uint8List] = uint8ListConverter;

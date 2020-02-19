@@ -1,3 +1,9 @@
+## 1.5.0
+
+* #34, Default Iterables converter introduced. 
+Partial solution to avoid value decorators approach for the cases when
+it is possible to pre-initialize Iterable field with an empty instance.
+
 ## 1.4.4
 
 * #33, Provide default values for `@JsonProperty(defaultValue: ...)`
