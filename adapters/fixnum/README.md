@@ -10,10 +10,10 @@ Please add the following dependencies to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  dart_json_mapper: any
-  dart_json_mapper_fixnum: any
+  dart_json_mapper:
+  dart_json_mapper_fixnum:
 dev_dependencies:
-  build_runner: any
+  build_runner:
 ```
 
 Usage example
