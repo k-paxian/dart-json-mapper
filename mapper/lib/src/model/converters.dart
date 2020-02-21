@@ -5,7 +5,6 @@ import 'dart:typed_data' show Uint8List;
 import 'package:intl/intl.dart';
 
 import '../errors.dart';
-import '../utils.dart';
 import 'annotations.dart';
 
 /// Abstract class for custom converters implementations
@@ -284,26 +283,4 @@ class DefaultConverter implements ICustomConverter {
   dynamic toJSON(Object object, [JsonProperty jsonProperty]) {
     return object;
   }
-}
-
-Map<Type, ICustomConverter> getDefaultConverters() {
-  final result = {};
-
-  result[dynamic] = defaultConverter;
-  result[String] = defaultConverter;
-  result[bool] = defaultConverter;
-  result[Symbol] = symbolConverter;
-  result[DateTime] = dateConverter;
-  result[num] = numberConverter;
-  result[int] = numberConverter;
-  result[double] = numberConverter;
-  result[BigInt] = bigIntConverter;
-  result[typeOf<Map<String, dynamic>>()] = mapStringDynamicConverter;
-  result[typeOf<Map<String, String>>()] = mapStringStringConverter;
-  result[List] = defaultIterableConverter;
-  result[Set] = defaultIterableConverter;
-
-  // Typed data
-  result[Uint8List] = uint8ListConverter;
-  return result.cast<Type, ICustomConverter>();
 }

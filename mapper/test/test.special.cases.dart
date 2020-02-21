@@ -15,13 +15,19 @@ void testSpecialCases() {
     test('A/B inception deserialization', () {
       // given
       final json = '{"content":{"content":[]}}';
+      final adapter = JsonMapperAdapter(
+          valueDecorators: {typeOf<List<A>>(): (value) => value.cast<A>()});
+      JsonMapper().useAdapter(adapter);
+
       // when
-      JsonMapper.registerValueDecorator<List<A>>((value) => value.cast<A>());
       final target = JsonMapper.deserialize<A>(json);
+
       // then
       expect(target, TypeMatcher<A>());
       expect(target.content, TypeMatcher<B>());
       expect(target.content.content, TypeMatcher<List<A>>());
+
+      JsonMapper().removeAdapter(adapter);
     });
   });
 }

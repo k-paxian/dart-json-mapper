@@ -15,32 +15,8 @@ class JsonMapper {
   final JsonDecoder jsonDecoder = JsonDecoder();
   final serializable = const JsonSerializable();
   final Map<String, ClassMirror> classes = {};
+  final Map<int, IAdapter> adapters = {};
   final Map<String, ProcessedObjectDescriptor> processedObjects = {};
-  final Map<Type, ICustomConverter> converters = getDefaultConverters();
-  final Map<Type, ValueDecoratorFunction> valueDecorators =
-      getDefaultValueDecorators();
-  final Map<int, ITypeInfoDecorator> typeInfoDecorators =
-      getDefaultTypeInfoDecorators();
-
-  /// Assign custom converter instance for certain type T
-  static void registerConverter<T>(ICustomConverter converter) {
-    instance.converters[T] = converter;
-  }
-
-  /// Assign custom value decorator function for certain type T
-  static void registerValueDecorator<T>(ValueDecoratorFunction decorator) {
-    instance.valueDecorators[T] = decorator;
-  }
-
-  /// Add custom typeInfo decorator
-  static void registerTypeInfoDecorator(ITypeInfoDecorator decorator,
-      [int priority]) {
-    final nextPriority = priority ??
-        instance.typeInfoDecorators.keys
-                .reduce((value, item) => max(value, item)) +
-            1;
-    instance.typeInfoDecorators[nextPriority] = decorator;
-  }
 
   /// Converts Dart object to JSON string
   static String toJson(Object object,
@@ -100,6 +76,48 @@ class JsonMapper {
     for (var classMirror in serializable.annotatedClasses) {
       classes[classMirror.reflectedType.toString()] = classMirror;
     }
+    useAdapter(defaultJsonMapperAdapter);
+  }
+
+  JsonMapper useAdapter(IAdapter adapter, [int priority]) {
+    final nextPriority = priority ?? adapters.keys.isNotEmpty
+        ? adapters.keys.reduce((value, item) => max(value, item)) + 1
+        : 0;
+    adapters[nextPriority] = adapter;
+    return this;
+  }
+
+  JsonMapper removeAdapter(IAdapter adapter) {
+    adapters.removeWhere((priority, x) => x == adapter);
+    return this;
+  }
+
+  void info() {
+    adapters.forEach((priority, adapter) => print('$priority : $adapter'));
+  }
+
+  Map<Type, ICustomConverter> get converters {
+    final result = {};
+    adapters.values.forEach((IAdapter adapter) {
+      result.addAll(adapter.converters);
+    });
+    return result.cast<Type, ICustomConverter>();
+  }
+
+  Map<Type, ValueDecoratorFunction> get valueDecorators {
+    final result = {};
+    adapters.values.forEach((IAdapter adapter) {
+      result.addAll(adapter.valueDecorators);
+    });
+    return result.cast<Type, ValueDecoratorFunction>();
+  }
+
+  Map<int, ITypeInfoDecorator> get typeInfoDecorators {
+    final result = [];
+    adapters.values.forEach((IAdapter adapter) {
+      result.addAll(adapter.typeInfoDecorators.values);
+    });
+    return Map.fromIterable(result).cast<int, ITypeInfoDecorator>();
   }
 
   InstanceMirror safeGetInstanceMirror(Object object) {

@@ -145,47 +145,50 @@ class ObservableBoolConverter implements ICustomConverter<Observable<bool>> {
       defaultConverter.toJSON(object.value, jsonProperty);
 }
 
-void initializeJsonMapperForMobX() {
-  JsonMapper.registerTypeInfoDecorator(mobXTypeInfoDecorator);
-
-  // Value decorators for ObservableList variations
-  JsonMapper.registerValueDecorator<ObservableList<DateTime>>(
-      (value) => ObservableList<DateTime>.of(value.cast<DateTime>()));
-  JsonMapper.registerValueDecorator<ObservableList<String>>(
-      (value) => ObservableList<String>.of(value.cast<String>()));
-  JsonMapper.registerValueDecorator<ObservableList<num>>(
-      (value) => ObservableList<num>.of(value.cast<num>()));
-  JsonMapper.registerValueDecorator<ObservableList<int>>(
-      (value) => ObservableList<int>.of(value.cast<int>()));
-  JsonMapper.registerValueDecorator<ObservableList<double>>(
-      (value) => ObservableList<double>.of(value.cast<double>()));
-  JsonMapper.registerValueDecorator<ObservableList<bool>>(
-      (value) => ObservableList<bool>.of(value.cast<bool>()));
-
-  // Value decorators for ObservableSet variations
-  JsonMapper.registerValueDecorator<ObservableSet<DateTime>>(
-      (value) => ObservableSet<DateTime>.of(value.cast<DateTime>()));
-  JsonMapper.registerValueDecorator<ObservableSet<String>>(
-      (value) => ObservableSet<String>.of(value.cast<String>()));
-  JsonMapper.registerValueDecorator<ObservableSet<num>>(
-      (value) => ObservableSet<num>.of(value.cast<num>()));
-  JsonMapper.registerValueDecorator<ObservableSet<int>>(
-      (value) => ObservableSet<int>.of(value.cast<int>()));
-  JsonMapper.registerValueDecorator<ObservableSet<double>>(
-      (value) => ObservableSet<double>.of(value.cast<double>()));
-  JsonMapper.registerValueDecorator<ObservableSet<bool>>(
-      (value) => ObservableSet<bool>.of(value.cast<bool>()));
-
-  // Value converters for ObservableMap variations
-  JsonMapper.registerConverter<ObservableMap<String, dynamic>>(
-      observableMapConverter);
-
-  // Value converters for Observable variations
-  JsonMapper.registerConverter<Observable<String>>(observableStringConverter);
-  JsonMapper.registerConverter<Observable<DateTime>>(
-      observableDateTimeConverter);
-  JsonMapper.registerConverter<Observable<bool>>(observableBoolConverter);
-  JsonMapper.registerConverter<Observable<num>>(observableNumConverter);
-  JsonMapper.registerConverter<Observable<int>>(observableIntConverter);
-  JsonMapper.registerConverter<Observable<double>>(observableDoubleConverter);
-}
+final mobXAdapter = JsonMapperAdapter(
+    title: 'MobX Adapter',
+    refUrl: 'https://github.com/mobxjs/mobx.dart',
+    url:
+        'https://github.com/k-paxian/dart-json-mapper/tree/master/adapters/mobx',
+    typeInfoDecorators: {
+      0: mobXTypeInfoDecorator
+    },
+    converters: {
+      // Value converters for ObservableMap variations
+      typeOf<ObservableMap<String, dynamic>>(): observableMapConverter,
+      // Value converters for Observable variations
+      typeOf<Observable<String>>(): observableStringConverter,
+      typeOf<Observable<DateTime>>(): observableDateTimeConverter,
+      typeOf<Observable<bool>>(): observableBoolConverter,
+      typeOf<Observable<num>>(): observableNumConverter,
+      typeOf<Observable<int>>(): observableIntConverter,
+      typeOf<Observable<double>>(): observableDoubleConverter
+    },
+    valueDecorators: {
+      // Value decorators for ObservableList variations
+      typeOf<ObservableList<DateTime>>(): (value) =>
+          ObservableList<DateTime>.of(value.cast<DateTime>()),
+      typeOf<ObservableList<String>>(): (value) =>
+          ObservableList<String>.of(value.cast<String>()),
+      typeOf<ObservableList<num>>(): (value) =>
+          ObservableList<num>.of(value.cast<num>()),
+      typeOf<ObservableList<int>>(): (value) =>
+          ObservableList<int>.of(value.cast<int>()),
+      typeOf<ObservableList<double>>(): (value) =>
+          ObservableList<double>.of(value.cast<double>()),
+      typeOf<ObservableList<bool>>(): (value) =>
+          ObservableList<bool>.of(value.cast<bool>()),
+      // Value decorators for ObservableSet variations
+      typeOf<ObservableSet<DateTime>>(): (value) =>
+          ObservableSet<DateTime>.of(value.cast<DateTime>()),
+      typeOf<ObservableSet<String>>(): (value) =>
+          ObservableSet<String>.of(value.cast<String>()),
+      typeOf<ObservableSet<num>>(): (value) =>
+          ObservableSet<num>.of(value.cast<num>()),
+      typeOf<ObservableSet<int>>(): (value) =>
+          ObservableSet<int>.of(value.cast<int>()),
+      typeOf<ObservableSet<double>>(): (value) =>
+          ObservableSet<double>.of(value.cast<double>()),
+      typeOf<ObservableSet<bool>>(): (value) =>
+          ObservableSet<bool>.of(value.cast<bool>()),
+    });

@@ -113,7 +113,9 @@ void testConverters() {
   "color": "Color.Green"
  }
 }''';
-      JsonMapper.registerConverter<String>(CustomStringConverter());
+      final adapter =
+          JsonMapperAdapter(converters: {String: CustomStringConverter()});
+      JsonMapper().useAdapter(adapter);
 
       final i = Immutable(1, 'Bob', Car('Audi', Color.Green));
       // when
@@ -121,7 +123,7 @@ void testConverters() {
       // then
       expect(target, json);
 
-      JsonMapper.registerConverter<String>(defaultConverter);
+      JsonMapper().removeAdapter(adapter);
     });
 
     test('Custom Iterable converter', () {

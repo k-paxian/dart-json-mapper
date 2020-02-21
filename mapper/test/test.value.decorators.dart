@@ -152,7 +152,9 @@ void testValueDecorators() {
       expect(json, carListJson);
 
       // given
-      JsonMapper.registerValueDecorator<Set<Car>>(iterableCarDecorator);
+      final adapter = JsonMapperAdapter(
+          valueDecorators: {typeOf<Set<Car>>(): iterableCarDecorator});
+      JsonMapper().useAdapter(adapter);
 
       // when
       final target = JsonMapper.deserialize<Set<Car>>(carListJson);
@@ -162,11 +164,15 @@ void testValueDecorators() {
       expect(target.first, TypeMatcher<Car>());
       expect(target.first.model, 'Audi');
       expect(target.first.color, Color.Green);
+
+      JsonMapper().removeAdapter(adapter);
     });
 
     test('Custom List<Car> value decorator', () {
       // given
-      JsonMapper.registerValueDecorator<List<Car>>(iterableCarDecorator);
+      final adapter = JsonMapperAdapter(
+          valueDecorators: {typeOf<List<Car>>(): iterableCarDecorator});
+      JsonMapper().useAdapter(adapter);
 
       // when
       final target = JsonMapper.deserialize<List<Car>>(carListJson);
@@ -176,16 +182,20 @@ void testValueDecorators() {
       expect(target[0], TypeMatcher<Car>());
       expect(target[0].model, 'Audi');
       expect(target[0].color, Color.Green);
+
+      JsonMapper().removeAdapter(adapter);
     });
 
     test('Custom List<ServiceOrderModel> value decorator', () {
       // given
-      JsonMapper.registerValueDecorator<List<Customer>>(
-          iterableCustomerDecorator);
-      JsonMapper.registerValueDecorator<List<ServiceOrderModel>>(
-          (value) => value.cast<ServiceOrderModel>());
-      JsonMapper.registerValueDecorator<List<ServiceOrderItemModel>>(
-          (value) => value.cast<ServiceOrderItemModel>());
+      final adapter = JsonMapperAdapter(valueDecorators: {
+        typeOf<List<Customer>>(): iterableCustomerDecorator,
+        typeOf<List<ServiceOrderModel>>(): (value) =>
+            value.cast<ServiceOrderModel>(),
+        typeOf<List<ServiceOrderItemModel>>(): (value) =>
+            value.cast<ServiceOrderItemModel>()
+      });
+      JsonMapper().useAdapter(adapter);
 
       // when
       final target =
@@ -196,6 +206,8 @@ void testValueDecorators() {
       expect(target[0], TypeMatcher<ServiceOrderModel>());
       expect(target[0].id, 96);
       expect(target[0].expertId, 1);
+
+      JsonMapper().removeAdapter(adapter);
     });
 
     test(
@@ -205,14 +217,19 @@ void testValueDecorators() {
       final jack = Stakeholder('Jack', [Startup(10), Hotel(4)]);
 
       // when
-      JsonMapper.registerValueDecorator<List<Business>>(
-          (value) => value.cast<Business>());
+      final adapter = JsonMapperAdapter(valueDecorators: {
+        typeOf<List<Business>>(): (value) => value.cast<Business>()
+      });
+      JsonMapper().useAdapter(adapter);
+
       final json = JsonMapper.serialize(jack);
       final target = JsonMapper.deserialize<Stakeholder>(json);
 
       // then
       expect(target.businesses[0], TypeMatcher<Startup>());
       expect(target.businesses[1], TypeMatcher<Hotel>());
+
+      JsonMapper().removeAdapter(adapter);
     });
 
     test('List of Lists', () {
@@ -223,19 +240,23 @@ void testValueDecorators() {
    [{}, {}, {}]
  ]
 }''';
+      final adapter = JsonMapperAdapter(valueDecorators: {
+        typeOf<List<List<Item>>>(): (value) => value.cast<List<Item>>(),
+        typeOf<List<Item>>(): (value) => value.cast<Item>()
+      });
+      JsonMapper().useAdapter(adapter);
 
       // when
-      JsonMapper.registerValueDecorator<List<List<Item>>>(
-          (value) => value.cast<List<Item>>());
-      JsonMapper.registerValueDecorator<List<Item>>(
-          (value) => value.cast<Item>());
       final target = JsonMapper.deserialize<ListOfLists>(json);
+
       // then
       expect(target.lists.length, 2);
       expect(target.lists.first.length, 2);
       expect(target.lists.last.length, 3);
       expect(target.lists.first.first, TypeMatcher<Item>());
       expect(target.lists.last.first, TypeMatcher<Item>());
+
+      JsonMapper().removeAdapter(adapter);
     });
   });
 }

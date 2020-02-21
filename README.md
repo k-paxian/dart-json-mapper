@@ -46,9 +46,9 @@ Please add the following dependencies to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  dart_json_mapper: any
+  dart_json_mapper:
 dev_dependencies:
-  build_runner: any
+  build_runner:
 ```
 
 Say, you have a dart program *main.dart* having some classes intended to be traveling to JSON and back.
@@ -280,20 +280,22 @@ target field `List<Car>` for instance. So obvious workaround will be to cast
 In order to do so, we'll use Value Decorator Function inspired by Decorator pattern.
 
 ```dart
-final iterableCarDecorator = (value) => value.cast<Car>();
 final String json = '[{"modelName": "Audi", "color": "Color.Green"}]';
+JsonMapper().useAdapter(JsonMapperAdapter(
+  valueDecorators: {
+    typeOf<List<Car>>(): (value) => value.cast<Car>(),
+    typeOf<Set<Car>>(): (value) => value.cast<Car>()
+  })
+);
 
-JsonMapper.registerValueDecorator<List<Car>>(iterableCarDecorator);
 List<Car> myCarsList = JsonMapper.deserialize(json);
-...
-JsonMapper.registerValueDecorator<Set<Car>>(iterableCarDecorator);
 Set<Car> myCarsSet = JsonMapper.deserialize(json);
 ```
 
 Basic iterable based generics using Dart built-in types like `List<num>, List<Sring>, List<bool>, 
 List<DateTime>, Set<num>, Set<Sring>, Set<bool>, Set<DateTime>, etc.` supported out of the box. 
 
-For custom iterable types like `List<Car> / Set<Car>` you have to register value decorator function 
+For custom iterable types like `List<Car> / Set<Car>` you have to provide value decorator function 
 as showed in a code snippet above before using deserialization. This function will have explicit 
 cast to concrete iterable type.
 
@@ -351,8 +353,13 @@ final json = '''{
 }''';
 
 // when
-JsonMapper.registerValueDecorator<List<List<Item>>>((value) => value.cast<List<Item>>());
-JsonMapper.registerValueDecorator<List<Item>>((value) => value.cast<Item>());
+JsonMapper().useAdapter(JsonMapperAdapter(
+  valueDecorators: {
+    typeOf<List<List<Item>>>(): (value) => value.cast<List<Item>>(),
+    typeOf<List<Item>>(): (value) => value.cast<Item>()
+  })
+);
+
 final target = JsonMapper.deserialize<ListOfLists>(json);
 // then
 expect(target.lists.length, 2);
@@ -421,7 +428,12 @@ class Stakeholder {
 final jack = Stakeholder("Jack", [Startup(10), Hotel(4)]);
 
 // when
-JsonMapper.registerValueDecorator<List<Business>>((value) => value.cast<Business>());
+JsonMapper().useAdapter(JsonMapperAdapter(
+  valueDecorators: {
+    typeOf<List<Business>>(): (value) => value.cast<Business>()
+  })
+);
+
 final String json = JsonMapper.serialize(jack);
 final Stakeholder target = JsonMapper.deserialize(json);
 
@@ -437,7 +449,7 @@ always `true` for JSON models, they could follow
 [one of those popular - Pascal, Kebab, Snake, SnakeAllCaps][10] styles, right? 
 
 That's why we need a way to manage that in an organized way, instead of
-hand coding each property using @JsonProperty(name: ...) it is possible to pass
+hand coding each property using `@JsonProperty(name: ...)` it is possible to pass
 `CaseStyle` parameter to serialization / deserialization methods. 
 
 ```dart
@@ -604,7 +616,11 @@ class CustomStringConverter implements ICustomConverter<String> {
 And register it afterwards, if you want to have it applied for **all** occurrences of specified type 
 
 ```dart
-JsonMapper.registerConverter<String>(CustomStringConverter());
+JsonMapper().useAdapter(JsonMapperAdapter(
+  converters: {
+    String: CustomStringConverter()
+  })
+);
 ```
 
 OR use it individually on selected class fields, via `@JsonProperty` annotation 
@@ -660,13 +676,13 @@ in your app.
 
     ```yaml
     dependencies:
-      fixnum: any
-      dart_json_mapper: any
-      dart_json_mapper_fixnum: any
+      fixnum:
+      dart_json_mapper:
+      dart_json_mapper_fixnum:
     dev_dependencies:
-      build_runner: any
+      build_runner:
     ```
-* Usually, adapter library contains a single global function to invoke in your `main.dart`, so
+* Usually, adapter library exposes `final` adapter definition instance, to be provided as a parameter to `JsonMapper().useAdapter(adapter)`
 
     ```dart
     import 'package:fixnum/fixnum.dart' show Int32;
@@ -684,7 +700,7 @@ in your app.
     
     main() {
       initializeReflectable(); // Imported from main.reflectable.dart
-      initializeJsonMapperForFixnum(); // Imported from dart_json_mapper_fixnum
+      JsonMapper().useAdapter(fixnumAdapter); // fixnumAdapter imported from dart_json_mapper_fixnum
       
       print(JsonMapper.serialize(
          FixnumExample(Int32(1234567890))
@@ -697,6 +713,14 @@ in your app.
       "integer32": 1234567890
     }
     ```
+### You can easily mix and combine several adapters using following one-liner: 
+
+```dart
+JsonMapper()
+   .useAdapter(fixnumAdapter)
+   .useAdapter(mobXAdapter)
+   .info(); // print out a list of used adapters to console
+```
 
 [1]: https://github.com/flutter/flutter/issues/1150
 [2]: https://pub.dartlang.org/packages/intl

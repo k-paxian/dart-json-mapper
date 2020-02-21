@@ -53,8 +53,11 @@ void testIntegration() {
 
     test('Serialization <=> Deserialization', () {
       // given
-      JsonMapper.registerValueDecorator<List<Color>>(
-          (value) => value.cast<Color>());
+      final adapter = JsonMapperAdapter(valueDecorators: {
+        typeOf<List<Color>>(): (value) => value.cast<Color>()
+      });
+      JsonMapper().useAdapter(adapter);
+
       // when
       final stopwatch = Stopwatch()..start();
       final person = JsonMapper.deserialize<Person>(personJson);
@@ -65,6 +68,8 @@ void testIntegration() {
           'Serialization executed in ${stopwatch.elapsedMilliseconds - deserializationMs} ms');
       // then
       expect(json, personJson);
+
+      JsonMapper().removeAdapter(adapter);
     });
   });
 }

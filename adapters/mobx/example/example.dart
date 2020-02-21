@@ -15,7 +15,7 @@ class MobX {
 
 void main() {
   initializeReflectable();
-  initializeJsonMapperForMobX();
+  JsonMapper().useAdapter(mobXAdapter);
 
   final m = MobX(
       ObservableList<String>.of(['aa@test.com', 'bb@test.com', 'cc@test.com']));

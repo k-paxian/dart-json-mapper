@@ -11,7 +11,7 @@ part 'test.basics.dart';
 
 void main() {
   initializeReflectable();
-  initializeJsonMapperForFixnum();
+  JsonMapper().useAdapter(fixnumAdapter).info();
 
   testBasics();
 }

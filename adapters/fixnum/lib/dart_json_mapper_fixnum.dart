@@ -61,17 +61,21 @@ class Int64Converter implements ICustomConverter<Int64> {
   }
 }
 
-void initializeJsonMapperForFixnum() {
-  JsonMapper.registerTypeInfoDecorator(fixnumTypeInfoDecorator);
-
-  JsonMapper.registerConverter<Int32>(int32Converter);
-  JsonMapper.registerConverter<Int64>(int64Converter);
-
-  JsonMapper.registerValueDecorator<List<Int32>>(
-      (value) => value.cast<Int32>());
-  JsonMapper.registerValueDecorator<List<Int64>>(
-      (value) => value.cast<Int64>());
-
-  JsonMapper.registerValueDecorator<Set<Int32>>((value) => value.cast<Int32>());
-  JsonMapper.registerValueDecorator<Set<Int64>>((value) => value.cast<Int64>());
-}
+final fixnumAdapter = JsonMapperAdapter(
+    title: 'Fixnum Adapter',
+    refUrl: 'https://pub.dev/packages/fixnum',
+    url:
+        'https://github.com/k-paxian/dart-json-mapper/tree/master/adapters/fixnum',
+    typeInfoDecorators: {
+      0: fixnumTypeInfoDecorator
+    },
+    converters: {
+      Int32: int32Converter,
+      Int64: int64Converter
+    },
+    valueDecorators: {
+      typeOf<List<Int32>>(): (value) => value.cast<Int32>(),
+      typeOf<List<Int64>>(): (value) => value.cast<Int64>(),
+      typeOf<Set<Int32>>(): (value) => value.cast<Int32>(),
+      typeOf<Set<Int64>>(): (value) => value.cast<Int64>(),
+    });

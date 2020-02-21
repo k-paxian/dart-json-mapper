@@ -15,7 +15,7 @@ class Int32IntData {
 
 void main() {
   initializeReflectable();
-  initializeJsonMapperForFixnum();
+  JsonMapper().useAdapter(fixnumAdapter);
 
   // given
   final rawString = '1234567890';

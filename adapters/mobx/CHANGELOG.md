@@ -1,3 +1,9 @@
+## 1.1.0
+
+* Support for new adapters contract
+* mobx version bump
+
+
 ## 1.0.1
 
 * mobx version bump

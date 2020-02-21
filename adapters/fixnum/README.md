@@ -34,7 +34,7 @@ class FixnumClass {
 
 main() {
   initializeReflectable(); // Imported from main.reflectable.dart
-  initializeJsonMapperForFixnum(); // Imported from dart_json_mapper_fixnum
+  JsonMapper().useAdapter(fixnumAdapter); // Imported from dart_json_mapper_fixnum
   
   print(JsonMapper.serialize(
      FixnumClass(Int32(1234567890))

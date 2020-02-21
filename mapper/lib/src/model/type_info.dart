@@ -84,9 +84,3 @@ class DefaultTypeInfoDecorator implements ITypeInfoDecorator {
     }
   }
 }
-
-Map<int, ITypeInfoDecorator> getDefaultTypeInfoDecorators() {
-  final result = {};
-  result[0] = defaultTypeInfoDecorator;
-  return result.cast<int, ITypeInfoDecorator>();
-}

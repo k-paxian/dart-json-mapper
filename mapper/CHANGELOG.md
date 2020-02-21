@@ -1,3 +1,7 @@
+## 1.5.1
+
+* Adapters management improved. Easily extend & configure mapper capabilities via modular approach. 
+
 ## 1.5.0
 
 * #34, Default Iterables converter introduced. 

@@ -50,8 +50,6 @@ class Person {
 
   String get fullName => '${name} ${lastName}';
 
-  Person();
-
   @override
   String toString() {
     return 'Person{skills: $skills, lastPromotionDate: '
@@ -89,11 +87,6 @@ void main() {
   }
  ]
 }''';
-
-  // Because Person has a custom list List<Car>, we have to provide value cast decorator for it
-  // to be able to Deserialize
-  final iterableCarDecorator = (value) => value.cast<Car>();
-  JsonMapper.registerValueDecorator<List<Car>>(iterableCarDecorator);
 
   // Serialize
   print(JsonMapper.serialize(Person()));

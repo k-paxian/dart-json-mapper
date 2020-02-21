@@ -11,7 +11,7 @@ part 'test.observables.dart';
 
 void main() {
   initializeReflectable();
-  initializeJsonMapperForMobX();
+  JsonMapper().useAdapter(mobXAdapter).info();
 
   testObservables();
 }

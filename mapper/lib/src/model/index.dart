@@ -1,5 +1,6 @@
 import 'name_casing.dart';
 
+export 'adapters.dart';
 export 'annotations.dart';
 export 'converters.dart';
 export 'name_casing.dart';
