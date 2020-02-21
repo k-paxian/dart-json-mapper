@@ -726,7 +726,7 @@ JsonMapper()
 [2]: https://pub.dartlang.org/packages/intl
 [3]: https://pub.dartlang.org/packages/reflectable
 [4]: https://github.com/k-paxian/samples/tree/master/jsonexample
-[7]: https://mobx.pub
+[7]: https://github.com/mobxjs/mobx.dart
 [8]: https://github.com/dart-lang/fixnum
 [9]: https://en.wikipedia.org/wiki/Camel_case
 [10]: https://medium.com/better-programming/string-case-styles-camel-pascal-snake-and-kebab-case-981407998841
