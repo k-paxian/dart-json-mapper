@@ -1,6 +1,6 @@
 [![pub package](https://img.shields.io/pub/v/dart_json_mapper_mobx.svg)](https://pub.dartlang.org/packages/dart_json_mapper_mobx)
 
-This is a [dart-json-mapper][1] complementary package provides support for http://mobx.pub classes in order to serialize / deserialize them from / to JSON.
+This is a [dart-json-mapper][1] complementary package provides support for MobX.dart classes in order to serialize / deserialize them from / to JSON.
  
 ## Basic setup
 

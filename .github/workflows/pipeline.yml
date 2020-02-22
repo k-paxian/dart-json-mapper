@@ -12,6 +12,7 @@ jobs:
       - name: '>> mapper <<'
         run: |
           cp README.md ./mapper/README.md
+          cp banner.svg ./mapper/banner.svg
           cp -f LICENSE ./mapper/LICENSE
       - uses: axel-op/dart-package-analyzer@stable
         with:
