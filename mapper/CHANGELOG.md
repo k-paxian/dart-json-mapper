@@ -1,3 +1,7 @@
+## 1.5.2
+
+* #36, Allow serialize same object instances same nesting level.  
+
 ## 1.5.1
 
 * Adapters management improved. Easily extend & configure mapper capabilities via modular approach. 

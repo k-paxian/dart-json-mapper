@@ -40,7 +40,24 @@ class SerializationOptions extends DeserializationOptions {
 
 class ProcessedObjectDescriptor {
   dynamic object;
-  int times = 0;
+  Map<int, int> usages = {}; // level : usagesCounter
 
   ProcessedObjectDescriptor(this.object);
+
+  int get levelsCount {
+    return usages.keys.length;
+  }
+
+  void logUsage(int level) {
+    if (usages.containsKey(level)) {
+      usages[level]++;
+    } else {
+      usages[level] = 1;
+    }
+  }
+
+  @override
+  String toString() {
+    return '$object / $usages';
+  }
 }

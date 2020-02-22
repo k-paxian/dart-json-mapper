@@ -133,7 +133,7 @@ class JsonMapper {
   String getObjectKey(Object object) =>
       '${object.runtimeType}-${object.hashCode}';
 
-  ProcessedObjectDescriptor getObjectProcessed(Object object) {
+  ProcessedObjectDescriptor getObjectProcessed(Object object, int level) {
     ProcessedObjectDescriptor result;
 
     if (object.runtimeType.toString() == 'Null' ||
@@ -144,7 +144,7 @@ class JsonMapper {
     final key = getObjectKey(object);
     if (processedObjects.containsKey(key)) {
       result = processedObjects[key];
-      result.times++;
+      result.logUsage(level);
     } else {
       result = processedObjects[key] = ProcessedObjectDescriptor(object);
     }
@@ -433,11 +433,13 @@ class JsonMapper {
     return result;
   }
 
-  dynamic serializeIterable(Iterable object, [SerializationOptions options]) {
-    return object.map((item) => serializeObject(item, options)).toList();
+  dynamic serializeIterable(Iterable object,
+      [SerializationOptions options, int level = 0]) {
+    return object.map((item) => serializeObject(item, options, level)).toList();
   }
 
-  dynamic serializeObject(Object object, [SerializationOptions options]) {
+  dynamic serializeObject(Object object,
+      [SerializationOptions options, int level = 0]) {
     if (object == null) {
       return object;
     }
@@ -447,13 +449,13 @@ class JsonMapper {
     if (converter != null) {
       var convertedValue = converter.toJSON(object, null);
       if (object is Iterable && convertedValue == object) {
-        convertedValue = serializeIterable(object, options);
+        convertedValue = serializeIterable(object, options, level);
       }
       return convertedValue;
     }
 
     if (object is Iterable) {
-      return serializeIterable(object, options);
+      return serializeIterable(object, options, level);
     }
 
     if (im == null || im.type == null) {
@@ -468,13 +470,13 @@ class JsonMapper {
     final jsonMeta = classInfo.getMeta(options.scheme);
     final initialMap = options.template ?? {};
     final result = JsonMap(initialMap, jsonMeta);
-    final processedObjectDescriptor = getObjectProcessed(object);
+    final processedObjectDescriptor = getObjectProcessed(object, level);
     if (processedObjectDescriptor != null &&
-        processedObjectDescriptor.times >= 1) {
+        processedObjectDescriptor.levelsCount > 1) {
       final allowanceIsSet =
           (jsonMeta != null && jsonMeta.allowCircularReferences > 0);
       final allowanceExceeded = (allowanceIsSet &&
-              processedObjectDescriptor.times >
+              processedObjectDescriptor.levelsCount >
                   jsonMeta.allowCircularReferences)
           ? true
           : null;
@@ -504,13 +506,13 @@ class JsonMapper {
           if (valueTypeInfo.isIterable) {
             convertedValue = converter.toJSON(value, meta);
             if (convertedValue == value) {
-              convertedValue = serializeIterable(value, options);
+              convertedValue = serializeIterable(value, options, ++level);
             }
           } else {
             convertedValue = convert(value);
           }
         } else {
-          convertedValue = serializeObject(value, options);
+          convertedValue = serializeObject(value, options, ++level);
         }
         result.setPropertyValue(jsonName, convertedValue);
       }

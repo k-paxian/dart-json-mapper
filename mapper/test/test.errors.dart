@@ -12,6 +12,15 @@ class MyCar extends Car {
 }
 
 @jsonSerializable
+class Device {}
+
+@jsonSerializable
+class UserSettings {
+  List<Device> devices;
+  UserSettings(this.devices);
+}
+
+@jsonSerializable
 class UnAnnotatedEnumField {
   Sex sex = Sex.Female;
 }
@@ -46,6 +55,13 @@ void testErrorHandling() {
       final car = MyCar('VW', Color.Blue);
       car.replacement = car;
       expect(catchError(() => JsonMapper.serialize(car, compactOptions)), null);
+    });
+
+    test('Allow using same object same level during serialization', () {
+      final device = Device();
+      final us = UserSettings([device, device]);
+
+      expect(catchError(() => JsonMapper.serialize(us, compactOptions)), null);
     });
 
     test('Missing annotation on class', () {
