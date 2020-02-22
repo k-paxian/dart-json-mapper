@@ -21,6 +21,8 @@ guided by the annotated classes only, as the result types information is accessi
 
 Typical `Flutter.io project integration` sample can be found [here][4]
 
+![](banner.svg)
+
 * [Basic setup](#basic-setup)
 * [Configuration use cases](#format-datetime--num-types)
     * [Extended classes](#inherited-classes-derived-from-abstract--base-class)
