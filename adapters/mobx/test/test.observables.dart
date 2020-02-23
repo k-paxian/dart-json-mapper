@@ -1,6 +1,15 @@
 part of json_mapper_mobx.test;
 
 @jsonSerializable
+class Item {}
+
+@jsonSerializable
+class ItemsList {
+  ObservableList<Item> items = ObservableList<Item>.of([Item(), Item()]);
+  ObservableSet<Item> itemsSet = ObservableSet<Item>.of([Item(), Item()]);
+}
+
+@jsonSerializable
 @Json(ignoreNullMembers: true)
 class MobX {
   ObservableList<String> stringList = ObservableList<String>();
@@ -53,6 +62,21 @@ final compactOptions = SerializationOptions(indent: '');
 
 void testObservables() {
   group('[Verify ObservableList]', () {
+    test('ObservableList<Item> w/o decorator', () {
+      // given
+      final json = '''{"items":[{},{}],"itemsSet":[{},{}]}''';
+      // when
+      final targetJson = JsonMapper.serialize(ItemsList(), compactOptions);
+      final instance = JsonMapper.deserialize<ItemsList>(targetJson);
+      // then
+      expect(targetJson, json);
+      expect(instance, TypeMatcher<ItemsList>());
+      expect(instance.items.length, 2);
+      expect(instance.items.first, TypeMatcher<Item>());
+      expect(instance.itemsSet.length, 2);
+      expect(instance.itemsSet.first, TypeMatcher<Item>());
+    });
+
     test('ObservableList<String>', () {
       // given
       final json =

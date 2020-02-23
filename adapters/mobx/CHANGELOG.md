@@ -1,3 +1,7 @@
+## 1.2.0
+
+* Support for Observable iterables, w/o decorators
+
 ## 1.1.0
 
 * Support for new adapters contract
