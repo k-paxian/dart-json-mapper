@@ -1,3 +1,7 @@
+## 1.5.3
+
+* #41, Fix null pointer on Iterables processing.
+
 ## 1.5.2
 
 * #36, Allow serialize same object instances same nesting level.  

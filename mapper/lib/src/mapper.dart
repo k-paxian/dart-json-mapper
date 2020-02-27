@@ -385,17 +385,8 @@ class JsonMapper {
           return;
         }
         final parameterTypeInfo = detectObjectType(value, typeInfo.type, null);
-        if (parameterTypeInfo.isIterable) {
-          value = (value as Iterable)
-              .map((item) => deserializeObject(
-                  item, getScalarType(parameterTypeInfo.type), meta, options))
-              .toList();
-        } else {
-          value =
-              deserializeObject(value, parameterTypeInfo.type, meta, options);
-        }
         result[Symbol(name)] =
-            applyValueDecorator(value, parameterTypeInfo, meta);
+            deserializeObject(value, parameterTypeInfo.type, meta, options);
       }
     });
 
@@ -413,16 +404,7 @@ class JsonMapper {
           jsonMap.hasProperty(jsonName)) {
         var value = jsonMap.getPropertyValue(jsonName);
         final parameterTypeInfo = detectObjectType(value, typeInfo.type, null);
-        if (parameterTypeInfo.isIterable) {
-          value = (value as Iterable)
-              .map((item) => deserializeObject(
-                  item, getScalarType(parameterTypeInfo.type), meta, options))
-              .toList();
-        } else {
-          value =
-              deserializeObject(value, parameterTypeInfo.type, meta, options);
-        }
-        value = applyValueDecorator(value, parameterTypeInfo, meta);
+        value = deserializeObject(value, parameterTypeInfo.type, meta, options);
         if (isFieldIgnored(value, classMeta, meta, options)) {
           value = null;
         }
@@ -435,7 +417,9 @@ class JsonMapper {
 
   dynamic serializeIterable(Iterable object,
       [SerializationOptions options, int level = 0]) {
-    return object.map((item) => serializeObject(item, options, level)).toList();
+    return object != null
+        ? object.map((item) => serializeObject(item, options, level)).toList()
+        : null;
   }
 
   dynamic serializeObject(Object object,
@@ -531,10 +515,12 @@ class JsonMapper {
       JsonProperty meta, DeserializationOptions options) {
     List jsonList =
         (jsonValue is String) ? jsonDecoder.convert(jsonValue) : jsonValue;
-    var value = jsonList
-        .map((item) => deserializeObject(
-            item, getScalarType(typeInfo.type), null, options))
-        .toList();
+    final value = jsonList != null
+        ? jsonList
+            .map((item) => deserializeObject(
+                item, getScalarType(typeInfo.type), null, options))
+            .toList()
+        : null;
     return applyValueDecorator(value, typeInfo, meta);
   }
 
