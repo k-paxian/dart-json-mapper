@@ -3,49 +3,49 @@ name: Pipeline
 on: push
 
 jobs:
-  publishing:
+
+  publish_mapper:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-        
-      - name: '>> mapper <<'
-        run: |
+      - uses: actions/checkout@v2
+      - run: |
           cp README.md ./mapper/README.md
           cp banner.svg ./mapper/banner.svg
           cp -f LICENSE ./mapper/LICENSE
-      - uses: axel-op/dart-package-analyzer@stable
-        with:
-          githubToken: ${{ secrets.GITHUB_TOKEN }}
-          relativePath: mapper
-      - uses: k-paxian/dart-package-publisher@master
+      - name: '>> mapper <<'
+        id: publish
+        uses: k-paxian/dart-package-publisher@master
         with:
           accessToken: ${{ secrets.OAUTH_ACCESS_TOKEN }}
           refreshToken: ${{ secrets.OAUTH_REFRESH_TOKEN }}
           relativePath: mapper
+      - name: 'Tag commit'
+        if: steps.publish.outputs.success
+        uses: hole19/git-tag-action@master
+        env:
+          TAG: ${{steps.publish.outputs.package}}-${{steps.publish.outputs.localVersion}}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: '>> adapters/mobx <<'
-        run:  |
-          cp -f LICENSE ./adapters/mobx/LICENSE
-      - uses: axel-op/dart-package-analyzer@stable
-        with:
-          githubToken: ${{ secrets.GITHUB_TOKEN }}
-          relativePath: adapters/mobx          
-      - uses: k-paxian/dart-package-publisher@master
-        with:
-          accessToken: ${{ secrets.OAUTH_ACCESS_TOKEN }}
-          refreshToken: ${{ secrets.OAUTH_REFRESH_TOKEN }}
-          relativePath: adapters/mobx
-          
-      - name: '>> adapters/fixnum <<'
-        run:  |
-          cp -f LICENSE ./adapters/fixnum/LICENSE
-      - uses: axel-op/dart-package-analyzer@stable
-        with:
-          githubToken: ${{ secrets.GITHUB_TOKEN }}
-          relativePath: adapters/fixnum          
-      - uses: k-paxian/dart-package-publisher@master
+  publish_adapters:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        adapter: ["fixnum", "mobx"]
+
+    steps:
+      - uses: actions/checkout@v2
+      - run: cp -f LICENSE ./adapters/${{ matrix.adapter }}/LICENSE
+      - name: '>> adapter / ${{ matrix.adapter }} <<'
+        id: publish
+        uses: k-paxian/dart-package-publisher@master
         with:
           accessToken: ${{ secrets.OAUTH_ACCESS_TOKEN }}
           refreshToken: ${{ secrets.OAUTH_REFRESH_TOKEN }}
-          relativePath: adapters/fixnum
+          relativePath: adapters/${{ matrix.adapter }}
+      - name: 'Tag commit'
+        if: steps.publish.outputs.success
+        uses: hole19/git-tag-action@master
+        env:
+          TAG: ${{steps.publish.outputs.package}}-${{steps.publish.outputs.localVersion}}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
