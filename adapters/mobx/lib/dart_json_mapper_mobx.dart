@@ -8,16 +8,23 @@ import 'package:mobx/mobx.dart';
 final mobXTypeInfoDecorator = MobXTypeInfoDecorator();
 
 class MobXTypeInfoDecorator extends DefaultTypeInfoDecorator {
+  bool isObservableList(TypeInfo typeInfo) =>
+      typeInfo.typeName.indexOf('ObservableList<') == 0;
+
+  bool isObservableMap(TypeInfo typeInfo) =>
+      typeInfo.typeName.indexOf('ObservableMap<') == 0;
+
+  bool isObservableSet(TypeInfo typeInfo) =>
+      typeInfo.typeName.indexOf('ObservableSet<') == 0;
+
   @override
   TypeInfo decorate(TypeInfo typeInfo) {
-    final isObservableList = typeInfo.typeName.indexOf('ObservableList<') == 0;
-    final isObservableMap = typeInfo.typeName.indexOf('ObservableMap<') == 0;
-    final isObservableSet = typeInfo.typeName.indexOf('ObservableSet<') == 0;
-    typeInfo.isList = typeInfo.isList || isObservableList;
-    typeInfo.isSet = typeInfo.isSet || isObservableSet;
-    typeInfo.isMap = typeInfo.isMap || isObservableMap;
-    typeInfo.isIterable =
-        typeInfo.isIterable || isObservableList || isObservableSet;
+    typeInfo.isList = typeInfo.isList || isObservableList(typeInfo);
+    typeInfo.isSet = typeInfo.isSet || isObservableSet(typeInfo);
+    typeInfo.isMap = typeInfo.isMap || isObservableMap(typeInfo);
+    typeInfo.isIterable = typeInfo.isIterable ||
+        isObservableList(typeInfo) ||
+        isObservableSet(typeInfo);
     typeInfo.scalarType = detectScalarType(typeInfo);
     typeInfo.genericType = detectGenericType(typeInfo);
     return typeInfo;
@@ -25,16 +32,16 @@ class MobXTypeInfoDecorator extends DefaultTypeInfoDecorator {
 
   @override
   Type detectGenericType(TypeInfo typeInfo) {
-    if (typeInfo.isList) {
+    if (isObservableList(typeInfo)) {
       return ObservableList;
     }
-    if (typeInfo.isSet) {
+    if (isObservableSet(typeInfo)) {
       return ObservableSet;
     }
-    if (typeInfo.isMap) {
+    if (isObservableMap(typeInfo)) {
       return ObservableMap;
     }
-    return null;
+    return super.detectGenericType(typeInfo);
   }
 }
 
