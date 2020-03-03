@@ -33,6 +33,7 @@ Typical `Flutter.io project integration` sample can be found [here][4]
     * [Iterable types](#iterable-types)
     * [Enum types](#enum-types)
     * [Name casing styles](#name-casing-styles-pascal-kebab-snake-snakeallcaps)
+    * [Serialization template](#serialization-template)
     * [Custom types](#custom-types)
     * [Nesting](#nesting-configuration)
     * [Schemes](#schemes)
@@ -41,6 +42,7 @@ Typical `Flutter.io project integration` sample can be found [here][4]
     * [How to use adapter?](#complementary-adapter-libraries)
     * [![pub package](https://img.shields.io/pub/v/dart_json_mapper_mobx.svg)](https://pub.dartlang.org/packages/dart_json_mapper_mobx) | [dart_json_mapper_mobx](adapters/mobx) | [MobX][7]
     * [![pub package](https://img.shields.io/pub/v/dart_json_mapper_fixnum.svg)](https://pub.dartlang.org/packages/dart_json_mapper_fixnum) | [dart_json_mapper_fixnum](adapters/fixnum) | [Fixnum][8]
+    * [![pub package](https://img.shields.io/pub/v/dart_json_mapper_flutter.svg)](https://pub.dartlang.org/packages/dart_json_mapper_flutter) | [dart_json_mapper_flutter](adapters/flutter) | [Flutter][11]
 
 ## Basic setup
 
@@ -100,8 +102,6 @@ targets:
       reflectable:
         generate_for:
           - lib/main.dart
-        options:
-          formatted: true
 ```
 
 Now run the code generation step with the root of your package as the current
@@ -444,6 +444,26 @@ expect(target.businesses[0], TypeMatcher<Startup>());
 expect(target.businesses[1], TypeMatcher<Hotel>());
 ```
 
+## Serialization template
+
+In case you already have an instance of huge JSON Map object
+and portion of it needs to be surgically updated, then you cna pass
+your `Map<String, dynamic>` instance as a `template` parameter for  
+`SerializationOptions`
+
+```dart
+// given
+final template = {'a': 'a', 'b': true};
+
+// when
+final json = JsonMapper.serialize(Car('Tesla S3', Color.Black),
+  SerializationOptions(indent: '', template: template));
+
+// then
+expect(json,
+  '''{"a":"a","b":true,"modelName":"Tesla S3","color":"Color.Black"}''');
+```
+
 ## Name casing styles [Pascal, Kebab, Snake, SnakeAllCaps]
 
 Assuming your Dart code is following [Camel case style][9], but that is not 
@@ -732,6 +752,7 @@ JsonMapper()
 [8]: https://github.com/dart-lang/fixnum
 [9]: https://en.wikipedia.org/wiki/Camel_case
 [10]: https://medium.com/better-programming/string-case-styles-camel-pascal-snake-and-kebab-case-981407998841
+[11]: https://github.com/flutter/flutter
 
 [rfc6901]: https://tools.ietf.org/html/rfc6901
 

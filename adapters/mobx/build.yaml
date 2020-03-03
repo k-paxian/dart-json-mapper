@@ -5,5 +5,3 @@ targets:
         generate_for:
           - test/_test.dart
           - example/example.dart
-        options:
-          formatted: true

@@ -1,10 +1,12 @@
 library json_mapper_mobx.example;
 
-import 'package:dart_json_mapper/dart_json_mapper.dart';
-import 'package:dart_json_mapper_mobx/dart_json_mapper_mobx.dart';
-import 'package:mobx/mobx.dart';
+import 'package:dart_json_mapper/dart_json_mapper.dart'
+    show JsonMapper, jsonSerializable, SerializationOptions;
+import 'package:dart_json_mapper_mobx/dart_json_mapper_mobx.dart'
+    show mobXAdapter;
+import 'package:mobx/mobx.dart' show ObservableList;
 
-import 'example.reflectable.dart'; // Import generated code.
+import 'example.reflectable.dart' show initializeReflectable;
 
 @jsonSerializable
 class MobX {

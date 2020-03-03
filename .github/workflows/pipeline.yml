@@ -30,7 +30,7 @@ jobs:
 
     strategy:
       matrix:
-        adapter: ["fixnum", "mobx"]
+        adapter: ["flutter", "fixnum", "mobx"]
 
     steps:
       - uses: actions/checkout@v2
