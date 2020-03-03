@@ -16,7 +16,6 @@ dev_dependencies:
     sdk: flutter
   pedantic:
   build_runner:
-  build_test:
   test:
 #dependency_overrides:
 #  dart_json_mapper:
