@@ -19,7 +19,7 @@ Dart classes reflection mechanism is based on [reflectable][3] library.
 This means "extended types information" is auto-generated out of existing Dart program 
 guided by the annotated classes only, as the result types information is accessible at runtime, at a reduced cost.
 
-Typical `Flutter.io project integration` sample can be found [here][4]
+Typical `flutter.dev project integration` sample can be found [here][4]
 
 ![](banner.svg)
 
@@ -61,9 +61,9 @@ Say, you have a dart program *main.dart* having some classes intended to be trav
 
 **lib/main.dart**
 ```dart
-import 'package:dart_json_mapper/dart_json_mapper.dart';
+import 'package:dart_json_mapper/dart_json_mapper.dart' show JsonMapper;
 
-import 'main.reflectable.dart'; // Import generated code.
+import 'main.reflectable.dart' show initializeReflectable;
 
 @jsonSerializable // This annotation let instances of MyData traveling to/from JSON
 class MyData {
@@ -79,7 +79,7 @@ class MyData {
 }
 
 main() {
-  initializeReflectable(); // Imported from main.reflectable.dart
+  initializeReflectable();
   
   print(JsonMapper.serialize(MyData(456, true, "yes")));
 }
@@ -447,7 +447,7 @@ expect(target.businesses[1], TypeMatcher<Hotel>());
 ## Serialization template
 
 In case you already have an instance of huge JSON Map object
-and portion of it needs to be surgically updated, then you cna pass
+and portion of it needs to be surgically updated, then you can pass
 your `Map<String, dynamic>` instance as a `template` parameter for  
 `SerializationOptions`
 
@@ -708,10 +708,10 @@ in your app.
 
     ```dart
     import 'package:fixnum/fixnum.dart' show Int32;
-    import 'package:dart_json_mapper/dart_json_mapper.dart';
-    import 'package:dart_json_mapper_fixnum/dart_json_mapper_fixnum.dart';
+    import 'package:dart_json_mapper/dart_json_mapper.dart' show JsonMapper, jsonSerializable;
+    import 'package:dart_json_mapper_fixnum/dart_json_mapper_fixnum.dart' show fixnumAdapter;
     
-    import 'main.reflectable.dart'; // Import generated code.
+    import 'main.reflectable.dart' show initializeReflectable;
     
     @jsonSerializable
     class FixnumExample {
@@ -720,9 +720,9 @@ in your app.
       FixnumExample(this.integer32);
     }
     
-    main() {
-      initializeReflectable(); // Imported from main.reflectable.dart
-      JsonMapper().useAdapter(fixnumAdapter); // fixnumAdapter imported from dart_json_mapper_fixnum
+    void main() {
+      initializeReflectable();
+      JsonMapper().useAdapter(fixnumAdapter);
       
       print(JsonMapper.serialize(
          FixnumExample(Int32(1234567890))
@@ -740,6 +740,7 @@ in your app.
 ```dart
 JsonMapper()
    .useAdapter(fixnumAdapter)
+   .useAdapter(flutterAdapter)
    .useAdapter(mobXAdapter)
    .info(); // print out a list of used adapters to console
 ```

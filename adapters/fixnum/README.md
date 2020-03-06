@@ -20,10 +20,10 @@ Usage example
 **lib/main.dart**
 ```dart
 import 'package:fixnum/fixnum.dart' show Int32;
-import 'package:dart_json_mapper/dart_json_mapper.dart';
-import 'package:dart_json_mapper_fixnum/dart_json_mapper_fixnum.dart';
+import 'package:dart_json_mapper/dart_json_mapper.dart' show JsonMapper, jsonSerializable;
+import 'package:dart_json_mapper_fixnum/dart_json_mapper_fixnum.dart' show fixnumAdapter;
 
-import 'main.reflectable.dart'; // Import generated code.
+import 'main.reflectable.dart' show initializeReflectable;
 
 @jsonSerializable
 class FixnumClass {
@@ -32,9 +32,9 @@ class FixnumClass {
   FixnumClass(this.integer32);
 }
 
-main() {
-  initializeReflectable(); // Imported from main.reflectable.dart
-  JsonMapper().useAdapter(fixnumAdapter); // Imported from dart_json_mapper_fixnum
+void main() {
+  initializeReflectable();
+  JsonMapper().useAdapter(fixnumAdapter);
   
   print(JsonMapper.serialize(
      FixnumClass(Int32(1234567890))

@@ -33,7 +33,7 @@ class FlutterClass {
   FlutterClass(this.color);
 }
 
-main() {
+void main() {
   initializeReflectable();
   JsonMapper().useAdapter(flutterAdapter);
   

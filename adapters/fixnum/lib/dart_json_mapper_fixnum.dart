@@ -1,6 +1,13 @@
 library json_mapper_fixnum;
 
-import 'package:dart_json_mapper/dart_json_mapper.dart';
+import 'package:dart_json_mapper/dart_json_mapper.dart'
+    show
+        DefaultTypeInfoDecorator,
+        TypeInfo,
+        typeOf,
+        ICustomConverter,
+        JsonProperty,
+        JsonMapperAdapter;
 import 'package:fixnum/fixnum.dart' show Int32, Int64;
 
 final fixnumTypeInfoDecorator = FixnumTypeInfoDecorator();

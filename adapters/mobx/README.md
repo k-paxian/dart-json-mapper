@@ -32,9 +32,9 @@ class MyMobXClass {
   MyMobXClass(this.mailingList);
 }
 
-main() {
-  initializeReflectable(); // Imported from main.reflectable.dart
-  JsonMapper().useAdapter(mobXAdapter); // Imported from dart_json_mapper_mobx
+void main() {
+  initializeReflectable();
+  JsonMapper().useAdapter(mobXAdapter);
   
   print(JsonMapper.serialize(
      MyMobXClass(ObservableList<String>.of(['aa@test.com', 'bb@test.com', 'cc@test.com']))
