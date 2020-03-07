@@ -18,6 +18,26 @@ class UnmappedProperties {
   }
 }
 
+@jsonSerializable
+class AllPrivateFields {
+  String _name;
+  String _lastName;
+
+  set name(dynamic value) {
+    _name = value;
+  }
+
+  String get name => _name;
+
+  @JsonProperty(name: 'lastName')
+  void setLastName(dynamic value) {
+    _lastName = value;
+  }
+
+  @JsonProperty(name: 'lastName')
+  String getLastName() => _lastName;
+}
+
 void testPartialDeserialization() {
   group('[Verify partial processing]', () {
     test('Person deserialization', () {
@@ -62,6 +82,24 @@ void testPartialDeserialization() {
       final json2 = JsonMapper.serialize(instance, compactOptions);
       // then
       expect(json2, json);
+    });
+
+    test('AllPrivateFields deserialization & serialization', () {
+      // given
+      final json = '''{"name":"Bob","lastName":"Marley"}''';
+
+      // when
+      final instance = JsonMapper.deserialize<AllPrivateFields>(json);
+
+      // then
+      expect(instance.name, 'Bob');
+      expect(instance.getLastName(), 'Marley');
+
+      // when
+      final targetJson = JsonMapper.serialize(instance, compactOptions);
+
+      // then
+      expect(targetJson, json);
     });
   });
 }

@@ -296,6 +296,8 @@ class JsonMapper {
   void enumeratePublicFields(InstanceMirror instanceMirror, JsonMap jsonMap,
       DeserializationOptions options, Function visitor) {
     final classInfo = ClassInfo(instanceMirror.type);
+    final classMeta = classInfo.getMeta(options.scheme);
+
     for (var name in classInfo.publicFieldNames) {
       var jsonName = name;
       final declarationMirror = classInfo.getDeclarationMirror(name);
@@ -306,7 +308,6 @@ class JsonMapper {
       final isGetterOnly = classInfo.isGetterOnly(name);
       final meta =
           classInfo.getDeclarationMeta(declarationMirror, options.scheme);
-      final classMeta = classInfo.getMeta(options.scheme);
       if (meta != null && meta.name != null) {
         jsonName = meta.name;
       }
@@ -334,6 +335,35 @@ class JsonMapper {
           getScalarType(declarationType),
           getTypeInfo(declarationType));
     }
+
+    classInfo.enumerateJsonGetters((MethodMirror mm, JsonProperty meta) {
+      final name = mm.simpleName;
+      final value = instanceMirror.invoke(mm.simpleName, []);
+      final jsonName = transformFieldName(meta.name, options.caseStyle);
+      final declarationType = getDeclarationType(mm);
+
+      if (value == null && jsonMap != null) {
+        if (isFieldIgnored(
+            jsonMap.getPropertyValue(jsonName), classMeta, meta, options)) {
+          return;
+        }
+      } else {
+        if (isFieldIgnored(value, classMeta, meta, options)) {
+          return;
+        }
+      }
+
+      visitor(
+          name,
+          jsonName,
+          value,
+          true,
+          meta,
+          getConverter(
+              meta, declarationType, value != null ? value.runtimeType : null),
+          getScalarType(declarationType),
+          getTypeInfo(declarationType));
+    }, options.scheme);
   }
 
   void enumerateConstructorParameters(ClassMirror classMirror,
@@ -610,11 +640,17 @@ class JsonMapper {
         .where((field) => !mappedFields.contains(field))
         .toList();
     if (unmappedFields.isNotEmpty) {
-      final jsonAnySetter = classInfo.getJsonAnySetter();
-      if (jsonAnySetter != null) {
-        unmappedFields.forEach((field) =>
-            im.invoke(jsonAnySetter.simpleName, [field, jsonMap.map[field]]));
-      }
+      final jsonAnySetter = classInfo.getJsonAnySetter(options.scheme);
+      unmappedFields.forEach((field) {
+        final jsonSetter =
+            classInfo.getJsonSetter(field, options.scheme) ?? jsonAnySetter;
+        final params = jsonSetter == jsonAnySetter
+            ? [field, jsonMap.map[field]]
+            : [jsonMap.map[field]];
+        if (jsonSetter != null) {
+          im.invoke(jsonSetter.simpleName, params);
+        }
+      });
     }
 
     return objectInstance;

@@ -115,7 +115,7 @@ class ClassInfo {
     return lookupClassMetaData(classMirror);
   }
 
-  MethodMirror getJsonAnySetter() {
+  MethodMirror getJsonSetter(String name, [dynamic scheme]) {
     MethodMirror result;
     try {
       result =
@@ -124,7 +124,8 @@ class ClassInfo {
             dm is MethodMirror &&
             !dm.isConstructor &&
             dm.returnType.simpleName == 'void' &&
-            getDeclarationMeta(dm) != null;
+            getDeclarationMeta(dm, scheme) != null &&
+            getDeclarationMeta(dm, scheme).name == name;
       });
     } catch (error) {
       result = null;
@@ -132,7 +133,23 @@ class ClassInfo {
     return result;
   }
 
-  MethodMirror getJsonAnyGetter() {
+  MethodMirror getJsonAnySetter([dynamic scheme]) =>
+      getJsonSetter(null, scheme);
+
+  void enumerateJsonGetters(Function visitor, [dynamic scheme]) {
+    classMirror.declarations.values.where((DeclarationMirror dm) {
+      return !dm.isPrivate &&
+          dm is MethodMirror &&
+          !dm.isConstructor &&
+          dm.parameters.isEmpty &&
+          getDeclarationMeta(dm, scheme) != null &&
+          getDeclarationMeta(dm, scheme).name != null;
+    }).forEach((DeclarationMirror dm) {
+      visitor(dm, getDeclarationMeta(dm, scheme));
+    });
+  }
+
+  MethodMirror getJsonAnyGetter([dynamic scheme]) {
     MethodMirror result;
     try {
       result =
@@ -143,7 +160,7 @@ class ClassInfo {
             dm.parameters.isEmpty &&
             dm.hasReflectedReturnType &&
             dm.reflectedReturnType.toString() == 'Map<String, dynamic>' &&
-            getDeclarationMeta(dm) != null;
+            getDeclarationMeta(dm, scheme) != null;
       });
     } catch (error) {
       result = null;

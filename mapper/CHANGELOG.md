@@ -1,5 +1,6 @@
 ## 1.5.3
 
+* Custom getter / setter methods support added.
 * #41, Fix null pointer on Iterables processing.
 
 ## 1.5.2

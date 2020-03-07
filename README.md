@@ -24,9 +24,11 @@ Typical `flutter.dev project integration` sample can be found [here][4]
 ![](banner.svg)
 
 * [Basic setup](#basic-setup)
+* [Annotations](#annotations)
 * [Configuration use cases](#format-datetime--num-types)
     * [Extended classes](#inherited-classes-derived-from-abstract--base-class)
     * [Immutable classes](#example-with-immutable-class)
+    * [Get or Set fields](#get-or-set-fields)
     * [Constructor parameters](#constructor-parameters)
     * [Unmapped properties](#unmapped-properties)
     * [DateTime / num types](#format-datetime--num-types)
@@ -37,7 +39,6 @@ Typical `flutter.dev project integration` sample can be found [here][4]
     * [Custom types](#custom-types)
     * [Nesting](#nesting-configuration)
     * [Schemes](#schemes)
-* [Annotations](#annotations)
 * [Adapters](#complementary-adapter-libraries)
     * [How to use adapter?](#complementary-adapter-libraries)
     * [![pub package](https://img.shields.io/pub/v/dart_json_mapper_mobx.svg)](https://pub.dartlang.org/packages/dart_json_mapper_mobx) | [dart_json_mapper_mobx](adapters/mobx) | [MobX][7]
@@ -156,7 +157,50 @@ output:
 ```
 
 As well, it is possible to utilize `converterParams` map to provide custom
-parameters to your [custom converters](#custom-based-types-handling).
+parameters to your [custom converters](#custom-types).
+
+## Get or Set fields
+
+When relying on Dart `getters / setters`, no need to annotate them.
+But when you have custom `getter / setter` methods, you should provide annotations for them.
+
+```dart
+@jsonSerializable
+class AllPrivateFields {
+  String _name;
+  String _lastName;
+
+  set name(dynamic value) {
+    _name = value;
+  }
+
+  String get name => _name;
+
+  @JsonProperty(name: 'lastName')
+  void setLastName(dynamic value) {
+    _lastName = value;
+  }
+
+  @JsonProperty(name: 'lastName')
+  String getLastName() => _lastName;
+}
+
+// given
+final json = '''{"name":"Bob","lastName":"Marley"}''';
+
+// when
+final instance = JsonMapper.deserialize<AllPrivateFields>(json);
+
+// then
+expect(instance.name, 'Bob');
+expect(instance.getLastName(), 'Marley');
+
+// when
+final targetJson = JsonMapper.serialize(instance, SerializationOptions(indent: ''));
+
+// then
+expect(targetJson, json);
+```
 
 ## Example with immutable class
 
@@ -421,7 +465,7 @@ class Startup extends Business {
 @jsonSerializable
 class Stakeholder {
   String fullName;
-  List<Business> businesses;
+  List<Business> businesses = [];
 
   Stakeholder(this.fullName, this.businesses);
 }
@@ -430,12 +474,6 @@ class Stakeholder {
 final jack = Stakeholder("Jack", [Startup(10), Hotel(4)]);
 
 // when
-JsonMapper().useAdapter(JsonMapperAdapter(
-  valueDecorators: {
-    typeOf<List<Business>>(): (value) => value.cast<Business>()
-  })
-);
-
 final String json = JsonMapper.serialize(jack);
 final Stakeholder target = JsonMapper.deserialize(json);
 
@@ -448,7 +486,7 @@ expect(target.businesses[1], TypeMatcher<Hotel>());
 
 In case you already have an instance of huge JSON Map object
 and portion of it needs to be surgically updated, then you can pass
-your `Map<String, dynamic>` instance as a `template` parameter for  
+your `Map<String, dynamic>` instance as a `template` parameter for
 `SerializationOptions`
 
 ```dart
@@ -547,6 +585,7 @@ class RootObject {
 
 // when
 final RootObject instance = JsonMapper.deserialize(json);
+
 // then
 expect(instance.items.length, 3);
 expect(instance.items, ['a', 'b', 'c']);
@@ -691,48 +730,48 @@ existing adapter or create one for your use case and make a PR to this repo.
 * custom [value decorators](#iterable-types)
 * custom typeInfo decorators
  
-For example, you would like to use `Int32` type provided by [Fixnum][8] library
-in your app. 
+For example, you would like to use `Color` type from Flutter in your model class.
 
 * Make sure you have following dependencies in your `pubspec.yaml`:
 
     ```yaml
     dependencies:
-      fixnum:
       dart_json_mapper:
-      dart_json_mapper_fixnum:
+      dart_json_mapper_flutter:
     dev_dependencies:
       build_runner:
     ```
 * Usually, adapter library exposes `final` adapter definition instance, to be provided as a parameter to `JsonMapper().useAdapter(adapter)`
 
     ```dart
-    import 'package:fixnum/fixnum.dart' show Int32;
-    import 'package:dart_json_mapper/dart_json_mapper.dart' show JsonMapper, jsonSerializable;
-    import 'package:dart_json_mapper_fixnum/dart_json_mapper_fixnum.dart' show fixnumAdapter;
+    import 'dart:ui' show Color;    
+    import 'package:dart_json_mapper/dart_json_mapper.dart' show JsonMapper, jsonSerializable;    
+    import 'package:dart_json_mapper_flutter/dart_json_mapper_flutter.dart' show flutterAdapter;
     
     import 'main.reflectable.dart' show initializeReflectable;
     
     @jsonSerializable
-    class FixnumExample {
-      Int32 integer32;
+    class ColorfulItem {
+      String name;
+      Color color;
     
-      FixnumExample(this.integer32);
+      ColorfulItem(this.name, this.color);
     }
     
     void main() {
       initializeReflectable();
-      JsonMapper().useAdapter(fixnumAdapter);
+      JsonMapper().useAdapter(flutterAdapter);
       
       print(JsonMapper.serialize(
-         FixnumExample(Int32(1234567890))
+         ColorfulItem('Item 1', Color(0x3f4f5f))
       ));
     }
     ```
     output:
     ```json
     {
-      "integer32": 1234567890
+      "name": "Item 1",
+      "color": "#3F4F5F"
     }
     ```
 ### You can easily mix and combine several adapters using following one-liner: 
