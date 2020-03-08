@@ -10,6 +10,7 @@ This package allows programmers to annotate Dart classes in order to
 * Compatible with **all** Dart platforms, including [Flutter](https://pub.dartlang.org/flutter/packages) and [Web](https://pub.dartlang.org/web/packages) platforms
 * No need to extend your classes from **any** mixins/base/abstract classes to keep code leaner
 * Clean and simple setup, transparent and straight-forward usage with **no heavy maintenance**
+* Feature parity with highly popular [Java Jackson][12], and only **4** annotations to remember, to cover all possible use cases.
 * **No extra boilerplate**, 100% generated code, which you'll *never* see.
 * **Custom converters** per each class field, full control over the process
 * **NO** dependency on `dart:mirrors`, one of the reasons is described [here][1].
@@ -334,8 +335,8 @@ JsonMapper().useAdapter(JsonMapperAdapter(
   })
 );
 
-List<Car> myCarsList = JsonMapper.deserialize(json);
-Set<Car> myCarsSet = JsonMapper.deserialize(json);
+final myCarsList = JsonMapper.deserialize<List<Car>>(json);
+final myCarsSet = JsonMapper.deserialize<Set<Car>>(json);
 ```
 
 Basic iterable based generics using Dart built-in types like `List<num>, List<Sring>, List<bool>, 
@@ -508,7 +509,7 @@ Assuming your Dart code is following [Camel case style][9], but that is not
 always `true` for JSON models, they could follow 
 [one of those popular - Pascal, Kebab, Snake, SnakeAllCaps][10] styles, right? 
 
-That's why we need a way to manage that in an organized way, instead of
+That's why we need an organized way to manage that, instead of
 hand coding each property using `@JsonProperty(name: ...)` it is possible to pass
 `CaseStyle` parameter to serialization / deserialization methods. 
 
@@ -584,7 +585,7 @@ class RootObject {
 }
 
 // when
-final RootObject instance = JsonMapper.deserialize(json);
+final instance = JsonMapper.deserialize<RootObject>(json);
 
 // then
 expect(instance.items.length, 3);
@@ -793,6 +794,7 @@ JsonMapper()
 [9]: https://en.wikipedia.org/wiki/Camel_case
 [10]: https://medium.com/better-programming/string-case-styles-camel-pascal-snake-and-kebab-case-981407998841
 [11]: https://github.com/flutter/flutter
+[12]: https://www.baeldung.com/jackson-annotations
 
 [rfc6901]: https://tools.ietf.org/html/rfc6901
 
