@@ -59,9 +59,8 @@ final defaultJsonMapperAdapter = JsonMapperAdapter(
       BigInt: bigIntConverter,
       List: defaultIterableConverter,
       Set: defaultIterableConverter,
-      Uint8List: uint8ListConverter,
-      typeOf<Map<String, dynamic>>(): mapStringDynamicConverter,
-      typeOf<Map<String, String>>(): mapStringStringConverter,
+      Map: mapConverter,
+      Uint8List: uint8ListConverter
     },
     valueDecorators: {
       typeOf<List<String>>(): (value) => value.cast<String>(),

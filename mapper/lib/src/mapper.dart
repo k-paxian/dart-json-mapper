@@ -36,7 +36,8 @@ class JsonMapper {
         encoder = JsonEncoder.withIndent(options.indent);
       }
     }
-    return encoder.convert(instance.serializeObject(object, options));
+    return encoder.convert(
+        instance.serializeObject(object, SerializationContext(options)));
   }
 
   /// Converts JSON string to Dart object of type T
@@ -263,9 +264,6 @@ class JsonMapper {
         getValueDecorator(jsonProperty, typeInfo.type) == null) {
       result = converters[typeInfo.genericType];
     }
-    if (result == null && typeInfo.isMap) {
-      result = defaultConverter;
-    }
     return result;
   }
 
@@ -445,15 +443,13 @@ class JsonMapper {
     return result;
   }
 
-  dynamic serializeIterable(Iterable object,
-      [SerializationOptions options, int level = 0]) {
+  dynamic serializeIterable(Iterable object, [SerializationContext context]) {
     return object != null
-        ? object.map((item) => serializeObject(item, options, level)).toList()
+        ? object.map((item) => serializeObject(item, context)).toList()
         : null;
   }
 
-  dynamic serializeObject(Object object,
-      [SerializationOptions options, int level = 0]) {
+  dynamic serializeObject(Object object, [SerializationContext context]) {
     if (object == null) {
       return object;
     }
@@ -461,15 +457,19 @@ class JsonMapper {
     final im = safeGetInstanceMirror(object);
     final converter = getConverter(null, object.runtimeType, null, im);
     if (converter != null) {
+      if (converter is IRecursiveConverter) {
+        (converter as IRecursiveConverter)
+            .setSerializeObjectFunction((o) => serializeObject(o, context));
+      }
       var convertedValue = converter.toJSON(object, null);
       if (object is Iterable && convertedValue == object) {
-        convertedValue = serializeIterable(object, options, level);
+        convertedValue = serializeIterable(object, context);
       }
       return convertedValue;
     }
 
     if (object is Iterable) {
-      return serializeIterable(object, options, level);
+      return serializeIterable(object, context);
     }
 
     if (im == null || im.type == null) {
@@ -481,10 +481,10 @@ class JsonMapper {
     }
 
     final classInfo = ClassInfo(im.type);
-    final jsonMeta = classInfo.getMeta(options.scheme);
-    final initialMap = options.template ?? {};
+    final jsonMeta = classInfo.getMeta(context.options.scheme);
+    final initialMap = context.options.template ?? {};
     final result = JsonMap(initialMap, jsonMeta);
-    final processedObjectDescriptor = getObjectProcessed(object, level);
+    final processedObjectDescriptor = getObjectProcessed(object, context.level);
     if (processedObjectDescriptor != null &&
         processedObjectDescriptor.levelsCount > 1) {
       final allowanceIsSet =
@@ -502,7 +502,7 @@ class JsonMapper {
       }
     }
     dumpTypeNameToObjectProperty(result, im.type);
-    enumeratePublicFields(im, null, options, (name,
+    enumeratePublicFields(im, null, context.options, (name,
         jsonName,
         value,
         isGetterOnly,
@@ -514,19 +514,21 @@ class JsonMapper {
         result.setPropertyValue(jsonName, meta.defaultValue);
       } else {
         var convertedValue;
+        final newContext =
+            SerializationContext(context.options, context.level + 1);
         if (converter != null) {
           final valueTypeInfo = getTypeInfo(value.runtimeType);
           dynamic convert(item) => converter.toJSON(item, meta);
           if (valueTypeInfo.isIterable) {
             convertedValue = converter.toJSON(value, meta);
             if (convertedValue == value) {
-              convertedValue = serializeIterable(value, options, ++level);
+              convertedValue = serializeIterable(value, newContext);
             }
           } else {
             convertedValue = convert(value);
           }
         } else {
-          convertedValue = serializeObject(value, options, ++level);
+          convertedValue = serializeObject(value, newContext);
         }
         result.setPropertyValue(jsonName, convertedValue);
       }

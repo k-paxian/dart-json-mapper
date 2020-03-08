@@ -34,7 +34,8 @@ class DefaultTypeInfoDecorator implements ITypeInfoDecorator {
     typeInfo.isDynamic = typeName == 'dynamic';
     typeInfo.isList = typeName.indexOf('List<') == 0;
     typeInfo.isSet = typeName.indexOf('Set<') == 0;
-    typeInfo.isMap = typeName.indexOf('Map<') == 0;
+    typeInfo.isMap = typeName.indexOf('Map<') == 0 ||
+        typeName.indexOf('_InternalLinkedHashMap<') == 0;
     typeInfo.isIterable = typeInfo.isList || typeInfo.isSet;
     typeInfo.scalarType = detectScalarType(typeInfo);
     typeInfo.genericType = detectGenericType(typeInfo);

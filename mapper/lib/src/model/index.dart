@@ -38,6 +38,13 @@ class SerializationOptions extends DeserializationOptions {
       : super(scheme: scheme, caseStyle: caseStyle);
 }
 
+class SerializationContext {
+  final SerializationOptions options;
+  final int level;
+
+  const SerializationContext(this.options, [this.level = 0]);
+}
+
 class ProcessedObjectDescriptor {
   dynamic object;
   Map<int, int> usages = {}; // level : usagesCounter

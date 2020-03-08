@@ -103,6 +103,20 @@ void testConverters() {
       expect(rawString, String.fromCharCodes(target.data));
     });
 
+    test('Default Map<K, V> converter', () {
+      // given
+      final targetJson =
+          '''{"bar":{"modelName":"Tesla S3","color":"Color.Black"}}''';
+      final foo = <String, Car>{};
+      foo['bar'] = Car('Tesla S3', Color.Black);
+
+      // when
+      final json = JsonMapper.serialize(foo, compactOptions);
+
+      // then
+      expect(json, targetJson);
+    });
+
     test('Custom String converter', () {
       // given
       final json = '''{

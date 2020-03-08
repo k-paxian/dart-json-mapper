@@ -6,6 +6,9 @@ import 'package:intl/intl.dart';
 
 import '../errors.dart';
 import 'annotations.dart';
+import 'index.dart';
+
+typedef SerializeObjectFunction = dynamic Function(Object object);
 
 /// Abstract class for custom converters implementations
 abstract class ICustomConverter<T> {
@@ -16,6 +19,11 @@ abstract class ICustomConverter<T> {
 /// Abstract class for custom iterable converters implementations
 abstract class ICustomIterableConverter {
   void setIterableInstance(Iterable instance);
+}
+
+/// Abstract class for custom recursive converters implementations
+abstract class IRecursiveConverter {
+  void setSerializeObjectFunction(SerializeObjectFunction serializeObject);
 }
 
 /// Base class for custom type converter having access to parameters provided
@@ -189,44 +197,26 @@ class BigIntConverter implements ICustomConverter {
   }
 }
 
-const mapStringDynamicConverter = MapStringDynamicConverter();
+const mapConverter = MapConverter();
 
-/// [Map<String, dynamic>] converter
-class MapStringDynamicConverter
-    implements ICustomConverter<Map<String, dynamic>> {
-  const MapStringDynamicConverter() : super();
+/// [Map<K, V>] converter
+class MapConverter implements ICustomConverter<Map>, IRecursiveConverter {
+  const MapConverter() : super();
 
+  static SerializeObjectFunction serializeObject;
   static JsonDecoder jsonDecoder = JsonDecoder();
 
   @override
-  Map<String, dynamic> fromJSON(dynamic jsonValue,
-      [JsonProperty jsonProperty]) {
-    return (jsonValue is String) ? jsonDecoder.convert(jsonValue) : jsonValue;
-  }
+  Map fromJSON(dynamic jsonValue, [JsonProperty jsonProperty]) =>
+      (jsonValue is String) ? jsonDecoder.convert(jsonValue) : jsonValue;
 
   @override
-  dynamic toJSON(Map<String, dynamic> object, [JsonProperty jsonProperty]) {
-    return object;
-  }
-}
-
-const mapStringStringConverter = MapStringStringConverter();
-
-/// [Map<String, String>] converter
-class MapStringStringConverter
-    implements ICustomConverter<Map<String, String>> {
-  const MapStringStringConverter() : super();
-
-  static JsonDecoder jsonDecoder = JsonDecoder();
+  dynamic toJSON(Map object, [JsonProperty jsonProperty]) =>
+      object.map((key, value) => MapEntry(key, serializeObject(value)));
 
   @override
-  Map<String, String> fromJSON(dynamic jsonValue, [JsonProperty jsonProperty]) {
-    return (jsonValue is String) ? jsonDecoder.convert(jsonValue) : jsonValue;
-  }
-
-  @override
-  dynamic toJSON(Map<String, String> object, [JsonProperty jsonProperty]) {
-    return object;
+  void setSerializeObjectFunction(SerializeObjectFunction serializeObject) {
+    MapConverter.serializeObject = serializeObject;
   }
 }
 

@@ -1,3 +1,7 @@
+## 1.5.4
+
+* #46, Introduce default converter for Map<K, V>.
+
 ## 1.5.3
 
 * Custom getter / setter methods support added.
