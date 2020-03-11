@@ -12,6 +12,7 @@ part 'model.dart';
 part 'test.constructors.dart';
 part 'test.converters.dart';
 part 'test.errors.dart';
+part 'test.generics.dart';
 part 'test.integration.dart';
 part 'test.name.casing.dart';
 part 'test.name.path.dart';
@@ -32,5 +33,6 @@ void main() {
   testPartialDeserialization();
   testIntegration();
   testSpecialCases();
+  testGenerics();
   testNamePath();
 }

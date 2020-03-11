@@ -75,7 +75,11 @@ class JsonMapper {
 
   JsonMapper._internal() {
     for (var classMirror in serializable.annotatedClasses) {
-      classes[classMirror.reflectedType.toString()] = classMirror;
+      if (classMirror.hasReflectedType) {
+        classes[classMirror.reflectedType.toString()] = classMirror;
+      } else if (classMirror.hasDynamicReflectedType) {
+        classes[classMirror.dynamicReflectedType.toString()] = classMirror;
+      }
     }
     useAdapter(defaultJsonMapperAdapter);
   }

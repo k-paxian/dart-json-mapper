@@ -1,3 +1,7 @@
+## 1.5.5
+
+* #47, Proper handling for annotated `Generics` classes.
+
 ## 1.5.4
 
 * #46, Introduce default converter for Map<K, V>.
