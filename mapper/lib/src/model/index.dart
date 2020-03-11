@@ -11,13 +11,19 @@ const defaultDeserializationOptions = DeserializationOptions();
 
 class DeserializationOptions {
   /// The most popular ways to combine words into a single string
-  /// Based on assumption: That all Dart class fields initially given as CaseStyle.Camel
+  /// Based on assumption: That all Dart class fields initially
+  /// given as CaseStyle.Camel
   final CaseStyle caseStyle;
 
   /// Scheme to be used
   final dynamic scheme;
 
-  const DeserializationOptions({this.scheme, this.caseStyle});
+  /// Declares necessity for all annotated classes and all their subclasses
+  /// to dump their own type name to the custom named json property.
+  final String typeNameProperty;
+
+  const DeserializationOptions(
+      {this.scheme, this.caseStyle, this.typeNameProperty});
 }
 
 const defaultSerializationOptions = SerializationOptions();
@@ -34,8 +40,16 @@ class SerializationOptions extends DeserializationOptions {
   final Map<String, dynamic> template;
 
   const SerializationOptions(
-      {scheme, caseStyle, this.indent, this.template, this.ignoreNullMembers})
-      : super(scheme: scheme, caseStyle: caseStyle);
+      {scheme,
+      caseStyle,
+      typeNameProperty,
+      this.indent,
+      this.template,
+      this.ignoreNullMembers})
+      : super(
+            scheme: scheme,
+            caseStyle: caseStyle,
+            typeNameProperty: typeNameProperty);
 }
 
 class SerializationContext {

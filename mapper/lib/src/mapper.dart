@@ -164,8 +164,8 @@ class JsonMapper {
     return result;
   }
 
-  TypeInfo detectObjectType(
-      dynamic objectInstance, Type objectType, JsonMap objectJsonMap) {
+  TypeInfo detectObjectType(dynamic objectInstance, Type objectType,
+      JsonMap objectJsonMap, DeserializationOptions options) {
     final objectClassMirror = classes[objectType.toString()];
     final objectClassInfo = ClassInfo(objectClassMirror);
     final Json meta = objectClassInfo.metaData
@@ -176,11 +176,11 @@ class JsonMapper {
     }
     final typeInfo = getTypeInfo(objectType ?? objectInstance.runtimeType);
 
+    final typeNameProperty = getTypeNameProperty(meta, options);
     final String typeName = objectJsonMap != null &&
-            meta != null &&
-            meta.typeNameProperty != null &&
-            objectJsonMap.hasProperty(meta.typeNameProperty)
-        ? objectJsonMap.getPropertyValue(meta.typeNameProperty)
+            typeNameProperty != null &&
+            objectJsonMap.hasProperty(typeNameProperty)
+        ? objectJsonMap.getPropertyValue(typeNameProperty)
         : typeInfo.typeName;
 
     final type = classes[typeName] != null
@@ -395,13 +395,20 @@ class JsonMapper {
     });
   }
 
-  void dumpTypeNameToObjectProperty(JsonMap object, ClassMirror classMirror) {
+  String getTypeNameProperty(Json meta, DeserializationOptions options) =>
+      meta != null && meta.typeNameProperty != null
+          ? meta.typeNameProperty
+          : options.typeNameProperty;
+
+  void dumpTypeNameToObjectProperty(
+      JsonMap object, ClassMirror classMirror, DeserializationOptions options) {
     final classInfo = ClassInfo(classMirror);
     final Json meta =
         classInfo.metaData.firstWhere((m) => m is Json, orElse: () => null);
-    if (meta != null && meta.typeNameProperty != null) {
+    final typeNameProperty = getTypeNameProperty(meta, options);
+    if (typeNameProperty != null) {
       final typeInfo = getTypeInfo(classMirror.reflectedType);
-      object.setPropertyValue(meta.typeNameProperty, typeInfo.typeName);
+      object.setPropertyValue(typeNameProperty, typeInfo.typeName);
     }
   }
 
@@ -416,7 +423,8 @@ class JsonMapper {
         if (isFieldIgnored(value, classMeta, meta, options)) {
           return;
         }
-        final parameterTypeInfo = detectObjectType(value, typeInfo.type, null);
+        final parameterTypeInfo =
+            detectObjectType(value, typeInfo.type, null, options);
         result[Symbol(name)] =
             deserializeObject(value, parameterTypeInfo.type, meta, options);
       }
@@ -435,7 +443,8 @@ class JsonMapper {
           !param.isNamed &&
           jsonMap.hasProperty(jsonName)) {
         var value = jsonMap.getPropertyValue(jsonName);
-        final parameterTypeInfo = detectObjectType(value, typeInfo.type, null);
+        final parameterTypeInfo =
+            detectObjectType(value, typeInfo.type, null, options);
         value = deserializeObject(value, parameterTypeInfo.type, meta, options);
         if (isFieldIgnored(value, classMeta, meta, options)) {
           value = null;
@@ -505,7 +514,7 @@ class JsonMapper {
         throw CircularReferenceError(object);
       }
     }
-    dumpTypeNameToObjectProperty(result, im.type);
+    dumpTypeNameToObjectProperty(result, im.type, context.options);
     enumeratePublicFields(im, null, context.options, (name,
         jsonName,
         value,
@@ -587,7 +596,7 @@ class JsonMapper {
     } on FormatException {
       throw MissingEnumValuesError(typeInfo.type);
     }
-    typeInfo = detectObjectType(null, instanceType, jsonMap);
+    typeInfo = detectObjectType(null, instanceType, jsonMap, options);
     final cm = classes[typeInfo.typeName];
     if (cm == null) {
       throw MissingAnnotationOnTypeError(typeInfo.type);

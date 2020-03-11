@@ -1,3 +1,7 @@
+## 1.5.6
+
+* #49, Global `typeNameProperty` introduced.
+
 ## 1.5.5
 
 * #47, Proper handling for annotated `Generics` classes.
