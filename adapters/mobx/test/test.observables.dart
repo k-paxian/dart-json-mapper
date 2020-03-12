@@ -27,6 +27,7 @@ class MobX {
   ObservableSet<double> doubleSet = ObservableSet<double>();
 
   ObservableMap<String, dynamic> map = ObservableMap<String, dynamic>();
+  ObservableMap<String, Item> mapItem = ObservableMap<String, Item>();
 
   Observable<String> stringObservable = Observable<String>('');
   Observable<DateTime> dateTimeObservable =
@@ -55,7 +56,8 @@ class MobX {
       this.intObservable,
       this.doubleObservable,
       this.boolObservable,
-      this.map});
+      this.map,
+      this.mapItem});
 }
 
 final compactOptions = SerializationOptions(indent: '');
@@ -267,6 +269,20 @@ void testObservables() {
       expect(targetJson, json);
       expect(instance, TypeMatcher<MobX>());
       expect(instance.map, TypeMatcher<ObservableMap<String, dynamic>>());
+    });
+
+    test('ObservableMap<String, Item>', () {
+      // given
+      final json = '''{"mapItem":{"x":{},"y":{}}}''';
+      final m = MobX(
+          mapItem: ObservableMap<String, Item>.of({'x': Item(), 'y': Item()}));
+      // when
+      final targetJson = JsonMapper.serialize(m, compactOptions);
+      final instance = JsonMapper.deserialize<MobX>(targetJson);
+      // then
+      expect(targetJson, json);
+      expect(instance, TypeMatcher<MobX>());
+      expect(instance.mapItem, TypeMatcher<ObservableMap<String, Item>>());
     });
   });
 

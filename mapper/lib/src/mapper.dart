@@ -458,8 +458,8 @@ class JsonMapper {
     return result;
   }
 
-  void configureConverter(ICustomConverter converter, dynamic value,
-      [SerializationContext context]) {
+  void configureConverter(ICustomConverter converter,
+      [dynamic value, SerializationContext context]) {
     if (converter is ICustomIterableConverter && value is Iterable) {
       (converter as ICustomIterableConverter).setIterableInstance(value);
     }
@@ -591,7 +591,7 @@ class JsonMapper {
     var typeInfo = getTypeInfo(instanceType);
     final converter = getConverter(parentMeta, typeInfo.type);
     if (converter != null) {
-      configureConverter(converter, jsonValue);
+      configureConverter(converter);
       var convertedValue = converter.fromJSON(jsonValue, parentMeta);
       if (typeInfo.isIterable && jsonValue == convertedValue) {
         convertedValue =

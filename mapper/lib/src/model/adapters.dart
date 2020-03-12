@@ -43,7 +43,7 @@ class JsonMapperAdapter implements IAdapter {
 }
 
 final defaultJsonMapperAdapter = JsonMapperAdapter(
-    title: 'Default Embeded JsonMapper Adapter',
+    title: 'Dart Core Embeded JsonMapper Adapter',
     typeInfoDecorators: {
       0: defaultTypeInfoDecorator
     },

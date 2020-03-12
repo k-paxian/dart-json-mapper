@@ -1,3 +1,7 @@
+## 1.2.1
+
+* Converter for ObservableMap<K,V> w/o decorators, when Map is pre-initialized
+
 ## 1.2.0
 
 * Support for Observable iterables, w/o decorators

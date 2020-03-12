@@ -51,18 +51,14 @@ class ObservableMapConverter
     implements ICustomConverter, IRecursiveConverter, ICustomMapConverter {
   ObservableMapConverter() : super();
 
-  final _jsonDecoder = JsonDecoder();
   SerializeObjectFunction _serializeObject;
   Map _instance;
 
   @override
   dynamic fromJSON(dynamic jsonValue, [JsonProperty jsonProperty]) {
     var result = jsonValue;
-    if (_instance != null && jsonValue is Map) {
-      _instance.clear();
-      _instance.addAll(jsonValue);
+    if (_instance != null && jsonValue is Map && jsonValue != _instance) {
       result = _instance;
-      _instance = null;
     }
     return result;
   }

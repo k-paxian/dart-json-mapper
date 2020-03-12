@@ -1,6 +1,7 @@
 ## 1.5.6
 
-* #49, Global `typeNameProperty` introduced.
+* #49, Global option `typeNameProperty` introduced.
+* #49, Global option `processAnnotatedMembersOnly` introduced.
 
 ## 1.5.5
 
