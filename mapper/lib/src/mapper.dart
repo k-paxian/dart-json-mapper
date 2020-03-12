@@ -310,6 +310,9 @@ class JsonMapper {
       final isGetterOnly = classInfo.isGetterOnly(name);
       final meta =
           classInfo.getDeclarationMeta(declarationMirror, options.scheme);
+      if (meta == null && options.processAnnotatedMembersOnly == true) {
+        continue;
+      }
       if (meta != null && meta.name != null) {
         jsonName = meta.name;
       }

@@ -22,8 +22,14 @@ class DeserializationOptions {
   /// to dump their own type name to the custom named json property.
   final String typeNameProperty;
 
+  /// Process only annotated class members
+  final bool processAnnotatedMembersOnly;
+
   const DeserializationOptions(
-      {this.scheme, this.caseStyle, this.typeNameProperty});
+      {this.scheme,
+      this.caseStyle,
+      this.typeNameProperty,
+      this.processAnnotatedMembersOnly});
 }
 
 const defaultSerializationOptions = SerializationOptions();
@@ -43,13 +49,15 @@ class SerializationOptions extends DeserializationOptions {
       {scheme,
       caseStyle,
       typeNameProperty,
+      processAnnotatedMembersOnly,
       this.indent,
       this.template,
       this.ignoreNullMembers})
       : super(
             scheme: scheme,
             caseStyle: caseStyle,
-            typeNameProperty: typeNameProperty);
+            typeNameProperty: typeNameProperty,
+            processAnnotatedMembersOnly: processAnnotatedMembersOnly);
 }
 
 class SerializationContext {

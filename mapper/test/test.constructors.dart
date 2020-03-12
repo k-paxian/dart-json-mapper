@@ -329,6 +329,16 @@ void testConstructors() {
       expect(target, '{"@type":"PtDerived","value":{"@type":"Pt"}}');
     });
 
+    test('processAnnotatedMembersOnly global option', () {
+      // given
+      final instance = ImmutableDefault();
+      // when
+      final target = JsonMapper.serialize(instance,
+          SerializationOptions(indent: '', processAnnotatedMembersOnly: true));
+      // then
+      expect(target, '{"id":1}');
+    });
+
     test('IgnoredFieldClass class', () {
       // given
       final json = '{"firstName":"Bob","middleName":"Jr","lastName":"Marley"}';
