@@ -22,9 +22,8 @@ class MobXTypeInfoDecorator extends DefaultTypeInfoDecorator {
     typeInfo.isList = typeInfo.isList || isObservableList(typeInfo);
     typeInfo.isSet = typeInfo.isSet || isObservableSet(typeInfo);
     typeInfo.isMap = typeInfo.isMap || isObservableMap(typeInfo);
-    typeInfo.isIterable = typeInfo.isIterable ||
-        isObservableList(typeInfo) ||
-        isObservableSet(typeInfo);
+    typeInfo.isIterable =
+        typeInfo.isIterable || typeInfo.isList || typeInfo.isSet;
     typeInfo.scalarType = detectScalarType(typeInfo);
     typeInfo.genericType = detectGenericType(typeInfo);
     return typeInfo;
@@ -47,19 +46,39 @@ class MobXTypeInfoDecorator extends DefaultTypeInfoDecorator {
 
 final observableMapConverter = ObservableMapConverter();
 
-/// [ObservableMap] converter
+/// [ObservableMap<K, V>] converter
 class ObservableMapConverter
-    implements ICustomConverter<ObservableMap<String, dynamic>> {
-  const ObservableMapConverter() : super();
+    implements ICustomConverter, IRecursiveConverter, ICustomMapConverter {
+  ObservableMapConverter() : super();
+
+  final _jsonDecoder = JsonDecoder();
+  SerializeObjectFunction _serializeObject;
+  Map _instance;
 
   @override
-  ObservableMap<String, dynamic> fromJSON(dynamic jsonValue,
-          [JsonProperty jsonProperty]) =>
-      ObservableMap<String, dynamic>.of(jsonValue);
+  dynamic fromJSON(dynamic jsonValue, [JsonProperty jsonProperty]) {
+    var result = jsonValue;
+    if (_instance != null && jsonValue is Map) {
+      _instance.clear();
+      _instance.addAll(jsonValue);
+      result = _instance;
+      _instance = null;
+    }
+    return result;
+  }
 
   @override
-  dynamic toJSON(Object object, [JsonProperty jsonProperty]) {
-    return object;
+  dynamic toJSON(dynamic object, [JsonProperty jsonProperty]) => object.map(
+      (key, value) => MapEntry(_serializeObject(key), _serializeObject(value)));
+
+  @override
+  void setSerializeObjectFunction(SerializeObjectFunction serializeObject) {
+    _serializeObject = serializeObject;
+  }
+
+  @override
+  void setMapInstance(Map instance) {
+    _instance = instance;
   }
 }
 
@@ -218,9 +237,8 @@ final mobXAdapter = JsonMapperAdapter(
     converters: {
       ObservableList: iterableConverter,
       ObservableSet: iterableConverter,
+      ObservableMap: observableMapConverter,
 
-      // Value converters for ObservableMap variations
-      typeOf<ObservableMap<String, dynamic>>(): observableMapConverter,
       // Value converters for Observable variations
       typeOf<Observable<String>>(): observableStringConverter,
       typeOf<Observable<DateTime>>(): observableDateTimeConverter,

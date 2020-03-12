@@ -10,7 +10,7 @@ This package allows programmers to annotate Dart classes in order to
 * Compatible with **all** Dart platforms, including [Flutter](https://pub.dartlang.org/flutter/packages) and [Web](https://pub.dartlang.org/web/packages) platforms
 * No need to extend your classes from **any** mixins/base/abstract classes to keep code leaner
 * Clean and simple setup, transparent and straight-forward usage with **no heavy maintenance**
-* Feature parity with highly popular [Java Jackson][12], and only **4** annotations to remember, to cover all possible use cases.
+* Feature parity with highly popular [Java Jackson][12], and only **4** [annotations](#annotations) to remember, to cover all possible use cases.
 * **No extra boilerplate**, 100% generated code, which you'll *never* see.
 * **Custom converters** per each class field, full control over the process
 * **NO** dependency on `dart:mirrors`, one of the reasons is described [here][1].
@@ -63,11 +63,11 @@ Say, you have a dart program *main.dart* having some classes intended to be trav
 
 **lib/main.dart**
 ```dart
-import 'package:dart_json_mapper/dart_json_mapper.dart' show JsonMapper;
+import 'package:dart_json_mapper/dart_json_mapper.dart' show JsonMapper, jsonSerializable;
 
 import 'main.reflectable.dart' show initializeReflectable;
 
-@jsonSerializable // This annotation let instances of MyData traveling to/from JSON
+@jsonSerializable // This annotation let instances of MyData travel to/from JSON
 class MyData {
   int a = 123;
 
@@ -353,12 +353,12 @@ like on example below, you don't need to mess around with value decorators.
 
 ```dart
 @jsonSerializable
-class ListItem {}
+class Item {}
 
 @jsonSerializable
 class IterablesContainer {
-  List<ListItem> list = [];
-  Set<ListItem> set = {};
+  List<Item> list = [];
+  Set<Item> set = {};
 }
 
 // given
@@ -368,12 +368,12 @@ final json = '''{"list":[{}, {}],"set":[{}, {}]}''';
 final target = JsonMapper.deserialize<IterablesContainer>(json);
 
 // then
-expect(target.list, TypeMatcher<List<ListItem>>());
-expect(target.list.first, TypeMatcher<ListItem>());
+expect(target.list, TypeMatcher<List<Item>>());
+expect(target.list.first, TypeMatcher<Item>());
 expect(target.list.length, 2);
 
-expect(target.set, TypeMatcher<Set<ListItem>>());
-expect(target.set.first, TypeMatcher<ListItem>());
+expect(target.set, TypeMatcher<Set<Item>>());
+expect(target.set.first, TypeMatcher<Item>());
 expect(target.set.length, 2);
 ```
 

@@ -21,6 +21,11 @@ abstract class ICustomIterableConverter {
   void setIterableInstance(Iterable instance);
 }
 
+/// Abstract class for custom map converters implementations
+abstract class ICustomMapConverter {
+  void setMapInstance(Map instance);
+}
+
 /// Abstract class for custom recursive converters implementations
 abstract class IRecursiveConverter {
   void setSerializeObjectFunction(SerializeObjectFunction serializeObject);
@@ -211,8 +216,8 @@ class MapConverter implements ICustomConverter<Map>, IRecursiveConverter {
       (jsonValue is String) ? jsonDecoder.convert(jsonValue) : jsonValue;
 
   @override
-  dynamic toJSON(Map object, [JsonProperty jsonProperty]) =>
-      object.map((key, value) => MapEntry(key, serializeObject(value)));
+  dynamic toJSON(Map object, [JsonProperty jsonProperty]) => object.map(
+      (key, value) => MapEntry(serializeObject(key), serializeObject(value)));
 
   @override
   void setSerializeObjectFunction(SerializeObjectFunction serializeObject) {

@@ -295,7 +295,7 @@ class JsonMapper {
                   options.ignoreNullMembers == true) &&
           value == null);
 
-  void enumeratePublicFields(InstanceMirror instanceMirror, JsonMap jsonMap,
+  void enumeratePublicProperties(InstanceMirror instanceMirror, JsonMap jsonMap,
       DeserializationOptions options, Function visitor) {
     final classInfo = ClassInfo(instanceMirror.type);
     final classMeta = classInfo.getMeta(options.scheme);
@@ -429,7 +429,6 @@ class JsonMapper {
             deserializeObject(value, parameterTypeInfo.type, meta, options);
       }
     });
-
     return result;
   }
 
@@ -456,6 +455,20 @@ class JsonMapper {
     return result;
   }
 
+  void configureConverter(ICustomConverter converter, dynamic value,
+      [SerializationContext context]) {
+    if (converter is ICustomIterableConverter && value is Iterable) {
+      (converter as ICustomIterableConverter).setIterableInstance(value);
+    }
+    if (converter is ICustomMapConverter && value is Map) {
+      (converter as ICustomMapConverter).setMapInstance(value);
+    }
+    if (converter is IRecursiveConverter) {
+      (converter as IRecursiveConverter)
+          .setSerializeObjectFunction((o) => serializeObject(o, context));
+    }
+  }
+
   dynamic serializeIterable(Iterable object, [SerializationContext context]) {
     return object != null
         ? object.map((item) => serializeObject(item, context)).toList()
@@ -470,10 +483,7 @@ class JsonMapper {
     final im = safeGetInstanceMirror(object);
     final converter = getConverter(null, object.runtimeType, null, im);
     if (converter != null) {
-      if (converter is IRecursiveConverter) {
-        (converter as IRecursiveConverter)
-            .setSerializeObjectFunction((o) => serializeObject(o, context));
-      }
+      configureConverter(converter, object, context);
       var convertedValue = converter.toJSON(object, null);
       if (object is Iterable && convertedValue == object) {
         convertedValue = serializeIterable(object, context);
@@ -515,7 +525,7 @@ class JsonMapper {
       }
     }
     dumpTypeNameToObjectProperty(result, im.type, context.options);
-    enumeratePublicFields(im, null, context.options, (name,
+    enumeratePublicProperties(im, null, context.options, (name,
         jsonName,
         value,
         isGetterOnly,
@@ -530,6 +540,7 @@ class JsonMapper {
         final newContext =
             SerializationContext(context.options, context.level + 1);
         if (converter != null) {
+          configureConverter(converter, value, context);
           final valueTypeInfo = getTypeInfo(value.runtimeType);
           dynamic convert(item) => converter.toJSON(item, meta);
           if (valueTypeInfo.isIterable) {
@@ -577,6 +588,7 @@ class JsonMapper {
     var typeInfo = getTypeInfo(instanceType);
     final converter = getConverter(parentMeta, typeInfo.type);
     if (converter != null) {
+      configureConverter(converter, jsonValue);
       var convertedValue = converter.fromJSON(jsonValue, parentMeta);
       if (typeInfo.isIterable && jsonValue == convertedValue) {
         convertedValue =
@@ -613,7 +625,7 @@ class JsonMapper {
     final im = safeGetInstanceMirror(objectInstance);
     final mappedFields = [];
 
-    enumeratePublicFields(im, jsonMap, options, (name,
+    enumeratePublicProperties(im, jsonMap, options, (name,
         jsonName,
         value,
         isGetterOnly,
@@ -638,10 +650,7 @@ class JsonMapper {
       }
       if (converter != null) {
         final originalValue = im.invokeGetter(name);
-        if (converter is ICustomIterableConverter &&
-            originalValue is Iterable) {
-          converter.setIterableInstance(originalValue);
-        }
+        configureConverter(converter, originalValue);
         fieldValue = converter.fromJSON(fieldValue, meta);
       }
       if (!isGetterOnly) {
