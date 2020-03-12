@@ -15,6 +15,11 @@ class TypeInfo {
   bool isIterable;
 
   TypeInfo(this.type);
+
+  @override
+  String toString() =>
+      'typeName: $typeName, scalarTypeName: $scalarTypeName, genericType: ' +
+      genericType.runtimeType.toString();
 }
 
 /// Abstract class for custom typeInfo decorator implementations
