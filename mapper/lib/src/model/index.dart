@@ -1,3 +1,4 @@
+import 'annotations.dart';
 import 'name_casing.dart';
 
 export 'adapters.dart';
@@ -25,10 +26,16 @@ class DeserializationOptions {
   /// Process only annotated class members
   final bool processAnnotatedMembersOnly;
 
+  /// Template Instance
+  /// - for Deserialization output it could be a typed Iterable<T>, or Map<K, V>, or else
+  /// - for Serialization output it could be an instance of Map<String, dynamic>
+  final dynamic template;
+
   const DeserializationOptions(
       {this.scheme,
       this.caseStyle,
       this.typeNameProperty,
+      this.template,
       this.processAnnotatedMembersOnly});
 }
 
@@ -42,19 +49,17 @@ class SerializationOptions extends DeserializationOptions {
   /// will be excluded from serialization process
   final bool ignoreNullMembers;
 
-  /// Template
-  final Map<String, dynamic> template;
-
   const SerializationOptions(
       {scheme,
       caseStyle,
       typeNameProperty,
+      template,
       processAnnotatedMembersOnly,
       this.indent,
-      this.template,
       this.ignoreNullMembers})
       : super(
             scheme: scheme,
+            template: template,
             caseStyle: caseStyle,
             typeNameProperty: typeNameProperty,
             processAnnotatedMembersOnly: processAnnotatedMembersOnly);
@@ -62,9 +67,19 @@ class SerializationOptions extends DeserializationOptions {
 
 class SerializationContext {
   final SerializationOptions options;
+  final JsonProperty parentMeta;
   final int level;
 
-  const SerializationContext(this.options, [this.level = 0]);
+  const SerializationContext(this.options, [this.level = 0, this.parentMeta]);
+}
+
+class DeserializationContext {
+  final DeserializationOptions options;
+  final Type instanceType;
+  final JsonProperty parentMeta;
+
+  const DeserializationContext(this.options, this.instanceType,
+      [this.parentMeta]);
 }
 
 class ProcessedObjectDescriptor {

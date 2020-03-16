@@ -11,6 +11,7 @@ part 'json.dart';
 part 'model.dart';
 part 'test.constructors.dart';
 part 'test.converters.dart';
+part 'test.enums.dart';
 part 'test.errors.dart';
 part 'test.generics.dart';
 part 'test.inheritance.dart';
@@ -37,4 +38,5 @@ void main() {
   testGenerics();
   testNamePath();
   testInheritance();
+  testEnums();
 }

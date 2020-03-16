@@ -9,6 +9,7 @@ import 'annotations.dart';
 import 'index.dart';
 
 typedef SerializeObjectFunction = dynamic Function(Object object);
+typedef DeserializeObjectFunction = dynamic Function(Object object, Type type);
 
 /// Abstract class for custom converters implementations
 abstract class ICustomConverter<T> {
@@ -18,17 +19,24 @@ abstract class ICustomConverter<T> {
 
 /// Abstract class for custom iterable converters implementations
 abstract class ICustomIterableConverter {
-  void setIterableInstance(Iterable instance);
+  void setIterableInstance(Iterable instance, TypeInfo typeInfo);
 }
 
 /// Abstract class for custom map converters implementations
 abstract class ICustomMapConverter {
-  void setMapInstance(Map instance);
+  void setMapInstance(Map instance, TypeInfo typeInfo);
+}
+
+/// Abstract class for custom Enum converters implementations
+abstract class ICustomEnumConverter {
+  void setEnumValues(Iterable enumValues);
 }
 
 /// Abstract class for custom recursive converters implementations
 abstract class IRecursiveConverter {
   void setSerializeObjectFunction(SerializeObjectFunction serializeObject);
+  void setDeserializeObjectFunction(
+      DeserializeObjectFunction deserializeObject);
 }
 
 /// Base class for custom type converter having access to parameters provided
@@ -88,7 +96,9 @@ class NumberConverter extends BaseCustomConverter implements ICustomConverter {
     final format = getNumberFormat(jsonProperty);
     return format != null && (jsonValue is String)
         ? getNumberFormat(jsonProperty).parse(jsonValue)
-        : jsonValue;
+        : (jsonValue is String)
+            ? num.tryParse(jsonValue) ?? jsonValue
+            : jsonValue;
   }
 
   @override
@@ -96,12 +106,47 @@ class NumberConverter extends BaseCustomConverter implements ICustomConverter {
     final format = getNumberFormat(jsonProperty);
     return object != null && format != null
         ? getNumberFormat(jsonProperty).format(object)
-        : object;
+        : (object is String) ? num.tryParse(object) : object;
   }
 
   NumberFormat getNumberFormat([JsonProperty jsonProperty]) {
     String format = getConverterParameter('format', jsonProperty);
     return format != null ? NumberFormat(format) : null;
+  }
+}
+
+final annotatedEnumConverter = AnnotatedEnumConverter();
+
+/// Annotated Enum instance converter
+class AnnotatedEnumConverter implements ICustomConverter, ICustomEnumConverter {
+  AnnotatedEnumConverter() : super();
+
+  Iterable _enumValues = [];
+
+  @override
+  Object fromJSON(dynamic jsonValue, [JsonProperty jsonProperty]) {
+    final enumValues =
+        (jsonProperty != null ? jsonProperty.enumValues : _enumValues);
+    dynamic convert(value) => enumValues.firstWhere((eValue) {
+          if (value != null &&
+              value != 'null' &&
+              jsonProperty != null &&
+              jsonProperty.isEnumValuesValid(value, enumValues) != true) {
+            throw InvalidEnumValueError(value, enumValues);
+          }
+          return eValue.toString() == value.toString();
+        }, orElse: () => null);
+    return convert(
+        jsonValue is String ? jsonValue.replaceAll('"', '') : jsonValue);
+  }
+
+  @override
+  dynamic toJSON(Object object, [JsonProperty jsonProperty]) =>
+      (object is! String) ? object.toString() : object;
+
+  @override
+  void setEnumValues(Iterable enumValues) {
+    _enumValues = enumValues;
   }
 }
 
@@ -114,8 +159,10 @@ class EnumConverter implements ICustomConverter {
   @override
   Object fromJSON(dynamic jsonValue, [JsonProperty jsonProperty]) {
     dynamic convert(value) => jsonProperty.enumValues.firstWhere((eValue) {
-          if (value != null && jsonProperty.isEnumValuesValid(value) != true) {
-            throw MissingEnumValuesError(value.runtimeType);
+          if (value != null &&
+              value != 'null' &&
+              jsonProperty.isEnumValuesValid(value) != true) {
+            throw InvalidEnumValueError(value, jsonProperty.enumValues);
           }
           return eValue.toString() == value.toString();
         }, orElse: () => null);
@@ -126,9 +173,19 @@ class EnumConverter implements ICustomConverter {
 
   @override
   dynamic toJSON(Object object, [JsonProperty jsonProperty]) {
-    return (object is List)
-        ? object.map((item) => item.toString()).toList()
-        : object.toString();
+    dynamic convert(value) {
+      if (value != null &&
+          value != 'null' &&
+          jsonProperty != null &&
+          jsonProperty.isEnumValuesValid(value) != true) {
+        throw InvalidEnumValueError(value, jsonProperty.enumValues);
+      }
+      return value.toString();
+    }
+
+    return (object is Iterable)
+        ? object.map(convert).toList()
+        : convert(object);
   }
 }
 
@@ -202,26 +259,83 @@ class BigIntConverter implements ICustomConverter {
   }
 }
 
-const mapConverter = MapConverter();
+final mapConverter = MapConverter();
 
 /// [Map<K, V>] converter
-class MapConverter implements ICustomConverter<Map>, IRecursiveConverter {
-  const MapConverter() : super();
+class MapConverter
+    implements ICustomConverter<Map>, IRecursiveConverter, ICustomMapConverter {
+  MapConverter() : super();
 
-  static SerializeObjectFunction serializeObject;
-  static JsonDecoder jsonDecoder = JsonDecoder();
+  SerializeObjectFunction _serializeObject;
+  DeserializeObjectFunction _deserializeObject;
+  TypeInfo _typeInfo;
+  Map _instance;
+  final _jsonDecoder = JsonDecoder();
+
+  dynamic from(item, Type type, JsonProperty jsonProperty) {
+    var result = _deserializeObject(item, type);
+    try {
+      if (jsonProperty != null && jsonProperty.enumValues != null) {
+        result = enumConverter.fromJSON(item, jsonProperty);
+      }
+    } on InvalidEnumValueError {
+      result = result;
+    }
+    return result;
+  }
+
+  dynamic to(item, JsonProperty jsonProperty) {
+    var result = item;
+    try {
+      if (jsonProperty != null && jsonProperty.enumValues != null) {
+        result = enumConverter.toJSON(item, jsonProperty);
+      } else {
+        result = _serializeObject(result);
+      }
+    } on InvalidEnumValueError {
+      result = _serializeObject(result);
+    }
+    return result;
+  }
 
   @override
-  Map fromJSON(dynamic jsonValue, [JsonProperty jsonProperty]) =>
-      (jsonValue is String) ? jsonDecoder.convert(jsonValue) : jsonValue;
+  Map fromJSON(dynamic jsonValue, [JsonProperty jsonProperty]) {
+    var result = jsonValue;
+    if (jsonValue is String) {
+      result = _jsonDecoder.convert(jsonValue);
+    }
+    if (_typeInfo != null &&
+        _instance != null &&
+        _instance is Map &&
+        result is Map) {
+      result = result.map((key, value) => MapEntry(
+          from(key, _typeInfo.parameters.first, jsonProperty),
+          from(value, _typeInfo.parameters.last, jsonProperty)));
+      result.forEach((key, value) => _instance[key] = value);
+      result = _instance;
+    }
+    return result;
+  }
 
   @override
   dynamic toJSON(Map object, [JsonProperty jsonProperty]) => object.map(
-      (key, value) => MapEntry(serializeObject(key), serializeObject(value)));
+      (key, value) => MapEntry(to(key, jsonProperty), to(value, jsonProperty)));
 
   @override
   void setSerializeObjectFunction(SerializeObjectFunction serializeObject) {
-    MapConverter.serializeObject = serializeObject;
+    _serializeObject = serializeObject;
+  }
+
+  @override
+  void setDeserializeObjectFunction(
+      DeserializeObjectFunction deserializeObject) {
+    _deserializeObject = deserializeObject;
+  }
+
+  @override
+  void setMapInstance(Map instance, TypeInfo typeInfo) {
+    _instance = instance;
+    _typeInfo = typeInfo;
   }
 }
 
@@ -232,20 +346,22 @@ class DefaultIterableConverter
     implements ICustomConverter, ICustomIterableConverter {
   DefaultIterableConverter() : super();
 
-  static JsonDecoder jsonDecoder = JsonDecoder();
-
   Iterable _instance;
 
   @override
   dynamic fromJSON(dynamic jsonValue, [JsonProperty jsonProperty]) {
+    dynamic convert(item) =>
+        jsonProperty != null && jsonProperty.enumValues != null
+            ? enumConverter.fromJSON(item, jsonProperty)
+            : item;
     if (_instance != null && jsonValue is Iterable) {
       if (_instance is List) {
         (_instance as List).clear();
-        jsonValue.forEach((item) => (_instance as List).add(item));
+        jsonValue.forEach((item) => (_instance as List).add(convert(item)));
       }
       if (_instance is Set) {
         (_instance as Set).clear();
-        jsonValue.forEach((item) => (_instance as Set).add(item));
+        jsonValue.forEach((item) => (_instance as Set).add(convert(item)));
       }
       return _instance;
     }
@@ -258,7 +374,7 @@ class DefaultIterableConverter
   }
 
   @override
-  void setIterableInstance(Iterable instance) {
+  void setIterableInstance(Iterable instance, TypeInfo typeInfo) {
     _instance = instance;
   }
 }

@@ -12,13 +12,13 @@ This package allows programmers to annotate Dart classes in order to
 * Clean and simple setup, transparent and straight-forward usage with **no heavy maintenance**
 * Feature parity with highly popular [Java Jackson][12], and only **4** [annotations](#annotations) to remember, to cover all possible use cases.
 * **No extra boilerplate**, 100% generated code, which you'll *never* see.
-* **Custom converters** per each class field, full control over the process
+* **Complementary adapters** full control over the process when you strive for maximum flexibility.
 * **NO** dependency on `dart:mirrors`, one of the reasons is described [here][1].
 * Because Serialization/Deserialization is **NOT** a responsibility of your Model classes.
 
 Dart classes reflection mechanism is based on [reflectable][3] library. 
 This means "extended types information" is auto-generated out of existing Dart program 
-guided by the annotated classes only, as the result types information is accessible at runtime, at a reduced cost.
+guided by the annotated classes **only**, as the result types information is accessible at runtime, at a reduced cost.
 
 Typical `flutter.dev project integration` sample can be found [here][4]
 
@@ -420,14 +420,31 @@ expect(target.lists.last.first, TypeMatcher<Item>());
 
 Enum construction in Dart has a specific meaning, and has to be treated accordingly.
 
-Enum declarations should not be annotated with `@jsonSerializable`, since they are not a classes 
-technically, but a special built in types.
+Generally, we always have to bear in mind following cases around Enums:
 
+* Your own Enums declared as part of your program code, thus they **can** be annotated.
+* Enums from third party packages, they **can not** be annotated.
+
+So whenever possible, you should annotate your Enum declarations as follows
 ```dart
+@jsonSerializable
+@Json(enumValues: Color.values)
 enum Color { Red, Blue, Green, Brown, Yellow, Black, White }
-...
+```
+
+And annotate class fields referencing Enums as follows
+```dart
 @JsonProperty(enumValues: Color.values)
 Color color;
+
+@JsonProperty(enumValues: Color.values)
+List<Color> colors;
+
+@JsonProperty(enumValues: Color.values)
+Set<Color> colorsSet;
+
+@JsonProperty(enumValues: Color.values)
+Map<Color, int> colorPriorities = <Color, int>{};
 ```
 
 Each enum based class field has to be annotated as showed in a snippet above. 
@@ -501,6 +518,30 @@ final json = JsonMapper.serialize(Car('Tesla S3', Color.Black),
 // then
 expect(json,
   '''{"a":"a","b":true,"modelName":"Tesla S3","color":"Color.Black"}''');
+```
+
+## Deserialization template
+
+In case you need to deserialize specific `Map<K, V>` type then you can pass
+typed instance of it as a `template` parameter for `DeserializationOptions`.
+
+Since typed `Map<K, V>` instance cannot be created dynamically due to Dart
+language nature, so you are providing ready made instance to use for deserialization output.
+
+```dart
+// given
+final json = '{"Color.Black":1,"Color.Blue":2}';
+
+// when
+final target = JsonMapper.deserialize(
+          json, DeserializationOptions(template: <Color, int>{}));
+
+// then
+expect(target, TypeMatcher<Map<Color, int>>());
+expect(target.containsKey(Color.Black), true);
+expect(target.containsKey(Color.Blue), true);
+expect(target[Color.Black], 1);
+expect(target[Color.Blue], 2);
 ```
 
 ## Name casing styles [Pascal, Kebab, Snake, SnakeAllCaps]
@@ -706,6 +747,7 @@ Why it's not a `@JsonObject()`? just for you to type less characters :smile:
 Example: `'foo', 'bar', 'foo/bar/baz'`
     * *typeNameProperty* declares the necessity for annotated class and all it's subclasses to dump their own type name to
 the property named as this param value
+    * *enumValues* Provides a way to specify enum values, via Dart built in capability for all Enum instances. `Enum.values`
     * *ignoreNullMembers* If set to `true` Null class members will be excluded from serialization process
     * *allowCircularReferences* As of `int` type. Allows certain number of circular object references during serialization.
     * *scheme* dynamic [Scheme](#schemes) marker to associate this meta information with particular mapping scheme

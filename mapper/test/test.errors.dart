@@ -81,7 +81,7 @@ void testErrorHandling() {
       final json = '{"sex":"Sex.Female"}';
       expect(catchError(() {
         JsonMapper.deserialize<WrongAnnotatedEnumField>(json);
-      }), TypeMatcher<MissingEnumValuesError>());
+      }), TypeMatcher<InvalidEnumValueError>());
     });
 
     test('Missing target type for deserialization', () {

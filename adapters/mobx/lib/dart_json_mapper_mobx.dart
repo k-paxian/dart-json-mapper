@@ -1,7 +1,5 @@
 library json_mapper_mobx;
 
-import 'dart:convert' show JsonDecoder;
-
 import 'package:dart_json_mapper/dart_json_mapper.dart';
 import 'package:mobx/mobx.dart';
 
@@ -41,40 +39,6 @@ class MobXTypeInfoDecorator extends DefaultTypeInfoDecorator {
       return ObservableMap;
     }
     return super.detectGenericType(typeInfo);
-  }
-}
-
-final observableMapConverter = ObservableMapConverter();
-
-/// [ObservableMap<K, V>] converter
-class ObservableMapConverter
-    implements ICustomConverter, IRecursiveConverter, ICustomMapConverter {
-  ObservableMapConverter() : super();
-
-  SerializeObjectFunction _serializeObject;
-  Map _instance;
-
-  @override
-  dynamic fromJSON(dynamic jsonValue, [JsonProperty jsonProperty]) {
-    var result = jsonValue;
-    if (_instance != null && jsonValue is Map && jsonValue != _instance) {
-      result = _instance;
-    }
-    return result;
-  }
-
-  @override
-  dynamic toJSON(dynamic object, [JsonProperty jsonProperty]) => object.map(
-      (key, value) => MapEntry(_serializeObject(key), _serializeObject(value)));
-
-  @override
-  void setSerializeObjectFunction(SerializeObjectFunction serializeObject) {
-    _serializeObject = serializeObject;
-  }
-
-  @override
-  void setMapInstance(Map instance) {
-    _instance = instance;
   }
 }
 
@@ -185,43 +149,6 @@ class ObservableBoolConverter implements ICustomConverter<Observable<bool>> {
       defaultConverter.toJSON(object.value, jsonProperty);
 }
 
-final iterableConverter = IterableConverter();
-
-/// Iterable converter
-class IterableConverter implements ICustomConverter, ICustomIterableConverter {
-  IterableConverter() : super();
-
-  static JsonDecoder jsonDecoder = JsonDecoder();
-
-  Iterable _instance;
-
-  @override
-  dynamic fromJSON(dynamic jsonValue, [JsonProperty jsonProperty]) {
-    if (_instance != null && jsonValue is Iterable) {
-      if (_instance is List) {
-        (_instance as List).clear();
-        jsonValue.forEach((item) => (_instance as List).add(item));
-      }
-      if (_instance is Set) {
-        (_instance as Set).clear();
-        jsonValue.forEach((item) => (_instance as Set).add(item));
-      }
-      return _instance;
-    }
-    return jsonValue;
-  }
-
-  @override
-  dynamic toJSON(dynamic object, [JsonProperty jsonProperty]) {
-    return object;
-  }
-
-  @override
-  void setIterableInstance(Iterable instance) {
-    _instance = instance;
-  }
-}
-
 final mobXAdapter = JsonMapperAdapter(
     title: 'MobX Adapter',
     refUrl: 'https://github.com/mobxjs/mobx.dart',
@@ -231,9 +158,9 @@ final mobXAdapter = JsonMapperAdapter(
       0: mobXTypeInfoDecorator
     },
     converters: {
-      ObservableList: iterableConverter,
-      ObservableSet: iterableConverter,
-      ObservableMap: observableMapConverter,
+      ObservableList: defaultIterableConverter,
+      ObservableSet: defaultIterableConverter,
+      ObservableMap: mapConverter,
 
       // Value converters for Observable variations
       typeOf<Observable<String>>(): observableStringConverter,

@@ -26,9 +26,6 @@ class MobX {
   ObservableSet<int> intSet = ObservableSet<int>();
   ObservableSet<double> doubleSet = ObservableSet<double>();
 
-  ObservableMap<String, dynamic> map = ObservableMap<String, dynamic>();
-  ObservableMap<String, Item> mapItem = ObservableMap<String, Item>();
-
   Observable<String> stringObservable = Observable<String>('');
   Observable<DateTime> dateTimeObservable =
       Observable<DateTime>(DateTime.now());
@@ -55,9 +52,14 @@ class MobX {
       this.numObservable,
       this.intObservable,
       this.doubleObservable,
-      this.boolObservable,
-      this.map,
-      this.mapItem});
+      this.boolObservable});
+}
+
+@jsonSerializable
+@Json(ignoreNullMembers: true)
+class MobXMaps {
+  ObservableMap<String, dynamic> map = ObservableMap<String, dynamic>();
+  ObservableMap<String, Item> mapItem = ObservableMap<String, Item>();
 }
 
 final compactOptions = SerializationOptions(indent: '');
@@ -260,28 +262,30 @@ void testObservables() {
     test('ObservableMap<String, dynamic>', () {
       // given
       final json = '''{"map":{"x":"xx","y":"yy"}}''';
-      final m =
-          MobX(map: ObservableMap<String, dynamic>.of({'x': 'xx', 'y': 'yy'}));
+      final m = MobXMaps();
+      m.map = ObservableMap<String, dynamic>.of({'x': 'xx', 'y': 'yy'});
+      m.mapItem = null;
       // when
       final targetJson = JsonMapper.serialize(m, compactOptions);
-      final instance = JsonMapper.deserialize<MobX>(targetJson);
+      final instance = JsonMapper.deserialize<MobXMaps>(targetJson);
       // then
       expect(targetJson, json);
-      expect(instance, TypeMatcher<MobX>());
+      expect(instance, TypeMatcher<MobXMaps>());
       expect(instance.map, TypeMatcher<ObservableMap<String, dynamic>>());
     });
 
     test('ObservableMap<String, Item>', () {
       // given
       final json = '''{"mapItem":{"x":{},"y":{}}}''';
-      final m = MobX(
-          mapItem: ObservableMap<String, Item>.of({'x': Item(), 'y': Item()}));
+      final m = MobXMaps();
+      m.map = null;
+      m.mapItem = ObservableMap<String, Item>.of({'x': Item(), 'y': Item()});
       // when
       final targetJson = JsonMapper.serialize(m, compactOptions);
-      final instance = JsonMapper.deserialize<MobX>(targetJson);
+      final instance = JsonMapper.deserialize<MobXMaps>(targetJson);
       // then
       expect(targetJson, json);
-      expect(instance, TypeMatcher<MobX>());
+      expect(instance, TypeMatcher<MobXMaps>());
       expect(instance.mapItem, TypeMatcher<ObservableMap<String, Item>>());
     });
   });

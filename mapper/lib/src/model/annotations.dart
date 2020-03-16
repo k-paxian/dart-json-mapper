@@ -28,6 +28,10 @@ class Json {
   /// custom named json property.
   final String typeNameProperty;
 
+  /// Provides a way to specify enum values, via Dart built in
+  /// capability for all Enum instances. `Enum.values`
+  final List<dynamic> enumValues;
+
   /// Null class members
   /// will be excluded from serialization process
   final bool ignoreNullMembers;
@@ -42,6 +46,7 @@ class Json {
   const Json(
       {this.allowCircularReferences,
       this.scheme,
+      this.enumValues,
       this.typeNameProperty,
       this.ignoreNullMembers,
       this.name});
@@ -96,11 +101,11 @@ class JsonProperty {
       this.converterParams});
 
   /// Validate provided enum values [enumValues] against provided value
-  bool isEnumValuesValid(dynamic enumValue) {
+  bool isEnumValuesValid(dynamic enumValue, [List enumValuesList]) {
     final getEnumTypeNameFromString =
         (value) => value.toString().split('.').first;
     final enumValueTypeName = getEnumTypeNameFromString(enumValue);
-    return enumValues
+    return (enumValues ?? enumValuesList)
         .every((item) => getEnumTypeNameFromString(item) == enumValueTypeName);
   }
 }

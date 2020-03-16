@@ -2,6 +2,8 @@ part of json_mapper.test;
 
 final compactOptions = SerializationOptions(indent: '');
 
+@jsonSerializable
+@Json(enumValues: Color.values)
 enum Color { Red, Blue, Gray, GrayMetallic, Green, Brown, Yellow, Black, White }
 
 @jsonSerializable

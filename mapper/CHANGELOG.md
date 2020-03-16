@@ -1,5 +1,6 @@
 ## 1.5.6
 
+* #49, Enums support with Iterables(List, Set), Map enhanced.
 * #49, Global option `typeNameProperty` introduced.
 * #49, Global option `processAnnotatedMembersOnly` introduced.
 
