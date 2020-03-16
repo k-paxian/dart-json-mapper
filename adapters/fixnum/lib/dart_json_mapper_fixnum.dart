@@ -3,7 +3,6 @@ library json_mapper_fixnum;
 import 'package:dart_json_mapper/dart_json_mapper.dart'
     show
         DefaultTypeInfoDecorator,
-        TypeInfo,
         typeOf,
         ICustomConverter,
         JsonProperty,
@@ -14,12 +13,8 @@ final fixnumTypeInfoDecorator = FixnumTypeInfoDecorator();
 
 class FixnumTypeInfoDecorator extends DefaultTypeInfoDecorator {
   @override
-  Type detectScalarType(TypeInfo typeInfo) {
-    final result = super.detectScalarType(typeInfo);
-    if (result != null) {
-      return result;
-    }
-    switch (typeInfo.scalarTypeName) {
+  Type detectTypeByName(String name) {
+    switch (name) {
       case 'Int32':
         return Int32;
       case 'Int64':
