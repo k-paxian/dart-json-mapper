@@ -37,6 +37,7 @@ Typical `flutter.dev project integration` sample can be found [here][4]
     * [Enum types](#enum-types)
     * [Name casing styles](#name-casing-styles-pascal-kebab-snake-snakeallcaps)
     * [Serialization template](#serialization-template)
+    * [Deserialization template](#deserialization-template)
     * [Custom types](#custom-types)
     * [Nesting](#nesting-configuration)
     * [Schemes](#schemes)
@@ -741,7 +742,7 @@ Use it to mark all the Dart classes you'd like to be traveling to / from JSON
 * `@JsonConstructor()` or `@jsonConstructor` for short, It's an **optional** constructor only marker annotation. 
 Use it to mark specific Dart class constructor you'd like to be used during deserialization.    
     * *scheme* dynamic [Scheme](#schemes) marker to associate this meta information with particular mapping scheme
-* `@Json(...)` It's an *optional* class only annotation, describes a Dart class to JSON Object mapping.
+* `@Json(...)` It's an *optional* annotation for class or Enum declaration, describes a Dart class to JSON Object mapping.
 Why it's not a `@JsonObject()`? just for you to type less characters :smile:
     * *name* Defines [RFC 6901][rfc6901] JSON pointer, denotes the json Object root name/path to be used for mapping.
 Example: `'foo', 'bar', 'foo/bar/baz'`
