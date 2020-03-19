@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:reflectable/reflectable.dart';
 
 import './value_decorators.dart';
@@ -42,6 +44,23 @@ class DefaultTypeInfoDecorator implements ITypeInfoDecorator {
   Map<String, ClassMirror> _knownClasses;
   Iterable<Type> _valueDecoratorTypes;
 
+  bool isHashSet(TypeInfo typeInfo) =>
+      typeInfo.typeName.indexOf('HashSet<') == 0;
+
+  bool isUnmodifiableListView(TypeInfo typeInfo) =>
+      typeInfo.typeName.indexOf('UnmodifiableListView<') == 0;
+
+  bool isUnmodifiableMapView(TypeInfo typeInfo) =>
+      typeInfo.typeName.indexOf('UnmodifiableMapView<') == 0;
+
+  bool isHashMap(TypeInfo typeInfo) =>
+      typeInfo.typeName.indexOf('HashMap<') == 0 ||
+      typeInfo.typeName.indexOf('_HashMap<') == 0;
+
+  bool isLinkedHashMap(TypeInfo typeInfo) =>
+      typeInfo.typeName.indexOf('_LinkedHashMap<') == 0 ||
+      typeInfo.typeName.indexOf('_InternalLinkedHashMap<') == 0;
+
   @override
   TypeInfo decorate(TypeInfo typeInfo) {
     final type = typeInfo.type;
@@ -49,10 +68,13 @@ class DefaultTypeInfoDecorator implements ITypeInfoDecorator {
 
     typeInfo.typeName = typeName;
     typeInfo.isDynamic = typeName == 'dynamic';
-    typeInfo.isList = typeName.indexOf('List<') == 0;
-    typeInfo.isSet = typeName.indexOf('Set<') == 0;
+    typeInfo.isList =
+        typeName.indexOf('List<') == 0 || isUnmodifiableListView(typeInfo);
+    typeInfo.isSet = typeName.indexOf('Set<') == 0 || isHashSet(typeInfo);
     typeInfo.isMap = typeName.indexOf('Map<') == 0 ||
-        typeName.indexOf('_InternalLinkedHashMap<') == 0;
+        isHashMap(typeInfo) ||
+        isLinkedHashMap(typeInfo) ||
+        isUnmodifiableMapView(typeInfo);
     typeInfo.isIterable = typeInfo.isList || typeInfo.isSet;
     typeInfo.scalarType = detectScalarType(typeInfo);
     typeInfo.genericType = detectGenericType(typeInfo);
@@ -83,11 +105,26 @@ class DefaultTypeInfoDecorator implements ITypeInfoDecorator {
       : null;
 
   Type detectGenericType(TypeInfo typeInfo) {
+    if (isUnmodifiableListView(typeInfo)) {
+      return UnmodifiableListView;
+    }
     if (typeInfo.isList) {
       return List;
     }
+    if (isHashSet(typeInfo)) {
+      return HashSet;
+    }
     if (typeInfo.isSet) {
       return Set;
+    }
+    if (isHashMap(typeInfo)) {
+      return HashMap;
+    }
+    if (isLinkedHashMap(typeInfo)) {
+      return LinkedHashMap;
+    }
+    if (isUnmodifiableMapView(typeInfo)) {
+      return UnmodifiableMapView;
     }
     if (typeInfo.isMap) {
       return Map;

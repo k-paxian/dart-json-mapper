@@ -318,8 +318,9 @@ class MapConverter
   }
 
   @override
-  dynamic toJSON(Map object, [JsonProperty jsonProperty]) => object.map(
-      (key, value) => MapEntry(to(key, jsonProperty), to(value, jsonProperty)));
+  dynamic toJSON(Map object, [JsonProperty jsonProperty]) =>
+      object.map((key, value) =>
+          MapEntry(to(key, jsonProperty).toString(), to(value, jsonProperty)));
 
   @override
   void setSerializeObjectFunction(SerializeObjectFunction serializeObject) {
@@ -354,7 +355,7 @@ class DefaultIterableConverter
         jsonProperty != null && jsonProperty.enumValues != null
             ? enumConverter.fromJSON(item, jsonProperty)
             : item;
-    if (_instance != null && jsonValue is Iterable) {
+    if (_instance != null && jsonValue is Iterable && jsonValue != _instance) {
       if (_instance is List) {
         (_instance as List).clear();
         jsonValue.forEach((item) => (_instance as List).add(convert(item)));

@@ -39,7 +39,7 @@ class DeserializationOptions {
       this.processAnnotatedMembersOnly});
 }
 
-const defaultSerializationOptions = SerializationOptions();
+const defaultSerializationOptions = SerializationOptions(indent: ' ');
 
 class SerializationOptions extends DeserializationOptions {
   /// Indentation

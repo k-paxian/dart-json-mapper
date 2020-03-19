@@ -1,3 +1,7 @@
+## 1.5.7
+
+* #49, Support for types `HashSet, HashMap, UnmodifiableListView, UnmodifiableMapView` as a subset of `dart:collection`
+
 ## 1.5.6
 
 * #49, Enums support with Iterables(List, Set), Map enhanced.

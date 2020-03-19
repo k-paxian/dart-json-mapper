@@ -1,5 +1,7 @@
 library json_mapper.test;
 
+import 'dart:collection'
+    show HashSet, HashMap, UnmodifiableListView, UnmodifiableMapView;
 import 'dart:typed_data';
 
 import 'package:dart_json_mapper/dart_json_mapper.dart';
@@ -9,6 +11,7 @@ import '_test.reflectable.dart' show initializeReflectable;
 
 part 'json.dart';
 part 'model.dart';
+part 'test.collections.dart';
 part 'test.constructors.dart';
 part 'test.converters.dart';
 part 'test.enums.dart';
@@ -38,5 +41,6 @@ void main() {
   testGenerics();
   testNamePath();
   testInheritance();
+  testCollections();
   testEnums();
 }

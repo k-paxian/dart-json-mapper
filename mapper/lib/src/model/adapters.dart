@@ -1,3 +1,10 @@
+import 'dart:collection'
+    show
+        HashSet,
+        HashMap,
+        LinkedHashMap,
+        UnmodifiableListView,
+        UnmodifiableMapView;
 import 'dart:typed_data' show Uint8List;
 
 import '../utils.dart';
@@ -58,8 +65,13 @@ final defaultJsonMapperAdapter = JsonMapperAdapter(
       double: numberConverter,
       BigInt: bigIntConverter,
       List: defaultIterableConverter,
+      UnmodifiableListView: defaultIterableConverter,
       Set: defaultIterableConverter,
+      HashSet: defaultIterableConverter,
       Map: mapConverter,
+      HashMap: mapConverter,
+      LinkedHashMap: mapConverter,
+      UnmodifiableMapView: mapConverter,
       Uint8List: uint8ListConverter
     },
     valueDecorators: {

@@ -11,7 +11,6 @@ import 'utils.dart';
 /// from / to JSON string
 class JsonMapper {
   static final JsonMapper instance = JsonMapper._internal();
-  final JsonEncoder jsonEncoder = JsonEncoder.withIndent(' ');
   final JsonDecoder jsonDecoder = JsonDecoder();
   final serializable = const JsonSerializable();
   final Map<String, ClassMirror> classes = {};
@@ -24,20 +23,13 @@ class JsonMapper {
     return serialize(object, options);
   }
 
-  /// Converts Dart object to JSON string,
+  /// Converts Dart object to JSON string
   static String serialize(Object object,
       [SerializationOptions options = defaultSerializationOptions]) {
+    final context = SerializationContext(options);
     instance.processedObjects.clear();
-    var encoder = instance.jsonEncoder;
-    if (options.indent != null && options.indent.isEmpty) {
-      encoder = JsonEncoder();
-    } else {
-      if (options.indent != null && options.indent.isNotEmpty) {
-        encoder = JsonEncoder.withIndent(options.indent);
-      }
-    }
-    return encoder.convert(
-        instance.serializeObject(object, SerializationContext(options)));
+    return _getJsonEncoder(context)
+        .convert(instance.serializeObject(object, context));
   }
 
   /// Converts JSON string to Dart object of type T
@@ -68,14 +60,28 @@ class JsonMapper {
 
   /// Converts Map<String, dynamic> to Dart object instance
   static T fromMap<T>(Map<String, dynamic> map,
-      [DeserializationOptions options = defaultDeserializationOptions]) {
-    return deserialize<T>(instance.jsonEncoder.convert(map), options);
+      [DeserializationOptions options = defaultDeserializationOptions,
+      SerializationOptions serializationOptions =
+          defaultSerializationOptions]) {
+    return deserialize<T>(
+        _getJsonEncoder(SerializationContext(serializationOptions))
+            .convert(map),
+        options);
   }
 
   /// Clone Dart object of type T
   static T clone<T>(T object) {
     return fromJson<T>(toJson(object));
   }
+
+  static JsonEncoder _getJsonEncoder(SerializationContext context) =>
+      context.options.indent != null && context.options.indent.isNotEmpty
+          ? JsonEncoder.withIndent(
+              context.options.indent, _toEncodable(context))
+          : JsonEncoder(_toEncodable(context));
+
+  static dynamic _toEncodable(SerializationContext context) =>
+      (Object object) => instance.serializeObject(object, context);
 
   factory JsonMapper() => instance;
 
@@ -273,9 +279,7 @@ class JsonMapper {
         annotatedEnumConverter.setEnumValues(ClassInfo(im.type).enumValues);
       }
     }
-    if (result == null &&
-        converters[typeInfo.genericType] != null &&
-        getValueDecorator(jsonProperty, typeInfo.type) == null) {
+    if (result == null && converters[typeInfo.genericType] != null) {
       result = converters[typeInfo.genericType];
     }
     if (result == null &&
@@ -611,7 +615,7 @@ class JsonMapper {
 
   Object deserializeIterable(
       dynamic jsonValue, DeserializationContext context) {
-    List jsonList =
+    Iterable jsonList =
         (jsonValue is String) ? jsonDecoder.convert(jsonValue) : jsonValue;
     final value = jsonList != null
         ? jsonList
@@ -640,17 +644,20 @@ class JsonMapper {
       return applyValueDecorator(convertedValue, typeInfo, context.parentMeta);
     }
 
-    if (typeInfo.isIterable) {
-      return deserializeIterable(jsonValue, context);
-    }
-
-    JsonMap jsonMap;
+    var convertedJsonValue;
     try {
-      jsonMap = JsonMap(
-          (jsonValue is String) ? jsonDecoder.convert(jsonValue) : jsonValue);
+      convertedJsonValue =
+          (jsonValue is String) ? jsonDecoder.convert(jsonValue) : jsonValue;
     } on FormatException {
       throw MissingEnumValuesError(typeInfo.type);
     }
+
+    if (typeInfo.isIterable ||
+        (convertedJsonValue != null && convertedJsonValue is Iterable)) {
+      return deserializeIterable(jsonValue, context);
+    }
+
+    final jsonMap = JsonMap(convertedJsonValue);
     typeInfo =
         detectObjectType(null, context.instanceType, jsonMap, context.options);
     final cm = classes[typeInfo.typeName];
