@@ -13,6 +13,7 @@ class TypeInfo {
   String scalarTypeName;
 
   Type genericType;
+  String genericTypeName;
 
   Iterable<Type> parameters = []; // Type<T, K, V, etc.>
 
@@ -86,6 +87,8 @@ class DefaultTypeInfoDecorator implements ITypeInfoDecorator {
     typeInfo.parameters =
         getTypeParams(typeInfo).map((typeName) => detectTypeByName(typeName));
 
+    typeInfo.genericTypeName = detectGenericTypeName(typeInfo);
+
     return typeInfo;
   }
 
@@ -103,6 +106,15 @@ class DefaultTypeInfoDecorator implements ITypeInfoDecorator {
   String detectScalarTypeName(TypeInfo typeInfo) => typeInfo.isIterable
       ? RegExp('<(.+)>').allMatches(typeInfo.typeName).first.group(1)
       : null;
+
+  String detectGenericTypeName(
+          TypeInfo typeInfo) =>
+      typeInfo.typeName.contains('<')
+          ? typeInfo.typeName.substring(0, typeInfo.typeName.indexOf('<')) +
+              '<' +
+              typeInfo.parameters.map((x) => 'dynamic').join(',') +
+              '>'
+          : null;
 
   Type detectGenericType(TypeInfo typeInfo) {
     if (isUnmodifiableListView(typeInfo)) {

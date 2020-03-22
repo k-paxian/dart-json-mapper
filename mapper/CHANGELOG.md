@@ -1,3 +1,8 @@
+## 1.5.8
+
+* #47, Introduced support for `composition over inheritance`
+using composition of `Generic<T>` with `T`.
+
 ## 1.5.7
 
 * #49, Support for types `HashSet, HashMap, UnmodifiableListView, UnmodifiableMapView` as a subset of `dart:collection`

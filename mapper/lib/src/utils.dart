@@ -120,10 +120,16 @@ class ClassInfo {
     try {
       result =
           classMirror.declarations.values.firstWhere((DeclarationMirror dm) {
-        return !dm.isPrivate &&
-            dm is MethodMirror &&
+        var returnType;
+        try {
+          returnType = dm is MethodMirror ? dm.returnType.simpleName : null;
+        } catch (error) {
+          returnType = null;
+        }
+        return dm is MethodMirror &&
+            !dm.isPrivate &&
             !dm.isConstructor &&
-            dm.returnType.simpleName == 'void' &&
+            returnType == 'void' &&
             getDeclarationMeta(dm, scheme) != null &&
             getDeclarationMeta(dm, scheme).name == name;
       });

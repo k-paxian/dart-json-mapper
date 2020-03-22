@@ -402,7 +402,12 @@ class JsonMapper {
     methodMirror.parameters.forEach((ParameterMirror param) {
       final name = param.simpleName;
       final declarationMirror = classInfo.getDeclarationMirror(name) ?? param;
-      var paramTypeInfo = getTypeInfo(param.reflectedType);
+      final paramType = param.hasReflectedType
+          ? param.reflectedType
+          : param.hasDynamicReflectedType
+              ? param.dynamicReflectedType
+              : dynamic;
+      var paramTypeInfo = getTypeInfo(paramType);
       paramTypeInfo = paramTypeInfo.isDynamic
           ? getTypeInfo(getDeclarationType(declarationMirror))
           : paramTypeInfo;
@@ -660,13 +665,14 @@ class JsonMapper {
     final jsonMap = JsonMap(convertedJsonValue);
     typeInfo =
         detectObjectType(null, context.instanceType, jsonMap, context.options);
-    final cm = classes[typeInfo.typeName];
+    final cm = classes[typeInfo.typeName] ?? classes[typeInfo.genericTypeName];
     if (cm == null) {
       throw MissingAnnotationOnTypeError(typeInfo.type);
     }
     final classInfo = ClassInfo(cm);
     jsonMap.jsonMeta = classInfo.getMeta(context.options.scheme);
 
+    final namedArguments = getNamedArguments(cm, jsonMap, context);
     final objectInstance = context.options.template ??
         (cm.isEnum
             ? null
@@ -675,9 +681,12 @@ class JsonMapper {
                     .getJsonConstructor(context.options.scheme)
                     .constructorName,
                 getPositionalArguments(cm, jsonMap, context),
-                getNamedArguments(cm, jsonMap, context)));
+                namedArguments));
     final im = safeGetInstanceMirror(objectInstance);
-    final mappedFields = [];
+    final mappedFields = namedArguments.keys
+        .map((Symbol symbol) =>
+            RegExp('"(.+)"').allMatches(symbol.toString()).first.group(1))
+        .toList();
 
     enumeratePublicProperties(im, jsonMap, context.options, (name,
         jsonName,
@@ -718,8 +727,11 @@ class JsonMapper {
       }
     });
 
+    final typeNameProperty =
+        getTypeNameProperty(jsonMap.jsonMeta, context.options);
     final unmappedFields = jsonMap.map.keys
-        .where((field) => !mappedFields.contains(field))
+        .where((field) =>
+            !mappedFields.contains(field) && field != typeNameProperty)
         .toList();
     if (unmappedFields.isNotEmpty) {
       final jsonAnySetter = classInfo.getJsonAnySetter(context.options.scheme);
@@ -736,6 +748,6 @@ class JsonMapper {
       });
     }
 
-    return objectInstance;
+    return applyValueDecorator(objectInstance, typeInfo, context.parentMeta);
   }
 }
