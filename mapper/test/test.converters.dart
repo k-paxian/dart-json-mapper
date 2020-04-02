@@ -42,6 +42,11 @@ class CustomListContainer {
   Set<ListItem> set = {};
 }
 
+@jsonSerializable
+class InlineJsonContainer {
+  Map<String, dynamic> dataHash;
+}
+
 void testConverters() {
   group('[Verify converters]', () {
     test('Map<String, dynamic> converter', () {
@@ -55,6 +60,25 @@ void testConverters() {
       expect(target, TypeMatcher<Map<String, dynamic>>());
       expect(target['a'], TypeMatcher<String>());
       expect(target['b'], TypeMatcher<num>());
+    });
+
+    test('Map converter - Inline JSON value', () {
+      // given
+      final json = r'''{
+          "id": 15989,
+      "title": "xxx",
+      "body": "xxx",
+      "type": "abc",
+      "dataHash": "{\"id\":\"3098\",\"number\":1}"
+    }''';
+
+      // when
+      final target = JsonMapper.deserialize<InlineJsonContainer>(json);
+
+      // then
+      expect(target, TypeMatcher<InlineJsonContainer>());
+      expect(target.dataHash['id'], '3098');
+      expect(target.dataHash['number'], 1);
     });
 
     test('DateConverter', () {
