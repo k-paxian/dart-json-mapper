@@ -60,13 +60,9 @@ class JsonMapper {
 
   /// Converts Map<String, dynamic> to Dart object instance
   static T fromMap<T>(Map<String, dynamic> map,
-      [DeserializationOptions options = defaultDeserializationOptions,
-      SerializationOptions serializationOptions =
-          defaultSerializationOptions]) {
+      [SerializationOptions options = defaultSerializationOptions]) {
     return deserialize<T>(
-        _getJsonEncoder(SerializationContext(serializationOptions))
-            .convert(map),
-        options);
+        _getJsonEncoder(SerializationContext(options)).convert(map), options);
   }
 
   /// Clone Dart object of type T
@@ -549,7 +545,11 @@ class JsonMapper {
       if (im != null) {
         throw MissingEnumValuesError(object.runtimeType);
       } else {
-        throw MissingAnnotationOnTypeError(object.runtimeType);
+        if (context.options.ignoreUnknownTypes == true) {
+          return null;
+        } else {
+          throw MissingAnnotationOnTypeError(object.runtimeType);
+        }
       }
     }
 

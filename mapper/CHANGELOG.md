@@ -1,3 +1,7 @@
+## 1.5.9
+
+* #53, Global serialization option `ignoreUnknownTypes` introduced as an alternative for Java Jackson's `@JsonIgnoreProperties(ignoreUnknown = true)`
+
 ## 1.5.8
 
 * #47, Introduced support for `composition over inheritance`

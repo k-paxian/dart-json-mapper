@@ -49,6 +49,11 @@ class SerializationOptions extends DeserializationOptions {
   /// will be excluded from serialization process
   final bool ignoreNullMembers;
 
+  /// Class members having Unknown types
+  /// will be excluded from serialization process
+  /// Java Jackson's "@JsonIgnoreProperties(ignoreUnknown = true)"
+  final bool ignoreUnknownTypes;
+
   const SerializationOptions(
       {scheme,
       caseStyle,
@@ -56,7 +61,8 @@ class SerializationOptions extends DeserializationOptions {
       template,
       processAnnotatedMembersOnly,
       this.indent,
-      this.ignoreNullMembers})
+      this.ignoreNullMembers,
+      this.ignoreUnknownTypes})
       : super(
             scheme: scheme,
             template: template,

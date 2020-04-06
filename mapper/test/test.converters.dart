@@ -1,5 +1,11 @@
 part of json_mapper.test;
 
+class Timestamp {
+  num stamp;
+  num i;
+  Timestamp(this.stamp, this.i);
+}
+
 class CustomStringConverter implements ICustomConverter<String> {
   const CustomStringConverter() : super();
 
@@ -179,6 +185,21 @@ void testConverters() {
       expect(target.set, TypeMatcher<Set<ListItem>>());
       expect(target.set.first, TypeMatcher<ListItem>());
       expect(target.set.length, 2);
+    });
+
+    test('Unknown types .fromMap', () {
+      // given
+      final json = <String, dynamic>{
+        'model': 'Tesla',
+        'DateFacturation': Timestamp(1568465485, 0),
+      };
+
+      // when
+      final myModel = JsonMapper.fromMap<MyCarModel>(
+          json, SerializationOptions(ignoreUnknownTypes: true));
+
+      // then
+      expect(myModel.model, 'Tesla');
     });
   });
 }
