@@ -64,7 +64,7 @@ Say, you have a dart program *main.dart* having some classes intended to be trav
 
 **lib/main.dart**
 ```dart
-import 'package:dart_json_mapper/dart_json_mapper.dart' show JsonMapper, jsonSerializable;
+import 'package:dart_json_mapper/dart_json_mapper.dart' show JsonMapper, jsonSerializable, JsonProperty;
 
 import 'main.reflectable.dart' show initializeReflectable;
 
@@ -340,8 +340,8 @@ final myCarsList = JsonMapper.deserialize<List<Car>>(json);
 final myCarsSet = JsonMapper.deserialize<Set<Car>>(json);
 ```
 
-Basic iterable based generics using Dart built-in types like `List<num>, List<Sring>, List<bool>, 
-List<DateTime>, Set<num>, Set<Sring>, Set<bool>, Set<DateTime>, etc.` supported out of the box. 
+Basic iterable based generics using Dart built-in types like `List<num>, List<String>, List<bool>,
+List<DateTime>, Set<num>, Set<String>, Set<bool>, Set<DateTime>, etc.` supported out of the box.
 
 For custom iterable types like `List<Car> / Set<Car>` you have to provide value decorator function 
 as showed in a code snippet above before using deserialization. This function will have explicit 
@@ -509,6 +509,8 @@ your `Map<String, dynamic>` instance as a `template` parameter for
 `SerializationOptions`
 
 ```dart
+enum Color { Red, Blue, Green, Brown, Yellow, Black, White }
+
 // given
 final template = {'a': 'a', 'b': true};
 
@@ -530,6 +532,8 @@ Since typed `Map<K, V>` instance cannot be created dynamically due to Dart
 language nature, so you are providing ready made instance to use for deserialization output.
 
 ```dart
+enum Color { Red, Blue, Green, Brown, Yellow, Black, White }
+
 // given
 final json = '{"Color.Black":1,"Color.Blue":2}';
 
@@ -551,7 +555,7 @@ Assuming your Dart code is following [Camel case style][9], but that is not
 always `true` for JSON models, they could follow 
 [one of those popular - Pascal, Kebab, Snake, SnakeAllCaps][10] styles, right? 
 
-That's why we need an organized way to manage that, instead of
+That's why we need a smart way to manage that, instead of
 hand coding each property using `@JsonProperty(name: ...)` it is possible to pass
 `CaseStyle` parameter to serialization / deserialization methods. 
 
@@ -619,15 +623,15 @@ And with code similar to this one
 ``` dart
 @jsonSerializable
 @Json(name: 'root/foo/bar')
-class RootObject {
+class BarObject {
   @JsonProperty(name: 'baz/items')
   List<String> items;
 
-  RootObject({this.items});
+  BarObject({this.items});
 }
 
 // when
-final instance = JsonMapper.deserialize<RootObject>(json);
+final instance = JsonMapper.deserialize<BarObject>(json);
 
 // then
 expect(instance.items.length, 3);
@@ -736,13 +740,13 @@ String title;
 
 ## Annotations
 
-* `@JsonSerializable()` or `@jsonSerializable` for short, It's a **required** class only marker annotation. 
-Use it to mark all the Dart classes you'd like to be traveling to / from JSON   
+* `@JsonSerializable()` or `@jsonSerializable` for short, It's a **required** marker annotation for class or Enum declarations.
+Use it to mark all the Dart objects you'd like to be traveling to / from JSON
     * Has **NO** params
 * `@JsonConstructor()` or `@jsonConstructor` for short, It's an **optional** constructor only marker annotation. 
 Use it to mark specific Dart class constructor you'd like to be used during deserialization.    
     * *scheme* dynamic [Scheme](#schemes) marker to associate this meta information with particular mapping scheme
-* `@Json(...)` It's an *optional* annotation for class or Enum declaration, describes a Dart class to JSON Object mapping.
+* `@Json(...)` It's an *optional* annotation for class or Enum declaration, describes a Dart object to JSON Object mapping.
 Why it's not a `@JsonObject()`? just for you to type less characters :smile:
     * *name* Defines [RFC 6901][rfc6901] JSON pointer, denotes the json Object root name/path to be used for mapping.
 Example: `'foo', 'bar', 'foo/bar/baz'`
@@ -774,7 +778,7 @@ existing adapter or create one for your use case and make a PR to this repo.
 * custom [value decorators](#iterable-types)
 * custom typeInfo decorators
  
-For example, you would like to use `Color` type from Flutter in your model class.
+For example, you would like to refer to `Color` type from Flutter in your model class.
 
 * Make sure you have following dependencies in your `pubspec.yaml`:
 
@@ -788,7 +792,7 @@ For example, you would like to use `Color` type from Flutter in your model class
 * Usually, adapter library exposes `final` adapter definition instance, to be provided as a parameter to `JsonMapper().useAdapter(adapter)`
 
     ```dart
-    import 'dart:ui' show Color;    
+    import 'dart:ui' show Color;
     import 'package:dart_json_mapper/dart_json_mapper.dart' show JsonMapper, jsonSerializable;    
     import 'package:dart_json_mapper_flutter/dart_json_mapper_flutter.dart' show flutterAdapter;
     
