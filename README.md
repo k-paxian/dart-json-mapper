@@ -26,6 +26,8 @@ Typical `flutter.dev project integration` sample can be found [here][4]
 
 * [Basic setup](#basic-setup)
 * [Annotations](#annotations)
+* [Known limitations](#known-limitations)
+* [Documentation][docs]
 * [Configuration use cases](#format-datetime--num-types)
     * [Extended classes](#inherited-classes-derived-from-abstract--base-class)
     * [Immutable classes](#example-with-immutable-class)
@@ -767,6 +769,11 @@ Example: `'foo', 'bar', 'foo/bar/baz'`
     * *enumValues* Provides a way to specify enum values, via Dart built in capability for all Enum instances. `Enum.values`
     * *defaultValue* Defines field default value
 
+## Known limitations
+
+* [Dart code obfuscation][obfuscation]. If you are using or planning to use `extra-gen-snapshot-options=--obfuscate` option with your Flutter project,
+this library shouldn't be your primary choice then. At the moment there is no workaround for this to play nicely together.
+
 ## Complementary adapter libraries
 
 If you want a seamless integration with popular use cases, feel free to pick an 
@@ -843,7 +850,11 @@ JsonMapper()
 [11]: https://github.com/flutter/flutter
 [12]: https://www.baeldung.com/jackson-annotations
 
+[obfuscation]: https://flutter.dev/docs/deployment/obfuscate
+
 [rfc6901]: https://tools.ietf.org/html/rfc6901
+
+[docs]: https://pub.dev/documentation/dart_json_mapper/latest/dart_json_mapper/dart_json_mapper-library.html
 
 [ci-badge]: https://github.com/k-paxian/dart-json-mapper/workflows/Pipeline/badge.svg
 [ci-badge-url]: https://github.com/k-paxian/dart-json-mapper/actions?query=workflow%3A%22Pipeline%22
