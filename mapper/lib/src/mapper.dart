@@ -280,7 +280,7 @@ class JsonMapper {
     }
     if (result == null &&
         (jsonProperty != null && jsonProperty.enumValues != null)) {
-      result = enumConverter;
+      result = converters[Enum];
     }
     return result;
   }

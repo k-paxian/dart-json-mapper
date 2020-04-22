@@ -1,5 +1,17 @@
 part of json_mapper.test;
 
+enum NumericEnumTestColor {
+  Red,
+  Blue,
+  Gray,
+  GrayMetallic,
+  Green,
+  Brown,
+  Yellow,
+  Black,
+  White
+}
+
 class Timestamp {
   num stamp;
   num i;
@@ -37,6 +49,14 @@ class BigIntData {
 @jsonSerializable
 class Model {
   DateTime data;
+}
+
+@jsonSerializable
+class NumericEnum {
+  @JsonProperty(enumValues: NumericEnumTestColor.values)
+  NumericEnumTestColor color;
+
+  NumericEnum(this.color);
 }
 
 @jsonSerializable
@@ -200,6 +220,22 @@ void testConverters() {
 
       // then
       expect(myModel.model, 'Tesla');
+    });
+
+    test('Numeric Enum converter', () {
+      // given
+      final json = '''{"color":3}''';
+      final adapter =
+          JsonMapperAdapter(converters: {Enum: enumConverterNumeric});
+      JsonMapper().useAdapter(adapter);
+
+      final instance = NumericEnum(NumericEnumTestColor.GrayMetallic);
+      // when
+      final target = JsonMapper.serialize(instance, compactOptions);
+      // then
+      expect(target, json);
+
+      JsonMapper().removeAdapter(adapter);
     });
   });
 }

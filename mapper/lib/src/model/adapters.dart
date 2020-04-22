@@ -7,6 +7,7 @@ import 'dart:collection'
         UnmodifiableMapView;
 import 'dart:typed_data' show Uint8List;
 
+import '../model/index.dart' show Enum;
 import '../utils.dart';
 import 'converters.dart';
 import 'type_info.dart';
@@ -58,6 +59,7 @@ final defaultJsonMapperAdapter = JsonMapperAdapter(
       dynamic: defaultConverter,
       String: defaultConverter,
       bool: defaultConverter,
+      Enum: enumConverter,
       Symbol: symbolConverter,
       DateTime: dateConverter,
       num: numberConverter,

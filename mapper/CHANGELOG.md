@@ -1,3 +1,7 @@
+## 1.5.10
+
+* #58, Introduced ability to customize default Enums converter via adapter.
+
 ## 1.5.9
 
 * #53, Global serialization option `ignoreUnknownTypes` introduced as an alternative for Java Jackson's `@JsonIgnoreProperties(ignoreUnknown = true)`
