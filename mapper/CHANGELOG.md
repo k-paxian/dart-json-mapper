@@ -1,3 +1,7 @@
+## 1.5.11
+
+* #60, Introduced ability to specify inline value decorators, complimentary to global registration as apart of an adapter
+
 ## 1.5.10
 
 * #58, Introduced ability to customize default Enums converter via adapter.

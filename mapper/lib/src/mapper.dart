@@ -16,6 +16,7 @@ class JsonMapper {
   final Map<String, ClassMirror> classes = {};
   final Map<int, IAdapter> adapters = {};
   final Map<String, ProcessedObjectDescriptor> processedObjects = {};
+  final Map<Type, ValueDecoratorFunction> _inlineValueDecorators = {};
 
   /// Converts Dart object to JSON string
   static String toJson(Object object,
@@ -83,6 +84,10 @@ class JsonMapper {
 
   JsonMapper._internal() {
     for (var classMirror in serializable.annotatedClasses) {
+      final jsonMeta = ClassInfo(classMirror).getMeta();
+      if (jsonMeta != null && jsonMeta.valueDecorators != null) {
+        _inlineValueDecorators.addAll(jsonMeta.valueDecorators());
+      }
       if (classMirror.hasReflectedType) {
         classes[classMirror.reflectedType.toString()] = classMirror;
       } else if (classMirror.hasDynamicReflectedType) {
@@ -119,6 +124,7 @@ class JsonMapper {
 
   Map<Type, ValueDecoratorFunction> get valueDecorators {
     final result = {};
+    result.addAll(_inlineValueDecorators);
     adapters.values.forEach((IAdapter adapter) {
       result.addAll(adapter.valueDecorators);
     });

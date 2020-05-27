@@ -1,6 +1,7 @@
 import 'package:reflectable/reflectable.dart';
 
 import 'converters.dart';
+import 'value_decorators.dart';
 
 /// [jsonConstructor] is used as a shorthand metadata w/o "()"
 const jsonConstructor = JsonConstructor();
@@ -40,11 +41,32 @@ class Json {
   /// for annotated class. Presume You know what you are doing
   final int allowCircularReferences;
 
+  /// Static function to return a Map of Inline value decorators
+  ///
+  /// @jsonSerializable
+  /// class NoticeItem {}
+  ///
+  /// @Json(valueDecorators: NoticeList.valueDecorators)
+  /// @jsonSerializable
+  /// class NoticeList {
+  ///   static Map<Type, ValueDecoratorFunction> valueDecorators() =>
+  ///       <Type, ValueDecoratorFunction>{
+  ///         typeOf<List<NoticeItem>>(): (value) => value.cast<NoticeItem>()
+  ///       };
+  ///
+  ///   final List<NoticeItem> list;
+  ///
+  ///   const NoticeList(this.list);
+  /// }
+  ///
+  final Map<Type, ValueDecoratorFunction> Function() valueDecorators;
+
   /// Scheme marker to associate this meta information with particular mapping scheme
   final dynamic scheme;
 
   const Json(
       {this.allowCircularReferences,
+      this.valueDecorators,
       this.scheme,
       this.enumValues,
       this.typeNameProperty,
@@ -101,7 +123,7 @@ class JsonProperty {
       this.converterParams});
 
   /// Validate provided enum values [enumValues] against provided value
-  bool isEnumValuesValid(dynamic enumValue, [List enumValuesList]) {
+  bool isEnumValuesValid(dynamic enumValue, [Iterable enumValuesList]) {
     final getEnumTypeNameFromString =
         (value) => value.toString().split('.').first;
     final enumValueTypeName = getEnumTypeNameFromString(enumValue);

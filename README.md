@@ -390,7 +390,14 @@ virtually any depth.
 class Item {}
 
 @jsonSerializable
+@Json(valueDecorators: ListOfLists.valueDecorators)
 class ListOfLists {
+  static Map<Type, ValueDecoratorFunction> valueDecorators() =>
+      <Type, ValueDecoratorFunction>{
+        typeOf<List<List<Item>>>(): (value) => value.cast<List<Item>>(),
+        typeOf<List<Item>>(): (value) => value.cast<Item>()
+      };
+  
   List<List<Item>> lists;
 }
 
@@ -403,14 +410,8 @@ final json = '''{
 }''';
 
 // when
-JsonMapper().useAdapter(JsonMapperAdapter(
-  valueDecorators: {
-    typeOf<List<List<Item>>>(): (value) => value.cast<List<Item>>(),
-    typeOf<List<Item>>(): (value) => value.cast<Item>()
-  })
-);
-
 final target = JsonMapper.deserialize<ListOfLists>(json);
+
 // then
 expect(target.lists.length, 2);
 expect(target.lists.first.length, 2);

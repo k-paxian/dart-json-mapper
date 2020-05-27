@@ -1,6 +1,22 @@
 part of json_mapper.test;
 
 @jsonSerializable
+class NoticeItem {}
+
+@Json(valueDecorators: NoticeList.valueDecorators)
+@jsonSerializable
+class NoticeList {
+  static Map<Type, ValueDecoratorFunction> valueDecorators() =>
+      <Type, ValueDecoratorFunction>{
+        typeOf<List<NoticeItem>>(): (value) => value.cast<NoticeItem>()
+      };
+
+  final List<NoticeItem> list;
+
+  const NoticeList(this.list);
+}
+
+@jsonSerializable
 class TestChain extends _TestChain {}
 
 @jsonSerializable
@@ -138,6 +154,15 @@ void testValueDecorators() {
       expect(targetSet.first, TypeMatcher<int>());
       expect(targetList.length, 3);
       expect(targetList.first, TypeMatcher<int>());
+    });
+
+    test('Inline value decorators', () {
+      // when
+      final target = JsonMapper.deserialize<NoticeList>('{"list":[{},{}]}');
+
+      // then
+      expect(target.list.first, TypeMatcher<NoticeItem>());
+      expect(target.list.length, 2);
     });
 
     test('Custom Set<Car> value decorator', () {
