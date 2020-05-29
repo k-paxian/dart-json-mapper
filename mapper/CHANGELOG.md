@@ -1,3 +1,7 @@
+## 1.5.12
+
+* #64, Added support for class fields as of Map type having Enum as a Key or Value **AND initialized** via class constructor
+
 ## 1.5.11
 
 * #60, Introduced ability to specify inline value decorators, complimentary to global registration as apart of an adapter

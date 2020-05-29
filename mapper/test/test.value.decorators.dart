@@ -7,9 +7,7 @@ class NoticeItem {}
 @jsonSerializable
 class NoticeList {
   static Map<Type, ValueDecoratorFunction> valueDecorators() =>
-      <Type, ValueDecoratorFunction>{
-        typeOf<List<NoticeItem>>(): (value) => value.cast<NoticeItem>()
-      };
+      {typeOf<List<NoticeItem>>(): (value) => value.cast<NoticeItem>()};
 
   final List<NoticeItem> list;
 

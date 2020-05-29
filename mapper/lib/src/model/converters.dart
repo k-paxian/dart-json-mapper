@@ -304,15 +304,19 @@ class MapConverter
     if (jsonValue is String) {
       result = _jsonDecoder.convert(jsonValue);
     }
-    if (_typeInfo != null &&
-        _instance != null &&
-        _instance is Map &&
-        result is Map) {
-      result = result.map((key, value) => MapEntry(
-          from(key, _typeInfo.parameters.first, jsonProperty),
-          from(value, _typeInfo.parameters.last, jsonProperty)));
-      result.forEach((key, value) => _instance[key] = value);
-      result = _instance;
+    if (_typeInfo != null && result is Map) {
+      if (_instance != null && _instance is Map ||
+          (_instance == null &&
+              jsonProperty != null &&
+              jsonProperty.enumValues != null)) {
+        result = result.map((key, value) => MapEntry(
+            from(key, _typeInfo.parameters.first, jsonProperty),
+            from(value, _typeInfo.parameters.last, jsonProperty)));
+      }
+      if (_instance != null && _instance is Map) {
+        result.forEach((key, value) => _instance[key] = value);
+        result = _instance;
+      }
     }
     return result;
   }

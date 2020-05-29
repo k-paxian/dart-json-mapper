@@ -37,6 +37,22 @@ class EnumIterablesWithConstructor {
   EnumIterablesWithConstructor({this.colors, this.colorsSet});
 }
 
+@jsonSerializable
+@Json(enumValues: Category.values)
+enum Category { First, Second, Third }
+
+@jsonSerializable
+@Json(valueDecorators: Split.valueDecorators)
+class Split {
+  static Map<Type, ValueDecoratorFunction> valueDecorators() =>
+      {typeOf<Map<Category, int>>(): (value) => value.cast<Category, int>()};
+
+  @JsonProperty(enumValues: Category.values)
+  Map<Category, int> values;
+
+  Split(this.values);
+}
+
 void testEnums() {
   group('[Verify Enums cases]', () {
     test('Single Enum Value', () {
@@ -69,6 +85,29 @@ void testEnums() {
       expect(target.containsKey(Color.Blue), true);
       expect(target[Color.Black], 1);
       expect(target[Color.Blue], 2);
+    });
+
+    test('Map<Category, int> as constructor parameter', () {
+      // given
+      final json =
+          '{"values":{"Category.First":1,"Category.Second":2,"Category.Third":3}}';
+      final map = {
+        Category.First: 1,
+        Category.Second: 2,
+        Category.Third: 3,
+      };
+      final split = Split(map);
+
+      // when
+      final targetJson = JsonMapper.serialize(split, compactOptions);
+      final instance = JsonMapper.deserialize<Split>(targetJson);
+
+      // then
+      expect(json, targetJson);
+      expect(instance, TypeMatcher<Split>());
+      expect(instance.values[Category.First], 1);
+      expect(instance.values[Category.Second], 2);
+      expect(instance.values[Category.Third], 3);
     });
 
     test('Enum Iterable instance', () {

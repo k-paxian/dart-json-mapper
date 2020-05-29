@@ -393,7 +393,7 @@ class Item {}
 @Json(valueDecorators: ListOfLists.valueDecorators)
 class ListOfLists {
   static Map<Type, ValueDecoratorFunction> valueDecorators() =>
-      <Type, ValueDecoratorFunction>{
+      {
         typeOf<List<List<Item>>>(): (value) => value.cast<List<Item>>(),
         typeOf<List<Item>>(): (value) => value.cast<Item>()
       };
