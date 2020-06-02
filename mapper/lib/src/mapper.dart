@@ -668,6 +668,10 @@ class JsonMapper {
       return deserializeIterable(jsonValue, context);
     }
 
+    if (convertedJsonValue is! Map<String, dynamic>) {
+      return convertedJsonValue;
+    }
+
     final jsonMap = JsonMap(convertedJsonValue);
     typeInfo =
         detectObjectType(null, context.instanceType, jsonMap, context.options);

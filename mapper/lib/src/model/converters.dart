@@ -308,7 +308,8 @@ class MapConverter
       if (_instance != null && _instance is Map ||
           (_instance == null &&
               jsonProperty != null &&
-              jsonProperty.enumValues != null)) {
+              jsonProperty.enumValues != null) ||
+          (_instance == null && jsonProperty == null)) {
         result = result.map((key, value) => MapEntry(
             from(key, _typeInfo.parameters.first, jsonProperty),
             from(value, _typeInfo.parameters.last, jsonProperty)));

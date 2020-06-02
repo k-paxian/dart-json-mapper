@@ -1,6 +1,36 @@
 part of json_mapper.test;
 
 @jsonSerializable
+class NavbarTab {
+  final String icon;
+  final String title;
+  final bool on;
+  NavbarTab({this.icon, this.title, this.on});
+}
+
+@jsonSerializable
+@Json(valueDecorators: NavbarConfig.valueDecorators)
+class NavbarConfig {
+  static Map<Type, ValueDecoratorFunction> valueDecorators() => {
+        typeOf<Map<String, NavbarTab>>(): (value) =>
+            value.cast<String, NavbarTab>()
+      };
+
+  NavbarConfig(
+      {this.tabs,
+      this.activeColor,
+      this.inactiveColor,
+      this.backgroundColor,
+      this.fontSize});
+
+  final Map<String, NavbarTab> tabs;
+  final String activeColor;
+  final String inactiveColor;
+  final String backgroundColor;
+  final double fontSize;
+}
+
+@jsonSerializable
 class NoticeItem {}
 
 @Json(valueDecorators: NoticeList.valueDecorators)
@@ -126,6 +156,26 @@ void testValueDecorators() {
   final iterableCustomerDecorator = (value) => value.cast<Customer>();
 
   group('[Verify value decorators]', () {
+    test('Custom Map<K, V> decorator', () {
+      // given
+      final jsonMap = {
+        "tabs": {
+          "home": {"icon": "0xe800", "title": "Home", "on": true},
+          "sections": {"icon": "0xe801", "title": "Sections", "on": true}
+        },
+        "active_color": null,
+        "inactive_color": null,
+        "background_color": null,
+        "font_size": null
+      };
+
+      // when
+      final target = JsonMapper.fromMap<NavbarConfig>(jsonMap);
+
+      // then
+      expect(target, TypeMatcher<NavbarConfig>());
+    });
+
     test('Inherited List<String> property', () {
       // given
       final test = TestChain();

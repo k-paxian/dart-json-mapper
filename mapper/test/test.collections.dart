@@ -107,9 +107,8 @@ void testCollections() {
       // given
       final instance = HashMap.of({1: 'a', 2: 'b', 3: 'c'});
       final adapter = JsonMapperAdapter(valueDecorators: {
-        typeOf<HashMap<int, String>>(): (value) => HashMap<int, String>.of(value
-            .map((key, value) => MapEntry(int.tryParse(key), value))
-            .cast<int, String>())
+        typeOf<HashMap<int, String>>(): (value) => HashMap<int, String>.of(
+            value.map((key, value) => MapEntry(key, value)).cast<int, String>())
       });
       JsonMapper().useAdapter(adapter);
 

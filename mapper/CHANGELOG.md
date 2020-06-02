@@ -1,3 +1,7 @@
+## 1.5.13
+
+* #9, Map<K, V> support improved
+
 ## 1.5.12
 
 * #64, Added support for class fields as of Map type having Enum as a Key or Value **AND initialized** via class constructor
