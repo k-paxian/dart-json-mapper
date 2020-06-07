@@ -3,6 +3,7 @@ part of json_mapper.test;
 @jsonSerializable
 class NavbarTab {
   final String icon;
+  @JsonProperty(defaultValue: 'car')
   final String title;
   final bool on;
   NavbarTab({this.icon, this.title, this.on});
@@ -161,7 +162,8 @@ void testValueDecorators() {
       final jsonMap = {
         "tabs": {
           "home": {"icon": "0xe800", "title": "Home", "on": true},
-          "sections": {"icon": "0xe801", "title": "Sections", "on": true}
+          "sections": {"icon": "0xe801", "on": true},
+          "x": {"icon": "0xe801", "title": null, "on": true}
         },
         "active_color": null,
         "inactive_color": null,
@@ -174,6 +176,9 @@ void testValueDecorators() {
 
       // then
       expect(target, TypeMatcher<NavbarConfig>());
+      expect(target.tabs['home'].title, 'Home');
+      expect(target.tabs['sections'].title, 'car');
+      expect(target.tabs['x'].title, 'car');
     });
 
     test('Inherited List<String> property', () {

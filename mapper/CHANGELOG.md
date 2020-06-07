@@ -1,3 +1,7 @@
+## 1.5.14
+
+* #65, `@JsonProperty.defaultValue` handling bug fix
+
 ## 1.5.13
 
 * #9, Map<K, V> support improved
