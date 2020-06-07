@@ -43,6 +43,7 @@ Typical `flutter.dev project integration` sample can be found [here][4]
     * [Custom types](#custom-types)
     * [Nesting](#nesting-configuration)
     * [Schemes](#schemes)
+    * [Objects cloning](#objects-cloning)
 * [Adapters](#complementary-adapter-libraries)
     * [How to use adapter?](#complementary-adapter-libraries)
     * [![pub package](https://img.shields.io/pub/v/dart_json_mapper_mobx.svg)](https://pub.dartlang.org/packages/dart_json_mapper_mobx) | [dart_json_mapper_mobx](adapters/mobx) | [MobX][7]
@@ -691,6 +692,40 @@ final instance = Object('No Scheme');
 final json = JsonMapper.serialize(instance, SerializationOptions(indent: ''));
 // then
 expect(json, '''{"default":{"title":"No Scheme"}}''');
+```
+
+## Objects cloning
+
+If you are wondering how to deep-clone Dart Objects,
+or even considering using libraries like [Freezed](https://github.com/rrousselGit/freezed) to accomplish that,
+then this section probably will be useful for you
+
+```dart
+// given
+final car = Car('Tesla S3', Color.Black);
+
+// when
+final cloneCar = JsonMapper.clone(car);
+
+// then
+expect(cloneCar == car, false);
+expect(cloneCar.color == car.color, true);
+expect(cloneCar.model == car.model, true);
+```
+
+Or if you would like to override some properties for the clonned object instance
+
+```dart
+// given
+final car = Car('Tesla S3', Color.Black);
+
+// when
+final cloneCar = JsonMapper.copyWith(car, {'color': Color.Blue}); // overriding Black by Blue
+
+// then
+expect(cloneCar == car, false);
+expect(cloneCar.color, Color.Blue);
+expect(cloneCar.model, car.model);
 ```
 
 ## Custom types

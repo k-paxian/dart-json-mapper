@@ -71,6 +71,11 @@ class JsonMapper {
     return fromJson<T>(toJson(object));
   }
 
+  /// Copy Dart object of type T & merge it with Map<String, dynamic>
+  static T copyWith<T>(T object, Map<String, dynamic> map) {
+    return fromMap<T>(toMap(object)..addAll(map));
+  }
+
   static JsonEncoder _getJsonEncoder(SerializationContext context) =>
       context.options.indent != null && context.options.indent.isNotEmpty
           ? JsonEncoder.withIndent(

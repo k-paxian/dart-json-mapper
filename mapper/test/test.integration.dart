@@ -31,6 +31,19 @@ void testIntegration() {
       expect(clone.model == car.model, true);
     });
 
+    test('Object copyWith', () {
+      // given
+      final car = Car('Tesla S3', Color.Black);
+
+      // when
+      final instance = JsonMapper.copyWith(car, {'color': Color.Blue});
+
+      // then
+      expect(instance == car, false);
+      expect(instance.color, Color.Blue);
+      expect(instance.model, car.model);
+    });
+
     test('Serialize to target template map', () {
       // given
       final template = {'a': 'a', 'b': true};
