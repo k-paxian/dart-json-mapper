@@ -3,7 +3,6 @@ part of json_mapper.test;
 class UnAnnotated {}
 
 enum Sex { Male, Female }
-const sexTypeValues = ['__female', '__male'];
 
 @jsonSerializable
 @Json(allowCircularReferences: 1)
@@ -22,12 +21,6 @@ class UserSettings {
 
 @jsonSerializable
 class UnAnnotatedEnumField {
-  Sex sex = Sex.Female;
-}
-
-@jsonSerializable
-class WrongAnnotatedEnumField {
-  @JsonProperty(enumValues: sexTypeValues)
   Sex sex = Sex.Female;
 }
 
@@ -75,13 +68,6 @@ void testErrorHandling() {
       expect(
           catchError(() => JsonMapper.deserialize<UnAnnotatedEnumField>(json)),
           TypeMatcher<MissingEnumValuesError>());
-    });
-
-    test('Wrong enumValues in annotation on Enum field', () {
-      final json = '{"sex":"Sex.Female"}';
-      expect(catchError(() {
-        JsonMapper.deserialize<WrongAnnotatedEnumField>(json);
-      }), TypeMatcher<InvalidEnumValueError>());
     });
 
     test('Missing target type for deserialization', () {

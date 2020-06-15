@@ -290,7 +290,7 @@ class JsonMapper {
       result = converters[typeInfo.genericType];
     }
     if (result == null &&
-        (jsonProperty != null && jsonProperty.enumValues != null)) {
+        (jsonProperty != null && jsonProperty.isEnumType(targetType))) {
       result = converters[Enum];
     }
     return result;

@@ -1,3 +1,7 @@
+## 1.5.15
+
+* #63, #66, `Map<Enum, CustomType>` support improved
+
 ## 1.5.14
 
 * #65, `@JsonProperty.defaultValue` handling bug fix

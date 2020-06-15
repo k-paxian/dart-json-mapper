@@ -38,6 +38,12 @@ class EnumIterablesWithConstructor {
 }
 
 @jsonSerializable
+class StylingModel {
+  const StylingModel({this.primary});
+  final String primary;
+}
+
+@jsonSerializable
 @Json(enumValues: Category.values)
 enum Category { First, Second, Third }
 
@@ -51,6 +57,20 @@ class Split {
   Map<Category, int> values;
 
   Split(this.values);
+}
+
+@jsonSerializable
+@Json(valueDecorators: SplitModel.valueDecorators)
+class SplitModel {
+  static Map<Type, ValueDecoratorFunction> valueDecorators() => {
+        typeOf<Map<Category, StylingModel>>(): (value) =>
+            value.cast<Category, StylingModel>()
+      };
+
+  @JsonProperty(enumValues: Category.values)
+  final Map<Category, StylingModel> values;
+
+  const SplitModel(this.values);
 }
 
 void testEnums() {
@@ -108,6 +128,28 @@ void testEnums() {
       expect(instance.values[Category.First], 1);
       expect(instance.values[Category.Second], 2);
       expect(instance.values[Category.Third], 3);
+    });
+
+    test('Map<Category, StylingModel> as constructor parameter', () {
+      // given
+      final json =
+          '{"values":{"Category.First":{"primary":"1"},"Category.Second":{"primary":"2"},"Category.Third":{"primary":"3"}}}';
+      final map = {
+        Category.First: StylingModel(primary: '1'),
+        Category.Second: StylingModel(primary: '2'),
+        Category.Third: StylingModel(primary: '3'),
+      };
+      final split = SplitModel(map);
+
+      // when
+      final targetJson = JsonMapper.serialize(split, compactOptions);
+      final instance = JsonMapper.deserialize<SplitModel>(targetJson);
+
+      // then
+      expect(json, targetJson);
+      expect(instance, TypeMatcher<SplitModel>());
+      expect(instance.values[Category.First], TypeMatcher<StylingModel>());
+      expect(instance.values[Category.Second].primary, '2');
     });
 
     test('Enum Iterable instance', () {

@@ -122,13 +122,17 @@ class JsonProperty {
       this.defaultValue,
       this.converterParams});
 
-  /// Validate provided enum values [enumValues] against provided value
-  bool isEnumValuesValid(dynamic enumValue, [Iterable enumValuesList]) {
+  bool isEnumType(Type enumType) =>
+      enumValues != null && isEnumTypeForValues(enumType);
+
+  /// Validate provided enumType against provided [enumValues]
+  bool isEnumTypeForValues(Type enumType, [Iterable enumValuesList]) {
     final getEnumTypeNameFromString =
         (value) => value.toString().split('.').first;
-    final enumValueTypeName = getEnumTypeNameFromString(enumValue);
-    return (enumValues ?? enumValuesList)
-        .every((item) => getEnumTypeNameFromString(item) == enumValueTypeName);
+    final enumValueTypeName = getEnumTypeNameFromString(enumType.toString());
+    return enumType == dynamic ||
+        (enumValues ?? enumValuesList).every(
+            (item) => getEnumTypeNameFromString(item) == enumValueTypeName);
   }
 }
 

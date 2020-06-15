@@ -46,25 +46,6 @@ class _MissingEnumValuesErrorImpl extends JsonMapperError
       '@JsonProperty(enumValues: ${_type.toString()}.values)';
 }
 
-abstract class InvalidEnumValueError extends JsonMapperError {
-  factory InvalidEnumValueError(dynamic value, Iterable validValues) =
-      _InvalidEnumValueErrorImpl;
-}
-
-class _InvalidEnumValueErrorImpl extends JsonMapperError
-    implements InvalidEnumValueError {
-  final dynamic _value;
-  final Iterable _validValues;
-
-  _InvalidEnumValueErrorImpl(dynamic value, Iterable validValues)
-      : _value = value,
-        _validValues = validValues;
-
-  @override
-  String toString() => 'Invalid Enum value: "${_value.toString()}" detected,\n'
-      'it should be one of: ${_validValues.toString()}';
-}
-
 abstract class MissingTypeForDeserializationError extends JsonMapperError {
   factory MissingTypeForDeserializationError() =
       _MissingTypeForDeserializationErrorImpl;

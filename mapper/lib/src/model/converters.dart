@@ -4,7 +4,6 @@ import 'dart:typed_data' show Uint8List;
 
 import 'package:intl/intl.dart';
 
-import '../errors.dart';
 import 'annotations.dart';
 import 'index.dart';
 
@@ -127,15 +126,9 @@ class AnnotatedEnumConverter implements ICustomConverter, ICustomEnumConverter {
   Object fromJSON(dynamic jsonValue, [JsonProperty jsonProperty]) {
     final enumValues =
         (jsonProperty != null ? jsonProperty.enumValues : _enumValues);
-    dynamic convert(value) => enumValues.firstWhere((eValue) {
-          if (value != null &&
-              value != 'null' &&
-              jsonProperty != null &&
-              jsonProperty.isEnumValuesValid(value, enumValues) != true) {
-            throw InvalidEnumValueError(value, enumValues);
-          }
-          return eValue.toString() == value.toString();
-        }, orElse: () => null);
+    dynamic convert(value) =>
+        enumValues.firstWhere((eValue) => eValue.toString() == value.toString(),
+            orElse: () => null);
     return convert(
         jsonValue is String ? jsonValue.replaceAll('"', '') : jsonValue);
   }
@@ -158,14 +151,9 @@ class EnumConverter implements ICustomConverter {
 
   @override
   Object fromJSON(dynamic jsonValue, [JsonProperty jsonProperty]) {
-    dynamic convert(value) => jsonProperty.enumValues.firstWhere((eValue) {
-          if (value != null &&
-              value != 'null' &&
-              jsonProperty.isEnumValuesValid(value) != true) {
-            throw InvalidEnumValueError(value, jsonProperty.enumValues);
-          }
-          return eValue.toString() == value.toString();
-        }, orElse: () => null);
+    dynamic convert(value) => jsonProperty.enumValues.firstWhere(
+        (eValue) => eValue.toString() == value.toString(),
+        orElse: () => null);
     return jsonValue is Iterable
         ? jsonValue.map(convert).toList()
         : convert(jsonValue);
@@ -173,16 +161,7 @@ class EnumConverter implements ICustomConverter {
 
   @override
   dynamic toJSON(Object object, [JsonProperty jsonProperty]) {
-    dynamic convert(value) {
-      if (value != null &&
-          value != 'null' &&
-          jsonProperty != null &&
-          jsonProperty.isEnumValuesValid(value) != true) {
-        throw InvalidEnumValueError(value, jsonProperty.enumValues);
-      }
-      return value.toString();
-    }
-
+    dynamic convert(value) => value.toString();
     return (object is Iterable)
         ? object.map(convert).toList()
         : convert(object);
@@ -273,27 +252,21 @@ class MapConverter
   final _jsonDecoder = JsonDecoder();
 
   dynamic from(item, Type type, JsonProperty jsonProperty) {
-    var result = _deserializeObject(item, type);
-    try {
-      if (jsonProperty != null && jsonProperty.enumValues != null) {
-        result = enumConverter.fromJSON(item, jsonProperty);
-      }
-    } on InvalidEnumValueError {
-      result = result;
+    var result;
+    if (jsonProperty != null && jsonProperty.isEnumType(type)) {
+      result = enumConverter.fromJSON(item, jsonProperty);
+    } else {
+      result = _deserializeObject(item, type);
     }
     return result;
   }
 
   dynamic to(item, JsonProperty jsonProperty) {
-    var result = item;
-    try {
-      if (jsonProperty != null && jsonProperty.enumValues != null) {
-        result = enumConverter.toJSON(item, jsonProperty);
-      } else {
-        result = _serializeObject(result);
-      }
-    } on InvalidEnumValueError {
-      result = _serializeObject(result);
+    var result;
+    if (jsonProperty != null && jsonProperty.isEnumType(item.runtimeType)) {
+      result = enumConverter.toJSON(item, jsonProperty);
+    } else {
+      result = _serializeObject(item);
     }
     return result;
   }
