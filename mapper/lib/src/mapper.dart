@@ -342,7 +342,7 @@ class JsonMapper {
       if (meta != null && meta.name != null) {
         jsonName = meta.name;
       }
-      jsonName = transformFieldName(jsonName, options.caseStyle);
+      jsonName = transformFieldName(jsonName, getCaseStyle(classMeta, options));
 
       dynamic value = instanceMirror.invokeGetter(name);
       if (value == null && jsonMap != null) {
@@ -370,7 +370,8 @@ class JsonMapper {
     classInfo.enumerateJsonGetters((MethodMirror mm, JsonProperty meta) {
       final name = mm.simpleName;
       final value = instanceMirror.invoke(mm.simpleName, []);
-      final jsonName = transformFieldName(meta.name, options.caseStyle);
+      final jsonName =
+          transformFieldName(meta.name, getCaseStyle(classMeta, options));
       final declarationType = getDeclarationType(mm);
 
       if (value == null && jsonMap != null) {
@@ -427,7 +428,7 @@ class JsonMapper {
       if (meta != null && meta.name != null) {
         jsonName = meta.name;
       }
-      jsonName = transformFieldName(jsonName, options.caseStyle);
+      jsonName = transformFieldName(jsonName, getCaseStyle(classMeta, options));
       final defaultValue = meta != null ? meta.defaultValue : null;
       var value = jsonMap.hasProperty(jsonName)
           ? jsonMap.getPropertyValue(jsonName) ?? defaultValue
@@ -437,6 +438,11 @@ class JsonMapper {
       visitor(param, name, jsonName, classMeta, meta, value, paramTypeInfo);
     });
   }
+
+  CaseStyle getCaseStyle(Json meta, DeserializationOptions options) =>
+      meta != null && meta.caseStyle != null
+          ? meta.caseStyle
+          : options.caseStyle;
 
   String getTypeNameProperty(Json meta, DeserializationOptions options) =>
       meta != null && meta.typeNameProperty != null

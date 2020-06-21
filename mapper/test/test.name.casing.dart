@@ -1,6 +1,17 @@
 part of json_mapper.test;
 
 @jsonSerializable
+@Json(caseStyle: CaseStyle.Kebab)
+class NameCaseObjectOverride {
+  String mainTitle;
+  String description;
+  bool hasMainProperty;
+
+  NameCaseObjectOverride(
+      {this.mainTitle, this.description, this.hasMainProperty});
+}
+
+@jsonSerializable
 class NameCaseObject {
   String mainTitle;
   String description;
@@ -12,6 +23,17 @@ class NameCaseObject {
 void testNameCasing() {
   group('[Verify field names casing styles processing]', () {
     group('[Serialization]', () {
+      test('Verify CaseStyle override on class level', () {
+        // given
+        final instance = NameCaseObjectOverride(
+            mainTitle: 'title', description: 'desc', hasMainProperty: true);
+        // when
+        final json = JsonMapper.serialize(instance, compactOptions);
+        // then
+        expect(json,
+            '''{"main-title":"title","description":"desc","has-main-property":true}''');
+      });
+
       test('Verify CaseStyle.kebab', () {
         // given
         final instance = NameCaseObject(

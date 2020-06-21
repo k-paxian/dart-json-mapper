@@ -1,3 +1,7 @@
+## 1.5.16
+
+* `caseStyle` property introduced on `@Json` annotation, assign caseStyle on a class level
+
 ## 1.5.15
 
 * #63, #66, `Map<Enum, CustomType>` support improved

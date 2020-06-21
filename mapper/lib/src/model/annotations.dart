@@ -1,6 +1,7 @@
 import 'package:reflectable/reflectable.dart';
 
 import 'converters.dart';
+import 'name_casing.dart';
 import 'value_decorators.dart';
 
 /// [jsonConstructor] is used as a shorthand metadata w/o "()"
@@ -28,6 +29,11 @@ class Json {
   /// Declares necessity for annotated class and all its subclasses to dump their own type name to the
   /// custom named json property.
   final String typeNameProperty;
+
+  /// The most popular ways to combine words into a single string
+  /// Based on assumption: That all Dart class fields initially
+  /// given as CaseStyle.Camel
+  final CaseStyle caseStyle;
 
   /// Provides a way to specify enum values, via Dart built in
   /// capability for all Enum instances. `Enum.values`
@@ -70,6 +76,7 @@ class Json {
       this.scheme,
       this.enumValues,
       this.typeNameProperty,
+      this.caseStyle,
       this.ignoreNullMembers,
       this.name});
 }

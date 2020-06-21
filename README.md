@@ -788,6 +788,7 @@ Use it to mark specific Dart class constructor you'd like to be used during dese
 Why it's not a `@JsonObject()`? just for you to type less characters :smile:
     * *name* Defines [RFC 6901][rfc6901] JSON pointer, denotes the json Object root name/path to be used for mapping.
 Example: `'foo', 'bar', 'foo/bar/baz'`
+    * *caseStyle* The most popular ways to combine words into a single string. Based on assumption: That all Dart class fields initially given as CaseStyle.Camel
     * *typeNameProperty* declares the necessity for annotated class and all it's subclasses to dump their own type name to
 the property named as this param value
     * *enumValues* Provides a way to specify enum values, via Dart built in capability for all Enum instances. `Enum.values`
