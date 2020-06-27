@@ -235,6 +235,7 @@ abstract class Record implements Built<Record, RecordBuilder> {
 ```
 
 Deserialization of 537 records executed in **191ms**, at **0.36** ms per record
+
 Serialization of 537 records executed in **53ms**, at **0.099** ms per record
 
 # json_serializable
@@ -413,6 +414,7 @@ class Record {
 ```
 
 Deserialization of 537 records executed in **200ms**, at **0.37** ms per record
+
 Serialization of 537 records executed in **145ms**, at **0.27** ms per record
 
 # dart_json_mapper
@@ -478,6 +480,7 @@ class Record {
 ```
 
 Deserialization of 537 records executed in **6235ms**, at **12** ms per record
+
 Serialization of 537 records executed in **3378ms**, at **6.3** ms per record
 
 ## Instead of conclusion, everything has it's price tag.
