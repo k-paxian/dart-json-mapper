@@ -160,15 +160,15 @@ void testValueDecorators() {
     test('Custom Map<K, V> decorator', () {
       // given
       final jsonMap = {
-        "tabs": {
-          "home": {"icon": "0xe800", "title": "Home", "on": true},
-          "sections": {"icon": "0xe801", "on": true},
-          "x": {"icon": "0xe801", "title": null, "on": true}
+        'tabs': {
+          'home': {'icon': '0xe800', 'title': 'Home', 'on': true},
+          'sections': {'icon': '0xe801', 'on': true},
+          'x': {'icon': '0xe801', 'title': null, 'on': true}
         },
-        "active_color": null,
-        "inactive_color": null,
-        "background_color": null,
-        "font_size": null
+        'active_color': null,
+        'inactive_color': null,
+        'background_color': null,
+        'font_size': null
       };
 
       // when

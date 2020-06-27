@@ -1,0 +1,6 @@
+targets:
+  $default:
+    builders:
+      reflectable:
+        generate_for:
+          - test/starlink/dart_json_mapper/dart_json_mapper_test.dart
