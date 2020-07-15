@@ -12,8 +12,8 @@ final compactOptions = SerializationOptions(indent: '');
 void testBasics() {
   test('Color type', () {
     // given
-    final color = Color(0x3f4f5f);
-    final rawString = '#3F4F5F';
+    final color = Color(0x113f4f5f);
+    final rawString = '#113F4F5F';
     final json = '{"color":"${rawString}"}';
 
     // when

@@ -37,14 +37,14 @@ void main() {
   JsonMapper().useAdapter(flutterAdapter);
   
   print(JsonMapper.serialize(
-     FlutterClass(Color(0x3f4f5f))
+     FlutterClass(Color(0x003f4f5f))
   ));
 }
 ```
 output:
 ```json
 {
-  "color": "#3F4F5F"
+  "color": "#003F4F5F"
 }
 ```
 

@@ -24,18 +24,19 @@ class ColorConverter implements ICustomConverter<Color> {
   }
 
   String colorToString(Color color) {
+    final aValue = color.alpha.toRadixString(16).padLeft(2, '0');
     final rValue = color.red.toRadixString(16).padLeft(2, '0');
     final gValue = color.green.toRadixString(16).padLeft(2, '0');
     final bValue = color.blue.toRadixString(16).padLeft(2, '0');
-    return '#$rValue$gValue$bValue'.toUpperCase();
+    return '#$aValue$rValue$gValue$bValue'.toUpperCase();
   }
 
   Color parseColor(String value) {
     return Color.fromARGB(
-        0,
         int.tryParse(value.substring(1, 3), radix: 16),
         int.tryParse(value.substring(3, 5), radix: 16),
-        int.tryParse(value.substring(5, 7), radix: 16));
+        int.tryParse(value.substring(5, 7), radix: 16),
+        int.tryParse(value.substring(7), radix: 16));
   }
 }
 

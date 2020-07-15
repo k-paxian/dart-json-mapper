@@ -20,5 +20,5 @@ main() {
   initializeReflectable();
   JsonMapper().useAdapter(flutterAdapter);
 
-  print(JsonMapper.serialize(FlutterClass(Color(0x3f4f5f))));
+  print(JsonMapper.serialize(FlutterClass(Color(0x003f4f5f))));
 }
