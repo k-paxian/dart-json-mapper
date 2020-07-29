@@ -856,7 +856,7 @@ For example, you would like to refer to `Color` type from Flutter in your model 
       JsonMapper().useAdapter(flutterAdapter);
       
       print(JsonMapper.serialize(
-         ColorfulItem('Item 1', Color(0x3f4f5f))
+         ColorfulItem('Item 1', Color(0x003f4f5f))
       ));
     }
     ```
@@ -864,7 +864,7 @@ For example, you would like to refer to `Color` type from Flutter in your model 
     ```json
     {
       "name": "Item 1",
-      "color": "#3F4F5F"
+      "color": "#003F4F5F"
     }
     ```
 ### You can easily mix and combine several adapters using following one-liner: 

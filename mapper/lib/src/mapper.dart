@@ -18,6 +18,11 @@ class JsonMapper {
   final Map<String, ProcessedObjectDescriptor> processedObjects = {};
   final Map<Type, ValueDecoratorFunction> _inlineValueDecorators = {};
 
+  Map<Type, ICustomConverter> converters = {};
+  Map<int, ITypeInfoDecorator> typeInfoDecorators = {};
+  Map<Type, ValueDecoratorFunction> valueDecorators = {};
+  Map<Type, TypeInfo> typeInfoCache = {};
+
   /// Converts Dart object to JSON string
   static String toJson(Object object,
       [SerializationOptions options = defaultSerializationOptions]) {
@@ -107,19 +112,27 @@ class JsonMapper {
         ? adapters.keys.reduce((value, item) => max(value, item)) + 1
         : 0;
     adapters[nextPriority] = adapter;
+    _updateInternalMaps();
     return this;
   }
 
   JsonMapper removeAdapter(IAdapter adapter) {
     adapters.removeWhere((priority, x) => x == adapter);
+    _updateInternalMaps();
     return this;
+  }
+
+  void _updateInternalMaps() {
+    converters = _converters;
+    typeInfoDecorators = _typeInfoDecorators;
+    valueDecorators = _valueDecorators;
   }
 
   void info() {
     adapters.forEach((priority, adapter) => print('$priority : $adapter'));
   }
 
-  Map<Type, ICustomConverter> get converters {
+  Map<Type, ICustomConverter> get _converters {
     final result = {};
     adapters.values.forEach((IAdapter adapter) {
       result.addAll(adapter.converters);
@@ -127,7 +140,7 @@ class JsonMapper {
     return result.cast<Type, ICustomConverter>();
   }
 
-  Map<Type, ValueDecoratorFunction> get valueDecorators {
+  Map<Type, ValueDecoratorFunction> get _valueDecorators {
     final result = {};
     result.addAll(_inlineValueDecorators);
     adapters.values.forEach((IAdapter adapter) {
@@ -136,7 +149,7 @@ class JsonMapper {
     return result.cast<Type, ValueDecoratorFunction>();
   }
 
-  Map<int, ITypeInfoDecorator> get typeInfoDecorators {
+  Map<int, ITypeInfoDecorator> get _typeInfoDecorators {
     final result = [];
     adapters.values.forEach((IAdapter adapter) {
       result.addAll(adapter.typeInfoDecorators.values);
@@ -176,11 +189,15 @@ class JsonMapper {
   }
 
   TypeInfo getTypeInfo(Type type) {
+    if (typeInfoCache[type] != null) {
+      return typeInfoCache[type];
+    }
     var result = TypeInfo(type);
     typeInfoDecorators.values.forEach((ITypeInfoDecorator decorator) {
       decorator.init(classes, valueDecorators);
       result = decorator.decorate(result);
     });
+    typeInfoCache[type] = result;
     return result;
   }
 

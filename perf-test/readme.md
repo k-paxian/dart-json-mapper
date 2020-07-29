@@ -479,9 +479,9 @@ class Record {
 }
 ```
 
-Deserialization of 537 records executed in **6235ms**, at **12** ms per record
+Deserialization of **537** records executed in **1528ms**, at **2.8** ms per record
 
-Serialization of 537 records executed in **3378ms**, at **6.3** ms per record
+Serialization of **537** records executed in **745ms**, at **1.4** ms per record
 
 ## Instead of conclusion, everything has it's price tag.
 

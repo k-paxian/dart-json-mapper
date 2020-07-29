@@ -1,3 +1,7 @@
+## 1.5.17
+
+* Performance **4x** improvement.
+
 ## 1.5.16
 
 * `caseStyle` property introduced on `@Json` annotation, assign caseStyle on a class level
