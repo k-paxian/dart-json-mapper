@@ -3,6 +3,14 @@ part of json_mapper.test;
 enum ThirdParty { A, B, C }
 
 @jsonSerializable
+class ShortEnumConverter {
+  @JsonProperty(enumValues: ThirdParty.values)
+  ThirdParty party;
+
+  ShortEnumConverter({this.party});
+}
+
+@jsonSerializable
 class EnumIterables {
   @JsonProperty(enumValues: ThirdParty.values)
   ThirdParty party;
@@ -75,6 +83,24 @@ class SplitModel {
 
 void testEnums() {
   group('[Verify Enums cases]', () {
+    test('Short Enum Converter', () {
+      // given
+      final instance = ShortEnumConverter(party: ThirdParty.A);
+
+      // when
+      final adapter = JsonMapperAdapter(converters: {Enum: enumConverterShort});
+      JsonMapper().useAdapter(adapter);
+
+      final targetJson = JsonMapper.serialize(instance, compactOptions);
+      final target = JsonMapper.deserialize<ShortEnumConverter>(targetJson);
+
+      // then
+      expect(targetJson, '{"party":"A"}');
+      expect(target.party, ThirdParty.A);
+
+      JsonMapper().removeAdapter(adapter);
+    });
+
     test('Single Enum Value', () {
       // given
       final instance = Color.Green;

@@ -1,3 +1,7 @@
+## 1.5.18
+
+* Optional short Enum converter introduced. "Black" instead of "Color.Black"
+
 ## 1.5.17
 
 * Performance **4x** improvement.

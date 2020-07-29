@@ -168,6 +168,33 @@ class EnumConverter implements ICustomConverter {
   }
 }
 
+const enumConverterShort = EnumConverterShort();
+
+/// Short converter for [enum] type
+class EnumConverterShort implements ICustomConverter {
+  const EnumConverterShort() : super();
+
+  @override
+  Object fromJSON(dynamic jsonValue, [JsonProperty jsonProperty]) {
+    dynamic convert(value) => jsonProperty.enumValues.firstWhere(
+        (eValue) =>
+            eValue.toString().split('.').last ==
+            value.toString().split('.').last,
+        orElse: () => null);
+    return jsonValue is Iterable
+        ? jsonValue.map(convert).toList()
+        : convert(jsonValue);
+  }
+
+  @override
+  dynamic toJSON(Object object, [JsonProperty jsonProperty]) {
+    dynamic convert(value) => value.toString().split('.').last;
+    return (object is Iterable)
+        ? object.map(convert).toList()
+        : convert(object);
+  }
+}
+
 const enumConverterNumeric = EnumConverterNumeric();
 
 /// Numeric index based converter for [enum] type
