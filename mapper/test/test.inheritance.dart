@@ -1,5 +1,41 @@
 part of json_mapper.test;
 
+enum BusinessType { Private, Public }
+
+@jsonSerializable
+@Json(typeNameProperty: 'typeName')
+abstract class Business {
+  String name;
+  @JsonProperty(enumValues: BusinessType.values)
+  BusinessType type = BusinessType.Private;
+}
+
+@jsonSerializable
+class Hotel extends Business {
+  int stars;
+
+  Hotel(this.stars);
+}
+
+@jsonSerializable
+class Startup extends Business {
+  int userCount;
+
+  Startup(this.userCount);
+}
+
+@Json(valueDecorators: Stakeholder.valueDecorators)
+@jsonSerializable
+class Stakeholder {
+  static Map<Type, ValueDecoratorFunction> valueDecorators() =>
+      {typeOf<List<Business>>(): (value) => value.cast<Business>()};
+
+  String fullName;
+  List<Business> businesses;
+
+  Stakeholder(this.fullName, this.businesses);
+}
+
 class DataModel {
   String id;
   DataModel({this.id});
@@ -37,6 +73,21 @@ class UserImpl extends DataModel implements AbstractUser {
 
 void testInheritance() {
   group('[Verify inheritance cases]', () {
+    test(
+        'Should dump typeName to json property when'
+        " @Json(typeNameProperty: 'typeName')", () {
+      // given
+      final jack = Stakeholder('Jack', [Startup(10), Hotel(4)]);
+
+      // when
+      final json = JsonMapper.serialize(jack);
+      final target = JsonMapper.deserialize<Stakeholder>(json);
+
+      // then
+      expect(target.businesses[0], TypeMatcher<Startup>());
+      expect(target.businesses[1], TypeMatcher<Hotel>());
+    });
+
     test('implements AbstractUser', () {
       // given
       final user = UserImpl(id: 'xxx', email: 'x@x.com');

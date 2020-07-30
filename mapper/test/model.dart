@@ -86,38 +86,6 @@ class Person {
   Person();
 }
 
-enum BusinessType { Private, Public }
-
-@jsonSerializable
-@Json(typeNameProperty: 'typeName')
-abstract class Business {
-  String name;
-  @JsonProperty(enumValues: BusinessType.values)
-  BusinessType type = BusinessType.Private;
-}
-
-@jsonSerializable
-class Hotel extends Business {
-  int stars;
-
-  Hotel(this.stars);
-}
-
-@jsonSerializable
-class Startup extends Business {
-  int userCount;
-
-  Startup(this.userCount);
-}
-
-@jsonSerializable
-class Stakeholder {
-  String fullName;
-  List<Business> businesses;
-
-  Stakeholder(this.fullName, this.businesses);
-}
-
 @jsonSerializable
 class GettersOnly {
   int _nextId = 0;

@@ -1,3 +1,7 @@
+## 1.5.19
+
+* Issue #75 resolved, double converter invocation omitted in case of fields intersection between constructor arguments and public class fields.
+
 ## 1.5.18
 
 * Optional short Enum converter introduced. "Black" instead of "Color.Black"

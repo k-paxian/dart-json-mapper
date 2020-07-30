@@ -288,28 +288,6 @@ void testValueDecorators() {
       JsonMapper().removeAdapter(adapter);
     });
 
-    test(
-        'Should dump typeName to json property when'
-        " @Json(typeNameProperty: 'typeName')", () {
-      // given
-      final jack = Stakeholder('Jack', [Startup(10), Hotel(4)]);
-
-      // when
-      final adapter = JsonMapperAdapter(valueDecorators: {
-        typeOf<List<Business>>(): (value) => value.cast<Business>()
-      });
-      JsonMapper().useAdapter(adapter);
-
-      final json = JsonMapper.serialize(jack);
-      final target = JsonMapper.deserialize<Stakeholder>(json);
-
-      // then
-      expect(target.businesses[0], TypeMatcher<Startup>());
-      expect(target.businesses[1], TypeMatcher<Hotel>());
-
-      JsonMapper().removeAdapter(adapter);
-    });
-
     test('List of Lists', () {
       // given
       final json = '''{

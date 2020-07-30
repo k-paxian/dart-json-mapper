@@ -724,7 +724,7 @@ class JsonMapper {
         converter,
         scalarType,
         TypeInfo typeInfo) {
-      if (!jsonMap.hasProperty(jsonName)) {
+      if (!jsonMap.hasProperty(jsonName) || mappedFields.contains(name)) {
         if (meta != null && meta.defaultValue != null && !isGetterOnly) {
           im.invokeSetter(name, meta.defaultValue);
         }

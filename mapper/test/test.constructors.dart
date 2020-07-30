@@ -190,10 +190,14 @@ void testConstructors() {
     test('NamedParametersClass class', () {
       // given
       var instance = NamedParametersClass(firstName: 'Bob', lastName: 'Marley');
+
       // when
       final target = JsonMapper.serialize(instance, compactOptions);
+      final targetInstance = JsonMapper.deserialize<NamedParametersClass>(json);
+
       // then
       expect(target, json);
+      expect(targetInstance, TypeMatcher<NamedParametersClass>());
     });
 
     test('PartiallyOptionalParametersClass class', () {
