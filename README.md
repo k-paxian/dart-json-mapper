@@ -10,7 +10,7 @@ This package allows programmers to annotate Dart classes in order to
 * Compatible with **all** Dart platforms, including [Flutter](https://pub.dartlang.org/flutter/packages) and [Web](https://pub.dartlang.org/web/packages) platforms
 * No need to extend your classes from **any** mixins/base/abstract classes to keep code leaner
 * Clean and simple setup, transparent and straight-forward usage with **no heavy maintenance**
-* Feature parity with highly popular [Java Jackson][12], and only **4** [annotations](#annotations) to remember, to cover all possible use cases.
+* Inspired by [json2typescript][4], feature parity with highly popular [Java Jackson][12] and only **4** [annotations](#annotations) to remember to cover all possible use cases.
 * **No extra boilerplate**, 100% generated code, which you'll *never* see.
 * **Complementary adapters** full control over the process when you strive for maximum flexibility.
 * **NO** dependency on `dart:mirrors`, one of the reasons is described [here][1].
@@ -20,7 +20,6 @@ Dart classes reflection mechanism is based on [reflectable][3] library.
 This means "extended types information" is auto-generated out of existing Dart program 
 guided by the annotated classes **only**, as the result types information is accessible at runtime, at a reduced cost.
 
-Typical `flutter.dev project integration` sample can be found [here][4]
 
 ![](banner.svg)
 
@@ -880,7 +879,7 @@ JsonMapper()
 [1]: https://github.com/flutter/flutter/issues/1150
 [2]: https://pub.dartlang.org/packages/intl
 [3]: https://pub.dartlang.org/packages/reflectable
-[4]: https://github.com/k-paxian/samples/tree/master/jsonexample
+[4]: https://github.com/appvision-gmbh/json2typescript
 [7]: https://github.com/mobxjs/mobx.dart
 [8]: https://github.com/dart-lang/fixnum
 [9]: https://en.wikipedia.org/wiki/Camel_case
