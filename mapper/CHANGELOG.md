@@ -1,3 +1,7 @@
+## 1.5.20
+
+* Issue #78 resolved, double @JsonConstructor with different Schemes
+
 ## 1.5.19
 
 * Issue #75 resolved, double converter invocation omitted in case of fields intersection between constructor arguments and public class fields.

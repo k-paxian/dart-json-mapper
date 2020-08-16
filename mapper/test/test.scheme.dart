@@ -13,6 +13,63 @@ class Object {
   Object(this.title);
 }
 
+@jsonSerializable
+@Json(name: 'Address')
+class Address {
+  @JsonProperty(name: 'first_name', scheme: Scheme.B)
+  @JsonProperty(name: 'firstname', scheme: Scheme.A)
+  String firstName;
+
+  @JsonProperty(name: 'last_name', scheme: Scheme.B)
+  @JsonProperty(name: 'lastname', scheme: Scheme.A)
+  String lastName;
+
+  @JsonProperty(name: 'email', scheme: Scheme.B)
+  @JsonProperty(name: 'email', scheme: Scheme.A)
+  String email;
+
+  @JsonProperty(name: 'phone', scheme: Scheme.B)
+  @JsonProperty(name: 'telephone', scheme: Scheme.A)
+  String phoneNumber;
+
+  @JsonProperty(name: 'country', scheme: Scheme.B)
+  @JsonProperty(name: 'country_id', scheme: Scheme.A)
+  String country;
+
+  @JsonProperty(name: 'city', scheme: Scheme.B)
+  @JsonProperty(name: 'city', scheme: Scheme.A)
+  String city;
+
+  @JsonProperty(name: 'postcode', scheme: Scheme.B)
+  @JsonProperty(name: 'postcode', scheme: Scheme.A)
+  String zipCode;
+
+  @JsonProperty(name: 'address_1', scheme: Scheme.B)
+  String street;
+
+  @JsonProperty(name: 'street', scheme: Scheme.A)
+  List<String> streetList;
+
+  String id;
+  String district;
+
+  static Address fromJson(dynamic jsonValue, {Scheme scheme = Scheme.A}) =>
+      JsonMapper.fromJson<Address>(
+          jsonValue,
+          DeserializationOptions(
+              scheme: scheme, processAnnotatedMembersOnly: true));
+
+  @JsonConstructor(scheme: Scheme.B)
+  Address.jsonTwo();
+
+  @JsonConstructor(scheme: Scheme.A)
+  Address.jsonOne(@JsonProperty(name: 'id', scheme: Scheme.A) int _id,
+      this.streetList, this.city)
+      : id = _id.toString(),
+        street = streetList?.elementAt(0),
+        district = city;
+}
+
 void testScheme() {
   group('[Verify scheme processing]', () {
     test('Verify scheme A serialize', () {
@@ -74,6 +131,17 @@ void testScheme() {
       // then
       expect(instance, TypeMatcher<Object>());
       expect(instance.title, 'No Scheme');
+    });
+
+    test('Verify two @JsonConstructor', () {
+      // given
+      final json = '''{"id":5,"email":"a@a.com"}''';
+
+      // when
+      final instance = Address.fromJson(json);
+
+      // then
+      expect(instance, TypeMatcher<Address>());
     });
   });
 }

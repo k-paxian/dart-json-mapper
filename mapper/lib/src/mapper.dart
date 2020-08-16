@@ -419,8 +419,8 @@ class JsonMapper {
       DeserializationOptions options, Function filter, Function visitor) {
     final classInfo = ClassInfo(classMirror);
     final classMeta = classInfo.getMeta(options.scheme);
-    final methodMirror = classInfo
-        .getJsonConstructor(classMeta != null ? classMeta.scheme : null);
+    final scheme = classMeta != null ? classMeta.scheme : options.scheme;
+    final methodMirror = classInfo.getJsonConstructor(scheme);
     if (methodMirror == null) {
       return;
     }
