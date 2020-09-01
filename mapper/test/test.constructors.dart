@@ -183,6 +183,17 @@ class ImmutableDefault {
   const ImmutableDefault({this.id, this.name, this.car});
 }
 
+@jsonSerializable
+@Json(processAnnotatedMembersOnly: true)
+class ImmutableDefault2 {
+  @JsonProperty(defaultValue: 1)
+  final int id;
+  final String name;
+  final Car car;
+
+  const ImmutableDefault2({this.id, this.name, this.car});
+}
+
 void testConstructors() {
   group('[Verify class constructors support]', () {
     final json = '{"firstName":"Bob","lastName":"Marley"}';
@@ -339,6 +350,15 @@ void testConstructors() {
       // when
       final target = JsonMapper.serialize(instance,
           SerializationOptions(indent: '', processAnnotatedMembersOnly: true));
+      // then
+      expect(target, '{"id":1}');
+    });
+
+    test('processAnnotatedMembersOnly class annotation option', () {
+      // given
+      final instance = ImmutableDefault2();
+      // when
+      final target = JsonMapper.serialize(instance, compactOptions);
       // then
       expect(target, '{"id":1}');
     });
