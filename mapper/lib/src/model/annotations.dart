@@ -43,6 +43,9 @@ class Json {
   /// will be excluded from serialization process
   final bool ignoreNullMembers;
 
+  /// Process only annotated class members
+  final bool processAnnotatedMembersOnly;
+
   /// Allow circular object references during serialization
   /// for annotated class. Presume You know what you are doing
   final int allowCircularReferences;
@@ -78,6 +81,7 @@ class Json {
       this.typeNameProperty,
       this.caseStyle,
       this.ignoreNullMembers,
+      this.processAnnotatedMembersOnly,
       this.name});
 }
 

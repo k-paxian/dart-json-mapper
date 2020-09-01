@@ -1,3 +1,7 @@
+## 1.5.21
+
+* Issue #79 resolved, `@Json(processAnnotatedMembersOnly: true)` introduced
+
 ## 1.5.20
 
 * Issue #78 resolved, double @JsonConstructor with different Schemes

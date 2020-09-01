@@ -353,7 +353,8 @@ class JsonMapper {
       final isGetterOnly = classInfo.isGetterOnly(name);
       final meta =
           classInfo.getDeclarationMeta(declarationMirror, options.scheme);
-      if (meta == null && options.processAnnotatedMembersOnly == true) {
+      if (meta == null &&
+          getProcessAnnotatedMembersOnly(classMeta, options) == true) {
         continue;
       }
       if (meta != null && meta.name != null) {
@@ -465,6 +466,12 @@ class JsonMapper {
       meta != null && meta.typeNameProperty != null
           ? meta.typeNameProperty
           : options.typeNameProperty;
+
+  bool getProcessAnnotatedMembersOnly(
+          Json meta, DeserializationOptions options) =>
+      meta != null && meta.processAnnotatedMembersOnly != null
+          ? meta.processAnnotatedMembersOnly
+          : options.processAnnotatedMembersOnly;
 
   void dumpTypeNameToObjectProperty(
       JsonMap object, ClassMirror classMirror, DeserializationOptions options) {

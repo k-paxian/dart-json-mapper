@@ -793,6 +793,7 @@ the property named as this param value
     * *enumValues* Provides a way to specify enum values, via Dart built in capability for all Enum instances. `Enum.values`
     * *valueDecorators* Provides an inline way to specify a static function which will return a Map of value decorators, to support type casting activities for Map<K, V>, and other generic Iterables<T> instead of global adapter approach
     * *ignoreNullMembers* If set to `true` Null class members will be excluded from serialization process
+    * *processAnnotatedMembersOnly* If set to `true` Only annotated class members will be processed
     * *allowCircularReferences* As of `int` type. Allows certain number of circular object references during serialization.
     * *scheme* dynamic [Scheme](#schemes) marker to associate this meta information with particular mapping scheme
 * `@JsonProperty(...)` It's an *optional* class member annotation, describes JSON Object property mapping.

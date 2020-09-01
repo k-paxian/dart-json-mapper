@@ -28,7 +28,7 @@ class DeserializationOptions {
   /// to dump their own type name to the custom named json property.
   final String typeNameProperty;
 
-  /// Process only annotated class members
+  /// Process annotated class members only
   final bool processAnnotatedMembersOnly;
 
   /// Template Instance
