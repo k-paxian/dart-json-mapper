@@ -1,3 +1,7 @@
+## 1.5.22
+
+* Issue #80 resolved, Serialization template should be picked up from level 0 only
+
 ## 1.5.21
 
 * Issue #79 resolved, `@Json(processAnnotatedMembersOnly: true)` introduced

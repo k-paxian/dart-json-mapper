@@ -586,7 +586,9 @@ class JsonMapper {
 
     final classInfo = ClassInfo(im.type);
     final jsonMeta = classInfo.getMeta(context.options.scheme);
-    final initialMap = context.options.template ?? <String, dynamic>{};
+    final initialMap = context.level == 0
+        ? context.options.template ?? <String, dynamic>{}
+        : <String, dynamic>{};
     final result = JsonMap(initialMap, jsonMeta);
     final processedObjectDescriptor = getObjectProcessed(object, context.level);
     if (processedObjectDescriptor != null &&
