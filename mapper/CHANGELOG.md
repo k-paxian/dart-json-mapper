@@ -1,3 +1,7 @@
+## 1.5.23
+
+* Issue #82 resolved, Pick up annotation from constructor parameter
+
 ## 1.5.22
 
 * Issue #80 resolved, Serialization template should be picked up from level 0 only

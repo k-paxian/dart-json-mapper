@@ -442,7 +442,8 @@ class JsonMapper {
           : paramTypeInfo;
       var jsonName = name;
       final meta =
-          classInfo.getDeclarationMeta(declarationMirror, options.scheme);
+          classInfo.getDeclarationMeta(declarationMirror, options.scheme) ??
+              classInfo.getDeclarationMeta(param, options.scheme);
       if (meta != null && meta.name != null) {
         jsonName = meta.name;
       }

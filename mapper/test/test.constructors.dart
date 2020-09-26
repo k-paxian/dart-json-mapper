@@ -194,6 +194,37 @@ class ImmutableDefault2 {
   const ImmutableDefault2({this.id, this.name, this.car});
 }
 
+const customConverter = CustomConverter();
+
+class CustomConverter implements ICustomConverter {
+  const CustomConverter();
+  @override
+  dynamic fromJSON(dynamic jsonValue, [JsonProperty jsonProperty]) {
+    return jsonValue + 1;
+  }
+
+  @override
+  dynamic toJSON(dynamic object, [JsonProperty jsonProperty]) {
+    throw UnimplementedError();
+  }
+}
+
+@jsonSerializable
+class Record {
+  @JsonProperty(name: 'id')
+  int id;
+
+  int number;
+
+  @jsonConstructor
+  Record.json(this.id, @JsonProperty(converter: customConverter) this.number);
+
+  @override
+  String toString() {
+    return '''{"id": $id, "number": $number}''';
+  }
+}
+
 void testConstructors() {
   group('[Verify class constructors support]', () {
     final json = '{"firstName":"Bob","lastName":"Marley"}';
@@ -236,6 +267,16 @@ void testConstructors() {
       final target = JsonMapper.serialize(instance, compactOptions);
       // then
       expect(target, json);
+    });
+
+    test('Should pick up meta from constructor parameter', () {
+      // given
+      var json = '''{"id": 42,  "number": 2}''';
+      // when
+      final target = JsonMapper.deserialize<Record>(
+          json, DeserializationOptions(processAnnotatedMembersOnly: true));
+      // then
+      expect(target.number, 3);
     });
 
     test('Nested null value object should be null w/o NPE', () {
