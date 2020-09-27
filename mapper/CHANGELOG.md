@@ -1,3 +1,7 @@
+## 1.5.24
+
+* Issue #82 proper fix, `@JsonProperty(ignoreForSerialization / ignoreForDeserialization)` flags introduced to make your code more explicit and obvious
+
 ## 1.5.23
 
 * Issue #82 resolved, Pick up annotation from constructor parameter

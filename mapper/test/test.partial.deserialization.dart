@@ -1,6 +1,17 @@
 part of json_mapper.test;
 
 @jsonSerializable
+class IgnoreMembers {
+  @JsonProperty(ignoreForDeserialization: true)
+  String name;
+
+  @JsonProperty(ignoreForSerialization: true)
+  String title;
+
+  IgnoreMembers({this.name, this.title});
+}
+
+@jsonSerializable
 class UnmappedProperties {
   String name;
 
@@ -100,6 +111,28 @@ void testPartialDeserialization() {
 
       // then
       expect(targetJson, json);
+    });
+
+    test('Ignore members for deserialization / serialization', () {
+      // given
+      final json = '''{"name":"Bob","title":"Marley"}''';
+
+      // when
+      final instance = JsonMapper.deserialize<IgnoreMembers>(json);
+
+      // then
+      expect(instance.name, null);
+      expect(instance.title, 'Marley');
+
+      // given
+      final expectedJson = '''{"name":"Bob"}''';
+
+      // when
+      final targetJson = JsonMapper.serialize(
+          IgnoreMembers(name: 'Bob', title: 'Marley'), compactOptions);
+
+      // then
+      expect(targetJson, expectedJson);
     });
   });
 }

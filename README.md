@@ -803,6 +803,8 @@ Example: `'foo', 'bar', 'foo/bar/baz'`
     * *converter* Declares custom converter instance, to be used for annotated field serialization / deserialization 
     * *converterParams* A `Map<String, dynamic>` of named parameters to be passed to the converter instance
     * *ignore* A bool declares annotated field as ignored so it will be excluded from serialization / deserialization process
+    * *ignoreForSerialization* A bool declares annotated field as excluded from serialization process
+    * *ignoreForDeserialization* A bool declares annotated field as excluded from deserialization process
     * *ignoreIfNull* A bool declares annotated field as ignored if it's value is null so it will be excluded from serialization / deserialization process
     * *enumValues* Provides a way to specify enum values, via Dart built in capability for all Enum instances. `Enum.values`
     * *defaultValue* Defines field default value

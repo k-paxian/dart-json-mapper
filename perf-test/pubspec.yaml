@@ -8,7 +8,7 @@ description: >
 environment:
   sdk: '>=2.6.1 <3.0.0'
 dependencies:
-  dart_json_mapper: 1.5.17
+  dart_json_mapper:
   json_annotation: 3.0.1
   built_value: 7.1.0
   intl: ^0.16.1

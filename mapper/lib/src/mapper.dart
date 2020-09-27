@@ -331,7 +331,11 @@ class JsonMapper {
           JsonProperty meta,
           DeserializationOptions options]) =>
       (meta != null &&
-          (meta.ignore == true ||
+          ((meta.ignore == true ||
+                  (meta.ignoreForSerialization == true &&
+                      options is SerializationOptions) ||
+                  (meta.ignoreForDeserialization == true &&
+                      options is! SerializationOptions)) ||
               meta.ignoreIfNull == true && value == null)) ||
       ((classMeta != null && classMeta.ignoreNullMembers == true ||
               options is SerializationOptions &&

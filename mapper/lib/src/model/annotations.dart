@@ -112,6 +112,12 @@ class JsonProperty {
   /// serialization / deserialization process
   final bool ignore;
 
+  /// Declares annotated field as excluded from serialization process
+  final bool ignoreForSerialization;
+
+  /// Declares annotated field as excluded from deserialization process
+  final bool ignoreForDeserialization;
+
   /// Declares annotated field as ignored if it's value is null so it
   /// will be excluded from serialization / deserialization process
   final bool ignoreIfNull;
@@ -127,6 +133,8 @@ class JsonProperty {
       {this.scheme,
       this.name,
       this.ignore,
+      this.ignoreForSerialization,
+      this.ignoreForDeserialization,
       this.ignoreIfNull,
       this.converter,
       this.enumValues,

@@ -1,7 +1,6 @@
 include: package:pedantic/analysis_options.yaml
 analyzer:
   exclude:
-    - example/*.reflectable.dart
-    - test/*.reflectable.dart
+    - /*.reflectable.dart
   strong-mode:
     implicit-casts: true

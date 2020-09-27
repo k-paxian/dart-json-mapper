@@ -3,6 +3,7 @@ part of perf_test.test;
 abstract class SpaceTrack implements Built<SpaceTrack, SpaceTrackBuilder> {
   SpaceTrack._();
 
+  // ignore: use_function_type_syntax_for_parameters
   factory SpaceTrack([updates(SpaceTrackBuilder b)]) = _$SpaceTrack;
 
   @BuiltValueField(wireName: 'CCSDS_OMM_VERS')
@@ -144,6 +145,7 @@ abstract class SpaceTrack implements Built<SpaceTrack, SpaceTrackBuilder> {
 abstract class Record implements Built<Record, RecordBuilder> {
   Record._();
 
+  // ignore: use_function_type_syntax_for_parameters
   factory Record([updates(RecordBuilder b)]) = _$Record;
 
   @BuiltValueField(wireName: 'spaceTrack')
