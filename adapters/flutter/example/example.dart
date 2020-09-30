@@ -7,7 +7,7 @@ import 'package:dart_json_mapper/dart_json_mapper.dart'
 import 'package:dart_json_mapper_flutter/dart_json_mapper_flutter.dart'
     show flutterAdapter;
 
-import 'example.reflectable.dart' show initializeReflectable;
+import 'example.mapper.g.dart' show initializeReflectable;
 
 @jsonSerializable
 class FlutterClass {

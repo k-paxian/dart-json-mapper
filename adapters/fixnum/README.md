@@ -23,7 +23,7 @@ import 'package:fixnum/fixnum.dart' show Int32;
 import 'package:dart_json_mapper/dart_json_mapper.dart' show JsonMapper, jsonSerializable;
 import 'package:dart_json_mapper_fixnum/dart_json_mapper_fixnum.dart' show fixnumAdapter;
 
-import 'main.reflectable.dart' show initializeReflectable;
+import 'main.mapper.g.dart' show initializeReflectable;
 
 @jsonSerializable
 class FixnumClass {

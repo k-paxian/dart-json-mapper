@@ -3,5 +3,4 @@ targets:
     builders:
       reflectable:
         generate_for:
-          - test/_test.dart
-          - example/example.dart
+          - no/files

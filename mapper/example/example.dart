@@ -1,7 +1,7 @@
 import 'package:dart_json_mapper/dart_json_mapper.dart'
     show JsonMapper, jsonSerializable, JsonProperty, enumConverterNumeric;
 
-import 'example.reflectable.dart' show initializeReflectable;
+import 'example.mapper.g.dart' show initializeReflectable;
 
 enum Color { Red, Blue, Green, Brown, Yellow, Black, White }
 

@@ -7,7 +7,7 @@ import 'package:dart_json_mapper_fixnum/dart_json_mapper_fixnum.dart'
 import 'package:fixnum/fixnum.dart' show Int32, Int64;
 import 'package:test/test.dart';
 
-import '_test.reflectable.dart' show initializeReflectable;
+import '_test.mapper.g.dart' show initializeReflectable;
 
 part 'test.basics.dart';
 

@@ -62,13 +62,13 @@ dev_dependencies:
 
 Say, you have a dart program *main.dart* having some classes intended to be traveling to JSON and back.
 - First thing you should do is to put `@jsonSerializable` annotation on each of those classes
-- Next step is to auto generate *main.reflectable.dart* file. And afterwards import that file into *main.dart*
+- Next step is to auto generate *main.mapper.g.dart* file. And afterwards import that file into *main.dart*
 
 **lib/main.dart**
 ```dart
 import 'package:dart_json_mapper/dart_json_mapper.dart' show JsonMapper, jsonSerializable, JsonProperty;
 
-import 'main.reflectable.dart' show initializeReflectable;
+import 'main.mapper.g.dart' show initializeReflectable;
 
 @jsonSerializable // This annotation let instances of MyData travel to/from JSON
 class MyData {
@@ -104,9 +104,12 @@ following content:
 targets:
   $default:
     builders:
+      dart_json_mapper:
+          generate_for:
+            - lib/main.dart
       reflectable:
         generate_for:
-          - lib/main.dart
+          - no/files
 ```
 
 Now run the code generation step with the root of your package as the current
@@ -123,8 +126,8 @@ So for development time, use `watch` like this
 > pub run build_runner watch
 ```
 
-Each time you modify your project code, all *.reflectable.dart files will be updated as well.
-- Next step is to add "*.reflectable.dart" to your .gitignore
+Each time you modify your project code, all *.mapper.g.dart files will be updated as well.
+- Next step is to add "*.mapper.g.dart" to your .gitignore
 - And this is it, you are all set and ready to go. Happy coding!
 
 ## Format DateTime / num types
@@ -843,7 +846,7 @@ For example, you would like to refer to `Color` type from Flutter in your model 
     import 'package:dart_json_mapper/dart_json_mapper.dart' show JsonMapper, jsonSerializable;    
     import 'package:dart_json_mapper_flutter/dart_json_mapper_flutter.dart' show flutterAdapter;
     
-    import 'main.reflectable.dart' show initializeReflectable;
+    import 'main.mapper.g.dart' show initializeReflectable;
     
     @jsonSerializable
     class ColorfulItem {

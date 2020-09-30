@@ -23,7 +23,7 @@ import 'dart:ui' show Color;
 import 'package:dart_json_mapper/dart_json_mapper.dart' show JsonMapper, jsonSerializable;
 import 'package:dart_json_mapper_flutter/dart_json_mapper_flutter.dart' show flutterAdapter;
 
-import 'main.reflectable.dart' show initializeReflectable;
+import 'main.mapper.g.dart' show initializeReflectable;
 
 @jsonSerializable
 class FlutterClass {

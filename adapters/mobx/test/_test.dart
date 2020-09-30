@@ -8,7 +8,7 @@ import 'package:mobx/mobx.dart'
     show ObservableList, ObservableSet, ObservableMap, Observable;
 import 'package:test/test.dart';
 
-import '_test.reflectable.dart' show initializeReflectable;
+import '_test.mapper.g.dart' show initializeReflectable;
 
 part 'test.observables.dart';
 

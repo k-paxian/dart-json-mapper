@@ -23,7 +23,7 @@ import 'package:mobx/mobx.dart' show ObservableList;
 import 'package:dart_json_mapper/dart_json_mapper.dart' show JsonMapper, jsonSerializable;
 import 'package:dart_json_mapper_mobx/dart_json_mapper_mobx.dart' show mobXAdapter;
 
-import 'main.reflectable.dart' show initializeReflectable;
+import 'main.mapper.g.dart' show initializeReflectable;
 
 @jsonSerializable
 class MyMobXClass {

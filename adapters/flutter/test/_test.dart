@@ -8,7 +8,7 @@ import 'package:dart_json_mapper_flutter/dart_json_mapper_flutter.dart'
     show flutterAdapter;
 import 'package:flutter_test/flutter_test.dart';
 
-import '_test.reflectable.dart' show initializeReflectable;
+import '_test.mapper.g.dart' show initializeReflectable;
 
 part 'test.basics.dart';
 

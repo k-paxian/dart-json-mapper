@@ -7,7 +7,7 @@ import 'dart:typed_data';
 import 'package:dart_json_mapper/dart_json_mapper.dart';
 import 'package:test/test.dart';
 
-import '_test.reflectable.dart' show initializeReflectable;
+import '_test.mapper.g.dart' show initializeReflectable;
 
 part 'json.dart';
 part 'model.dart';

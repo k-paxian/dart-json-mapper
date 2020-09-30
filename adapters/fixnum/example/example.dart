@@ -6,7 +6,7 @@ import 'package:dart_json_mapper_fixnum/dart_json_mapper_fixnum.dart'
     show fixnumAdapter;
 import 'package:fixnum/fixnum.dart' show Int32;
 
-import 'example.reflectable.dart' show initializeReflectable;
+import 'example.mapper.g.dart' show initializeReflectable;
 
 @jsonSerializable
 class Int32IntData {
