@@ -1,3 +1,4 @@
+export './src/builder/index.dart';
 export './src/errors.dart';
 export './src/mapper.dart';
 export './src/model/index.dart';
