@@ -7,7 +7,7 @@ import 'dart:typed_data';
 import 'package:dart_json_mapper/dart_json_mapper.dart';
 import 'package:test/test.dart';
 
-import '_test.mapper.g.dart' show initializeReflectable;
+import '_test.mapper.g.dart' show initializeJsonMapper;
 
 part 'json.dart';
 part 'model.dart';
@@ -27,7 +27,7 @@ part 'test.special.cases.dart';
 part 'test.value.decorators.dart';
 
 void main() {
-  initializeReflectable();
+  initializeJsonMapper().info();
 
   testScheme();
   testNameCasing();

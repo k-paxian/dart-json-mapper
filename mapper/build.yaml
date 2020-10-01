@@ -8,6 +8,7 @@ builders:
     build_to: source
     defaults:
       options:
+        iterables: List, Set
         extension: .mapper.g.dart
       generate_for:
         exclude:
@@ -24,6 +25,12 @@ builders:
 targets:
   $default:
     builders:
+      dart_json_mapper:
+        options:
+          iterables: List, Set, HashSet, UnmodifiableListView
+        generate_for:
+          - example/**.dart
+          - test/_test.dart
       reflectable:
         generate_for:
           - no/files

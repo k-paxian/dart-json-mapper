@@ -21,7 +21,9 @@ class DartJsonMapperBuilder implements Builder {
     final builderImplementation = BuilderImplementation();
     final generatedSource = await builderImplementation.buildMirrorLibrary(
         resolver, inputId, outputId, inputLibrary, visibleLibraries, true, []);
-    final wrappedSource = wrapReflectableSource(inputLibrary, generatedSource);
+    final wrappedSource =
+        ReflectableSourceWrapper(inputLibrary, builderOptions.config)
+            .wrap(generatedSource);
     await buildStep.writeAsString(outputId, wrappedSource);
   }
 
