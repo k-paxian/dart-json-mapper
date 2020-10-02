@@ -59,6 +59,11 @@ class Model {
 }
 
 @jsonSerializable
+class DurationModel {
+  Duration data;
+}
+
+@jsonSerializable
 class NumericEnum {
   @JsonProperty(enumValues: NumericEnumTestColor.values)
   NumericEnumTestColor color;
@@ -121,6 +126,19 @@ void testConverters() {
       // when
       final json = JsonMapper.toJson(instance);
       final target = JsonMapper.fromJson<Model>(json);
+
+      // then
+      expect(target.data, instance.data);
+    });
+
+    test('DurationConverter', () {
+      // given
+      final instance = DurationModel();
+      instance.data = Duration(days: 2, hours: 2, milliseconds: 200);
+
+      // when
+      final json = JsonMapper.toJson(instance);
+      final target = JsonMapper.fromJson<DurationModel>(json);
 
       // then
       expect(target.data, instance.data);

@@ -50,49 +50,53 @@ class JsonMapperAdapter implements IAdapter {
   String toString() => '$title : $url';
 }
 
-final defaultJsonMapperAdapter = JsonMapperAdapter(
-    title: 'Dart Core Embeded JsonMapper Adapter',
-    typeInfoDecorators: {
-      0: defaultTypeInfoDecorator
-    },
-    converters: {
-      dynamic: defaultConverter,
-      String: defaultConverter,
-      bool: defaultConverter,
-      Enum: enumConverter,
-      Symbol: symbolConverter,
-      DateTime: dateConverter,
-      num: numberConverter,
-      int: numberConverter,
-      double: numberConverter,
-      BigInt: bigIntConverter,
-      List: defaultIterableConverter,
-      UnmodifiableListView: defaultIterableConverter,
-      Set: defaultIterableConverter,
-      HashSet: defaultIterableConverter,
-      Map: mapConverter,
-      HashMap: mapConverter,
-      LinkedHashMap: mapConverter,
-      UnmodifiableMapView: mapConverter,
-      Uint8List: uint8ListConverter
-    },
-    valueDecorators: {
-      typeOf<Map<String, dynamic>>(): (value) => value.cast<String, dynamic>(),
-      typeOf<List<String>>(): (value) => value.cast<String>(),
-      typeOf<List<DateTime>>(): (value) => value.cast<DateTime>(),
-      typeOf<List<num>>(): (value) => value.cast<num>(),
-      typeOf<List<int>>(): (value) => value.cast<int>(),
-      typeOf<List<double>>(): (value) => value.cast<double>(),
-      typeOf<List<bool>>(): (value) => value.cast<bool>(),
-      typeOf<List<Symbol>>(): (value) => value.cast<Symbol>(),
-      typeOf<List<BigInt>>(): (value) => value.cast<BigInt>(),
-      typeOf<Set<String>>(): (value) => value.cast<String>(),
-      typeOf<Set<DateTime>>(): (value) => value.cast<DateTime>(),
-      typeOf<Set<num>>(): (value) => value.cast<num>(),
-      typeOf<Set<int>>(): (value) => value.cast<int>(),
-      typeOf<Set<double>>(): (value) => value.cast<double>(),
-      typeOf<Set<bool>>(): (value) => value.cast<bool>(),
-      typeOf<Set<Symbol>>(): (value) => value.cast<Symbol>(),
-      typeOf<Set<BigInt>>(): (value) => value.cast<BigInt>(),
-      typeOf<Uint8List>(): (value) => Uint8List.fromList(value.cast<int>()),
-    });
+final dartCoreAdapter =
+    JsonMapperAdapter(title: 'Dart Core Adapter', typeInfoDecorators: {
+  0: defaultTypeInfoDecorator
+}, converters: {
+  dynamic: defaultConverter,
+  String: defaultConverter,
+  bool: defaultConverter,
+  Enum: enumConverter,
+  Symbol: symbolConverter,
+  DateTime: dateConverter,
+  Duration: durationConverter,
+  num: numberConverter,
+  int: numberConverter,
+  double: numberConverter,
+  BigInt: bigIntConverter,
+  List: defaultIterableConverter,
+  Set: defaultIterableConverter,
+  Map: mapConverter,
+  Uint8List: uint8ListConverter
+}, valueDecorators: {
+  typeOf<Map<String, dynamic>>(): (value) => value.cast<String, dynamic>(),
+  typeOf<List<String>>(): (value) => value.cast<String>(),
+  typeOf<List<DateTime>>(): (value) => value.cast<DateTime>(),
+  typeOf<List<Duration>>(): (value) => value.cast<Duration>(),
+  typeOf<List<num>>(): (value) => value.cast<num>(),
+  typeOf<List<int>>(): (value) => value.cast<int>(),
+  typeOf<List<double>>(): (value) => value.cast<double>(),
+  typeOf<List<bool>>(): (value) => value.cast<bool>(),
+  typeOf<List<Symbol>>(): (value) => value.cast<Symbol>(),
+  typeOf<List<BigInt>>(): (value) => value.cast<BigInt>(),
+  typeOf<Set<String>>(): (value) => value.cast<String>(),
+  typeOf<Set<DateTime>>(): (value) => value.cast<DateTime>(),
+  typeOf<Set<Duration>>(): (value) => value.cast<Duration>(),
+  typeOf<Set<num>>(): (value) => value.cast<num>(),
+  typeOf<Set<int>>(): (value) => value.cast<int>(),
+  typeOf<Set<double>>(): (value) => value.cast<double>(),
+  typeOf<Set<bool>>(): (value) => value.cast<bool>(),
+  typeOf<Set<Symbol>>(): (value) => value.cast<Symbol>(),
+  typeOf<Set<BigInt>>(): (value) => value.cast<BigInt>(),
+  typeOf<Uint8List>(): (value) => Uint8List.fromList(value.cast<int>()),
+});
+
+final dartCollectionAdapter =
+    JsonMapperAdapter(title: 'Dart Collection Adapter', converters: {
+  UnmodifiableListView: defaultIterableConverter,
+  HashSet: defaultIterableConverter,
+  HashMap: mapConverter,
+  LinkedHashMap: mapConverter,
+  UnmodifiableMapView: mapConverter
+});
