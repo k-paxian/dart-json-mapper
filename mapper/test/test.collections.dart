@@ -1,4 +1,9 @@
-part of json_mapper.test;
+import 'dart:collection';
+
+import 'package:dart_json_mapper/dart_json_mapper.dart';
+import 'package:test/test.dart';
+
+import './model/model.dart';
 
 void testCollections() {
   group('[Verify Dart Collection cases]', () {

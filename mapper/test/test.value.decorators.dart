@@ -1,4 +1,7 @@
-part of json_mapper.test;
+import 'package:dart_json_mapper/dart_json_mapper.dart';
+import 'package:test/test.dart';
+
+import 'model/model.dart';
 
 @jsonSerializable
 class NavbarTab {

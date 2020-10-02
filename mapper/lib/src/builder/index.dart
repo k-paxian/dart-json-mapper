@@ -4,12 +4,20 @@ import 'package:analyzer/dart/element/visitor.dart';
 export 'builder.dart';
 
 class LibraryVisitor extends RecursiveElementVisitor {
-  List<ClassElement> classElements = [];
+  List<ClassElement> publicClassElements = [];
+
+  @override
+  void visitImportElement(ImportElement element) {
+    if (element.importedLibrary.identifier.startsWith('asset:')) {
+      element.importedLibrary.visitChildren(this);
+    }
+    super.visitImportElement(element);
+  }
 
   @override
   void visitClassElement(ClassElement element) {
     if (!element.isPrivate) {
-      classElements.add(element);
+      publicClassElements.add(element);
     }
     super.visitClassElement(element);
   }
@@ -30,8 +38,12 @@ class ReflectableSourceWrapper {
   LibraryElement inputLibrary;
   Map<String, dynamic> options;
 
+  String _inputLibraryPath;
+
   ReflectableSourceWrapper(this.inputLibrary, this.options) {
     inputLibrary.visitChildren(_libraryVisitor);
+    _inputLibraryPath = inputLibrary.identifier
+        .substring(0, inputLibrary.identifier.lastIndexOf('/') + 1);
   }
 
   Iterable<String> get allowedIterables {
@@ -71,7 +83,7 @@ class ReflectableSourceWrapper {
   }
 
   String _renderValueDecorators() {
-    return _libraryVisitor.classElements
+    return _libraryVisitor.publicClassElements
         .map((e) => _renderValueDecoratorsForClassElement(e))
         .join(',\n');
   }
@@ -94,14 +106,13 @@ ${_renderValueDecorators()}
 }''';
   }
 
-  String _autoCorrectImport(String import) {
-    if (inputLibrary.identifier == import) {
+  String _renderElementImport(ClassElement element) {
+    if (element.library.identifier.startsWith(_inputLibraryPath)) {
       // local import
-      final importParts = import.split('/');
-      return importParts.last;
+      return '''import '${element.library.identifier.split(_inputLibraryPath).last}';''';
     }
 
-    return import;
+    return '''import '${element.library.identifier}';''';
   }
 
   String _renderHeader() {
@@ -112,13 +123,13 @@ ${_renderValueDecorators()}
   }
 
   String _renderImports() {
-    return {
-          isCollectionImportNeeded ? COLLECTION_IMPORT : null,
-          MAPPER_IMPORT,
-          ..._libraryVisitor.classElements.map((e) =>
-              '''import '${_autoCorrectImport(e.library.identifier)}';''')
-        }.where((x) => x != null).join('\n') +
-        '\n\n';
+    final importsList = {
+      isCollectionImportNeeded ? COLLECTION_IMPORT : null,
+      MAPPER_IMPORT,
+      ..._libraryVisitor.publicClassElements.map((e) => _renderElementImport(e))
+    }.where((x) => x != null).toList();
+    importsList.sort();
+    return importsList.join('\n') + '\n\n';
   }
 
   String _removeObjectCasts(String input) {

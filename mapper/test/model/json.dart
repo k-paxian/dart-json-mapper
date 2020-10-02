@@ -1,5 +1,3 @@
-part of json_mapper.test;
-
 final String personJson = '''{
  "skills": [
   "Go",
