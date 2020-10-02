@@ -23,7 +23,7 @@ import 'package:mobx/mobx.dart' show ObservableList;
 import 'package:dart_json_mapper/dart_json_mapper.dart' show JsonMapper, jsonSerializable;
 import 'package:dart_json_mapper_mobx/dart_json_mapper_mobx.dart' show mobXAdapter;
 
-import 'main.mapper.g.dart' show initializeReflectable;
+import 'main.mapper.g.dart' show initializeJsonMapper;
 
 @jsonSerializable
 class MyMobXClass {
@@ -33,8 +33,7 @@ class MyMobXClass {
 }
 
 void main() {
-  initializeReflectable();
-  JsonMapper().useAdapter(mobXAdapter);
+  initializeJsonMapper([mobXAdapter]);
   
   print(JsonMapper.serialize(
      MyMobXClass(ObservableList<String>.of(['aa@test.com', 'bb@test.com', 'cc@test.com']))

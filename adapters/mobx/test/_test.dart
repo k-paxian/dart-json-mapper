@@ -8,13 +8,12 @@ import 'package:mobx/mobx.dart'
     show ObservableList, ObservableSet, ObservableMap, Observable;
 import 'package:test/test.dart';
 
-import '_test.mapper.g.dart' show initializeReflectable;
+import '_test.mapper.g.dart' show initializeJsonMapper;
 
 part 'test.observables.dart';
 
 void main() {
-  initializeReflectable();
-  JsonMapper().useAdapter(mobXAdapter).info();
+  initializeJsonMapper([mobXAdapter]).info();
 
   testObservables();
 }

@@ -34,12 +34,8 @@ class NavbarConfig {
 @jsonSerializable
 class NoticeItem {}
 
-@Json(valueDecorators: NoticeList.valueDecorators)
 @jsonSerializable
 class NoticeList {
-  static Map<Type, ValueDecoratorFunction> valueDecorators() =>
-      {typeOf<List<NoticeItem>>(): (value) => value.cast<NoticeItem>()};
-
   final List<NoticeItem> list;
 
   const NoticeList(this.list);
@@ -153,8 +149,6 @@ void testValueDecorators() {
   }
   ]''';
   final intListJson = '[1,3,5]';
-  final iterableCarDecorator = (value) => value.cast<Car>();
-  final iterableCustomerDecorator = (value) => value.cast<Customer>();
 
   group('[Verify value decorators]', () {
     test('Custom Map<K, V> decorator', () {
@@ -230,10 +224,6 @@ void testValueDecorators() {
       expect(json, carListJson);
 
       // given
-      final adapter = JsonMapperAdapter(
-          valueDecorators: {typeOf<Set<Car>>(): iterableCarDecorator});
-      JsonMapper().useAdapter(adapter);
-
       // when
       final target = JsonMapper.deserialize<Set<Car>>(carListJson);
 
@@ -242,16 +232,10 @@ void testValueDecorators() {
       expect(target.first, TypeMatcher<Car>());
       expect(target.first.model, 'Audi');
       expect(target.first.color, Color.Green);
-
-      JsonMapper().removeAdapter(adapter);
     });
 
     test('Custom List<Car> value decorator', () {
       // given
-      final adapter = JsonMapperAdapter(
-          valueDecorators: {typeOf<List<Car>>(): iterableCarDecorator});
-      JsonMapper().useAdapter(adapter);
-
       // when
       final target = JsonMapper.deserialize<List<Car>>(carListJson);
 
@@ -260,21 +244,10 @@ void testValueDecorators() {
       expect(target[0], TypeMatcher<Car>());
       expect(target[0].model, 'Audi');
       expect(target[0].color, Color.Green);
-
-      JsonMapper().removeAdapter(adapter);
     });
 
     test('Custom List<ServiceOrderModel> value decorator', () {
       // given
-      final adapter = JsonMapperAdapter(valueDecorators: {
-        typeOf<List<Customer>>(): iterableCustomerDecorator,
-        typeOf<List<ServiceOrderModel>>(): (value) =>
-            value.cast<ServiceOrderModel>(),
-        typeOf<List<ServiceOrderItemModel>>(): (value) =>
-            value.cast<ServiceOrderItemModel>()
-      });
-      JsonMapper().useAdapter(adapter);
-
       // when
       final target =
           JsonMapper.deserialize<List<ServiceOrderModel>>(ordersListJson);
@@ -284,8 +257,6 @@ void testValueDecorators() {
       expect(target[0], TypeMatcher<ServiceOrderModel>());
       expect(target[0].id, 96);
       expect(target[0].expertId, 1);
-
-      JsonMapper().removeAdapter(adapter);
     });
 
     test('List of Lists', () {

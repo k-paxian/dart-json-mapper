@@ -7,7 +7,7 @@ import 'package:dart_json_mapper/dart_json_mapper.dart'
 import 'package:dart_json_mapper_flutter/dart_json_mapper_flutter.dart'
     show flutterAdapter;
 
-import 'example.mapper.g.dart' show initializeReflectable;
+import 'example.mapper.g.dart' show initializeJsonMapper;
 
 @jsonSerializable
 class FlutterClass {
@@ -17,8 +17,7 @@ class FlutterClass {
 }
 
 main() {
-  initializeReflectable();
-  JsonMapper().useAdapter(flutterAdapter);
+  initializeJsonMapper([flutterAdapter]);
 
   print(JsonMapper.serialize(FlutterClass(Color(0x003f4f5f))));
 }

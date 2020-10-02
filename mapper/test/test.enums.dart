@@ -183,12 +183,6 @@ void testEnums() {
       final instance = <Color>[Color.Black, Color.Blue];
 
       // when
-      final adapter = JsonMapperAdapter(valueDecorators: {
-        typeOf<List<Color>>(): (value) => value.cast<Color>(),
-        typeOf<Set<Color>>(): (value) => value.cast<Color>()
-      });
-      JsonMapper().useAdapter(adapter);
-
       final targetJson = JsonMapper.serialize(instance, compactOptions);
       final targetList = JsonMapper.deserialize<List<Color>>(targetJson);
       final targetSet = JsonMapper.deserialize<Set<Color>>(targetJson);
@@ -205,8 +199,6 @@ void testEnums() {
       expect(targetSet.length, 2);
       expect(targetSet.first, Color.Black);
       expect(targetSet.last, Color.Blue);
-
-      JsonMapper().removeAdapter(adapter);
     });
 
     test('EnumIterables', () {
@@ -224,12 +216,6 @@ void testEnums() {
       };
 
       // when
-      final adapter = JsonMapperAdapter(valueDecorators: {
-        typeOf<List<Color>>(): (value) => value.cast<Color>(),
-        typeOf<Set<Color>>(): (value) => value.cast<Color>()
-      });
-      JsonMapper().useAdapter(adapter);
-
       final targetJson = JsonMapper.serialize(instance, compactOptions);
       final target = JsonMapper.deserialize<EnumIterables>(targetJson);
 
@@ -251,8 +237,6 @@ void testEnums() {
       expect(target.colorsSet.length, 2);
       expect(target.colorsSet.first, Color.Black);
       expect(target.colorsSet.last, Color.Blue);
-
-      JsonMapper().removeAdapter(adapter);
     });
 
     test('EnumIterablesWithConstructor', () {
@@ -262,12 +246,6 @@ void testEnums() {
           colorsSet: <Color>{Color.Black, Color.Blue});
 
       // when
-      final adapter = JsonMapperAdapter(valueDecorators: {
-        typeOf<List<Color>>(): (value) => value.cast<Color>(),
-        typeOf<Set<Color>>(): (value) => value.cast<Color>()
-      });
-      JsonMapper().useAdapter(adapter);
-
       final targetJson = JsonMapper.serialize(instance, compactOptions);
       final target =
           JsonMapper.deserialize<EnumIterablesWithConstructor>(targetJson);
@@ -284,8 +262,6 @@ void testEnums() {
       expect(target.colorsSet.length, 2);
       expect(target.colorsSet.first, Color.Black);
       expect(target.colorsSet.last, Color.Blue);
-
-      JsonMapper().removeAdapter(adapter);
     });
   });
 }

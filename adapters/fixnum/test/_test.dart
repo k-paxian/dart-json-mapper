@@ -7,13 +7,12 @@ import 'package:dart_json_mapper_fixnum/dart_json_mapper_fixnum.dart'
 import 'package:fixnum/fixnum.dart' show Int32, Int64;
 import 'package:test/test.dart';
 
-import '_test.mapper.g.dart' show initializeReflectable;
+import '_test.mapper.g.dart' show initializeJsonMapper;
 
 part 'test.basics.dart';
 
 void main() {
-  initializeReflectable();
-  JsonMapper().useAdapter(fixnumAdapter).info();
+  initializeJsonMapper([fixnumAdapter]).info();
 
   testBasics();
 }

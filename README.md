@@ -68,7 +68,7 @@ Say, you have a dart program *main.dart* having some classes intended to be trav
 ```dart
 import 'package:dart_json_mapper/dart_json_mapper.dart' show JsonMapper, jsonSerializable, JsonProperty;
 
-import 'main.mapper.g.dart' show initializeReflectable;
+import 'main.mapper.g.dart' show initializeJsonMapper;
 
 @jsonSerializable // This annotation let instances of MyData travel to/from JSON
 class MyData {
@@ -84,7 +84,7 @@ class MyData {
 }
 
 main() {
-  initializeReflectable();
+  initializeJsonMapper();
   
   print(JsonMapper.serialize(MyData(456, true, "yes")));
 }
@@ -846,7 +846,7 @@ For example, you would like to refer to `Color` type from Flutter in your model 
     import 'package:dart_json_mapper/dart_json_mapper.dart' show JsonMapper, jsonSerializable;    
     import 'package:dart_json_mapper_flutter/dart_json_mapper_flutter.dart' show flutterAdapter;
     
-    import 'main.mapper.g.dart' show initializeReflectable;
+    import 'main.mapper.g.dart' show initializeJsonMapper;
     
     @jsonSerializable
     class ColorfulItem {
@@ -857,8 +857,7 @@ For example, you would like to refer to `Color` type from Flutter in your model 
     }
     
     void main() {
-      initializeReflectable();
-      JsonMapper().useAdapter(flutterAdapter);
+      initializeJsonMapper([flutterAdapter]);
       
       print(JsonMapper.serialize(
          ColorfulItem('Item 1', Color(0x003f4f5f))

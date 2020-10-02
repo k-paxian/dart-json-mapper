@@ -44,7 +44,7 @@ class ReflectableSourceWrapper {
   }
 
   String get _libraryAdapterId {
-    return '_$_libraryName';
+    return '$_libraryName';
   }
 
   String get _libraryName {

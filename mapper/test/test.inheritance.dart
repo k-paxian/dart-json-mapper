@@ -24,12 +24,8 @@ class Startup extends Business {
   Startup(this.userCount);
 }
 
-@Json(valueDecorators: Stakeholder.valueDecorators)
 @jsonSerializable
 class Stakeholder {
-  static Map<Type, ValueDecoratorFunction> valueDecorators() =>
-      {typeOf<List<Business>>(): (value) => value.cast<Business>()};
-
   String fullName;
   List<Business> businesses;
 
