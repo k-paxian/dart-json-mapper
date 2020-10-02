@@ -897,7 +897,7 @@ For example, you would like to refer to `Color` type from Flutter in your model 
     }
     
     void main() {
-      initializeJsonMapper([flutterAdapter]);
+      initializeJsonMapper(adapters: [flutterAdapter]);
       
       print(JsonMapper.serialize(
          ColorfulItem('Item 1', Color(0x003f4f5f))
