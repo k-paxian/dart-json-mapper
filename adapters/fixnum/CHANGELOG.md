@@ -1,3 +1,7 @@
+## 1.1.2
+
+* Support for new code generation contract
+
 ## 1.1.1
 
 * Support for new adapters contract

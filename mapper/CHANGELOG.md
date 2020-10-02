@@ -1,3 +1,10 @@
+## 1.6.0
+
+* Own builder introduced, to support `List, Set, HashSet, UnmodifiableListView` iterables to slightly ease the pain
+of manual adding value decorators per each model class. From now on, support for `List<T>, Set<T>` iterables will be
+out of the box by default.
+* `Duration` converter introduced
+
 ## 1.5.24
 
 * Issue #82 proper fix, `@JsonProperty(ignoreForSerialization / ignoreForDeserialization)` flags introduced to make your code more explicit and obvious

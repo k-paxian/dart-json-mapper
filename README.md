@@ -25,6 +25,7 @@ guided by the annotated classes **only**, as the result types information is acc
 
 * [Basic setup](#basic-setup)
 * [Annotations](#annotations)
+* [Builder](#builder)
 * [Known limitations](#known-limitations)
 * [Documentation][docs]
 * [Configuration use cases](#format-datetime--num-types)
@@ -116,14 +117,14 @@ Now run the code generation step with the root of your package as the current
 directory:
 
 ```shell
-> pub run build_runner build
+> pub run build_runner build --delete-conflicting-outputs
 ```
 
 **You'll need to re-run code generation each time you are making changes to `lib/main.dart`**
 So for development time, use `watch` like this
 
 ```shell
-> pub run build_runner watch
+> pub run build_runner watch --delete-conflicting-outputs
 ```
 
 Each time you modify your project code, all *.mapper.g.dart files will be updated as well.
@@ -348,11 +349,13 @@ final myCarsSet = JsonMapper.deserialize<Set<Car>>(json);
 Basic iterable based generics using Dart built-in types like `List<num>, List<String>, List<bool>,
 List<DateTime>, Set<num>, Set<String>, Set<bool>, Set<DateTime>, etc.` supported out of the box.
 
-For custom iterable types like `List<Car> / Set<Car>` you have to provide value decorator function 
-as showed in a code snippet above before using deserialization. This function will have explicit 
-cast to concrete iterable type.
+For custom iterable types like `List<Car> / Set<Car>` you **don't** have to provide value decorator function
+as showed in a code snippet above before using deserialization, thanks to the [Builder](#builder)
 
-### OR an *easy case* 
+For custom iterable types like `HashSet<Car> / UnmodifiableListView<Car>` you should configure
+[Builder](#builder) to support that.
+
+### OR an *easy case*
 
 When you are able to pre-initialize your Iterables with an empty instance,
 like on example below, you don't need to mess around with value decorators.
@@ -812,6 +815,43 @@ Example: `'foo', 'bar', 'foo/bar/baz'`
     * *enumValues* Provides a way to specify enum values, via Dart built in capability for all Enum instances. `Enum.values`
     * *defaultValue* Defines field default value
 
+## Builder
+
+This library introduces own builder used to pre-build Default adapter for your application code.
+Technically, provided builder wraps the [reflectable][3] builder output and adds a bit more generated code to it.
+
+Builder can be configured using `build.yaml` file at the root of your project.
+
+```yaml
+targets:
+  $default:
+    builders:
+      dart_json_mapper: # This part configures dart_json_mapper builder
+        options:
+          iterables: List, Set, HashSet, UnmodifiableListView
+        generate_for:
+          - example/**.dart
+          - test/_test.dart
+      reflectable:    # This part is needed to tell original reflectable builder to stay away from your code
+        generate_for: # it overrides default options for reflectable builder to an **empty** set of files
+          - no/files
+```
+
+Primary mission for the builder at this point is to generate Iterables support for your custom classes.
+
+Options:
+
+```yaml
+iterables: List, Set, HashSet, UnmodifiableListView
+```
+
+This option if omitted defaults to `List, Set` is used to configure a list of iterables you would like
+to be supported for you out of the box. For example you have a `Car` class in your app and
+would like to have `List<Car>` and `Set<Car>` support for deserialization, then you could omit this option.
+
+And when you would like to have a deserialization support for other iterables like `HashSet<Car>, UnmodifiableListView<Car>`
+you could add them to the list for this option.
+
 ## Known limitations
 
 * [Dart code obfuscation][obfuscation]. If you are using or planning to use `extra-gen-snapshot-options=--obfuscate` option with your Flutter project,
@@ -891,6 +931,7 @@ JsonMapper()
 [10]: https://medium.com/better-programming/string-case-styles-camel-pascal-snake-and-kebab-case-981407998841
 [11]: https://github.com/flutter/flutter
 [12]: https://www.baeldung.com/jackson-annotations
+[13]: https://pub.dev/packages/build#implementing-your-own-builders
 
 [obfuscation]: https://flutter.dev/docs/deployment/obfuscate
 

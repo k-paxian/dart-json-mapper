@@ -1,3 +1,7 @@
+## 1.2.2
+
+* Support for new code generation contract
+
 ## 1.2.1
 
 * Converter for ObservableMap<K,V> w/o decorators, when Map is pre-initialized
