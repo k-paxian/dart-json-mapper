@@ -1,5 +1,5 @@
 name: dart_json_mapper_fixnum
-version: 1.1.1
+version: 1.1.2
 description: >
   This is a dart-json-mapper complementary package
   provides support for https://pub.dev/packages/fixnum types in order to
@@ -15,6 +15,6 @@ dev_dependencies:
   build_runner:
   build_test:
   test:
-dependency_overrides:
-  dart_json_mapper:
-    path: ../../mapper
+#dependency_overrides:
+#  dart_json_mapper:
+#    path: ../../mapper

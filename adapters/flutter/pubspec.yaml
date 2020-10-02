@@ -1,5 +1,5 @@
 name: dart_json_mapper_flutter
-version: 1.0.1
+version: 1.0.2
 description: >
   This is a dart-json-mapper complementary package
   provides support for https://github.com/flutter/flutter types in order to
@@ -17,6 +17,6 @@ dev_dependencies:
   pedantic:
   build_runner:
   build_test:
-dependency_overrides:
-  dart_json_mapper:
-    path: ../../mapper
+#dependency_overrides:
+#  dart_json_mapper:
+#    path: ../../mapper
