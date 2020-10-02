@@ -12,7 +12,7 @@ import '_test.mapper.g.dart' show initializeJsonMapper;
 part 'test.basics.dart';
 
 void main() {
-  initializeJsonMapper([fixnumAdapter]).info();
+  initializeJsonMapper(adapters: [fixnumAdapter]).info();
 
   testBasics();
 }

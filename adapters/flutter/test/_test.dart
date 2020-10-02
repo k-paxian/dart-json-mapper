@@ -13,7 +13,7 @@ import '_test.mapper.g.dart' show initializeJsonMapper;
 part 'test.basics.dart';
 
 void main() {
-  initializeJsonMapper([flutterAdapter]).info();
+  initializeJsonMapper(adapters: [flutterAdapter]).info();
 
   testBasics();
 }

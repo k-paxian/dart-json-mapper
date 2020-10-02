@@ -16,7 +16,7 @@ class Int32IntData {
 }
 
 void main() {
-  initializeJsonMapper([fixnumAdapter]);
+  initializeJsonMapper(adapters: [fixnumAdapter]);
 
   // given
   final rawString = '1234567890';

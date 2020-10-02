@@ -33,7 +33,7 @@ class FixnumClass {
 }
 
 void main() {
-  initializeJsonMapper([fixnumAdapter]);
+  initializeJsonMapper(adapters: [fixnumAdapter]);
 
   print(JsonMapper.serialize(
      FixnumClass(Int32(1234567890))

@@ -13,7 +13,7 @@ import '_test.mapper.g.dart' show initializeJsonMapper;
 part 'test.observables.dart';
 
 void main() {
-  initializeJsonMapper([mobXAdapter]).info();
+  initializeJsonMapper(adapters: [mobXAdapter]).info();
 
   testObservables();
 }

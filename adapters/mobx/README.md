@@ -33,7 +33,7 @@ class MyMobXClass {
 }
 
 void main() {
-  initializeJsonMapper([mobXAdapter]);
+  initializeJsonMapper(adapters: [mobXAdapter]);
   
   print(JsonMapper.serialize(
      MyMobXClass(ObservableList<String>.of(['aa@test.com', 'bb@test.com', 'cc@test.com']))
