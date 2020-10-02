@@ -25,6 +25,7 @@ guided by the annotated classes **only**, as the result types information is acc
 
 * [Basic setup](#basic-setup)
 * [Annotations](#annotations)
+* [Builder](#builder)
 * [Known limitations](#known-limitations)
 * [Documentation][docs]
 * [Configuration use cases](#format-datetime--num-types)
@@ -62,13 +63,13 @@ dev_dependencies:
 
 Say, you have a dart program *main.dart* having some classes intended to be traveling to JSON and back.
 - First thing you should do is to put `@jsonSerializable` annotation on each of those classes
-- Next step is to auto generate *main.reflectable.dart* file. And afterwards import that file into *main.dart*
+- Next step is to auto generate *main.mapper.g.dart* file. And afterwards import that file into *main.dart*
 
 **lib/main.dart**
 ```dart
 import 'package:dart_json_mapper/dart_json_mapper.dart' show JsonMapper, jsonSerializable, JsonProperty;
 
-import 'main.reflectable.dart' show initializeReflectable;
+import 'main.mapper.g.dart' show initializeJsonMapper;
 
 @jsonSerializable // This annotation let instances of MyData travel to/from JSON
 class MyData {
@@ -84,7 +85,7 @@ class MyData {
 }
 
 main() {
-  initializeReflectable();
+  initializeJsonMapper();
   
   print(JsonMapper.serialize(MyData(456, true, "yes")));
 }
@@ -104,27 +105,30 @@ following content:
 targets:
   $default:
     builders:
+      dart_json_mapper:
+          generate_for:
+            - lib/main.dart
       reflectable:
         generate_for:
-          - lib/main.dart
+          - no/files
 ```
 
 Now run the code generation step with the root of your package as the current
 directory:
 
 ```shell
-> pub run build_runner build
+> pub run build_runner build --delete-conflicting-outputs
 ```
 
 **You'll need to re-run code generation each time you are making changes to `lib/main.dart`**
 So for development time, use `watch` like this
 
 ```shell
-> pub run build_runner watch
+> pub run build_runner watch --delete-conflicting-outputs
 ```
 
-Each time you modify your project code, all *.reflectable.dart files will be updated as well.
-- Next step is to add "*.reflectable.dart" to your .gitignore
+Each time you modify your project code, all *.mapper.g.dart files will be updated as well.
+- Next step is to add "*.mapper.g.dart" to your .gitignore
 - And this is it, you are all set and ready to go. Happy coding!
 
 ## Format DateTime / num types
@@ -345,11 +349,13 @@ final myCarsSet = JsonMapper.deserialize<Set<Car>>(json);
 Basic iterable based generics using Dart built-in types like `List<num>, List<String>, List<bool>,
 List<DateTime>, Set<num>, Set<String>, Set<bool>, Set<DateTime>, etc.` supported out of the box.
 
-For custom iterable types like `List<Car> / Set<Car>` you have to provide value decorator function 
-as showed in a code snippet above before using deserialization. This function will have explicit 
-cast to concrete iterable type.
+For custom iterable types like `List<Car> / Set<Car>` you **don't** have to provide value decorator function
+as showed in a code snippet above before using deserialization, thanks to the [Builder](#builder)
 
-### OR an *easy case* 
+For custom iterable types like `HashSet<Car> / UnmodifiableListView<Car>` you should configure
+[Builder](#builder) to support that.
+
+### OR an *easy case*
 
 When you are able to pre-initialize your Iterables with an empty instance,
 like on example below, you don't need to mess around with value decorators.
@@ -809,6 +815,43 @@ Example: `'foo', 'bar', 'foo/bar/baz'`
     * *enumValues* Provides a way to specify enum values, via Dart built in capability for all Enum instances. `Enum.values`
     * *defaultValue* Defines field default value
 
+## Builder
+
+This library introduces own builder used to pre-build Default adapter for your application code.
+Technically, provided builder wraps the [reflectable][3] builder output and adds a bit more generated code to it.
+
+Builder can be configured using `build.yaml` file at the root of your project.
+
+```yaml
+targets:
+  $default:
+    builders:
+      dart_json_mapper: # This part configures dart_json_mapper builder
+        options:
+          iterables: List, Set, HashSet, UnmodifiableListView
+        generate_for:
+          - example/**.dart
+          - test/_test.dart
+      reflectable:    # This part is needed to tell original reflectable builder to stay away from your code
+        generate_for: # it overrides default options for reflectable builder to an **empty** set of files
+          - no/files
+```
+
+Primary mission for the builder at this point is to generate Iterables support for your custom classes.
+
+Options:
+
+```yaml
+iterables: List, Set, HashSet, UnmodifiableListView
+```
+
+This option if omitted defaults to `List, Set` is used to configure a list of iterables you would like
+to be supported for you out of the box. For example you have a `Car` class in your app and
+would like to have `List<Car>` and `Set<Car>` support for deserialization, then you could omit this option.
+
+And when you would like to have a deserialization support for other iterables like `HashSet<Car>, UnmodifiableListView<Car>`
+you could add them to the list for this option.
+
 ## Known limitations
 
 * [Dart code obfuscation][obfuscation]. If you are using or planning to use `extra-gen-snapshot-options=--obfuscate` option with your Flutter project,
@@ -843,7 +886,7 @@ For example, you would like to refer to `Color` type from Flutter in your model 
     import 'package:dart_json_mapper/dart_json_mapper.dart' show JsonMapper, jsonSerializable;    
     import 'package:dart_json_mapper_flutter/dart_json_mapper_flutter.dart' show flutterAdapter;
     
-    import 'main.reflectable.dart' show initializeReflectable;
+    import 'main.mapper.g.dart' show initializeJsonMapper;
     
     @jsonSerializable
     class ColorfulItem {
@@ -854,8 +897,7 @@ For example, you would like to refer to `Color` type from Flutter in your model 
     }
     
     void main() {
-      initializeReflectable();
-      JsonMapper().useAdapter(flutterAdapter);
+      initializeJsonMapper(adapters: [flutterAdapter]);
       
       print(JsonMapper.serialize(
          ColorfulItem('Item 1', Color(0x003f4f5f))
@@ -889,6 +931,7 @@ JsonMapper()
 [10]: https://medium.com/better-programming/string-case-styles-camel-pascal-snake-and-kebab-case-981407998841
 [11]: https://github.com/flutter/flutter
 [12]: https://www.baeldung.com/jackson-annotations
+[13]: https://pub.dev/packages/build#implementing-your-own-builders
 
 [obfuscation]: https://flutter.dev/docs/deployment/obfuscate
 

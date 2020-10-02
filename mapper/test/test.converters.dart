@@ -1,4 +1,11 @@
-part of json_mapper.test;
+import 'dart:typed_data';
+
+import 'package:dart_json_mapper/dart_json_mapper.dart';
+import 'package:test/test.dart';
+
+import './model/model.dart';
+import 'model/generic.dart';
+import 'model/immutable.dart';
 
 enum NumericEnumTestColor {
   Red,
@@ -49,6 +56,11 @@ class BigIntData {
 @jsonSerializable
 class Model {
   DateTime data;
+}
+
+@jsonSerializable
+class DurationModel {
+  Duration data;
 }
 
 @jsonSerializable
@@ -114,6 +126,19 @@ void testConverters() {
       // when
       final json = JsonMapper.toJson(instance);
       final target = JsonMapper.fromJson<Model>(json);
+
+      // then
+      expect(target.data, instance.data);
+    });
+
+    test('DurationConverter', () {
+      // given
+      final instance = DurationModel();
+      instance.data = Duration(days: 2, hours: 2, milliseconds: 200);
+
+      // when
+      final json = JsonMapper.toJson(instance);
+      final target = JsonMapper.fromJson<DurationModel>(json);
 
       // then
       expect(target.data, instance.data);

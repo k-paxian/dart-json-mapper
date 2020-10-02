@@ -43,7 +43,9 @@ class JsonMapper {
       [DeserializationOptions options = defaultDeserializationOptions]) {
     final targetType = T != dynamic
         ? T
-        : options.template != null ? options.template.runtimeType : dynamic;
+        : options.template != null
+            ? options.template.runtimeType
+            : dynamic;
     assert(targetType != dynamic
         ? true
         : throw MissingTypeForDeserializationError());
@@ -104,7 +106,8 @@ class JsonMapper {
         classes[classMirror.dynamicReflectedType.toString()] = classMirror;
       }
     }
-    useAdapter(defaultJsonMapperAdapter);
+    useAdapter(dartCoreAdapter);
+    useAdapter(dartCollectionAdapter);
   }
 
   JsonMapper useAdapter(IAdapter adapter, [int priority]) {

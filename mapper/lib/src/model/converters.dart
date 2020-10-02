@@ -75,7 +75,9 @@ class DateConverter extends BaseCustomConverter implements ICustomConverter {
         ? format.format(object)
         : (object is List)
             ? object.map((item) => item.toString()).toList()
-            : object != null ? object.toString() : null;
+            : object != null
+                ? object.toString()
+                : null;
   }
 
   DateFormat getDateFormat([JsonProperty jsonProperty]) {
@@ -105,7 +107,9 @@ class NumberConverter extends BaseCustomConverter implements ICustomConverter {
     final format = getNumberFormat(jsonProperty);
     return object != null && format != null
         ? getNumberFormat(jsonProperty).format(object)
-        : (object is String) ? num.tryParse(object) : object;
+        : (object is String)
+            ? num.tryParse(object)
+            : object;
   }
 
   NumberFormat getNumberFormat([JsonProperty jsonProperty]) {
@@ -228,6 +232,23 @@ class SymbolConverter implements ICustomConverter {
     return object != null
         ? RegExp('"(.+)"').allMatches(object.toString()).first.group(1)
         : null;
+  }
+}
+
+const durationConverter = DurationConverter();
+
+/// DurationConverter converter for [Duration] type
+class DurationConverter implements ICustomConverter<Duration> {
+  const DurationConverter() : super();
+
+  @override
+  Duration fromJSON(dynamic jsonValue, [JsonProperty jsonProperty]) {
+    return jsonValue is num ? Duration(microseconds: jsonValue) : jsonValue;
+  }
+
+  @override
+  dynamic toJSON(Duration object, [JsonProperty jsonProperty]) {
+    return object != null ? object.inMicroseconds : null;
   }
 }
 

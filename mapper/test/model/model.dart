@@ -1,4 +1,4 @@
-part of json_mapper.test;
+import 'package:dart_json_mapper/dart_json_mapper.dart';
 
 final compactOptions = SerializationOptions(indent: '');
 

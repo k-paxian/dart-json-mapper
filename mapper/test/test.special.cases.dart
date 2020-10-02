@@ -1,4 +1,5 @@
-part of json_mapper.test;
+import 'package:dart_json_mapper/dart_json_mapper.dart';
+import 'package:test/test.dart';
 
 @jsonSerializable
 class A {
@@ -15,9 +16,6 @@ void testSpecialCases() {
     test('A/B inception deserialization', () {
       // given
       final json = '{"content":{"content":[]}}';
-      final adapter = JsonMapperAdapter(
-          valueDecorators: {typeOf<List<A>>(): (value) => value.cast<A>()});
-      JsonMapper().useAdapter(adapter);
 
       // when
       final target = JsonMapper.deserialize<A>(json);
@@ -26,8 +24,6 @@ void testSpecialCases() {
       expect(target, TypeMatcher<A>());
       expect(target.content, TypeMatcher<B>());
       expect(target.content.content, TypeMatcher<List<A>>());
-
-      JsonMapper().removeAdapter(adapter);
     });
   });
 }

@@ -1,7 +1,7 @@
 import 'package:dart_json_mapper/dart_json_mapper.dart'
     show JsonMapper, jsonSerializable, JsonProperty, enumConverterNumeric;
 
-import 'example.reflectable.dart' show initializeReflectable;
+import 'example.mapper.g.dart' show initializeJsonMapper;
 
 enum Color { Red, Blue, Green, Brown, Yellow, Black, White }
 
@@ -61,7 +61,7 @@ class Person {
 }
 
 void main() {
-  initializeReflectable();
+  initializeJsonMapper();
 
   final personJson = '''{
  "skills": [

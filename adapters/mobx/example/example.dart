@@ -6,7 +6,7 @@ import 'package:dart_json_mapper_mobx/dart_json_mapper_mobx.dart'
     show mobXAdapter;
 import 'package:mobx/mobx.dart' show ObservableList;
 
-import 'example.reflectable.dart' show initializeReflectable;
+import 'example.mapper.g.dart' show initializeJsonMapper;
 
 @jsonSerializable
 class MobX {
@@ -16,8 +16,7 @@ class MobX {
 }
 
 void main() {
-  initializeReflectable();
-  JsonMapper().useAdapter(mobXAdapter);
+  initializeJsonMapper(adapters: [mobXAdapter]);
 
   final m = MobX(
       ObservableList<String>.of(['aa@test.com', 'bb@test.com', 'cc@test.com']));

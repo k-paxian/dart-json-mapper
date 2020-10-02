@@ -16,3 +16,4 @@ doc/api/
 .idea
 
 *.reflectable.dart
+*.mapper.g.dart

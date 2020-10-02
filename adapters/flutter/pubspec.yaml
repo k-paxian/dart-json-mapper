@@ -14,10 +14,9 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  reflectable:
   pedantic:
   build_runner:
   build_test:
-#dependency_overrides:
-#  dart_json_mapper:
-#    path: ../../mapper
+dependency_overrides:
+  dart_json_mapper:
+    path: ../../mapper

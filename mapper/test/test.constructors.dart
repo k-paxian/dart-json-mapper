@@ -1,4 +1,8 @@
-part of json_mapper.test;
+import 'package:dart_json_mapper/dart_json_mapper.dart';
+import 'package:test/test.dart';
+
+import './model/model.dart';
+import 'model/immutable.dart';
 
 @jsonSerializable
 class BusinessObject {
@@ -162,15 +166,6 @@ class IgnoredFieldClassWoConstructor {
 
   @JsonProperty(ignoreIfNull: true)
   String middleName;
-}
-
-@jsonSerializable
-class Immutable {
-  final int id;
-  final String name;
-  final Car car;
-
-  const Immutable(this.id, this.name, this.car);
 }
 
 @jsonSerializable

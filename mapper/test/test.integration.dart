@@ -1,4 +1,8 @@
-part of json_mapper.test;
+import 'package:dart_json_mapper/dart_json_mapper.dart';
+import 'package:test/test.dart';
+
+import 'model/json.dart';
+import 'model/model.dart';
 
 void testIntegration() {
   group('[Verify end to end serialization <=> deserialization]', () {
@@ -66,11 +70,6 @@ void testIntegration() {
 
     test('Serialization <=> Deserialization', () {
       // given
-      final adapter = JsonMapperAdapter(valueDecorators: {
-        typeOf<List<Color>>(): (value) => value.cast<Color>()
-      });
-      JsonMapper().useAdapter(adapter);
-
       // when
       final stopwatch = Stopwatch()..start();
       final person = JsonMapper.deserialize<Person>(personJson);
@@ -81,8 +80,6 @@ void testIntegration() {
           'Serialization executed in ${stopwatch.elapsedMilliseconds - deserializationMs} ms');
       // then
       expect(json, personJson);
-
-      JsonMapper().removeAdapter(adapter);
     });
   });
 }

@@ -1,7 +1,36 @@
+builders:
+  dart_json_mapper:
+    target: ":dart_json_mapper"
+    import: "package:dart_json_mapper/dart_json_mapper.dart"
+    builder_factories: ["dartJsonMapperBuilder"]
+    build_extensions: {".dart": [".mapper.g.dart"]}
+    auto_apply: root_package
+    build_to: source
+    defaults:
+      options:
+        iterables: List, Set
+        extension: .mapper.g.dart
+      generate_for:
+        exclude:
+          - lib/**.dart
+        include:
+          - benchmark/**.dart
+          - bin/**.dart
+          - test/_*.dart
+          - example/**.dart
+          - lib/main.dart
+          - tool/**.dart
+          - web/**.dart
+
 targets:
   $default:
     builders:
+      dart_json_mapper:
+        options:
+          iterables: List, Set, HashSet, UnmodifiableListView
+        generate_for:
+          - example/**.dart
+          - test/_test.dart
       reflectable:
         generate_for:
-          - test/_test.dart
-          - example/example.dart
+          - no/files

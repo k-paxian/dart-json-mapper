@@ -1,4 +1,5 @@
-part of json_mapper.test;
+import 'package:dart_json_mapper/dart_json_mapper.dart';
+import 'package:test/test.dart';
 
 enum BusinessType { Private, Public }
 
@@ -24,12 +25,8 @@ class Startup extends Business {
   Startup(this.userCount);
 }
 
-@Json(valueDecorators: Stakeholder.valueDecorators)
 @jsonSerializable
 class Stakeholder {
-  static Map<Type, ValueDecoratorFunction> valueDecorators() =>
-      {typeOf<List<Business>>(): (value) => value.cast<Business>()};
-
   String fullName;
   List<Business> businesses;
 
