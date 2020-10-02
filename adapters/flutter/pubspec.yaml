@@ -12,6 +12,7 @@ dependencies:
   flutter:
     sdk: flutter
 dev_dependencies:
+  reflectable:
   flutter_test:
     sdk: flutter
   pedantic:
