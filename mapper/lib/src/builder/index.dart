@@ -8,7 +8,8 @@ class LibraryVisitor extends RecursiveElementVisitor {
 
   @override
   void visitImportElement(ImportElement element) {
-    if (element.importedLibrary.identifier.startsWith('asset:')) {
+    if (element.importedLibrary != null &&
+        element.importedLibrary.identifier.startsWith('asset:')) {
       element.importedLibrary.visitChildren(this);
     }
     super.visitImportElement(element);
@@ -60,7 +61,11 @@ class ReflectableSourceWrapper {
   }
 
   String get _libraryName {
-    return inputLibrary.identifier.split('/').last.replaceAll('.dart', '') +
+    return inputLibrary.identifier
+            .split('/')
+            .last
+            .replaceAll('.dart', '')
+            .replaceAll('.', '_') +
         'Adapter';
   }
 
@@ -107,12 +112,13 @@ ${_renderValueDecorators()}
   }
 
   String _renderElementImport(ClassElement element) {
-    if (element.library.identifier.startsWith(_inputLibraryPath)) {
+    if (element.library != null &&
+        element.library.identifier.startsWith(_inputLibraryPath)) {
       // local import
       return '''import '${element.library.identifier.split(_inputLibraryPath).last}';''';
     }
 
-    return '''import '${element.library.identifier}';''';
+    return null;
   }
 
   String _renderHeader() {
