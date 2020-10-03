@@ -1,5 +1,6 @@
 name: performance_test
-version: 0.0.0
+# This package is not intended to be published
+publish_to: none
 description: >
   This package contains performance tests for the following JSON interoperability libraries:
   - JsonSerializable https://pub.dev/packages/json_serializable

@@ -1,7 +1,7 @@
 import 'package:build/build.dart';
 import 'package:reflectable/src/builder_implementation.dart';
 
-import 'index.dart';
+import './src/builder/index.dart';
 
 class DartJsonMapperBuilder implements Builder {
   BuilderOptions builderOptions;

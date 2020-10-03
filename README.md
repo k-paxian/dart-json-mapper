@@ -98,8 +98,7 @@ output:
 }
 ```
 
-Go ahead and create a `build.yaml` file in your project root directory. Then add the
-following content:
+Go ahead and create / update `build.yaml` file in your project root directory with the following snippet:
 
 ```yaml
 targets:
@@ -108,13 +107,15 @@ targets:
       dart_json_mapper:
           generate_for:
             - lib/main.dart
+
+      # This part is needed to tell original reflectable builder to stay away
+      # it overrides default options for reflectable builder to an **empty** set of files
       reflectable:
         generate_for:
           - no/files
 ```
 
-Now run the code generation step with the root of your package as the current
-directory:
+Now run the code generation step with the root of your package as the current directory:
 
 ```shell
 > pub run build_runner build --delete-conflicting-outputs
@@ -331,8 +332,16 @@ For example List() will produce `List<dynamic>` type which can't be directly set
 target field `List<Car>` for instance. So obvious workaround will be to cast 
 `List<dynamic> => List<Car>`, which can be performed as `List<dynamic>().cast<Car>()`.
 
-In order to do so, we'll use Value Decorator Function inspired by Decorator pattern.
+Basic iterable based generics using Dart built-in types like `List<num>, List<String>, List<bool>,
+List<DateTime>, Set<num>, Set<String>, Set<bool>, Set<DateTime>, etc.` supported out of the box.
 
+In order to do so, we'll use `Value Decorator Functions` inspired by Decorator pattern.
+
+To solve this we have a few options:
+
+### Provide value decorator functions manually
+
+* As a global adapter
 ```dart
 final String json = '[{"modelName": "Audi", "color": "Color.Green"}]';
 JsonMapper().useAdapter(JsonMapperAdapter(
@@ -346,13 +355,37 @@ final myCarsList = JsonMapper.deserialize<List<Car>>(json);
 final myCarsSet = JsonMapper.deserialize<Set<Car>>(json);
 ```
 
-Basic iterable based generics using Dart built-in types like `List<num>, List<String>, List<bool>,
-List<DateTime>, Set<num>, Set<String>, Set<bool>, Set<DateTime>, etc.` supported out of the box.
+* As an class inline code
+```dart
+@jsonSerializable
+@Json(valueDecorators: CarsContainer.valueDecorators)
+class CarsContainer {
+  static Map<Type, ValueDecoratorFunction> valueDecorators() =>
+      {
+        typeOf<List<Car>>(): (value) => value.cast<Car>(),
+        typeOf<Set<Car>>(): (value) => value.cast<Car>()
+      };
 
-For custom iterable types like `List<Car> / Set<Car>` you **don't** have to provide value decorator function
-as showed in a code snippet above before using deserialization, thanks to the [Builder](#builder)
+  List<Car> myCarsList;
+  Set<Car> myCarsSet;
+}
+```
 
-For custom iterable types like `HashSet<Car> / UnmodifiableListView<Car>` you should configure
+### Rely on builder to generate global adapter having value decorator functions automatically
+
+Builder will scan project code during build pass and will generate value decorator functions for **all**
+public classes in advance.
+
+For custom iterable types like `List<Car> / Set<Car>` we **don't** have to provide value decorators
+as showed in a code snippet below, thanks to the [Builder](#builder)
+
+```dart
+final String json = '[{"modelName": "Audi", "color": "Color.Green"}]';
+final myCarsList = JsonMapper.deserialize<List<Car>>(json);
+final myCarsSet = JsonMapper.deserialize<Set<Car>>(json);
+```
+
+For custom iterable types like `HashSet<Car> / UnmodifiableListView<Car>` we should configure
 [Builder](#builder) to support that.
 
 ### OR an *easy case*
@@ -826,14 +859,18 @@ Builder can be configured using `build.yaml` file at the root of your project.
 targets:
   $default:
     builders:
-      dart_json_mapper: # This part configures dart_json_mapper builder
+      # This part configures dart_json_mapper builder
+      dart_json_mapper:
         options:
           iterables: List, Set, HashSet, UnmodifiableListView
         generate_for:
           - example/**.dart
           - test/_test.dart
-      reflectable:    # This part is needed to tell original reflectable builder to stay away from your code
-        generate_for: # it overrides default options for reflectable builder to an **empty** set of files
+
+      # This part is needed to tell original reflectable builder to stay away
+      # it overrides default options for reflectable builder to an **empty** set of files
+      reflectable:
+        generate_for:
           - no/files
 ```
 

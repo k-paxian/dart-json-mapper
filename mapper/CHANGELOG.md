@@ -1,3 +1,7 @@
+## 1.6.1
+
+* Update docs, improve pub package score
+
 ## 1.6.0
 
 * Own builder introduced, to support `List, Set, HashSet, UnmodifiableListView` iterables to slightly ease the pain

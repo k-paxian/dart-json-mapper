@@ -1,8 +1,6 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/visitor.dart';
 
-export 'builder.dart';
-
 class LibraryVisitor extends RecursiveElementVisitor {
   List<ClassElement> publicClassElements = [];
 
