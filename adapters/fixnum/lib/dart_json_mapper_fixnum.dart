@@ -35,7 +35,9 @@ class Int32Converter implements ICustomConverter<Int32> {
   Int32 fromJSON(dynamic jsonValue, [JsonProperty jsonProperty]) {
     return jsonValue is Int32
         ? jsonValue
-        : jsonValue is String ? Int32.parseInt(jsonValue) : Int32(jsonValue);
+        : jsonValue is String
+            ? Int32.parseInt(jsonValue)
+            : Int32(jsonValue);
   }
 
   @override
@@ -54,7 +56,9 @@ class Int64Converter implements ICustomConverter<Int64> {
   Int64 fromJSON(dynamic jsonValue, [JsonProperty jsonProperty]) {
     return jsonValue is Int64
         ? jsonValue
-        : jsonValue is String ? Int64.parseInt(jsonValue) : Int64(jsonValue);
+        : jsonValue is String
+            ? Int64.parseInt(jsonValue)
+            : Int64(jsonValue);
   }
 
   @override

@@ -15,7 +15,9 @@ class ColorConverter implements ICustomConverter<Color> {
   Color fromJSON(dynamic jsonValue, [JsonProperty jsonProperty]) {
     return jsonValue is Color
         ? jsonValue
-        : jsonValue is String ? parseColor(jsonValue) : Color(jsonValue);
+        : jsonValue is String
+            ? parseColor(jsonValue)
+            : Color(jsonValue);
   }
 
   @override

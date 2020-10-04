@@ -10,6 +10,7 @@ builders:
       options:
         iterables: List, Set
         extension: .mapper.g.dart
+        formatted: false
       generate_for:
         exclude:
           - lib/**.dart

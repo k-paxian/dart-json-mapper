@@ -2,12 +2,18 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/visitor.dart';
 
 class LibraryVisitor extends RecursiveElementVisitor {
-  List<ClassElement> publicClassElements = [];
+  Map<num, ClassElement> visitedPublicClassElements = {};
+  Map<String, ImportElement> visitedImports = {};
 
   @override
   void visitImportElement(ImportElement element) {
-    if (element.importedLibrary != null &&
-        element.importedLibrary.identifier.startsWith('asset:')) {
+    final importIdentifier = element.importedLibrary != null
+        ? element.importedLibrary.identifier
+        : null;
+    if (importIdentifier != null &&
+        !visitedImports.containsKey(importIdentifier) &&
+        importIdentifier.startsWith('asset:')) {
+      visitedImports.putIfAbsent(importIdentifier, () => element);
       element.importedLibrary.visitChildren(this);
     }
     super.visitImportElement(element);
@@ -15,8 +21,9 @@ class LibraryVisitor extends RecursiveElementVisitor {
 
   @override
   void visitClassElement(ClassElement element) {
-    if (!element.isPrivate) {
-      publicClassElements.add(element);
+    if (!element.isPrivate &&
+        !visitedPublicClassElements.containsKey(element.id)) {
+      visitedPublicClassElements.putIfAbsent(element.id, () => element);
     }
     super.visitClassElement(element);
   }
@@ -86,7 +93,7 @@ class ReflectableSourceWrapper {
   }
 
   String _renderValueDecorators() {
-    return _libraryVisitor.publicClassElements
+    return _libraryVisitor.visitedPublicClassElements.values
         .map((e) => _renderValueDecoratorsForClassElement(e))
         .join(',\n');
   }
@@ -130,7 +137,8 @@ ${_renderValueDecorators()}
     final importsList = {
       isCollectionImportNeeded ? COLLECTION_IMPORT : null,
       MAPPER_IMPORT,
-      ..._libraryVisitor.publicClassElements.map((e) => _renderElementImport(e))
+      ..._libraryVisitor.visitedPublicClassElements.values
+          .map((e) => _renderElementImport(e))
     }.where((x) => x != null).toList();
     importsList.sort();
     return importsList.join('\n') + '\n\n';

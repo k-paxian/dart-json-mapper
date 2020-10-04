@@ -1,3 +1,7 @@
+## 1.6.2
+
+* Fix incremental runs on builder
+
 ## 1.6.1
 
 * Update docs, improve pub package score
