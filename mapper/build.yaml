@@ -1,7 +1,7 @@
 builders:
   dart_json_mapper:
     target: ":dart_json_mapper"
-    import: "package:dart_json_mapper/builder.dart"
+    import: "package:dart_json_mapper/builder_factory.dart"
     builder_factories: ["dartJsonMapperBuilder"]
     build_extensions: {".dart": [".mapper.g.dart"]}
     auto_apply: root_package
