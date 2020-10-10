@@ -1,5 +1,6 @@
 import 'package:analyzer/dart/element/element.dart';
 
+import 'change_analyzer.dart';
 import 'library_visitor.dart';
 
 class ReflectableSourceWrapper {
@@ -138,8 +139,7 @@ ${_renderValueDecorators()}
     final incrementalLibraryVisitor = LibraryVisitor();
     library.visitChildren(incrementalLibraryVisitor);
     final hasChanges =
-        incrementalLibraryVisitor.visitedPublicAnnotatedClassElements.length !=
-            _libraryVisitor.visitedPublicAnnotatedClassElements.length;
+        ChangeAnalyzer(incrementalLibraryVisitor, _libraryVisitor).hasChanges;
     if (hasChanges) {
       _libraryVisitor = incrementalLibraryVisitor;
       inputLibrary = library;

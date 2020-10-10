@@ -1,3 +1,7 @@
+## 1.6.3
+
+* Improved incremental builds speed. From now on code regeneration in a `watch mode` will be triggered only when annotated classes affected. Issue #81 addressed.
+
 ## 1.6.2
 
 * Fix incremental runs on builder
