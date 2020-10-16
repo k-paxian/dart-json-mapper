@@ -78,6 +78,11 @@ class JsonMapper {
     return fromJson<T>(toJson(object));
   }
 
+  /// Alias for clone method to copy Dart object of type T
+  static T copy<T>(T object) {
+    return clone(object);
+  }
+
   /// Copy Dart object of type T & merge it with Map<String, dynamic>
   static T copyWith<T>(T object, Map<String, dynamic> map) {
     return fromMap<T>(toMap(object)..addAll(map));

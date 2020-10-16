@@ -113,7 +113,7 @@ void testEnums() {
       final target = JsonMapper.deserialize<Color>(targetJson);
 
       // then
-      expect(targetJson, '"Color.Green"');
+      expect(targetJson, '"Green"');
       expect(target, Color.Green);
     });
 
@@ -127,7 +127,7 @@ void testEnums() {
           targetJson, DeserializationOptions(template: <Color, int>{}));
 
       // then
-      expect(targetJson, '{"Color.Black":1,"Color.Blue":2}');
+      expect(targetJson, '{"Black":1,"Blue":2}');
 
       expect(target, TypeMatcher<Map<Color, int>>());
       expect(target.containsKey(Color.Black), true);
@@ -138,8 +138,7 @@ void testEnums() {
 
     test('Map<Category, int> as constructor parameter', () {
       // given
-      final json =
-          '{"values":{"Category.First":1,"Category.Second":2,"Category.Third":3}}';
+      final json = '{"values":{"First":1,"Second":2,"Third":3}}';
       final map = {
         Category.First: 1,
         Category.Second: 2,
@@ -162,7 +161,7 @@ void testEnums() {
     test('Map<Category, StylingModel> as constructor parameter', () {
       // given
       final json =
-          '{"values":{"Category.First":{"primary":"1"},"Category.Second":{"primary":"2"},"Category.Third":{"primary":"3"}}}';
+          '{"values":{"First":{"primary":"1"},"Second":{"primary":"2"},"Third":{"primary":"3"}}}';
       final map = {
         Category.First: StylingModel(primary: '1'),
         Category.Second: StylingModel(primary: '2'),
@@ -191,7 +190,7 @@ void testEnums() {
       final targetSet = JsonMapper.deserialize<Set<Color>>(targetJson);
 
       // then
-      expect(targetJson, '["Color.Black","Color.Blue"]');
+      expect(targetJson, '["Black","Blue"]');
 
       expect(targetList, TypeMatcher<List<Color>>());
       expect(targetList.length, 2);
@@ -224,7 +223,7 @@ void testEnums() {
 
       // then
       expect(targetJson,
-          '''{"party":"ThirdParty.A","color":"Color.GrayMetallic","parties":["ThirdParty.A","ThirdParty.B"],"colors":["Color.Black","Color.Blue"],"colorsSet":["Color.Black","Color.Blue"],"colorPriorities":{"Color.Black":1,"Color.Blue":2},"partyPriorities":{"ThirdParty.A":1,"ThirdParty.B":2}}''');
+          '''{"party":"A","color":"GrayMetallic","parties":["A","B"],"colors":["Black","Blue"],"colorsSet":["Black","Blue"],"colorPriorities":{"Black":1,"Blue":2},"partyPriorities":{"A":1,"B":2}}''');
 
       expect(target, TypeMatcher<EnumIterables>());
       expect(target.party, ThirdParty.A);
@@ -255,7 +254,7 @@ void testEnums() {
 
       // then
       expect(targetJson,
-          '{"colors":["Color.Black","Color.Blue"],"colorsSet":["Color.Black","Color.Blue"]}');
+          '{"colors":["Black","Blue"],"colorsSet":["Black","Blue"]}');
 
       expect(target, TypeMatcher<EnumIterablesWithConstructor>());
       expect(target.colors.length, 2);

@@ -118,7 +118,7 @@ class ListOfLists {
 }
 
 void testValueDecorators() {
-  final carListJson = '[{"modelName":"Audi","color":"Color.Green"}]';
+  final carListJson = '[{"modelName":"Audi","color":"Green"}]';
   final ordersListJson = '''[  
   {
     "Id": 96,

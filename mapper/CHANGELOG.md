@@ -1,3 +1,7 @@
+## 1.6.4
+
+* `enumConverterShort` is the default one for all Enums. More intuitive and compact.
+
 ## 1.6.3
 
 * Improved incremental builds speed. From now on code regeneration in a `watch mode` will be triggered only when annotated classes affected. Issue #81 addressed.

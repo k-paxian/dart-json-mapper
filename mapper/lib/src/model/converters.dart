@@ -118,6 +118,8 @@ class NumberConverter extends BaseCustomConverter implements ICustomConverter {
   }
 }
 
+const defaultEnumConverter = enumConverterShort;
+
 final annotatedEnumConverter = AnnotatedEnumConverter();
 
 /// Annotated Enum instance converter
@@ -126,20 +128,19 @@ class AnnotatedEnumConverter implements ICustomConverter, ICustomEnumConverter {
 
   Iterable _enumValues = [];
 
+  JsonProperty getJsonProperty(JsonProperty jsonProperty) => JsonProperty(
+      enumValues:
+          (jsonProperty != null ? jsonProperty.enumValues : _enumValues));
+
   @override
-  Object fromJSON(dynamic jsonValue, [JsonProperty jsonProperty]) {
-    final enumValues =
-        (jsonProperty != null ? jsonProperty.enumValues : _enumValues);
-    dynamic convert(value) =>
-        enumValues.firstWhere((eValue) => eValue.toString() == value.toString(),
-            orElse: () => null);
-    return convert(
-        jsonValue is String ? jsonValue.replaceAll('"', '') : jsonValue);
-  }
+  Object fromJSON(dynamic jsonValue, [JsonProperty jsonProperty]) =>
+      defaultEnumConverter.fromJSON(
+          jsonValue is String ? jsonValue.replaceAll('"', '') : jsonValue,
+          getJsonProperty(jsonProperty));
 
   @override
   dynamic toJSON(Object object, [JsonProperty jsonProperty]) =>
-      (object is! String) ? object.toString() : object;
+      defaultEnumConverter.toJSON(object, getJsonProperty(jsonProperty));
 
   @override
   void setEnumValues(Iterable enumValues) {
@@ -149,7 +150,7 @@ class AnnotatedEnumConverter implements ICustomConverter, ICustomEnumConverter {
 
 const enumConverter = EnumConverter();
 
-/// Default converter for [enum] type
+/// Long converter for [enum] type
 class EnumConverter implements ICustomConverter {
   const EnumConverter() : super();
 
@@ -174,7 +175,7 @@ class EnumConverter implements ICustomConverter {
 
 const enumConverterShort = EnumConverterShort();
 
-/// Short converter for [enum] type
+/// Default converter for [enum] type
 class EnumConverterShort implements ICustomConverter {
   const EnumConverterShort() : super();
 
@@ -302,7 +303,7 @@ class MapConverter
   dynamic from(item, Type type, JsonProperty jsonProperty) {
     var result;
     if (jsonProperty != null && jsonProperty.isEnumType(type)) {
-      result = enumConverter.fromJSON(item, jsonProperty);
+      result = defaultEnumConverter.fromJSON(item, jsonProperty);
     } else {
       result = _deserializeObject(item, type);
     }
@@ -312,7 +313,7 @@ class MapConverter
   dynamic to(item, JsonProperty jsonProperty) {
     var result;
     if (jsonProperty != null && jsonProperty.isEnumType(item.runtimeType)) {
-      result = enumConverter.toJSON(item, jsonProperty);
+      result = defaultEnumConverter.toJSON(item, jsonProperty);
     } else {
       result = _serializeObject(item);
     }
@@ -379,7 +380,7 @@ class DefaultIterableConverter
   dynamic fromJSON(dynamic jsonValue, [JsonProperty jsonProperty]) {
     dynamic convert(item) =>
         jsonProperty != null && jsonProperty.enumValues != null
-            ? enumConverter.fromJSON(item, jsonProperty)
+            ? defaultEnumConverter.fromJSON(item, jsonProperty)
             : item;
     if (_instance != null && jsonValue is Iterable && jsonValue != _instance) {
       if (_instance is List) {

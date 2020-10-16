@@ -252,7 +252,7 @@ output:
  "name": "Bob",
  "car": {
   "modelName": "Audi",
-  "color": "Color.Green"
+  "color": "Green"
  }
 }
 ```
@@ -343,7 +343,7 @@ To solve this we have a few options:
 
 * As a global adapter
 ```dart
-final String json = '[{"modelName": "Audi", "color": "Color.Green"}]';
+final json = '[{"modelName": "Audi", "color": "Green"}]';
 JsonMapper().useAdapter(JsonMapperAdapter(
   valueDecorators: {
     typeOf<List<Car>>(): (value) => value.cast<Car>(),
@@ -374,13 +374,13 @@ class CarsContainer {
 ### Rely on builder to generate global adapter having value decorator functions automatically
 
 Builder will scan project code during build pass and will generate value decorator functions for **all**
-public classes in advance.
+annotated public classes in advance.
 
 For custom iterable types like `List<Car> / Set<Car>` we **don't** have to provide value decorators
 as showed in a code snippet below, thanks to the [Builder](#builder)
 
 ```dart
-final String json = '[{"modelName": "Audi", "color": "Color.Green"}]';
+final json = '[{"modelName": "Audi", "color": "Green"}]';
 final myCarsList = JsonMapper.deserialize<List<Car>>(json);
 final myCarsSet = JsonMapper.deserialize<Set<Car>>(json);
 ```
@@ -494,6 +494,25 @@ Each enum based class field has to be annotated as showed in a snippet above.
 Enum`.values` refers to a list of all possible enum values, it's a handy built in capability of all
 enum based types. Without providing all values it's not possible to traverse it's values properly.
 
+There are few enum converters provided out of the box:
+
+* `enumConverterShort` produces values like: ["Red", "Blue", "Green"]
+* `enumConverter` produces values like: ["Color.Red", "Color.Blue", "Color.Green"]
+* `enumConverterNumeric` produces values like: [0, 1, 2]
+
+Default converter for **all** enums is `enumConverterShort`
+
+In case we would like to make a switch globally to the different one, or even custom converter for all enums
+
+```dart
+// lib/main.dart
+void main() {
+  initializeJsonMapper(adapters: [
+   JsonMapperAdapter(converters: {Enum: enumConverter})
+  ]);
+}
+```
+
 ## Inherited classes derived from abstract / base class
 
 Please use complementary `@Json(typeNameProperty: 'typeName')` annotation for subclasses
@@ -562,7 +581,7 @@ final json = JsonMapper.serialize(Car('Tesla S3', Color.Black),
 
 // then
 expect(json,
-  '''{"a":"a","b":true,"modelName":"Tesla S3","color":"Color.Black"}''');
+  '''{"a":"a","b":true,"modelName":"Tesla S3","color":"Black"}''');
 ```
 
 ## Deserialization template
@@ -577,7 +596,7 @@ language nature, so you are providing ready made instance to use for deserializa
 enum Color { Red, Blue, Green, Brown, Yellow, Black, White }
 
 // given
-final json = '{"Color.Black":1,"Color.Blue":2}';
+final json = '{"Black":1,"Blue":2}';
 
 // when
 final target = JsonMapper.deserialize(
@@ -599,10 +618,12 @@ always `true` for JSON models, they could follow
 
 That's why we need a smart way to manage that, instead of
 hand coding each property using `@JsonProperty(name: ...)` it is possible to pass
-`CaseStyle` parameter to serialization / deserialization methods. 
+`CaseStyle` parameter to serialization / deserialization methods OR specify this
+preference on a class level using `@Json(caseStyle: CaseStyle.Kebab)`.
 
 ```dart
 @jsonSerializable
+@Json(caseStyle: CaseStyle.Kebab)
 class NameCaseObject {
   String mainTitle;
   String description;
@@ -617,8 +638,7 @@ class NameCaseObject {
 final instance = NameCaseObject(
     mainTitle: 'title', description: 'desc', hasMainProperty: true);
 // when
-final json = JsonMapper.serialize(instance,
-    SerializationOptions(indent: '', caseStyle: CaseStyle.Kebab));
+final json = JsonMapper.serialize(instance, SerializationOptions(indent: ''));
 // then
 expect(json, '''{"main-title":"title","description":"desc","has-main-property":true}''');
 
@@ -627,8 +647,7 @@ expect(json, '''{"main-title":"title","description":"desc","has-main-property":t
 // given
 final json = '''{"main-title":"title","description":"desc","has-main-property":true}''';
 // when
-final instance = JsonMapper.deserialize<NameCaseObject>(
-    json, DeserializationOptions(caseStyle: CaseStyle.Kebab));
+final instance = JsonMapper.deserialize<NameCaseObject>(json);
 // then
 expect(instance.mainTitle, 'title');
 expect(instance.description, 'desc');
@@ -743,7 +762,7 @@ then this section probably will be useful for you
 final car = Car('Tesla S3', Color.Black);
 
 // when
-final cloneCar = JsonMapper.clone(car);
+final cloneCar = JsonMapper.copy(car);
 
 // then
 expect(cloneCar == car, false);

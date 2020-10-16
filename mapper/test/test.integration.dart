@@ -16,7 +16,7 @@ void testIntegration() {
       // then
       expect(targetMap, TypeMatcher<Map<String, dynamic>>());
       expect(targetMap['modelName'], 'Tesla S3');
-      expect(targetMap['color'], 'Color.Black');
+      expect(targetMap['color'], 'Black');
 
       expect(targetCar, TypeMatcher<Car>());
       expect(targetCar.model, 'Tesla S3');
@@ -57,7 +57,7 @@ void testIntegration() {
 
       // then
       expect(json,
-          '''{"a":"a","b":true,"modelName":"Tesla S3","color":"Color.Black"}''');
+          '''{"a":"a","b":true,"modelName":"Tesla S3","color":"Black"}''');
     });
 
     test('Serialization', () {

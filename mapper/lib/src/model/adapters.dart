@@ -57,7 +57,7 @@ final dartCoreAdapter =
   dynamic: defaultConverter,
   String: defaultConverter,
   bool: defaultConverter,
-  Enum: enumConverter,
+  Enum: defaultEnumConverter,
   Symbol: symbolConverter,
   DateTime: dateConverter,
   Duration: durationConverter,

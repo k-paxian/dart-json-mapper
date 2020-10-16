@@ -180,8 +180,7 @@ void testConverters() {
 
     test('Default Map<K, V> converter', () {
       // given
-      final targetJson =
-          '''{"bar":{"modelName":"Tesla S3","color":"Color.Black"}}''';
+      final targetJson = '''{"bar":{"modelName":"Tesla S3","color":"Black"}}''';
       final foo = <String, Car>{};
       foo['bar'] = Car('Tesla S3', Color.Black);
 
@@ -199,7 +198,7 @@ void testConverters() {
  "name": "_Bob_",
  "car": {
   "modelName": "_Audi_",
-  "color": "Color.Green"
+  "color": "Green"
  }
 }''';
       final adapter =

@@ -75,16 +75,16 @@ void main() {
  "dob": null,
  "age": 36,
  "lastName": "Gump",
- "eye_color": "Color.Blue",
+ "eye_color": "Blue",
  "hairColor": 3,
  "vehicles": [
   {
    "modelName": "Tesla",
-   "color": "Color.Black"
+   "color": "Black"
   },
   {
    "modelName": "BMW",
-   "color": "Color.Red"
+   "color": "Red"
   }
  ]
 }''';

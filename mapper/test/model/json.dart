@@ -32,19 +32,19 @@ final String personJson = '''{
  },
  "sym": "foo",
  "favouriteColours": [
-  "Color.Black",
-  "Color.White"
+  "Black",
+  "White"
  ],
- "eye_color": "Color.Blue",
+ "eye_color": "Blue",
  "hairColor": 5,
  "vehicles": [
   {
    "modelName": "Tesla",
-   "color": "Color.Black"
+   "color": "Black"
   },
   {
    "modelName": "BMW",
-   "color": "Color.Red"
+   "color": "Red"
   }
  ],
  "fullName": "Forest Gump"

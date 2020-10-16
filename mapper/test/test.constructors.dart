@@ -431,7 +431,7 @@ void testConstructors() {
  "name": "Bob",
  "car": {
   "modelName": "Audi",
-  "color": "Color.Green"
+  "color": "Green"
  }
 }''';
       final i = Immutable(1, 'Bob', Car('Audi', Color.Green));
@@ -453,7 +453,7 @@ void testConstructors() {
  "name": "Bob",
  "car": {
   "modelName": "Audi",
-  "color": "Color.Green"
+  "color": "Green"
  }
 }''';
 

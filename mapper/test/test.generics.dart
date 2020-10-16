@@ -23,7 +23,7 @@ void testGenerics() {
         'parentUuid': 'parentUid',
         'uuid': 'uid',
         'model': 'Tesla S3',
-        'color': 'Color.Black'
+        'color': 'Black'
       });
     });
 
@@ -53,11 +53,10 @@ void testGenerics() {
         'parentUuid': 'parentUid',
         'uuid': 'uid',
         'modelName': 'x',
-        'color': 'Color.Blue'
+        'color': 'Blue'
       });
 
-      expect(entityJson,
-          <String, dynamic>{'modelName': 'x', 'color': 'Color.Blue'});
+      expect(entityJson, <String, dynamic>{'modelName': 'x', 'color': 'Blue'});
 
       expect(entityInstance, TypeMatcher<Car>());
       expect(entityInstance.model, 'x');
