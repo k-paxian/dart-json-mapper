@@ -2,8 +2,6 @@ targets:
   $default:
     builders:
       reflectable:
-        options:
-          iterables:
         generate_for:
           - no/files
       dart_json_mapper:

@@ -2,7 +2,7 @@
 [![pub package](https://img.shields.io/pub/v/dart_json_mapper.svg)](https://pub.dartlang.org/packages/dart_json_mapper)
 [![Build Status][pedantic-badge]][pedantic-url]
 
-This package allows programmers to annotate Dart classes in order to
+This package allows programmers to annotate Dart objects in order to
   Serialize / Deserialize them to / from JSON.
   
 ## Why?

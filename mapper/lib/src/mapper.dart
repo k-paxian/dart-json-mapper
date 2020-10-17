@@ -535,6 +535,9 @@ class JsonMapper {
         ? getTypeInfo(deserializationContext.instanceType)
         : null;
 
+    if (converter is ICompositeConverter) {
+      (converter as ICompositeConverter).setGetConverterFunction(getConverter);
+    }
     if (converter is ICustomIterableConverter) {
       (converter as ICustomIterableConverter)
           .setIterableInstance(value, typeInfo);

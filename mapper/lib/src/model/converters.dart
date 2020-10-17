@@ -9,6 +9,8 @@ import 'index.dart';
 
 typedef SerializeObjectFunction = dynamic Function(Object object);
 typedef DeserializeObjectFunction = dynamic Function(Object object, Type type);
+typedef GetConverterFunction = ICustomConverter Function(
+    JsonProperty jsonProperty, Type declarationType);
 
 /// Abstract class for custom converters implementations
 abstract class ICustomConverter<T> {
@@ -29,6 +31,11 @@ abstract class ICustomMapConverter {
 /// Abstract class for custom Enum converters implementations
 abstract class ICustomEnumConverter {
   void setEnumValues(Iterable enumValues);
+}
+
+/// Abstract class for composite converters relying on other converters
+abstract class ICompositeConverter {
+  void setGetConverterFunction(GetConverterFunction getConverter);
 }
 
 /// Abstract class for custom recursive converters implementations
@@ -123,28 +130,37 @@ const defaultEnumConverter = enumConverterShort;
 final annotatedEnumConverter = AnnotatedEnumConverter();
 
 /// Annotated Enum instance converter
-class AnnotatedEnumConverter implements ICustomConverter, ICustomEnumConverter {
+class AnnotatedEnumConverter
+    implements ICustomConverter, ICustomEnumConverter, ICompositeConverter {
   AnnotatedEnumConverter() : super();
 
   Iterable _enumValues = [];
+  GetConverterFunction _getConverter;
 
-  JsonProperty getJsonProperty(JsonProperty jsonProperty) => JsonProperty(
+  JsonProperty _getJsonProperty(JsonProperty jsonProperty) => JsonProperty(
       enumValues:
           (jsonProperty != null ? jsonProperty.enumValues : _enumValues));
 
+  ICustomConverter get _enumConverter => _getConverter(null, Enum);
+
   @override
   Object fromJSON(dynamic jsonValue, [JsonProperty jsonProperty]) =>
-      defaultEnumConverter.fromJSON(
+      _enumConverter.fromJSON(
           jsonValue is String ? jsonValue.replaceAll('"', '') : jsonValue,
-          getJsonProperty(jsonProperty));
+          _getJsonProperty(jsonProperty));
 
   @override
   dynamic toJSON(Object object, [JsonProperty jsonProperty]) =>
-      defaultEnumConverter.toJSON(object, getJsonProperty(jsonProperty));
+      _enumConverter.toJSON(object, _getJsonProperty(jsonProperty));
 
   @override
   void setEnumValues(Iterable enumValues) {
     _enumValues = enumValues;
+  }
+
+  @override
+  void setGetConverterFunction(GetConverterFunction getConverter) {
+    _getConverter = getConverter;
   }
 }
 
@@ -291,7 +307,11 @@ final mapConverter = MapConverter();
 
 /// [Map<K, V>] converter
 class MapConverter
-    implements ICustomConverter<Map>, IRecursiveConverter, ICustomMapConverter {
+    implements
+        ICustomConverter<Map>,
+        IRecursiveConverter,
+        ICustomMapConverter,
+        ICompositeConverter {
   MapConverter() : super();
 
   SerializeObjectFunction _serializeObject;
@@ -299,11 +319,13 @@ class MapConverter
   TypeInfo _typeInfo;
   Map _instance;
   final _jsonDecoder = JsonDecoder();
+  GetConverterFunction _getConverter;
+  ICustomConverter get _enumConverter => _getConverter(null, Enum);
 
   dynamic from(item, Type type, JsonProperty jsonProperty) {
     var result;
     if (jsonProperty != null && jsonProperty.isEnumType(type)) {
-      result = defaultEnumConverter.fromJSON(item, jsonProperty);
+      result = _enumConverter.fromJSON(item, jsonProperty);
     } else {
       result = _deserializeObject(item, type);
     }
@@ -313,7 +335,7 @@ class MapConverter
   dynamic to(item, JsonProperty jsonProperty) {
     var result;
     if (jsonProperty != null && jsonProperty.isEnumType(item.runtimeType)) {
-      result = defaultEnumConverter.toJSON(item, jsonProperty);
+      result = _enumConverter.toJSON(item, jsonProperty);
     } else {
       result = _serializeObject(item);
     }
@@ -355,6 +377,11 @@ class MapConverter
   }
 
   @override
+  void setGetConverterFunction(GetConverterFunction getConverter) {
+    _getConverter = getConverter;
+  }
+
+  @override
   void setDeserializeObjectFunction(
       DeserializeObjectFunction deserializeObject) {
     _deserializeObject = deserializeObject;
@@ -371,16 +398,18 @@ final defaultIterableConverter = DefaultIterableConverter();
 
 /// Default Iterable converter
 class DefaultIterableConverter
-    implements ICustomConverter, ICustomIterableConverter {
+    implements ICustomConverter, ICustomIterableConverter, ICompositeConverter {
   DefaultIterableConverter() : super();
 
   Iterable _instance;
+  GetConverterFunction _getConverter;
+  ICustomConverter get _enumConverter => _getConverter(null, Enum);
 
   @override
   dynamic fromJSON(dynamic jsonValue, [JsonProperty jsonProperty]) {
     dynamic convert(item) =>
         jsonProperty != null && jsonProperty.enumValues != null
-            ? defaultEnumConverter.fromJSON(item, jsonProperty)
+            ? _enumConverter.fromJSON(item, jsonProperty)
             : item;
     if (_instance != null && jsonValue is Iterable && jsonValue != _instance) {
       if (_instance is List) {
@@ -404,6 +433,11 @@ class DefaultIterableConverter
   @override
   void setIterableInstance(Iterable instance, TypeInfo typeInfo) {
     _instance = instance;
+  }
+
+  @override
+  void setGetConverterFunction(GetConverterFunction getConverter) {
+    _getConverter = getConverter;
   }
 }
 
