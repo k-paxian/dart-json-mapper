@@ -13,19 +13,26 @@ class ReflectableSourceWrapper {
   final INIT_METHOD =
       'JsonMapper initializeJsonMapper({Iterable<JsonMapperAdapter> adapters = const []}) {';
 
-  LibraryVisitor _libraryVisitor = LibraryVisitor();
+  LibraryVisitor _libraryVisitor;
 
   LibraryElement inputLibrary;
   Map<String, dynamic> options;
   String lastOutput;
 
   String _inputLibraryPath;
+  String _inputLibraryPackageName;
 
   ReflectableSourceWrapper(this.inputLibrary, this.options) {
+    _inputLibraryPackageName = getLibraryPackageName(inputLibrary);
+    _libraryVisitor = LibraryVisitor(_inputLibraryPackageName);
     inputLibrary.visitChildren(_libraryVisitor);
     _inputLibraryPath = inputLibrary.identifier
         .substring(0, inputLibrary.identifier.lastIndexOf('/') + 1);
   }
+
+  String getLibraryPackageName(LibraryElement library) =>
+      'package:' +
+      library.source.uri.toString().split(':').last.split('/').first;
 
   Iterable<String> get allowedIterables {
     return (options['iterables'] as String).split(',').map((x) => x.trim());
@@ -98,6 +105,11 @@ ${_renderValueDecorators()}
       return '''import '${element.library.identifier.split(_inputLibraryPath).last}';''';
     }
 
+    if (element.library != null &&
+        element.library.identifier.startsWith(_inputLibraryPackageName)) {
+      // local package import
+      return '''import '${element.library.identifier}';''';
+    }
     return null;
   }
 
@@ -136,7 +148,7 @@ ${_renderValueDecorators()}
   }
 
   bool hasNoIncrementalChanges(LibraryElement library) {
-    final incrementalLibraryVisitor = LibraryVisitor();
+    final incrementalLibraryVisitor = LibraryVisitor(_inputLibraryPackageName);
     library.visitChildren(incrementalLibraryVisitor);
     final hasChanges =
         ChangeAnalyzer(incrementalLibraryVisitor, _libraryVisitor).hasChanges;

@@ -9,6 +9,9 @@ class LibraryVisitor extends RecursiveElementVisitor {
   Map<String, ImportElement> visitedImports = {};
 
   final _annotationClassName = jsonSerializable.runtimeType.toString();
+  String packageName;
+
+  LibraryVisitor(this.packageName);
 
   @override
   void visitImportElement(ImportElement element) {
@@ -17,7 +20,8 @@ class LibraryVisitor extends RecursiveElementVisitor {
         : null;
     if (importIdentifier != null &&
         !visitedImports.containsKey(importIdentifier) &&
-        importIdentifier.startsWith('asset:')) {
+        (importIdentifier.startsWith('asset:') ||
+            importIdentifier.startsWith(packageName))) {
       visitedImports.putIfAbsent(importIdentifier, () => element);
       element.importedLibrary.visitChildren(this);
     }
