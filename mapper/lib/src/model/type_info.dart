@@ -18,6 +18,7 @@ class TypeInfo {
   Iterable<Type> parameters = []; // Type<T, K, V, etc.>
 
   bool isDynamic;
+  bool isGeneric;
   bool isMap;
   bool isList;
   bool isSet;
@@ -41,9 +42,13 @@ abstract class ITypeInfoDecorator {
 
 final defaultTypeInfoDecorator = DefaultTypeInfoDecorator();
 
+// TODO: Split types detection over several decorators
 class DefaultTypeInfoDecorator implements ITypeInfoDecorator {
   Map<String, ClassMirror> _knownClasses;
   Iterable<Type> _valueDecoratorTypes;
+
+  bool isBigInt(TypeInfo typeInfo) =>
+      typeInfo.typeName == 'BigInt' || typeInfo.typeName == '_BigIntImpl';
 
   bool isHashSet(TypeInfo typeInfo) =>
       typeInfo.typeName.indexOf('HashSet<') == 0;
@@ -89,6 +94,15 @@ class DefaultTypeInfoDecorator implements ITypeInfoDecorator {
 
     typeInfo.genericTypeName = detectGenericTypeName(typeInfo);
 
+    if (typeInfo.parameters.isNotEmpty) {
+      typeInfo.isGeneric = true;
+    }
+
+    if (isBigInt(typeInfo)) {
+      typeInfo.type = BigInt;
+      typeInfo.genericType = BigInt;
+    }
+
     return typeInfo;
   }
 
@@ -112,7 +126,7 @@ class DefaultTypeInfoDecorator implements ITypeInfoDecorator {
       typeInfo.typeName.contains('<')
           ? typeInfo.typeName.substring(0, typeInfo.typeName.indexOf('<')) +
               '<' +
-              typeInfo.parameters.map((x) => 'dynamic').join(',') +
+              typeInfo.parameters.map((x) => 'dynamic').join(', ') +
               '>'
           : null;
 

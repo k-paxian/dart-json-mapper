@@ -20,17 +20,22 @@ abstract class ICustomConverter<T> {
 
 /// Abstract class for custom iterable converters implementations
 abstract class ICustomIterableConverter {
-  void setIterableInstance(Iterable instance, TypeInfo typeInfo);
+  void setIterableInstance(Iterable instance);
 }
 
 /// Abstract class for custom map converters implementations
 abstract class ICustomMapConverter {
-  void setMapInstance(Map instance, TypeInfo typeInfo);
+  void setMapInstance(Map instance);
 }
 
 /// Abstract class for custom Enum converters implementations
 abstract class ICustomEnumConverter {
   void setEnumValues(Iterable enumValues);
+}
+
+/// Abstract class for custom converters interested in TypeInfo
+abstract class ITypeInfoConsumerConverter {
+  void setTypeInfo(TypeInfo typeInfo);
 }
 
 /// Abstract class for composite converters relying on other converters
@@ -294,7 +299,7 @@ class BigIntConverter implements ICustomConverter {
 
   @override
   Object fromJSON(dynamic jsonValue, [JsonProperty jsonProperty]) {
-    return jsonValue is String ? BigInt.parse(jsonValue) : jsonValue;
+    return jsonValue is String ? BigInt.tryParse(jsonValue) : jsonValue;
   }
 
   @override
@@ -311,6 +316,7 @@ class MapConverter
         ICustomConverter<Map>,
         IRecursiveConverter,
         ICustomMapConverter,
+        ITypeInfoConsumerConverter,
         ICompositeConverter {
   MapConverter() : super();
 
@@ -388,8 +394,12 @@ class MapConverter
   }
 
   @override
-  void setMapInstance(Map instance, TypeInfo typeInfo) {
+  void setMapInstance(Map instance) {
     _instance = instance;
+  }
+
+  @override
+  void setTypeInfo(TypeInfo typeInfo) {
     _typeInfo = typeInfo;
   }
 }
@@ -431,7 +441,7 @@ class DefaultIterableConverter
   }
 
   @override
-  void setIterableInstance(Iterable instance, TypeInfo typeInfo) {
+  void setIterableInstance(Iterable instance) {
     _instance = instance;
   }
 

@@ -1,10 +1,14 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/visitor.dart';
 
+import '../model/annotations.dart';
+
 class LibraryVisitor extends RecursiveElementVisitor {
   Map<num, ClassElement> visitedPublicClassElements = {};
   Map<num, ClassElement> visitedPublicAnnotatedClassElements = {};
   Map<String, ImportElement> visitedImports = {};
+
+  final _annotationClassName = jsonSerializable.runtimeType.toString();
 
   @override
   void visitImportElement(ImportElement element) {
@@ -31,7 +35,7 @@ class LibraryVisitor extends RecursiveElementVisitor {
                       .computeConstantValue()
                       .type
                       .getDisplayString(withNullability: false) ==
-                  'JsonSerializable') !=
+                  _annotationClassName) !=
               null) {
         visitedPublicAnnotatedClassElements.putIfAbsent(
             element.id, () => element);

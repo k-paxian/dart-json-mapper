@@ -14,6 +14,7 @@ import 'test.name.path.dart';
 import 'test.partial.deserialization.dart';
 import 'test.scheme.dart';
 import 'test.special.cases.dart';
+import 'test.tuple.dart';
 import 'test.value.decorators.dart';
 
 void main() {
@@ -32,5 +33,6 @@ void main() {
   testNamePath();
   testInheritance();
   testCollections();
+  testTupleCases();
   testEnums();
 }

@@ -343,7 +343,6 @@ To solve this we have a few options:
 
 * As a global adapter
 ```dart
-final json = '[{"modelName": "Audi", "color": "Green"}]';
 JsonMapper().useAdapter(JsonMapperAdapter(
   valueDecorators: {
     typeOf<List<Car>>(): (value) => value.cast<Car>(),
@@ -351,6 +350,7 @@ JsonMapper().useAdapter(JsonMapperAdapter(
   })
 );
 
+final json = '[{"modelName": "Audi", "color": "Green"}]';
 final myCarsList = JsonMapper.deserialize<List<Car>>(json);
 final myCarsSet = JsonMapper.deserialize<Set<Car>>(json);
 ```
