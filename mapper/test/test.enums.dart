@@ -113,7 +113,7 @@ void testEnums() {
       final target = JsonMapper.deserialize<Color>(targetJson);
 
       // then
-      expect(targetJson, '"Green"');
+      expect(targetJson, r'Green');
       expect(target, Color.Green);
     });
 

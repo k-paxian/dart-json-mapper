@@ -451,6 +451,34 @@ class DefaultIterableConverter
   }
 }
 
+const uriConverter = UriConverter();
+
+/// Uri converter
+class UriConverter implements ICustomConverter<Uri> {
+  const UriConverter() : super();
+
+  @override
+  Uri fromJSON(dynamic jsonValue, [JsonProperty jsonProperty]) =>
+      jsonValue is String ? Uri.tryParse(jsonValue) : jsonValue;
+
+  @override
+  String toJSON(Uri object, [JsonProperty jsonProperty]) => object.toString();
+}
+
+const regExpConverter = RegExpConverter();
+
+/// RegExp converter
+class RegExpConverter implements ICustomConverter<RegExp> {
+  const RegExpConverter() : super();
+
+  @override
+  RegExp fromJSON(dynamic jsonValue, [JsonProperty jsonProperty]) =>
+      jsonValue is String ? RegExp(jsonValue) : jsonValue;
+
+  @override
+  dynamic toJSON(RegExp object, [JsonProperty jsonProperty]) => object.pattern;
+}
+
 const defaultConverter = DefaultConverter();
 
 /// Default converter for all types
@@ -458,12 +486,8 @@ class DefaultConverter implements ICustomConverter {
   const DefaultConverter() : super();
 
   @override
-  Object fromJSON(dynamic jsonValue, [JsonProperty jsonProperty]) {
-    return jsonValue;
-  }
+  Object fromJSON(dynamic jsonValue, [JsonProperty jsonProperty]) => jsonValue;
 
   @override
-  dynamic toJSON(Object object, [JsonProperty jsonProperty]) {
-    return object;
-  }
+  dynamic toJSON(Object object, [JsonProperty jsonProperty]) => object;
 }

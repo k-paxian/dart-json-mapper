@@ -50,6 +50,12 @@ class DefaultTypeInfoDecorator implements ITypeInfoDecorator {
   bool isBigInt(TypeInfo typeInfo) =>
       typeInfo.typeName == 'BigInt' || typeInfo.typeName == '_BigIntImpl';
 
+  bool isRegExp(TypeInfo typeInfo) =>
+      typeInfo.typeName == 'RegExp' || typeInfo.typeName == '_RegExp';
+
+  bool isUri(TypeInfo typeInfo) =>
+      typeInfo.typeName == 'Uri' || typeInfo.typeName == '_SimpleUri';
+
   bool isHashSet(TypeInfo typeInfo) =>
       typeInfo.typeName.indexOf('HashSet<') == 0;
 
@@ -101,6 +107,16 @@ class DefaultTypeInfoDecorator implements ITypeInfoDecorator {
     if (isBigInt(typeInfo)) {
       typeInfo.type = BigInt;
       typeInfo.genericType = BigInt;
+    }
+
+    if (isRegExp(typeInfo)) {
+      typeInfo.type = RegExp;
+      typeInfo.genericType = RegExp;
+    }
+
+    if (isUri(typeInfo)) {
+      typeInfo.type = Uri;
+      typeInfo.genericType = Uri;
     }
 
     return typeInfo;

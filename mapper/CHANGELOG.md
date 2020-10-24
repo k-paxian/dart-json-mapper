@@ -1,3 +1,7 @@
+## 1.6.5
+
+* Introduced converters for `RegExp`, `Uri` types.
+
 ## 1.6.4
 
 * `enumConverterShort` is the default one for all Enums. More intuitive and compact.

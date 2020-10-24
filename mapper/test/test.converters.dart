@@ -144,6 +144,37 @@ void testConverters() {
       expect(target.data, instance.data);
     });
 
+    test('RegExpConverter', () {
+      // given
+      final source = '\[[*>.]\]';
+      final instance = RegExp(source);
+
+      // when
+      final json = JsonMapper.toJson(instance);
+      final target = JsonMapper.fromJson<RegExp>(json);
+
+      // then
+      expect(json, source);
+      expect(target.pattern, instance.pattern);
+      expect(target, TypeMatcher<RegExp>());
+      expect(target, instance);
+    });
+
+    test('UriConverter', () {
+      // given
+      final uri = 'https://github.com/k-paxian/dart-json-mapper';
+      final instance = Uri.parse(uri);
+
+      // when
+      final json = JsonMapper.toJson(instance);
+      final target = JsonMapper.fromJson<Uri>(json);
+
+      // then
+      expect(json, uri);
+      expect(target, TypeMatcher<Uri>());
+      expect(target, instance);
+    });
+
     test('BigInt converter', () {
       // given
       final rawString = '1234567890000000012345678900';
@@ -164,7 +195,7 @@ void testConverters() {
     test('Uint8List converter', () {
       // given
       final json = '{"data":"QmFzZTY0IGlzIHdvcmtpbmch"}';
-      final rawString = 'Base64 is working!';
+      final rawString = r'Base64 is working!';
 
       // when
       final targetJson = JsonMapper.serialize(

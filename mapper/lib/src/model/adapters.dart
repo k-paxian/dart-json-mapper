@@ -54,6 +54,8 @@ final dartCoreAdapter =
     JsonMapperAdapter(title: 'Dart Core Adapter', typeInfoDecorators: {
   0: defaultTypeInfoDecorator
 }, converters: {
+  RegExp: regExpConverter,
+  Uri: uriConverter,
   dynamic: defaultConverter,
   String: defaultConverter,
   bool: defaultConverter,
@@ -71,6 +73,8 @@ final dartCoreAdapter =
   Uint8List: uint8ListConverter
 }, valueDecorators: {
   typeOf<Map<String, dynamic>>(): (value) => value.cast<String, dynamic>(),
+  typeOf<List<Uri>>(): (value) => value.cast<Uri>(),
+  typeOf<List<RegExp>>(): (value) => value.cast<RegExp>(),
   typeOf<List<String>>(): (value) => value.cast<String>(),
   typeOf<List<DateTime>>(): (value) => value.cast<DateTime>(),
   typeOf<List<Duration>>(): (value) => value.cast<Duration>(),
@@ -80,6 +84,8 @@ final dartCoreAdapter =
   typeOf<List<bool>>(): (value) => value.cast<bool>(),
   typeOf<List<Symbol>>(): (value) => value.cast<Symbol>(),
   typeOf<List<BigInt>>(): (value) => value.cast<BigInt>(),
+  typeOf<Set<Uri>>(): (value) => value.cast<Uri>(),
+  typeOf<Set<RegExp>>(): (value) => value.cast<RegExp>(),
   typeOf<Set<String>>(): (value) => value.cast<String>(),
   typeOf<Set<DateTime>>(): (value) => value.cast<DateTime>(),
   typeOf<Set<Duration>>(): (value) => value.cast<Duration>(),

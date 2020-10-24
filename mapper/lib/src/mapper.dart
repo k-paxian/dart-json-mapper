@@ -34,8 +34,10 @@ class JsonMapper {
       [SerializationOptions options = defaultSerializationOptions]) {
     final context = SerializationContext(options);
     instance.processedObjects.clear();
-    return _getJsonEncoder(context)
-        .convert(instance.serializeObject(object, context));
+    final serializedObject = instance.serializeObject(object, context);
+    return serializedObject is String // Do not enclose String to quotes ""
+        ? serializedObject
+        : _getJsonEncoder(context).convert(serializedObject);
   }
 
   /// Converts JSON string to Dart object of type T
