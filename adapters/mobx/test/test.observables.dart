@@ -125,8 +125,9 @@ void testObservables() {
 
     test('ObservableList<double>', () {
       // given
-      final json = '''{"doubleList":[1.0003,2.0,3.0]}''';
-      final m = MobX(doubleList: ObservableList<double>.of([1.0003, 2, 3]));
+      final json = '''{"doubleList":[1.0003,2.01,3.01]}''';
+      final m =
+          MobX(doubleList: ObservableList<double>.of([1.0003, 2.01, 3.01]));
       // when
       final targetJson = JsonMapper.serialize(m, compactOptions);
       final instance = JsonMapper.deserialize<MobX>(targetJson);
@@ -214,8 +215,8 @@ void testObservables() {
 
     test('ObservableSet<double>', () {
       // given
-      final json = '''{"doubleSet":[1.0003,2.0,3.0]}''';
-      final m = MobX(doubleSet: ObservableSet<double>.of([1.0003, 2, 3]));
+      final json = '''{"doubleSet":[1.0003,3.01,2.01]}''';
+      final m = MobX(doubleSet: ObservableSet<double>.of([1.0003, 2.01, 3.01]));
       // when
       final targetJson = JsonMapper.serialize(m, compactOptions);
       final instance = JsonMapper.deserialize<MobX>(targetJson);
