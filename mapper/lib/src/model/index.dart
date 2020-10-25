@@ -8,6 +8,8 @@ export 'name_casing.dart';
 export 'type_info.dart';
 export 'value_decorators.dart';
 
+enum ConversionDirection { fromJson, toJson }
+
 /// Virtual class
 /// Used as a generic reference to all Enum based types
 /// enum ABC {A, B, C}, etc.

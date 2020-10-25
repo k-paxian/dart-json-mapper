@@ -1,6 +1,8 @@
 ## 1.6.5
 
 * Introduced converters for `RegExp`, `Uri` types.
+* Internal `JsonMapper` methods made private.
+* Introduced cache layer on top of converters outputs, brings modest performance boost. #86.
 
 ## 1.6.4
 
