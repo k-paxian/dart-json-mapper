@@ -7,10 +7,21 @@ class Tuple<T, S> {
   final S value2;
 
   Tuple(this.value1, this.value2);
+
+  factory Tuple.of(Tuple<dynamic, dynamic> other) =>
+      Tuple<T, S>(other.value1, other.value2);
 }
 
 @jsonSerializable
+@Json(valueDecorators: ConcreteClass.valueDecorators)
 class ConcreteClass {
+  static Map<Type, ValueDecoratorFunction> valueDecorators() => {
+        typeOf<Tuple<int, DateTime>>(): (value) =>
+            Tuple<int, DateTime>.of(value),
+        typeOf<Tuple<Duration, BigInt>>(): (value) =>
+            Tuple<Duration, BigInt>.of(value)
+      };
+
   final Tuple<int, DateTime> tuple1;
   final Tuple<Duration, BigInt> tuple2;
 
@@ -39,9 +50,15 @@ void testTupleCases() {
 
       // when
       final targetJson = JsonMapper.serialize(instance);
+      final target = JsonMapper.deserialize<ConcreteClass>(targetJson);
 
       // then
       expect(targetJson, json);
+      expect(target, TypeMatcher<ConcreteClass>());
+      expect(target.tuple1, TypeMatcher<Tuple<int, DateTime>>());
+      expect(target.tuple2, TypeMatcher<Tuple<Duration, BigInt>>());
+      expect(target.tuple1.value1, 1);
+      expect(target.tuple2.value2, BigInt.two);
     });
   });
 }

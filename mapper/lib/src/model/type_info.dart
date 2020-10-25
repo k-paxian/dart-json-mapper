@@ -184,6 +184,8 @@ class DefaultTypeInfoDecorator implements ITypeInfoDecorator {
         return int;
       case 'double':
         return double;
+      case 'Duration':
+        return Duration;
       case 'BigInt':
         return BigInt;
       case 'bool':

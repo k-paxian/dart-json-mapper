@@ -211,6 +211,14 @@ class JsonMapper {
     return result;
   }
 
+  Type _getGenericParameterTypeByIndex(
+      num parameterIndex, TypeInfo genericType) {
+    return genericType.isGeneric &&
+            genericType.parameters.length - 1 >= parameterIndex
+        ? genericType.parameters.elementAt(parameterIndex)
+        : null;
+  }
+
   TypeInfo detectObjectType(dynamic objectInstance, Type objectType,
       JsonMap objectJsonMap, DeserializationOptions options) {
     final objectClassMirror = classes[objectType.toString()];
@@ -450,7 +458,10 @@ class JsonMapper {
           ? param.reflectedType
           : param.hasDynamicReflectedType
               ? param.dynamicReflectedType
-              : dynamic;
+              : _getGenericParameterTypeByIndex(
+                      methodMirror.parameters.indexOf(param),
+                      getTypeInfo(context.instanceType)) ??
+                  dynamic;
       var paramTypeInfo = getTypeInfo(paramType);
       paramTypeInfo = paramTypeInfo.isDynamic
           ? getTypeInfo(getDeclarationType(declarationMirror))
