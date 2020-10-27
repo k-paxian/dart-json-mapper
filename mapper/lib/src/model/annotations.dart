@@ -35,10 +35,6 @@ class Json {
   /// given as CaseStyle.Camel
   final CaseStyle caseStyle;
 
-  /// Provides a way to specify enum values, via Dart built in
-  /// capability for all Enum instances. `Enum.values`
-  final List<dynamic> enumValues;
-
   /// Null class members
   /// will be excluded from serialization process
   final bool ignoreNullMembers;
@@ -77,7 +73,6 @@ class Json {
       {this.allowCircularReferences,
       this.valueDecorators,
       this.scheme,
-      this.enumValues,
       this.typeNameProperty,
       this.caseStyle,
       this.ignoreNullMembers,
@@ -122,10 +117,6 @@ class JsonProperty {
   /// will be excluded from serialization / deserialization process
   final bool ignoreIfNull;
 
-  /// Provides a way to specify enum values, via Dart built in
-  /// capability for all Enum instances. `Enum.values`
-  final List<dynamic> enumValues;
-
   /// Final field default value
   final dynamic defaultValue;
 
@@ -137,22 +128,8 @@ class JsonProperty {
       this.ignoreForDeserialization,
       this.ignoreIfNull,
       this.converter,
-      this.enumValues,
       this.defaultValue,
       this.converterParams});
-
-  bool isEnumType(Type enumType) =>
-      enumValues != null && isEnumTypeForValues(enumType);
-
-  /// Validate provided enumType against provided [enumValues]
-  bool isEnumTypeForValues(Type enumType, [Iterable enumValuesList]) {
-    final getEnumTypeNameFromString =
-        (value) => value.toString().split('.').first;
-    final enumValueTypeName = getEnumTypeNameFromString(enumType.toString());
-    return enumType == dynamic ||
-        (enumValues ?? enumValuesList).every(
-            (item) => getEnumTypeNameFromString(item) == enumValueTypeName);
-  }
 }
 
 /// [jsonSerializable] is used as shorthand metadata, marking classes targeted

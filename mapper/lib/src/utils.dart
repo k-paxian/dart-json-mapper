@@ -194,11 +194,6 @@ class ClassInfo {
         });
   }
 
-  List get enumValues {
-    final meta = getMeta();
-    return meta != null ? meta.enumValues : [];
-  }
-
   List<String> get publicFieldNames {
     final instanceMembers = classMirror.instanceMembers;
     return instanceMembers.values

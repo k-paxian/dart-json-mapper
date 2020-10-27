@@ -35,8 +35,10 @@ class TypeInfo {
 
 /// Abstract class for custom typeInfo decorator implementations
 abstract class ITypeInfoDecorator {
-  void init(Map<String, ClassMirror> knownClasses,
-      Map<Type, ValueDecoratorFunction> valueDecorators);
+  void init(
+      Map<String, ClassMirror> knownClasses,
+      Map<Type, ValueDecoratorFunction> valueDecorators,
+      Map<Type, List> enumValues);
   TypeInfo decorate(TypeInfo typeInfo);
 }
 
@@ -46,6 +48,7 @@ final defaultTypeInfoDecorator = DefaultTypeInfoDecorator();
 class DefaultTypeInfoDecorator implements ITypeInfoDecorator {
   Map<String, ClassMirror> _knownClasses;
   Iterable<Type> _valueDecoratorTypes;
+  Map<Type, List> _enumValues;
 
   bool isBigInt(TypeInfo typeInfo) =>
       typeInfo.typeName == 'BigInt' || typeInfo.typeName == '_BigIntImpl';
@@ -93,6 +96,10 @@ class DefaultTypeInfoDecorator implements ITypeInfoDecorator {
 
     if (typeName != null && _knownClasses[typeName] != null) {
       typeInfo.isEnum = _knownClasses[typeName].isEnum;
+    } else {
+      if (typeName != null && _enumValues[type] != null) {
+        typeInfo.isEnum = _enumValues[type] != null;
+      }
     }
 
     typeInfo.parameters =
@@ -198,21 +205,26 @@ class DefaultTypeInfoDecorator implements ITypeInfoDecorator {
         if (_knownClasses[name] != null) {
           return _knownClasses[name].reflectedType;
         }
-        return _valueDecoratorTypes.firstWhere((t) => t.toString() == name,
-            orElse: () => dynamic);
+        final resultFromDecorators = _valueDecoratorTypes
+            .firstWhere((t) => t.toString() == name, orElse: () => null);
+        final resultFromEnums = _enumValues.keys
+            .firstWhere((t) => t.toString() == name, orElse: () => null);
+        return resultFromDecorators ?? resultFromEnums ?? dynamic;
     }
   }
 
   Type detectScalarType(TypeInfo typeInfo) {
     typeInfo.scalarTypeName = detectScalarTypeName(typeInfo);
-    if (typeInfo.isDynamic) return dynamic;
     return detectTypeByName(typeInfo.scalarTypeName);
   }
 
   @override
-  void init(Map<String, ClassMirror> knownClasses,
-      Map<Type, ValueDecoratorFunction> valueDecorators) {
+  void init(
+      Map<String, ClassMirror> knownClasses,
+      Map<Type, ValueDecoratorFunction> valueDecorators,
+      Map<Type, List> enumValues) {
     _knownClasses = knownClasses;
     _valueDecoratorTypes = valueDecorators.keys;
+    _enumValues = enumValues;
   }
 }

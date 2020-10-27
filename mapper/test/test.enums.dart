@@ -7,7 +7,6 @@ enum ThirdParty { A, B, C }
 
 @jsonSerializable
 class ShortEnumConverter {
-  @JsonProperty(enumValues: ThirdParty.values)
   ThirdParty party;
 
   ShortEnumConverter({this.party});
@@ -15,34 +14,18 @@ class ShortEnumConverter {
 
 @jsonSerializable
 class EnumIterables {
-  @JsonProperty(enumValues: ThirdParty.values)
   ThirdParty party;
-
-  @JsonProperty(enumValues: Color.values)
   Color color;
-
-  @JsonProperty(enumValues: ThirdParty.values)
   List<ThirdParty> parties = [];
-
-  @JsonProperty(enumValues: Color.values)
   List<Color> colors;
-
-  @JsonProperty(enumValues: Color.values)
   Set<Color> colorsSet;
-
-  @JsonProperty(enumValues: Color.values)
   Map<Color, int> colorPriorities = <Color, int>{};
-
-  @JsonProperty(enumValues: ThirdParty.values)
   Map<ThirdParty, int> partyPriorities = <ThirdParty, int>{};
 }
 
 @jsonSerializable
 class EnumIterablesWithConstructor {
-  @JsonProperty(enumValues: Color.values)
   List<Color> colors;
-
-  @JsonProperty(enumValues: Color.values)
   Set<Color> colorsSet;
 
   EnumIterablesWithConstructor({this.colors, this.colorsSet});
@@ -55,7 +38,6 @@ class StylingModel {
 }
 
 @jsonSerializable
-@Json(enumValues: Category.values)
 enum Category { First, Second, Third }
 
 @jsonSerializable
@@ -64,7 +46,6 @@ class Split {
   static Map<Type, ValueDecoratorFunction> valueDecorators() =>
       {typeOf<Map<Category, int>>(): (value) => value.cast<Category, int>()};
 
-  @JsonProperty(enumValues: Category.values)
   Map<Category, int> values;
 
   Split(this.values);
@@ -78,7 +59,6 @@ class SplitModel {
             value.cast<Category, StylingModel>()
       };
 
-  @JsonProperty(enumValues: Category.values)
   final Map<Category, StylingModel> values;
 
   const SplitModel(this.values);
@@ -91,7 +71,8 @@ void testEnums() {
       final instance = ShortEnumConverter(party: ThirdParty.A);
 
       // when
-      final adapter = JsonMapperAdapter(converters: {Enum: enumConverterShort});
+      final adapter =
+          JsonMapperAdapter(enumValues: {ThirdParty: ThirdParty.values});
       JsonMapper().useAdapter(adapter);
 
       final targetJson = JsonMapper.serialize(instance, compactOptions);
@@ -218,8 +199,14 @@ void testEnums() {
       };
 
       // when
+      final adapter =
+          JsonMapperAdapter(enumValues: {ThirdParty: ThirdParty.values});
+      JsonMapper().useAdapter(adapter);
+
       final targetJson = JsonMapper.serialize(instance, compactOptions);
       final target = JsonMapper.deserialize<EnumIterables>(targetJson);
+
+      JsonMapper().removeAdapter(adapter);
 
       // then
       expect(targetJson,

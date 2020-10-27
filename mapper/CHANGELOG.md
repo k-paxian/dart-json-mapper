@@ -1,3 +1,8 @@
+## 1.7.0
+
+* **Breaking change** Enums handling changed, no more repetitive `@JsonProperty(enumValues: Color.values)`. Annotate local Enums and Register third party Enums once per application
+* Issue #88 addressed. Refine imports in auto-generated `*.mapper.g.dart` so no name conflicts will be possible
+
 ## 1.6.5
 
 * Introduced converters for `RegExp`, `Uri` types.

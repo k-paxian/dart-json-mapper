@@ -1,13 +1,13 @@
 import 'package:dart_json_mapper/dart_json_mapper.dart';
 import 'package:test/test.dart';
 
+@jsonSerializable
 enum BusinessType { Private, Public }
 
 @jsonSerializable
 @Json(typeNameProperty: 'typeName')
 abstract class Business {
   String name;
-  @JsonProperty(enumValues: BusinessType.values)
   BusinessType type = BusinessType.Private;
 }
 

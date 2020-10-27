@@ -64,8 +64,6 @@ abstract class AbstractEntityModel<T> {
 @jsonSerializable
 class MyCarModel extends AbstractEntityModel<Car> {
   final String model;
-
-  @JsonProperty(enumValues: Color.values)
   final Color color;
 
   const MyCarModel({String parentUuid, String uuid, this.model, this.color})

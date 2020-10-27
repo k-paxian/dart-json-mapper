@@ -7,6 +7,7 @@ import './model/model.dart';
 import 'model/generic.dart';
 import 'model/immutable.dart';
 
+@jsonSerializable
 enum NumericEnumTestColor {
   Red,
   Blue,
@@ -65,7 +66,6 @@ class DurationModel {
 
 @jsonSerializable
 class NumericEnum {
-  @JsonProperty(enumValues: NumericEnumTestColor.values)
   NumericEnumTestColor color;
 
   NumericEnum(this.color);

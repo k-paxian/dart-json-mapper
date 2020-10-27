@@ -25,6 +25,7 @@ class JsonMapper {
   Map<Type, ICustomConverter> converters = {};
   Map<int, ITypeInfoDecorator> typeInfoDecorators = {};
   Map<Type, ValueDecoratorFunction> valueDecorators = {};
+  Map<Type, List> enumValues = {};
 
   /// Converts Dart object to JSON string
   static String toJson(Object object,
@@ -136,6 +137,7 @@ class JsonMapper {
   }
 
   void _updateInternalMaps() {
+    enumValues = _enumValues;
     converters = _converters;
     typeInfoDecorators = _typeInfoDecorators;
     valueDecorators = _valueDecorators;
@@ -143,6 +145,14 @@ class JsonMapper {
 
   void info() {
     adapters.forEach((priority, adapter) => print('$priority : $adapter'));
+  }
+
+  Map<Type, List> get _enumValues {
+    final result = {};
+    adapters.values.forEach((IAdapter adapter) {
+      result.addAll(adapter.enumValues);
+    });
+    return result.cast<Type, List>();
   }
 
   Map<Type, ICustomConverter> get _converters {
@@ -207,7 +217,7 @@ class JsonMapper {
     }
     var result = TypeInfo(type);
     typeInfoDecorators.values.forEach((ITypeInfoDecorator decorator) {
-      decorator.init(classes, valueDecorators);
+      decorator.init(classes, valueDecorators, enumValues);
       result = decorator.decorate(result);
     });
     _typeInfoCache[type] = result;
@@ -317,20 +327,14 @@ class JsonMapper {
     if (result == null && converters[typeInfo.type] != null) {
       result = converters[typeInfo.type];
     }
-    if (result == null &&
-        (im != null && im.type != null && im.type.isEnum ||
-            typeInfo.isEnum == true)) {
-      result = annotatedEnumConverter;
-      if (im != null && im.type != null) {
-        annotatedEnumConverter.setEnumValues(ClassInfo(im.type).enumValues);
-      }
-    }
     if (result == null && converters[typeInfo.genericType] != null) {
       result = converters[typeInfo.genericType];
     }
-    if (result == null &&
-        (jsonProperty != null && jsonProperty.isEnumType(targetType))) {
+    if (result == null && enumValues[targetType] != null) {
       result = converters[Enum];
+    }
+    if (result is ICustomEnumConverter) {
+      (result as ICustomEnumConverter).setEnumValues(enumValues[targetType]);
     }
     return result;
   }
@@ -345,9 +349,11 @@ class JsonMapper {
       return _convertedValuesCache[converter][direction][jsonProperty][value];
     }
 
-    final computedValue = direction == ConversionDirection.fromJson
-        ? converter.fromJSON(value, jsonProperty)
-        : converter.toJSON(value, jsonProperty);
+    final computedValue = converter == null
+        ? value
+        : direction == ConversionDirection.fromJson
+            ? converter.fromJSON(value, jsonProperty)
+            : converter.toJSON(value, jsonProperty);
     _convertedValuesCache.putIfAbsent(
         converter,
         () => {
@@ -586,12 +592,13 @@ class JsonMapper {
       DeserializationContext deserializationContext}) {
     if (converter is ICompositeConverter) {
       (converter as ICompositeConverter).setGetConverterFunction(_getConverter);
+      (converter as ICompositeConverter)
+          .setGetConvertedValueFunction(_getConvertedValue);
     }
-    if (converter is ITypeInfoConsumerConverter) {
-      final typeInfo = deserializationContext != null
-          ? _getTypeInfo(deserializationContext.instanceType)
-          : null;
-      (converter as ITypeInfoConsumerConverter).setTypeInfo(typeInfo);
+    if (converter is ITypeInfoConsumerConverter &&
+        deserializationContext != null) {
+      (converter as ITypeInfoConsumerConverter)
+          .setTypeInfo(_getTypeInfo(deserializationContext.instanceType));
     }
     if (converter is ICustomIterableConverter) {
       (converter as ICustomIterableConverter).setIterableInstance(value);

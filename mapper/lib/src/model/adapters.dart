@@ -20,6 +20,7 @@ abstract class IAdapter {
   String get refUrl;
   Map<Type, ICustomConverter> get converters;
   Map<Type, ValueDecoratorFunction> get valueDecorators;
+  Map<Type, List> get enumValues;
   Map<int, ITypeInfoDecorator> get typeInfoDecorators;
 }
 
@@ -37,11 +38,14 @@ class JsonMapperAdapter implements IAdapter {
   final Map<Type, ValueDecoratorFunction> valueDecorators;
   @override
   final Map<int, ITypeInfoDecorator> typeInfoDecorators;
+  @override
+  final Map<Type, List> enumValues;
 
   const JsonMapperAdapter(
       {this.converters = const {},
       this.valueDecorators = const {},
       this.typeInfoDecorators = const {},
+      this.enumValues = const {},
       this.title = 'JsonMapperAdapter',
       this.refUrl,
       this.url = 'https://github.com/k-paxian/dart-json-mapper'});

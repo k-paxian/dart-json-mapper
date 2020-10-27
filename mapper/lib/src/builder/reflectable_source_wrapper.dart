@@ -74,9 +74,20 @@ class ReflectableSourceWrapper {
     ].join(',\n');
   }
 
+  String _renderEnumValuesForClassElement(ClassElement element) {
+    return '    ${element.name}: ${element.name}.values';
+  }
+
   String _renderValueDecorators() {
     return _libraryVisitor.visitedPublicAnnotatedClassElements.values
         .map((e) => _renderValueDecoratorsForClassElement(e))
+        .join(',\n');
+  }
+
+  String _renderEnumValues() {
+    return _libraryVisitor.visitedPublicAnnotatedClassElements.values
+        .where((element) => element.isEnum)
+        .map((e) => _renderEnumValuesForClassElement(e))
         .join(',\n');
   }
 
@@ -87,6 +98,9 @@ final $_libraryAdapterId = JsonMapperAdapter(
   url: '${inputLibrary.identifier}',
   valueDecorators: {
 ${_renderValueDecorators()}
+},
+  enumValues: {
+${_renderEnumValues()}
 });\n''';
   }
 

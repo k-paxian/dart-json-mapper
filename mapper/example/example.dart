@@ -3,6 +3,7 @@ import 'package:dart_json_mapper/dart_json_mapper.dart'
 
 import 'example.mapper.g.dart' show initializeJsonMapper;
 
+@jsonSerializable
 enum Color { Red, Blue, Green, Brown, Yellow, Black, White }
 
 @jsonSerializable
@@ -10,7 +11,6 @@ class Car {
   @JsonProperty(name: 'modelName')
   String model;
 
-  @JsonProperty(enumValues: Color.values)
   Color color;
 
   Car(this.model, this.color);
@@ -41,10 +41,10 @@ class Person {
   num age = 36;
   var lastName = 'Gump';
 
-  @JsonProperty(name: 'eye_color', enumValues: Color.values)
+  @JsonProperty(name: 'eye_color')
   Color eyeColor = Color.Blue;
 
-  @JsonProperty(enumValues: Color.values, converter: enumConverterNumeric)
+  @JsonProperty(converter: enumConverterNumeric)
   Color hairColor = Color.Brown;
 
   List<Car> vehicles = [Car('Tesla', Color.Black), Car('BMW', Color.Red)];

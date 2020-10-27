@@ -214,6 +214,7 @@ expect(targetJson, json);
 ## Example with immutable class
 
 ```dart
+@jsonSerializable
 enum Color { Red, Blue, Green, Brown, Yellow, Black, White }
 
 @jsonSerializable
@@ -221,7 +222,6 @@ class Car {
     @JsonProperty(name: 'modelName')
     String model;
     
-    @JsonProperty(enumValues: Color.values)
     Color color;
     
     @JsonProperty(ignore: true)
@@ -466,33 +466,30 @@ Enum construction in Dart has a specific meaning, and has to be treated accordin
 Generally, we always have to bear in mind following cases around Enums:
 
 * Your own Enums declared as part of your program code, thus they **can** be annotated.
-* Enums from third party packages, they **can not** be annotated.
 
 So whenever possible, you should annotate your Enum declarations as follows
 ```dart
 @jsonSerializable
-@Json(enumValues: Color.values)
 enum Color { Red, Blue, Green, Brown, Yellow, Black, White }
 ```
 
-And annotate class fields referencing Enums as follows
+* Enums from third party packages, they **can not** be annotated.
+
+So you should register those enums via adapter as follows:
 ```dart
-@JsonProperty(enumValues: Color.values)
-Color color;
+import 'package:some_package' show ThirdPartyEnum, ThirdPartyEnum2;
 
-@JsonProperty(enumValues: Color.values)
-List<Color> colors;
-
-@JsonProperty(enumValues: Color.values)
-Set<Color> colorsSet;
-
-@JsonProperty(enumValues: Color.values)
-Map<Color, int> colorPriorities = <Color, int>{};
+JsonMapper().useAdapter(
+    JsonMapperAdapter(enumValues: {
+        ThirdPartyEnum: ThirdPartyEnum.values,
+        ThirdPartyEnum2: ThirdPartyEnum2.values
+    })
+);
 ```
 
-Each enum based class field has to be annotated as showed in a snippet above. 
 Enum`.values` refers to a list of all possible enum values, it's a handy built in capability of all
 enum based types. Without providing all values it's not possible to traverse it's values properly.
+
 
 There are few enum converters provided out of the box:
 
@@ -502,7 +499,7 @@ There are few enum converters provided out of the box:
 
 Default converter for **all** enums is `enumConverterShort`
 
-In case we would like to make a switch globally to the different one, or even custom converter for all enums
+In case we would like to make a switch **globally** to the different one, or even custom converter for all enums
 
 ```dart
 // lib/main.dart
@@ -848,7 +845,6 @@ Example: `'foo', 'bar', 'foo/bar/baz'`
     * *caseStyle* The most popular ways to combine words into a single string. Based on assumption: That all Dart class fields initially given as CaseStyle.Camel
     * *typeNameProperty* declares the necessity for annotated class and all it's subclasses to dump their own type name to
 the property named as this param value
-    * *enumValues* Provides a way to specify enum values, via Dart built in capability for all Enum instances. `Enum.values`
     * *valueDecorators* Provides an inline way to specify a static function which will return a Map of value decorators, to support type casting activities for Map<K, V>, and other generic Iterables<T> instead of global adapter approach
     * *ignoreNullMembers* If set to `true` Null class members will be excluded from serialization process
     * *processAnnotatedMembersOnly* If set to `true` Only annotated class members will be processed
@@ -864,7 +860,6 @@ Example: `'foo', 'bar', 'foo/bar/baz'`
     * *ignoreForSerialization* A bool declares annotated field as excluded from serialization process
     * *ignoreForDeserialization* A bool declares annotated field as excluded from deserialization process
     * *ignoreIfNull* A bool declares annotated field as ignored if it's value is null so it will be excluded from serialization / deserialization process
-    * *enumValues* Provides a way to specify enum values, via Dart built in capability for all Enum instances. `Enum.values`
     * *defaultValue* Defines field default value
 
 ## Builder
