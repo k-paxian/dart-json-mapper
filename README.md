@@ -342,34 +342,34 @@ To solve this we have a few options:
 ### Provide value decorator functions manually
 
 * As a global adapter
-```dart
-JsonMapper().useAdapter(JsonMapperAdapter(
-  valueDecorators: {
-    typeOf<List<Car>>(): (value) => value.cast<Car>(),
-    typeOf<Set<Car>>(): (value) => value.cast<Car>()
-  })
-);
-
-final json = '[{"modelName": "Audi", "color": "Green"}]';
-final myCarsList = JsonMapper.deserialize<List<Car>>(json);
-final myCarsSet = JsonMapper.deserialize<Set<Car>>(json);
-```
-
-* As an class inline code
-```dart
-@jsonSerializable
-@Json(valueDecorators: CarsContainer.valueDecorators)
-class CarsContainer {
-  static Map<Type, ValueDecoratorFunction> valueDecorators() =>
-      {
+    ```dart
+    JsonMapper().useAdapter(JsonMapperAdapter(
+      valueDecorators: {
         typeOf<List<Car>>(): (value) => value.cast<Car>(),
         typeOf<Set<Car>>(): (value) => value.cast<Car>()
-      };
+      })
+    );
+    
+    final json = '[{"modelName": "Audi", "color": "Green"}]';
+    final myCarsList = JsonMapper.deserialize<List<Car>>(json);
+    final myCarsSet = JsonMapper.deserialize<Set<Car>>(json);
+    ```
 
-  List<Car> myCarsList;
-  Set<Car> myCarsSet;
-}
-```
+* As an class inline code
+    ```dart
+    @jsonSerializable
+    @Json(valueDecorators: CarsContainer.valueDecorators)
+    class CarsContainer {
+      static Map<Type, ValueDecoratorFunction> valueDecorators() =>
+          {
+            typeOf<List<Car>>(): (value) => value.cast<Car>(),
+            typeOf<Set<Car>>(): (value) => value.cast<Car>()
+          };
+    
+      List<Car> myCarsList;
+      Set<Car> myCarsSet;
+    }
+    ```
 
 ### Rely on builder to generate global adapter having value decorator functions automatically
 
@@ -467,28 +467,28 @@ Generally, we always have to bear in mind following cases around Enums:
 
 * Your own Enums declared as part of your program code, thus they **can** be annotated.
 
-So whenever possible, you should annotate your Enum declarations as follows
-```dart
-@jsonSerializable
-enum Color { Red, Blue, Green, Brown, Yellow, Black, White }
-```
+    So whenever possible, you should annotate your Enum declarations as follows
+    ```dart
+    @jsonSerializable
+    enum Color { Red, Blue, Green, Brown, Yellow, Black, White }
+    ```
 
 * Enums from third party packages, they **can not** be annotated.
 
-So you should register those enums via adapter as follows:
-```dart
-import 'package:some_package' show ThirdPartyEnum, ThirdPartyEnum2;
-
-JsonMapper().useAdapter(
-    JsonMapperAdapter(enumValues: {
-        ThirdPartyEnum: ThirdPartyEnum.values,
-        ThirdPartyEnum2: ThirdPartyEnum2.values
-    })
-);
-```
-
-Enum`.values` refers to a list of all possible enum values, it's a handy built in capability of all
-enum based types. Without providing all values it's not possible to traverse it's values properly.
+    So you should register those enums via adapter as follows:
+    ```dart
+    import 'package:some_package' show ThirdPartyEnum, ThirdPartyEnum2;
+    
+    JsonMapper().useAdapter(
+        JsonMapperAdapter(enumValues: {
+            ThirdPartyEnum: ThirdPartyEnum.values,
+            ThirdPartyEnum2: ThirdPartyEnum2.values
+        })
+    );
+    ```
+    
+    Enum`.values` refers to a list of all possible enum values, it's a handy built in capability of all
+    enum based types. Without providing all values it's not possible to traverse it's values properly.
 
 
 There are few enum converters provided out of the box:
@@ -838,7 +838,7 @@ Use it to mark all the Dart objects you'd like to be traveling to / from JSON
 * `@JsonConstructor()` or `@jsonConstructor` for short, It's an **optional** constructor only marker annotation. 
 Use it to mark specific Dart class constructor you'd like to be used during deserialization.    
     * *scheme* dynamic [Scheme](#schemes) marker to associate this meta information with particular mapping scheme
-* `@Json(...)` It's an *optional* annotation for class or Enum declaration, describes a Dart object to JSON Object mapping.
+* `@Json(...)` It's an **optional** annotation for class or Enum declaration, describes a Dart object to JSON Object mapping.
 Why it's not a `@JsonObject()`? just for you to type less characters :smile:
     * *name* Defines [RFC 6901][rfc6901] JSON pointer, denotes the json Object root name/path to be used for mapping.
 Example: `'foo', 'bar', 'foo/bar/baz'`
@@ -850,7 +850,7 @@ the property named as this param value
     * *processAnnotatedMembersOnly* If set to `true` Only annotated class members will be processed
     * *allowCircularReferences* As of `int` type. Allows certain number of circular object references during serialization.
     * *scheme* dynamic [Scheme](#schemes) marker to associate this meta information with particular mapping scheme
-* `@JsonProperty(...)` It's an *optional* class member annotation, describes JSON Object property mapping.
+* `@JsonProperty(...)` It's an **optional** class member annotation, describes JSON Object property mapping.
     * *name* Defines [RFC 6901][rfc6901] JSON pointer, denotes the name/path to be used for property mapping relative to the class *root nesting*
 Example: `'foo', 'bar', 'foo/bar/baz'`
     * *scheme* dynamic [Scheme](#schemes) marker to associate this meta information with particular mapping scheme
@@ -962,6 +962,7 @@ For example, you would like to refer to `Color` type from Flutter in your model 
       "color": "#003F4F5F"
     }
     ```
+    
 ### You can easily mix and combine several adapters using following one-liner: 
 
 ```dart

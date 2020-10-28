@@ -112,19 +112,23 @@ ${_renderEnumValues()}
 }''';
   }
 
-  String _renderElementImport(ClassElement element) {
+  void _renderElementImport(
+      ClassElement element, Map<String, List<String>> importsMap) {
+    var importString;
     if (element.library != null &&
         element.library.identifier.startsWith(_inputLibraryPath)) {
       // local import
-      return '''import '${element.library.identifier.split(_inputLibraryPath).last}';''';
+      importString = element.library.identifier.split(_inputLibraryPath).last;
     }
-
     if (element.library != null &&
         element.library.identifier.startsWith(_inputLibraryPackageName)) {
       // local package import
-      return '''import '${element.library.identifier}';''';
+      importString = element.library.identifier;
     }
-    return null;
+    if (importsMap.containsKey(importString)) {
+      importsMap[importString].add(element.name);
+    }
+    importsMap.putIfAbsent(importString, () => [element.name]);
   }
 
   String _renderHeader() {
@@ -135,11 +139,14 @@ ${_renderEnumValues()}
   }
 
   String _renderImports() {
+    final importsMap = <String, List<String>>{};
+    _libraryVisitor.visitedPublicAnnotatedClassElements.values
+        .forEach((e) => _renderElementImport(e, importsMap));
     final importsList = {
       isCollectionImportNeeded ? COLLECTION_IMPORT : null,
       MAPPER_IMPORT,
-      ..._libraryVisitor.visitedPublicAnnotatedClassElements.values
-          .map((e) => _renderElementImport(e))
+      ...importsMap.keys.map(
+          (key) => '''import '${key}' show ${importsMap[key].join(', ')};''')
     }.where((x) => x != null).toList();
     importsList.sort();
     return importsList.join('\n') + '\n\n';
