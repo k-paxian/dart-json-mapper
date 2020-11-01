@@ -524,7 +524,8 @@ class JsonMapper {
           : defaultValue;
       value = _deserializeObject(value,
           DeserializationContext(context.options, paramTypeInfo.type, meta));
-      visitor(param, name, jsonName, classMeta, meta, value, paramTypeInfo);
+      visitor(param, name, jsonName, classMeta, meta, value ?? defaultValue,
+          paramTypeInfo);
     });
   }
 
@@ -813,9 +814,10 @@ class JsonMapper {
         converter,
         scalarType,
         TypeInfo typeInfo) {
+      final defaultValue = meta?.defaultValue;
       if (!jsonMap.hasProperty(jsonName) || mappedFields.contains(name)) {
-        if (meta != null && meta.defaultValue != null && !isGetterOnly) {
-          im.invokeSetter(name, meta.defaultValue);
+        if (defaultValue != null && !isGetterOnly) {
+          im.invokeSetter(name, defaultValue);
         }
         return;
       }
@@ -839,7 +841,8 @@ class JsonMapper {
             converter, ConversionDirection.fromJson, fieldValue, meta);
       }
       if (!isGetterOnly) {
-        fieldValue = _applyValueDecorator(fieldValue, typeInfo, meta);
+        fieldValue =
+            _applyValueDecorator(fieldValue, typeInfo, meta) ?? defaultValue;
         im.invokeSetter(name, fieldValue);
         mappedFields.add(jsonName);
       }

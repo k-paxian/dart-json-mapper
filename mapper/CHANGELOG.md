@@ -1,3 +1,7 @@
+## 1.7.1
+
+* #90, Support deserialization to default enum value for unknown values
+
 ## 1.7.0
 
 * **Breaking change** Enums handling changed, no more repetitive `@JsonProperty(enumValues: Color.values)`. Annotate local Enums and Register third party Enums once per application

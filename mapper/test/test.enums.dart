@@ -41,6 +41,12 @@ class StylingModel {
 enum Category { First, Second, Third }
 
 @jsonSerializable
+class DefaultCategory {
+  @JsonProperty(defaultValue: Category.First)
+  Category category;
+}
+
+@jsonSerializable
 @Json(valueDecorators: Split.valueDecorators)
 class Split {
   static Map<Type, ValueDecoratorFunction> valueDecorators() =>
@@ -96,6 +102,28 @@ void testEnums() {
       // then
       expect(targetJson, r'Green');
       expect(target, Color.Green);
+    });
+
+    test('Unknown Enum Value', () {
+      // given
+      final json = r'Purple';
+
+      // when
+      final target = JsonMapper.deserialize<Color>(json);
+
+      // then
+      expect(target, null);
+    });
+
+    test('When Unknown Enum Value use defaultValue from annotation', () {
+      // given
+      final json = r'{"category":"Fourth"}';
+
+      // when
+      final target = JsonMapper.deserialize<DefaultCategory>(json);
+
+      // then
+      expect(target.category, Category.First);
     });
 
     test('Map<Enum, int> instance', () {
