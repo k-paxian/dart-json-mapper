@@ -169,13 +169,25 @@ class IgnoredFieldClassWoConstructor {
 }
 
 @jsonSerializable
+class CropArea {
+  num top;
+  num left;
+  num right;
+  num bottom;
+}
+
+@jsonSerializable
 class ImmutableDefault {
+  @JsonProperty(
+      defaultValue: {'top': 0.0, 'left': 1.0, 'right': 1.0, 'bottom': 0.0})
+  final CropArea cropArea;
+
   @JsonProperty(defaultValue: 1)
   final int id;
   final String name;
   final Car car;
 
-  const ImmutableDefault({this.id, this.name, this.car});
+  const ImmutableDefault({this.cropArea, this.id, this.name, this.car});
 }
 
 @jsonSerializable
@@ -387,7 +399,8 @@ void testConstructors() {
       final target = JsonMapper.serialize(instance,
           SerializationOptions(indent: '', processAnnotatedMembersOnly: true));
       // then
-      expect(target, '{"id":1}');
+      expect(target,
+          '{"cropArea":{"top":0.0,"left":1.0,"right":1.0,"bottom":0.0},"id":1}');
     });
 
     test('processAnnotatedMembersOnly class annotation option', () {
@@ -449,6 +462,12 @@ void testConstructors() {
     test('Serialize Immutable class with DefaultValue provided', () {
       // given
       final immutableJson = '''{
+ "cropArea": {
+  "top": 0.0,
+  "left": 1.0,
+  "right": 1.0,
+  "bottom": 0.0
+ },
  "id": 1,
  "name": "Bob",
  "car": {
@@ -457,11 +476,27 @@ void testConstructors() {
  }
 }''';
 
+      final json = '''{
+ "name": "Bob",
+ "car": {
+  "modelName": "Audi",
+  "color": "Green"
+ }
+}''';
       final i = ImmutableDefault(name: 'Bob', car: Car('Audi', Color.Green));
+
       // when
-      final target = JsonMapper.serialize(i);
+      final targetJson = JsonMapper.serialize(i);
+      final target = JsonMapper.deserialize<ImmutableDefault>(json);
+
       // then
-      expect(target, immutableJson);
+      expect(targetJson, immutableJson);
+
+      expect(target.id, 1);
+      expect(target.cropArea, TypeMatcher<CropArea>());
+      expect(target.cropArea.left, 1);
+      expect(target.cropArea.right, 1);
+      expect(target.cropArea.bottom, 0);
     });
   });
 }
