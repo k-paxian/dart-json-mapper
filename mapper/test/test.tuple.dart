@@ -1,6 +1,8 @@
 import 'package:dart_json_mapper/dart_json_mapper.dart';
 import 'package:test/test.dart';
 
+/// Motivation: https://github.com/google/json_serializable.dart/blob/master/example/lib/tuple_example.dart
+
 @jsonSerializable
 class Tuple<T, S> {
   final T value1;

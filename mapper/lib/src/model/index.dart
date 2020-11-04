@@ -80,19 +80,22 @@ class SerializationOptions extends DeserializationOptions {
 
 class SerializationContext {
   final SerializationOptions options;
-  final JsonProperty parentMeta;
+  final JsonProperty jsonPropertyMeta;
+  final Json classMeta;
   final int level;
 
-  const SerializationContext(this.options, [this.level = 0, this.parentMeta]);
+  const SerializationContext(this.options,
+      [this.level = 0, this.jsonPropertyMeta, this.classMeta]);
 }
 
 class DeserializationContext {
   final DeserializationOptions options;
   final Type instanceType;
-  final JsonProperty parentMeta;
+  final JsonProperty jsonPropertyMeta;
+  final Json classMeta;
 
   const DeserializationContext(this.options, this.instanceType,
-      [this.parentMeta]);
+      [this.jsonPropertyMeta, this.classMeta]);
 }
 
 class ProcessedObjectDescriptor {

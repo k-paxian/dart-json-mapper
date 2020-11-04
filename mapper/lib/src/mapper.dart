@@ -339,8 +339,9 @@ class JsonMapper {
     return result;
   }
 
-  dynamic _getConvertedValue(ICustomConverter converter,
-      ConversionDirection direction, dynamic value, JsonProperty jsonProperty) {
+  dynamic _getConvertedValue(
+      ICustomConverter converter, ConversionDirection direction, dynamic value,
+      [JsonProperty jsonProperty]) {
     if (_convertedValuesCache.containsKey(converter) &&
         _convertedValuesCache[converter].containsKey(direction) &&
         _convertedValuesCache[converter][direction].containsKey(jsonProperty) &&
@@ -522,8 +523,10 @@ class JsonMapper {
       var value = jsonMap.hasProperty(jsonName)
           ? jsonMap.getPropertyValue(jsonName) ?? defaultValue
           : defaultValue;
-      value = _deserializeObject(value,
-          DeserializationContext(context.options, paramTypeInfo.type, meta));
+      value = _deserializeObject(
+          value,
+          DeserializationContext(
+              context.options, paramTypeInfo.type, meta, context.classMeta));
       visitor(param, name, jsonName, classMeta, meta, value ?? defaultValue,
           paramTypeInfo);
     });
@@ -617,8 +620,11 @@ class JsonMapper {
       (converter as IRecursiveConverter).setDeserializeObjectFunction(
           (o, type) => _deserializeObject(
               o,
-              DeserializationContext(deserializationContext.options, type,
-                  deserializationContext.parentMeta)));
+              DeserializationContext(
+                  deserializationContext.options,
+                  type,
+                  deserializationContext.jsonPropertyMeta,
+                  deserializationContext.classMeta)));
     }
   }
 
@@ -635,7 +641,7 @@ class JsonMapper {
 
     final im = _safeGetInstanceMirror(object);
     final converter =
-        _getConverter(context.parentMeta, object.runtimeType, null, im);
+        _getConverter(context.jsonPropertyMeta, object.runtimeType, null, im);
     if (converter != null) {
       _configureConverter(converter,
           value: object, serializationContext: context);
@@ -699,8 +705,8 @@ class JsonMapper {
         result.setPropertyValue(jsonName, meta.defaultValue);
       } else {
         var convertedValue;
-        final newContext =
-            SerializationContext(context.options, context.level + 1, meta);
+        final newContext = SerializationContext(
+            context.options, context.level + 1, meta, jsonMeta);
         if (converter != null) {
           _configureConverter(converter,
               value: value, serializationContext: context);
@@ -740,11 +746,14 @@ class JsonMapper {
             .map((item) => _deserializeObject(
                 item,
                 DeserializationContext(
-                    context.options, _getScalarType(context.instanceType))))
+                    context.options,
+                    _getScalarType(context.instanceType),
+                    context.jsonPropertyMeta,
+                    context.classMeta)))
             .toList()
         : null;
     return _applyValueDecorator(
-        value, _getTypeInfo(context.instanceType), context.parentMeta);
+        value, _getTypeInfo(context.instanceType), context.jsonPropertyMeta);
   }
 
   Object _deserializeObject(dynamic jsonValue, DeserializationContext context) {
@@ -752,15 +761,16 @@ class JsonMapper {
       return null;
     }
     var typeInfo = _getTypeInfo(context.instanceType);
-    final converter = _getConverter(context.parentMeta, typeInfo.type);
+    final converter = _getConverter(context.jsonPropertyMeta, typeInfo.type);
     if (converter != null) {
       _configureConverter(converter, deserializationContext: context);
       var convertedValue = _getConvertedValue(converter,
-          ConversionDirection.fromJson, jsonValue, context.parentMeta);
+          ConversionDirection.fromJson, jsonValue, context.jsonPropertyMeta);
       if (typeInfo.isIterable && jsonValue == convertedValue) {
         convertedValue = _deserializeIterable(jsonValue, context);
       }
-      return _applyValueDecorator(convertedValue, typeInfo, context.parentMeta);
+      return _applyValueDecorator(
+          convertedValue, typeInfo, context.jsonPropertyMeta);
     }
 
     var convertedJsonValue;
@@ -824,19 +834,23 @@ class JsonMapper {
       var fieldValue = jsonMap.getPropertyValue(jsonName);
       if (fieldValue is Iterable) {
         fieldValue = fieldValue
-            .map((item) => _deserializeObject(item,
-                DeserializationContext(context.options, scalarType, meta)))
+            .map((item) => _deserializeObject(
+                item,
+                DeserializationContext(
+                    context.options, scalarType, meta, context.classMeta)))
             .toList();
       } else {
-        fieldValue = _deserializeObject(fieldValue,
-            DeserializationContext(context.options, typeInfo.type, meta));
+        fieldValue = _deserializeObject(
+            fieldValue,
+            DeserializationContext(
+                context.options, typeInfo.type, meta, context.classMeta));
       }
       if (converter != null) {
         final originalValue = im.invokeGetter(name);
         _configureConverter(converter,
             value: originalValue ?? fieldValue,
-            deserializationContext:
-                DeserializationContext(context.options, typeInfo.type, meta));
+            deserializationContext: DeserializationContext(
+                context.options, typeInfo.type, meta, context.classMeta));
         fieldValue = _getConvertedValue(
             converter, ConversionDirection.fromJson, fieldValue, meta);
       }
@@ -869,6 +883,7 @@ class JsonMapper {
       });
     }
 
-    return _applyValueDecorator(objectInstance, typeInfo, context.parentMeta);
+    return _applyValueDecorator(
+        objectInstance, typeInfo, context.jsonPropertyMeta);
   }
 }
