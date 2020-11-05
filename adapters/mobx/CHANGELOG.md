@@ -1,3 +1,7 @@
+## 1.2.3
+
+* Support for new code converters contract
+
 ## 1.2.2
 
 * Support for new code generation contract

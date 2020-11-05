@@ -50,11 +50,12 @@ class ObservableStringConverter
   const ObservableStringConverter() : super();
 
   @override
-  Observable<String> fromJSON(dynamic jsonValue, [JsonProperty jsonProperty]) =>
+  Observable<String> fromJSON(dynamic jsonValue,
+          [DeserializationContext context]) =>
       jsonValue is String ? Observable<String>(jsonValue) : jsonValue;
 
   @override
-  dynamic toJSON(Observable<dynamic> object, [JsonProperty jsonProperty]) {
+  dynamic toJSON(Observable<dynamic> object, [SerializationContext context]) {
     return object.value is String ? object.value : object.value.toString();
   }
 }
@@ -68,15 +69,14 @@ class ObservableDateTimeConverter
 
   @override
   Observable<DateTime> fromJSON(dynamic jsonValue,
-          [JsonProperty jsonProperty]) =>
+          [DeserializationContext context]) =>
       jsonValue is String
-          ? Observable<DateTime>(
-              dateConverter.fromJSON(jsonValue, jsonProperty))
+          ? Observable<DateTime>(dateConverter.fromJSON(jsonValue, context))
           : jsonValue;
 
   @override
-  dynamic toJSON(Observable<DateTime> object, [JsonProperty jsonProperty]) =>
-      dateConverter.toJSON(object.value, jsonProperty);
+  dynamic toJSON(Observable<DateTime> object, [SerializationContext context]) =>
+      dateConverter.toJSON(object.value, context);
 }
 
 final observableNumConverter = ObservableNumConverter();
@@ -86,14 +86,15 @@ class ObservableNumConverter implements ICustomConverter<Observable<num>> {
   const ObservableNumConverter() : super();
 
   @override
-  Observable<num> fromJSON(dynamic jsonValue, [JsonProperty jsonProperty]) =>
+  Observable<num> fromJSON(dynamic jsonValue,
+          [DeserializationContext context]) =>
       (jsonValue is String || jsonValue is num)
-          ? Observable<num>(numberConverter.fromJSON(jsonValue, jsonProperty))
+          ? Observable<num>(numberConverter.fromJSON(jsonValue, context))
           : jsonValue;
 
   @override
-  dynamic toJSON(Observable<num> object, [JsonProperty jsonProperty]) =>
-      numberConverter.toJSON(object.value, jsonProperty);
+  dynamic toJSON(Observable<num> object, [SerializationContext context]) =>
+      numberConverter.toJSON(object.value, context);
 }
 
 final observableIntConverter = ObservableIntConverter();
@@ -103,14 +104,15 @@ class ObservableIntConverter implements ICustomConverter<Observable<int>> {
   const ObservableIntConverter() : super();
 
   @override
-  Observable<int> fromJSON(dynamic jsonValue, [JsonProperty jsonProperty]) =>
+  Observable<int> fromJSON(dynamic jsonValue,
+          [DeserializationContext context]) =>
       (jsonValue is String || jsonValue is int)
-          ? Observable<int>(numberConverter.fromJSON(jsonValue, jsonProperty))
+          ? Observable<int>(numberConverter.fromJSON(jsonValue, context))
           : jsonValue;
 
   @override
-  dynamic toJSON(Observable<int> object, [JsonProperty jsonProperty]) =>
-      numberConverter.toJSON(object.value, jsonProperty);
+  dynamic toJSON(Observable<int> object, [SerializationContext context]) =>
+      numberConverter.toJSON(object.value, context);
 }
 
 final observableDoubleConverter = ObservableDoubleConverter();
@@ -121,15 +123,15 @@ class ObservableDoubleConverter
   const ObservableDoubleConverter() : super();
 
   @override
-  Observable<double> fromJSON(dynamic jsonValue, [JsonProperty jsonProperty]) =>
+  Observable<double> fromJSON(dynamic jsonValue,
+          [DeserializationContext context]) =>
       (jsonValue is String || jsonValue is double)
-          ? Observable<double>(
-              numberConverter.fromJSON(jsonValue, jsonProperty))
+          ? Observable<double>(numberConverter.fromJSON(jsonValue, context))
           : jsonValue;
 
   @override
-  dynamic toJSON(Observable<double> object, [JsonProperty jsonProperty]) =>
-      numberConverter.toJSON(object.value, jsonProperty);
+  dynamic toJSON(Observable<double> object, [SerializationContext context]) =>
+      numberConverter.toJSON(object.value, context);
 }
 
 final observableBoolConverter = ObservableBoolConverter();
@@ -139,14 +141,15 @@ class ObservableBoolConverter implements ICustomConverter<Observable<bool>> {
   const ObservableBoolConverter() : super();
 
   @override
-  Observable<bool> fromJSON(dynamic jsonValue, [JsonProperty jsonProperty]) =>
+  Observable<bool> fromJSON(dynamic jsonValue,
+          [DeserializationContext context]) =>
       (jsonValue is String || jsonValue is bool)
-          ? Observable<bool>(defaultConverter.fromJSON(jsonValue, jsonProperty))
+          ? Observable<bool>(defaultConverter.fromJSON(jsonValue, context))
           : jsonValue;
 
   @override
-  dynamic toJSON(Observable<bool> object, [JsonProperty jsonProperty]) =>
-      defaultConverter.toJSON(object.value, jsonProperty);
+  dynamic toJSON(Observable<bool> object, [SerializationContext context]) =>
+      defaultConverter.toJSON(object.value, context);
 }
 
 final mobXAdapter = JsonMapperAdapter(

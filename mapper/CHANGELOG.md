@@ -1,5 +1,6 @@
 ## 1.7.1
 
+* **Breaking change** Custom converters contract changed. `JsonProperty` replaced by serialization/deserialization `context`. Allowing each custom converter instance to have diverse context information
 * #90, Support deserialization to default enum value for unknown values
 
 ## 1.7.0

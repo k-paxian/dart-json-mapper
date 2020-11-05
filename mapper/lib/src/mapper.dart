@@ -19,7 +19,7 @@ class JsonMapper {
   final Map<Type, ValueDecoratorFunction> _inlineValueDecorators = {};
   final Map<Type, TypeInfo> _typeInfoCache = {};
   final Map<ICustomConverter,
-          Map<ConversionDirection, Map<JsonProperty, Map<dynamic, dynamic>>>>
+          Map<ConversionDirection, Map<dynamic, Map<dynamic, dynamic>>>>
       _convertedValuesCache = {};
 
   Map<Type, ICustomConverter> converters = {};
@@ -36,7 +36,8 @@ class JsonMapper {
   /// Converts Dart object to JSON string
   static String serialize(Object object,
       [SerializationOptions options = defaultSerializationOptions]) {
-    final context = SerializationContext(options);
+    final context = SerializationContext(
+        options, 0, null, null, instance._getTypeInfo(object.runtimeType));
     instance._processedObjects.clear();
     final serializedObject = instance._serializeObject(object, context);
     return serializedObject is String // Do not enclose String to quotes ""
@@ -55,8 +56,8 @@ class JsonMapper {
     assert(targetType != dynamic
         ? true
         : throw MissingTypeForDeserializationError());
-    return instance._deserializeObject(
-        jsonValue, DeserializationContext(options, targetType));
+    return instance._deserializeObject(jsonValue,
+        DeserializationContext(options, instance._getTypeInfo(targetType)));
   }
 
   /// Converts JSON string to Dart object of type T
@@ -339,37 +340,41 @@ class JsonMapper {
     return result;
   }
 
-  dynamic _getConvertedValue(
-      ICustomConverter converter, ConversionDirection direction, dynamic value,
-      [JsonProperty jsonProperty]) {
+  dynamic _getConvertedValue(ICustomConverter converter, dynamic value,
+      [SerializationContext serializationContext,
+      DeserializationContext deserializationContext]) {
+    final context = serializationContext ?? deserializationContext;
+    final direction = serializationContext != null
+        ? ConversionDirection.toJson
+        : ConversionDirection.fromJson;
     if (_convertedValuesCache.containsKey(converter) &&
         _convertedValuesCache[converter].containsKey(direction) &&
-        _convertedValuesCache[converter][direction].containsKey(jsonProperty) &&
-        _convertedValuesCache[converter][direction][jsonProperty]
+        _convertedValuesCache[converter][direction].containsKey(context) &&
+        _convertedValuesCache[converter][direction][context]
             .containsKey(value)) {
-      return _convertedValuesCache[converter][direction][jsonProperty][value];
+      return _convertedValuesCache[converter][direction][context][value];
     }
 
     final computedValue = converter == null
         ? value
         : direction == ConversionDirection.fromJson
-            ? converter.fromJSON(value, jsonProperty)
-            : converter.toJSON(value, jsonProperty);
+            ? converter.fromJSON(value, deserializationContext)
+            : converter.toJSON(value, serializationContext);
     _convertedValuesCache.putIfAbsent(
         converter,
         () => {
               direction: {
-                jsonProperty: {value: computedValue}
+                context: {value: computedValue}
               }
             });
     _convertedValuesCache[converter].putIfAbsent(
         direction,
         () => {
-              jsonProperty: {value: computedValue}
+              context: {value: computedValue}
             });
     _convertedValuesCache[converter][direction]
-        .putIfAbsent(jsonProperty, () => {value: computedValue});
-    _convertedValuesCache[converter][direction][jsonProperty]
+        .putIfAbsent(context, () => {value: computedValue});
+    _convertedValuesCache[converter][direction][context]
         .putIfAbsent(value, () => computedValue);
     return computedValue;
   }
@@ -504,7 +509,7 @@ class JsonMapper {
               ? param.dynamicReflectedType
               : _getGenericParameterTypeByIndex(
                       methodMirror.parameters.indexOf(param),
-                      _getTypeInfo(context.instanceType)) ??
+                      context.typeInfo) ??
                   dynamic;
       var paramTypeInfo = _getTypeInfo(paramType);
       paramTypeInfo = paramTypeInfo.isDynamic
@@ -526,7 +531,7 @@ class JsonMapper {
       value = _deserializeObject(
           value,
           DeserializationContext(
-              context.options, paramTypeInfo.type, meta, context.classMeta));
+              context.options, paramTypeInfo, meta, context.classMeta));
       visitor(param, name, jsonName, classMeta, meta, value ?? defaultValue,
           paramTypeInfo);
     });
@@ -602,7 +607,7 @@ class JsonMapper {
     if (converter is ITypeInfoConsumerConverter &&
         deserializationContext != null) {
       (converter as ITypeInfoConsumerConverter)
-          .setTypeInfo(_getTypeInfo(deserializationContext.instanceType));
+          .setTypeInfo(deserializationContext.typeInfo);
     }
     if (converter is ICustomIterableConverter) {
       (converter as ICustomIterableConverter).setIterableInstance(value);
@@ -622,7 +627,7 @@ class JsonMapper {
               o,
               DeserializationContext(
                   deserializationContext.options,
-                  type,
+                  _getTypeInfo(type),
                   deserializationContext.jsonPropertyMeta,
                   deserializationContext.classMeta)));
     }
@@ -645,8 +650,7 @@ class JsonMapper {
     if (converter != null) {
       _configureConverter(converter,
           value: object, serializationContext: context);
-      var convertedValue = _getConvertedValue(
-          converter, ConversionDirection.toJson, object, null);
+      var convertedValue = _getConvertedValue(converter, object, context);
       if (object is Iterable && convertedValue == object) {
         convertedValue = _serializeIterable(object, context);
       }
@@ -706,13 +710,13 @@ class JsonMapper {
       } else {
         var convertedValue;
         final newContext = SerializationContext(
-            context.options, context.level + 1, meta, jsonMeta);
+            context.options, context.level + 1, meta, jsonMeta, typeInfo);
         if (converter != null) {
           _configureConverter(converter,
-              value: value, serializationContext: context);
+              value: value, serializationContext: newContext);
           final valueTypeInfo = _getTypeInfo(value.runtimeType);
-          dynamic convert(item) => _getConvertedValue(
-              converter, ConversionDirection.toJson, item, meta);
+          dynamic convert(item) =>
+              _getConvertedValue(converter, item, newContext);
           if (valueTypeInfo.isIterable) {
             convertedValue = convert(value);
             if (convertedValue == value) {
@@ -747,25 +751,25 @@ class JsonMapper {
                 item,
                 DeserializationContext(
                     context.options,
-                    _getScalarType(context.instanceType),
+                    _getTypeInfo(_getScalarType(context.typeInfo.type)),
                     context.jsonPropertyMeta,
                     context.classMeta)))
             .toList()
         : null;
     return _applyValueDecorator(
-        value, _getTypeInfo(context.instanceType), context.jsonPropertyMeta);
+        value, context.typeInfo, context.jsonPropertyMeta);
   }
 
   Object _deserializeObject(dynamic jsonValue, DeserializationContext context) {
     if (jsonValue == null) {
       return null;
     }
-    var typeInfo = _getTypeInfo(context.instanceType);
+    var typeInfo = context.typeInfo;
     final converter = _getConverter(context.jsonPropertyMeta, typeInfo.type);
     if (converter != null) {
       _configureConverter(converter, deserializationContext: context);
-      var convertedValue = _getConvertedValue(converter,
-          ConversionDirection.fromJson, jsonValue, context.jsonPropertyMeta);
+      var convertedValue =
+          _getConvertedValue(converter, jsonValue, null, context);
       if (typeInfo.isIterable && jsonValue == convertedValue) {
         convertedValue = _deserializeIterable(jsonValue, context);
       }
@@ -791,8 +795,8 @@ class JsonMapper {
     }
 
     final jsonMap = JsonMap(convertedJsonValue);
-    typeInfo =
-        _detectObjectType(null, context.instanceType, jsonMap, context.options);
+    typeInfo = _detectObjectType(
+        null, context.typeInfo.type, jsonMap, context.options);
     final cm = classes[typeInfo.typeName] ?? classes[typeInfo.genericTypeName];
     if (cm == null) {
       throw MissingAnnotationOnTypeError(typeInfo.type);
@@ -831,28 +835,26 @@ class JsonMapper {
         }
         return;
       }
+      final newContext = DeserializationContext(
+          context.options, typeInfo, meta, context.classMeta);
       var fieldValue = jsonMap.getPropertyValue(jsonName);
       if (fieldValue is Iterable) {
         fieldValue = fieldValue
             .map((item) => _deserializeObject(
                 item,
-                DeserializationContext(
-                    context.options, scalarType, meta, context.classMeta)))
+                DeserializationContext(context.options,
+                    _getTypeInfo(scalarType), meta, context.classMeta)))
             .toList();
       } else {
-        fieldValue = _deserializeObject(
-            fieldValue,
-            DeserializationContext(
-                context.options, typeInfo.type, meta, context.classMeta));
+        fieldValue = _deserializeObject(fieldValue, newContext);
       }
       if (converter != null) {
         final originalValue = im.invokeGetter(name);
         _configureConverter(converter,
             value: originalValue ?? fieldValue,
-            deserializationContext: DeserializationContext(
-                context.options, typeInfo.type, meta, context.classMeta));
-        fieldValue = _getConvertedValue(
-            converter, ConversionDirection.fromJson, fieldValue, meta);
+            deserializationContext: newContext);
+        fieldValue =
+            _getConvertedValue(converter, fieldValue, null, newContext);
       }
       if (!isGetterOnly) {
         fieldValue =

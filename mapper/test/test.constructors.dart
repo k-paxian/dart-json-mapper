@@ -206,12 +206,12 @@ const customConverter = CustomConverter();
 class CustomConverter implements ICustomConverter {
   const CustomConverter();
   @override
-  dynamic fromJSON(dynamic jsonValue, [JsonProperty jsonProperty]) {
+  dynamic fromJSON(dynamic jsonValue, [DeserializationContext context]) {
     return jsonValue + 1;
   }
 
   @override
-  dynamic toJSON(dynamic object, [JsonProperty jsonProperty]) {
+  dynamic toJSON(dynamic object, [SerializationContext context]) {
     throw UnimplementedError();
   }
 }

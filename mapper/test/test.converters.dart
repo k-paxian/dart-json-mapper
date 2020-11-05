@@ -30,12 +30,12 @@ class CustomStringConverter implements ICustomConverter<String> {
   const CustomStringConverter() : super();
 
   @override
-  String fromJSON(dynamic jsonValue, [JsonProperty jsonProperty]) {
+  String fromJSON(dynamic jsonValue, [DeserializationContext context]) {
     return jsonValue;
   }
 
   @override
-  dynamic toJSON(String object, [JsonProperty jsonProperty]) {
+  dynamic toJSON(String object, [SerializationContext context]) {
     return '_${object}_';
   }
 }

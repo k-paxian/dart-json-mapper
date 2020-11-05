@@ -4,8 +4,9 @@ import 'package:dart_json_mapper/dart_json_mapper.dart'
     show
         DefaultTypeInfoDecorator,
         typeOf,
+        DeserializationContext,
+        SerializationContext,
         ICustomConverter,
-        JsonProperty,
         JsonMapperAdapter;
 import 'package:fixnum/fixnum.dart' show Int32, Int64;
 
@@ -32,7 +33,7 @@ class Int32Converter implements ICustomConverter<Int32> {
   const Int32Converter() : super();
 
   @override
-  Int32 fromJSON(dynamic jsonValue, [JsonProperty jsonProperty]) {
+  Int32 fromJSON(dynamic jsonValue, [DeserializationContext context]) {
     return jsonValue is Int32
         ? jsonValue
         : jsonValue is String
@@ -41,7 +42,7 @@ class Int32Converter implements ICustomConverter<Int32> {
   }
 
   @override
-  dynamic toJSON(Int32 object, [JsonProperty jsonProperty]) {
+  dynamic toJSON(Int32 object, [SerializationContext context]) {
     return object is Int32 ? object.toInt() : object;
   }
 }
@@ -53,7 +54,7 @@ class Int64Converter implements ICustomConverter<Int64> {
   const Int64Converter() : super();
 
   @override
-  Int64 fromJSON(dynamic jsonValue, [JsonProperty jsonProperty]) {
+  Int64 fromJSON(dynamic jsonValue, [DeserializationContext context]) {
     return jsonValue is Int64
         ? jsonValue
         : jsonValue is String
@@ -62,7 +63,7 @@ class Int64Converter implements ICustomConverter<Int64> {
   }
 
   @override
-  dynamic toJSON(Int64 object, [JsonProperty jsonProperty]) {
+  dynamic toJSON(Int64 object, [SerializationContext context]) {
     return object is Int64 ? object.toInt() : object;
   }
 }

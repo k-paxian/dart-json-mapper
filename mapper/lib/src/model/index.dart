@@ -1,5 +1,6 @@
 import 'annotations.dart';
 import 'name_casing.dart';
+import 'type_info.dart';
 
 export 'adapters.dart';
 export 'annotations.dart';
@@ -82,19 +83,20 @@ class SerializationContext {
   final SerializationOptions options;
   final JsonProperty jsonPropertyMeta;
   final Json classMeta;
+  final TypeInfo typeInfo;
   final int level;
 
   const SerializationContext(this.options,
-      [this.level = 0, this.jsonPropertyMeta, this.classMeta]);
+      [this.level = 0, this.jsonPropertyMeta, this.classMeta, this.typeInfo]);
 }
 
 class DeserializationContext {
   final DeserializationOptions options;
-  final Type instanceType;
+  final TypeInfo typeInfo;
   final JsonProperty jsonPropertyMeta;
   final Json classMeta;
 
-  const DeserializationContext(this.options, this.instanceType,
+  const DeserializationContext(this.options, this.typeInfo,
       [this.jsonPropertyMeta, this.classMeta]);
 }
 

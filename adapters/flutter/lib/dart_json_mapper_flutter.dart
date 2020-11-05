@@ -3,7 +3,11 @@ library json_mapper_flutter;
 import 'dart:ui' show Color;
 
 import 'package:dart_json_mapper/dart_json_mapper.dart'
-    show ICustomConverter, JsonProperty, JsonMapperAdapter;
+    show
+        ICustomConverter,
+        DeserializationContext,
+        SerializationContext,
+        JsonMapperAdapter;
 
 final colorConverter = ColorConverter();
 
@@ -12,7 +16,7 @@ class ColorConverter implements ICustomConverter<Color> {
   const ColorConverter() : super();
 
   @override
-  Color fromJSON(dynamic jsonValue, [JsonProperty jsonProperty]) {
+  Color fromJSON(dynamic jsonValue, [DeserializationContext context]) {
     return jsonValue is Color
         ? jsonValue
         : jsonValue is String
@@ -21,7 +25,7 @@ class ColorConverter implements ICustomConverter<Color> {
   }
 
   @override
-  dynamic toJSON(Color object, [JsonProperty jsonProperty]) {
+  dynamic toJSON(Color object, [SerializationContext context]) {
     return object is Color ? colorToString(object) : object;
   }
 
