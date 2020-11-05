@@ -79,25 +79,32 @@ class SerializationOptions extends DeserializationOptions {
             processAnnotatedMembersOnly: processAnnotatedMembersOnly);
 }
 
-class SerializationContext {
-  final SerializationOptions options;
-  final JsonProperty jsonPropertyMeta;
-  final Json classMeta;
-  final TypeInfo typeInfo;
-  final int level;
-
-  const SerializationContext(this.options,
-      [this.level = 0, this.jsonPropertyMeta, this.classMeta, this.typeInfo]);
-}
-
 class DeserializationContext {
   final DeserializationOptions options;
-  final TypeInfo typeInfo;
   final JsonProperty jsonPropertyMeta;
   final Json classMeta;
+  final TypeInfo typeInfo;
 
-  const DeserializationContext(this.options, this.typeInfo,
-      [this.jsonPropertyMeta, this.classMeta]);
+  const DeserializationContext(
+      {this.options, this.jsonPropertyMeta, this.classMeta, this.typeInfo});
+}
+
+class SerializationContext extends DeserializationContext {
+  final int level;
+
+  const SerializationContext(
+      {this.level = 0,
+      SerializationOptions options,
+      jsonPropertyMeta,
+      classMeta,
+      typeInfo})
+      : super(
+            options: options,
+            jsonPropertyMeta: jsonPropertyMeta,
+            classMeta: classMeta,
+            typeInfo: typeInfo);
+
+  SerializationOptions get serializationOptions => options;
 }
 
 class ProcessedObjectDescriptor {

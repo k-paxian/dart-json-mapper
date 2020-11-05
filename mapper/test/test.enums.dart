@@ -104,6 +104,17 @@ void testEnums() {
       expect(target, Color.Green);
     });
 
+    test('Null Enum Value', () {
+      // given
+      final instance = null;
+
+      // when
+      final target = JsonMapper.deserialize<Color>(instance);
+
+      // then
+      expect(target, null);
+    });
+
     test('Unknown Enum Value', () {
       // given
       final json = r'Purple';

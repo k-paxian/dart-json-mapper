@@ -1,3 +1,7 @@
+## 1.7.2
+
+* #91, Enum values inherit CaseStyle from the parent serializable class or global option.
+
 ## 1.7.1
 
 * **Breaking change** Custom converters contract changed. `JsonProperty` replaced by serialization/deserialization `context`. Allowing each custom converter instance to have diverse context information

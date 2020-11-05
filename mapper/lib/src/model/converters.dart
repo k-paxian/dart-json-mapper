@@ -182,7 +182,8 @@ class EnumConverterShort implements ICustomConverter, ICustomEnumConverter {
   Object fromJSON(dynamic jsonValue, [DeserializationContext context]) {
     dynamic convert(value) => _enumValues.firstWhere(
         (eValue) =>
-            eValue.toString().split('.').last ==
+            transformFieldName(
+                eValue.toString().split('.').last, _getCaseStyle(context)) ==
             value.toString().split('.').last,
         orElse: () => null);
     return jsonValue is Iterable
@@ -192,7 +193,10 @@ class EnumConverterShort implements ICustomConverter, ICustomEnumConverter {
 
   @override
   dynamic toJSON(Object object, [SerializationContext context]) {
-    dynamic convert(value) => value.toString().split('.').last;
+    dynamic convert(value) => value != null
+        ? transformFieldName(
+            value.toString().split('.').last, _getCaseStyle(context))
+        : null;
     return (object is Iterable)
         ? object.map(convert).toList()
         : convert(object);
@@ -202,6 +206,11 @@ class EnumConverterShort implements ICustomConverter, ICustomEnumConverter {
   void setEnumValues(Iterable<dynamic> enumValues) {
     _enumValues = enumValues;
   }
+
+  CaseStyle _getCaseStyle(DeserializationContext context) =>
+      context.classMeta != null && context.classMeta.caseStyle != null
+          ? context.classMeta.caseStyle
+          : context.options.caseStyle;
 }
 
 const enumConverterNumeric = ConstEnumConverterNumeric();
