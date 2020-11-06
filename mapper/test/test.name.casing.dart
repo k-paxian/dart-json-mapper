@@ -120,6 +120,7 @@ void testNameCasing() {
         expect(instance.mainTitle, 'title');
         expect(instance.description, 'desc');
         expect(instance.hasMainProperty, true);
+        expect(instance.primaryColor, Color.GrayMetallic);
       });
 
       test('Verify CaseStyle.Snake', () {
@@ -133,6 +134,7 @@ void testNameCasing() {
         expect(instance.mainTitle, 'title');
         expect(instance.description, 'desc');
         expect(instance.hasMainProperty, true);
+        expect(instance.primaryColor, Color.GrayMetallic);
       });
 
       test('Verify CaseStyle.Pascal', () {
@@ -146,6 +148,7 @@ void testNameCasing() {
         expect(instance.mainTitle, 'title');
         expect(instance.description, 'desc');
         expect(instance.hasMainProperty, true);
+        expect(instance.primaryColor, Color.GrayMetallic);
       });
 
       test('Verify CaseStyle.Kebab', () {
@@ -159,6 +162,7 @@ void testNameCasing() {
         expect(instance.mainTitle, 'title');
         expect(instance.description, 'desc');
         expect(instance.hasMainProperty, true);
+        expect(instance.primaryColor, Color.GrayMetallic);
       });
     });
   });

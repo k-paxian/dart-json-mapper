@@ -37,11 +37,6 @@ abstract class ICustomEnumConverter {
   void setEnumValues(Iterable enumValues);
 }
 
-/// Abstract class for custom converters interested in TypeInfo
-abstract class ITypeInfoConsumerConverter {
-  void setTypeInfo(TypeInfo typeInfo);
-}
-
 /// Abstract class for composite converters relying on other converters
 abstract class ICompositeConverter {
   void setGetConverterFunction(GetConverterFunction getConverter);
@@ -332,22 +327,18 @@ final mapConverter = MapConverter();
 
 /// [Map<K, V>] converter
 class MapConverter
-    implements
-        ICustomConverter<Map>,
-        IRecursiveConverter,
-        ICustomMapConverter,
-        ITypeInfoConsumerConverter {
+    implements ICustomConverter<Map>, IRecursiveConverter, ICustomMapConverter {
   MapConverter() : super();
 
   SerializeObjectFunction _serializeObject;
   DeserializeObjectFunction _deserializeObject;
-  TypeInfo _typeInfo;
   Map _instance;
   final _jsonDecoder = JsonDecoder();
 
   @override
   Map fromJSON(dynamic jsonValue, [DeserializationContext context]) {
     var result = jsonValue;
+    final _typeInfo = context.typeInfo;
     if (jsonValue is String) {
       result = _jsonDecoder.convert(jsonValue);
     }
@@ -385,33 +376,23 @@ class MapConverter
   void setMapInstance(Map instance) {
     _instance = instance;
   }
-
-  @override
-  void setTypeInfo(TypeInfo typeInfo) {
-    _typeInfo = typeInfo;
-  }
 }
 
 final defaultIterableConverter = DefaultIterableConverter();
 
 /// Default Iterable converter
 class DefaultIterableConverter
-    implements
-        ICustomConverter,
-        ICustomIterableConverter,
-        ICompositeConverter,
-        ITypeInfoConsumerConverter {
+    implements ICustomConverter, ICustomIterableConverter, ICompositeConverter {
   DefaultIterableConverter() : super();
 
   Iterable _instance;
   GetConverterFunction _getConverter;
   GetConvertedValueFunction _getConvertedValue;
-  TypeInfo _typeInfo;
 
   @override
   dynamic fromJSON(dynamic jsonValue, [DeserializationContext context]) {
     dynamic convert(item) => _getConvertedValue(
-        _getConverter(context.jsonPropertyMeta, _typeInfo.scalarType),
+        _getConverter(context.jsonPropertyMeta, context.typeInfo.scalarType),
         item,
         null,
         context);
@@ -449,11 +430,6 @@ class DefaultIterableConverter
   void setGetConvertedValueFunction(
       GetConvertedValueFunction getConvertedValue) {
     _getConvertedValue = getConvertedValue;
-  }
-
-  @override
-  void setTypeInfo(TypeInfo typeInfo) {
-    _typeInfo = typeInfo;
   }
 }
 

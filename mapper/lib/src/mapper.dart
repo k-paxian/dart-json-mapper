@@ -18,8 +18,10 @@ class JsonMapper {
   final Map<String, ProcessedObjectDescriptor> _processedObjects = {};
   final Map<Type, ValueDecoratorFunction> _inlineValueDecorators = {};
   final Map<Type, TypeInfo> _typeInfoCache = {};
-  final Map<ICustomConverter,
-          Map<ConversionDirection, Map<dynamic, Map<dynamic, dynamic>>>>
+  final Map<
+          ICustomConverter,
+          Map<ConversionDirection,
+              Map<DeserializationContext, Map<dynamic, dynamic>>>>
       _convertedValuesCache = {};
 
   Map<Type, ICustomConverter> converters = {};
@@ -610,11 +612,6 @@ class JsonMapper {
       (converter as ICompositeConverter).setGetConverterFunction(_getConverter);
       (converter as ICompositeConverter)
           .setGetConvertedValueFunction(_getConvertedValue);
-    }
-    if (converter is ITypeInfoConsumerConverter &&
-        deserializationContext != null) {
-      (converter as ITypeInfoConsumerConverter)
-          .setTypeInfo(deserializationContext.typeInfo);
     }
     if (converter is ICustomIterableConverter) {
       (converter as ICustomIterableConverter).setIterableInstance(value);

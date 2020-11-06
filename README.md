@@ -620,13 +620,21 @@ preference on a class level using `@Json(caseStyle: CaseStyle.Kebab)`.
 
 ```dart
 @jsonSerializable
+enum Color { Red, Blue, Gray, GrayMetallic, Green, Brown, Yellow, Black, White }
+
+@jsonSerializable
 @Json(caseStyle: CaseStyle.Kebab)
 class NameCaseObject {
   String mainTitle;
   String description;
   bool hasMainProperty;
+  Color primaryColor;
 
-  NameCaseObject({this.mainTitle, this.description, this.hasMainProperty});
+  NameCaseObject({
+      this.mainTitle,
+      this.description,
+      this.hasMainProperty,
+      this.primaryColor = Color.GrayMetallic});
 }
 
 /// Serialization
@@ -637,18 +645,19 @@ final instance = NameCaseObject(
 // when
 final json = JsonMapper.serialize(instance, SerializationOptions(indent: ''));
 // then
-expect(json, '''{"main-title":"title","description":"desc","has-main-property":true}''');
+expect(json, '''{"main-title":"title","description":"desc","has-main-property":true,"primary-color":"gray-metallic"}''');
 
 /// Deserialization
 
 // given
-final json = '''{"main-title":"title","description":"desc","has-main-property":true}''';
+final json = '''{"main-title":"title","description":"desc","has-main-property":true,"primary-color":"gray-metallic"}''';
 // when
 final instance = JsonMapper.deserialize<NameCaseObject>(json);
 // then
 expect(instance.mainTitle, 'title');
 expect(instance.description, 'desc');
 expect(instance.hasMainProperty, true);
+expect(instance.primaryColor, Color.GrayMetallic);
 ```
 
 ## Nesting configuration
@@ -790,8 +799,8 @@ provide your own custom Converter class per each custom runtimeType.
 ```dart
 /// Abstract class for custom converters implementations
 abstract class ICustomConverter<T> {
-  dynamic toJSON(T object, [JsonProperty jsonProperty]);
-  T fromJSON(dynamic jsonValue, [JsonProperty jsonProperty]);
+  dynamic toJSON(T object, [SerializationContext context]);
+  T fromJSON(dynamic jsonValue, [DeserializationContext context]);
 }
 ```
 
@@ -802,12 +811,12 @@ class CustomStringConverter implements ICustomConverter<String> {
   const CustomStringConverter() : super();
 
   @override
-  String fromJSON(dynamic jsonValue, [JsonProperty jsonProperty]) {
+  String fromJSON(dynamic jsonValue, [DeserializationContext context]) {
     return jsonValue;
   }
 
   @override
-  dynamic toJSON(String object, [JsonProperty jsonProperty]) {
+  dynamic toJSON(String object, [SerializationContext context]) {
     return '_${object}_';
   }
 }
