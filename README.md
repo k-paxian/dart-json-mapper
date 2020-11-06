@@ -626,13 +626,11 @@ enum Color { Red, Blue, Gray, GrayMetallic, Green, Brown, Yellow, Black, White }
 @Json(caseStyle: CaseStyle.Kebab)
 class NameCaseObject {
   String mainTitle;
-  String description;
   bool hasMainProperty;
   Color primaryColor;
 
   NameCaseObject({
       this.mainTitle,
-      this.description,
       this.hasMainProperty,
       this.primaryColor = Color.GrayMetallic});
 }
@@ -640,22 +638,20 @@ class NameCaseObject {
 /// Serialization
 
 // given
-final instance = NameCaseObject(
-    mainTitle: 'title', description: 'desc', hasMainProperty: true);
+final instance = NameCaseObject(mainTitle: 'title', hasMainProperty: true);
 // when
 final json = JsonMapper.serialize(instance, SerializationOptions(indent: ''));
 // then
-expect(json, '''{"main-title":"title","description":"desc","has-main-property":true,"primary-color":"gray-metallic"}''');
+expect(json, '''{"main-title":"title","has-main-property":true,"primary-color":"gray-metallic"}''');
 
 /// Deserialization
 
 // given
-final json = '''{"main-title":"title","description":"desc","has-main-property":true,"primary-color":"gray-metallic"}''';
+final json = '''{"main-title":"title","has-main-property":true,"primary-color":"gray-metallic"}''';
 // when
 final instance = JsonMapper.deserialize<NameCaseObject>(json);
 // then
 expect(instance.mainTitle, 'title');
-expect(instance.description, 'desc');
 expect(instance.hasMainProperty, true);
 expect(instance.primaryColor, Color.GrayMetallic);
 ```
