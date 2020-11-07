@@ -183,7 +183,7 @@ class ClassInfo {
             dm is MethodMirror &&
             dm.isConstructor &&
             hasConstructorMeta(dm, scheme) != null;
-      });
+      }, orElse: () => null);
     } catch (error) {
       result = null;
     }
@@ -191,7 +191,7 @@ class ClassInfo {
     return result ??
         classMirror.declarations.values.firstWhere((DeclarationMirror dm) {
           return !dm.isPrivate && dm is MethodMirror && dm.isConstructor;
-        });
+        }, orElse: () => null);
   }
 
   List<String> get publicFieldNames {
