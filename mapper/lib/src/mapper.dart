@@ -29,20 +29,21 @@ class JsonMapper {
   Map<Type, ValueDecoratorFunction> valueDecorators = {};
   Map<Type, List> enumValues = {};
 
-  /// Converts Dart object to JSON string
-  static String toJson(Object object,
+  /// Converts Dart object to JSON
+  static dynamic toJson(Object object,
       [SerializationOptions options = defaultSerializationOptions]) {
     return serialize(object, options);
   }
 
-  /// Converts Dart object to JSON string
-  static String serialize(Object object,
+  /// Converts Dart object to JSON
+  static dynamic serialize(Object object,
       [SerializationOptions options = defaultSerializationOptions]) {
     final context = SerializationContext(
         options: options, typeInfo: instance._getTypeInfo(object.runtimeType));
     instance._processedObjects.clear();
     final serializedObject = instance._serializeObject(object, context);
-    return serializedObject is String // Do not enclose String to quotes ""
+    return (serializedObject is String ||
+            serializedObject is num) // Do not enclose to quotes ""
         ? serializedObject
         : _getJsonEncoder(context).convert(serializedObject);
   }
@@ -129,6 +130,9 @@ class JsonMapper {
   }
 
   JsonMapper useAdapter(IAdapter adapter, [int priority]) {
+    if (adapters.containsValue(adapter)) {
+      return this;
+    }
     final nextPriority = priority ?? adapters.keys.isNotEmpty
         ? adapters.keys.reduce((value, item) => max(value, item)) + 1
         : 0;

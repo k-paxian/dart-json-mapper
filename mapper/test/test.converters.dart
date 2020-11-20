@@ -85,6 +85,9 @@ class InlineJsonContainer {
   Map<String, dynamic> dataHash;
 }
 
+@jsonSerializable
+enum MyEnum { valueA, valueB }
+
 void testConverters() {
   group('[Verify converters]', () {
     test('Map<String, dynamic> converter', () {
@@ -289,6 +292,12 @@ void testConverters() {
       final target = JsonMapper.serialize(instance, compactOptions);
       // then
       expect(target, json);
+
+      // when
+      final json2 = JsonMapper.serialize(MyEnum.valueA);
+      final myEnum = JsonMapper.deserialize<MyEnum>(json2);
+      // then
+      expect(myEnum, MyEnum.valueA);
 
       JsonMapper().removeAdapter(adapter);
     });

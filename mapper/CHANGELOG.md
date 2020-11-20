@@ -1,6 +1,7 @@
 ## 1.7.2
 
 * #91, Enum values inherit CaseStyle from the parent serializable class or global option.
+* #94, fix: Deserialization fails when using [enumConverterNumeric]
 
 ## 1.7.1
 
