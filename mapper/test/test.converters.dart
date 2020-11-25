@@ -225,6 +225,30 @@ void testConverters() {
       expect(json, targetJson);
     });
 
+    test('Map<String, bool>', () {
+      // given
+      final targetJson = '''{"foo":true,"bar":false,"bazz":true}''';
+      final instance = <String, bool>{
+        'foo': true,
+        'bar': false,
+        'bazz': true,
+      };
+      final adapter = JsonMapperAdapter(valueDecorators: {
+        typeOf<Map<String, bool>>(): (value) => value.cast<String, bool>()
+      });
+      JsonMapper().useAdapter(adapter);
+
+      // when
+      final json = JsonMapper.serialize(instance, compactOptions);
+      final target = JsonMapper.deserialize<Map<String, bool>>(json);
+
+      // then
+      expect(json, targetJson);
+      expect(target, TypeMatcher<Map<String, bool>>());
+
+      JsonMapper().removeAdapter(adapter);
+    });
+
     test('Custom String converter', () {
       // given
       final json = '''{

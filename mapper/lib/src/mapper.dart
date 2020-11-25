@@ -48,7 +48,7 @@ class JsonMapper {
         : _getJsonEncoder(context).convert(serializedObject);
   }
 
-  /// Converts JSON string to Dart object of type T
+  /// Converts JSON to Dart object of type T
   static T deserialize<T>(dynamic jsonValue,
       [DeserializationOptions options = defaultDeserializationOptions]) {
     final targetType = T != dynamic
@@ -65,7 +65,7 @@ class JsonMapper {
             options: options, typeInfo: instance._getTypeInfo(targetType)));
   }
 
-  /// Converts JSON string to Dart object of type T
+  /// Converts JSON to Dart object of type T
   static T fromJson<T>(dynamic jsonValue,
       [DeserializationOptions options = defaultDeserializationOptions]) {
     return deserialize<T>(jsonValue, options);

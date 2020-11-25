@@ -567,8 +567,6 @@ your `Map<String, dynamic>` instance as a `template` parameter for
 `SerializationOptions`
 
 ```dart
-enum Color { Red, Blue, Green, Brown, Yellow, Black, White }
-
 // given
 final template = {'a': 'a', 'b': true};
 
@@ -590,8 +588,6 @@ Since typed `Map<K, V>` instance cannot be created dynamically due to Dart
 language nature, so you are providing ready made instance to use for deserialization output.
 
 ```dart
-enum Color { Red, Blue, Green, Brown, Yellow, Black, White }
-
 // given
 final json = '{"Black":1,"Blue":2}';
 
