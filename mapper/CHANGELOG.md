@@ -1,3 +1,7 @@
+## 1.7.3
+
+* #99, fix: builder crawling over exports statements improved
+
 ## 1.7.2
 
 * #91, Enum values inherit CaseStyle from the parent serializable class or global option.

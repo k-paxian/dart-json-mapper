@@ -1,8 +1,7 @@
 import 'package:dart_json_mapper/dart_json_mapper.dart';
 import 'package:test/test.dart';
 
-import './model/model.dart';
-import 'model/immutable.dart';
+import './model/index.dart';
 
 @jsonSerializable
 class BusinessObject {

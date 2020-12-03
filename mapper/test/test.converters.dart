@@ -3,9 +3,7 @@ import 'dart:typed_data';
 import 'package:dart_json_mapper/dart_json_mapper.dart';
 import 'package:test/test.dart';
 
-import './model/model.dart';
-import 'model/generic.dart';
-import 'model/immutable.dart';
+import './model/index.dart';
 
 @jsonSerializable
 enum NumericEnumTestColor {

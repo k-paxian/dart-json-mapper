@@ -6,7 +6,7 @@ import '../model/annotations.dart';
 class LibraryVisitor extends RecursiveElementVisitor {
   Map<num, ClassElement> visitedPublicClassElements = {};
   Map<num, ClassElement> visitedPublicAnnotatedClassElements = {};
-  Map<String, ImportElement> visitedImports = {};
+  Map<String, LibraryElement> visitedLibraries = {};
 
   final _annotationClassName = jsonSerializable.runtimeType.toString();
   String packageName;
@@ -14,17 +14,14 @@ class LibraryVisitor extends RecursiveElementVisitor {
   LibraryVisitor(this.packageName);
 
   @override
+  void visitExportElement(ExportElement element) {
+    _visitLibrary(element.exportedLibrary);
+    super.visitExportElement(element);
+  }
+
+  @override
   void visitImportElement(ImportElement element) {
-    final importIdentifier = element.importedLibrary != null
-        ? element.importedLibrary.identifier
-        : null;
-    if (importIdentifier != null &&
-        !visitedImports.containsKey(importIdentifier) &&
-        (importIdentifier.startsWith('asset:') ||
-            importIdentifier.startsWith(packageName))) {
-      visitedImports.putIfAbsent(importIdentifier, () => element);
-      element.importedLibrary.visitChildren(this);
-    }
+    _visitLibrary(element.importedLibrary);
     super.visitImportElement(element);
   }
 
@@ -45,5 +42,16 @@ class LibraryVisitor extends RecursiveElementVisitor {
       }
     }
     super.visitClassElement(element);
+  }
+
+  void _visitLibrary(LibraryElement element) {
+    final identifier = element != null ? element.identifier : null;
+    if (identifier != null &&
+        !visitedLibraries.containsKey(identifier) &&
+        (identifier.startsWith('asset:') ||
+            identifier.startsWith(packageName))) {
+      visitedLibraries.putIfAbsent(identifier, () => element);
+      element.visitChildren(this);
+    }
   }
 }

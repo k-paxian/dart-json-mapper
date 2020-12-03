@@ -1,8 +1,7 @@
 import 'package:dart_json_mapper/dart_json_mapper.dart';
 import 'package:test/test.dart';
 
-import 'model/json.dart';
-import 'model/model.dart';
+import './model/index.dart';
 
 void testIntegration() {
   group('[Verify end to end serialization <=> deserialization]', () {

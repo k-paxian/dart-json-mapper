@@ -1,8 +1,7 @@
 import 'package:dart_json_mapper/dart_json_mapper.dart';
 import 'package:test/test.dart';
 
-import 'model/generic.dart';
-import 'model/model.dart';
+import 'model/index.dart';
 
 void testGenerics() {
   group('[Verify generics<T> cases]', () {
