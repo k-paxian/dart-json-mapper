@@ -1,3 +1,7 @@
+## 1.7.4
+
+* #100, fix: Naming conflicts in generated file. Prefixes introduced
+
 ## 1.7.3
 
 * #99, fix: builder crawling over exports statements improved

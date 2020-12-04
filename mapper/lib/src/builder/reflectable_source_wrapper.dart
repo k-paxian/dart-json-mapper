@@ -21,6 +21,8 @@ class ReflectableSourceWrapper {
 
   String _inputLibraryPath;
   String _inputLibraryPackageName;
+  final _elementImportPrefix = <Element, String>{};
+  final _importPrefix = <String, String>{};
 
   ReflectableSourceWrapper(this.inputLibrary, this.options) {
     _inputLibraryPackageName = getLibraryPackageName(inputLibrary);
@@ -56,26 +58,31 @@ class ReflectableSourceWrapper {
         'Adapter';
   }
 
+  String _getElementFullName(Element element) {
+    final prefix = _elementImportPrefix[element];
+    return '''$prefix.${element.name}''';
+  }
+
   String _renderValueDecoratorsForClassElement(ClassElement element) {
     return [
       ...[
         'List',
         'Set'
       ].where((x) => allowedIterables.contains(x)).map((iterable) =>
-          '''    typeOf<$iterable<${element.name}>>(): (value) => value.cast<${element.name}>()'''),
+          '''    typeOf<$iterable<${_getElementFullName(element)}>>(): (value) => value.cast<${_getElementFullName(element)}>()'''),
       ...[
         'HashSet'
       ].where((x) => allowedIterables.contains(x)).map((iterable) =>
-          '''    typeOf<$iterable<${element.name}>>(): (value) => $iterable<${element.name}>.of(value.cast<${element.name}>())'''),
+          '''    typeOf<$iterable<${_getElementFullName(element)}>>(): (value) => $iterable<${_getElementFullName(element)}>.of(value.cast<${_getElementFullName(element)}>())'''),
       ...[
         'UnmodifiableListView'
       ].where((x) => allowedIterables.contains(x)).map((iterable) =>
-          '''    typeOf<$iterable<${element.name}>>(): (value) => $iterable<${element.name}>(value.cast<${element.name}>())''')
+          '''    typeOf<$iterable<${_getElementFullName(element)}>>(): (value) => $iterable<${_getElementFullName(element)}>(value.cast<${_getElementFullName(element)}>())''')
     ].join(',\n');
   }
 
   String _renderEnumValuesForClassElement(ClassElement element) {
-    return '    ${element.name}: ${element.name}.values';
+    return '    ${_getElementFullName(element)}: ${_getElementFullName(element)}.values';
   }
 
   String _renderValueDecorators() {
@@ -125,10 +132,15 @@ ${_renderEnumValues()}
       // local package import
       importString = element.library.identifier;
     }
-    if (importsMap.containsKey(importString)) {
-      importsMap[importString].add(element.name);
+    final prefix = '''x${importsMap.length}''';
+    final key = importString;
+    if (importsMap.containsKey(key)) {
+      importsMap[key].add(element.name);
+      _elementImportPrefix.putIfAbsent(element, () => _importPrefix[key]);
     }
-    importsMap.putIfAbsent(importString, () => [element.name]);
+    importsMap.putIfAbsent(key, () => [element.name]);
+    _elementImportPrefix.putIfAbsent(element, () => prefix);
+    _importPrefix.putIfAbsent(key, () => prefix);
   }
 
   String _renderHeader() {
@@ -138,15 +150,20 @@ ${_renderEnumValues()}
 ''';
   }
 
-  String _renderImports() {
-    final importsMap = <String, List<String>>{};
+  Map<String, List<String>> _buildImportsMap() {
+    final _importsMap = <String, List<String>>{};
     _libraryVisitor.visitedPublicAnnotatedClassElements.values
-        .forEach((e) => _renderElementImport(e, importsMap));
+        .forEach((e) => _renderElementImport(e, _importsMap));
+    return _importsMap;
+  }
+
+  String _renderImports() {
+    final importsMap = _buildImportsMap();
     final importsList = {
       isCollectionImportNeeded ? COLLECTION_IMPORT : null,
       MAPPER_IMPORT,
-      ...importsMap.keys.map(
-          (key) => '''import '${key}' show ${importsMap[key].join(', ')};''')
+      ...importsMap.keys.map((key) =>
+          '''import '${key}' as ${_importPrefix[key]} show ${importsMap[key].join(', ')};''')
     }.where((x) => x != null).toList();
     importsList.sort();
     return importsList.join('\n') + '\n\n';
