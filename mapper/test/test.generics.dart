@@ -5,6 +5,21 @@ import 'model/index.dart';
 
 void testGenerics() {
   group('[Verify generics<T> cases]', () {
+    test('BarBase<T>', () {
+      // given
+      final json = '''{"foo":{}}''';
+      final bar = Bar()..foo = Foo();
+
+      // when
+      final targetJson = bar.toJson();
+      final target = Bar().fromJson(json);
+
+      // then
+      expect(targetJson, json);
+      expect(target, TypeMatcher<Bar>());
+      expect(target.foo, TypeMatcher<Foo>());
+    });
+
     test('Generic AbstractEntityModel, OOP paradigm(inheritance)', () {
       // given
       const carModel = MyCarModel(

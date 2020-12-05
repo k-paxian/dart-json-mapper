@@ -39,11 +39,11 @@ class User {
 }
 
 @jsonSerializable
-class Foo {
+class Fo {
   final Bar bar;
   final String message;
 
-  Foo(this.bar, this.message);
+  Fo(this.bar, this.message);
 }
 
 @jsonSerializable
@@ -288,9 +288,9 @@ void testConstructors() {
     test('Nested null value object should be null w/o NPE', () {
       // given
       final json = '{"bar":null,"message":"hello world"}';
-      final target = Foo(null, 'hello world');
+      final target = Fo(null, 'hello world');
       // when
-      final instance = JsonMapper.deserialize<Foo>(json);
+      final instance = JsonMapper.deserialize<Fo>(json);
       final targetJson = JsonMapper.serialize(target, compactOptions);
       // then
       expect(instance.message, 'hello world');

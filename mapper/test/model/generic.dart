@@ -3,6 +3,32 @@ import 'package:dart_json_mapper/dart_json_mapper.dart';
 import 'model.dart';
 
 @jsonSerializable
+class Foo {}
+
+@jsonSerializable
+class BarBase<T> {
+  T foo;
+
+  BarBase({this.foo});
+
+  BarBase<T> fromJson(dynamic json) => JsonMapper.deserialize<BarBase<T>>(json);
+
+  dynamic toJson() =>
+      JsonMapper.serialize(this, SerializationOptions(indent: ''));
+}
+
+@jsonSerializable
+@Json(valueDecorators: Bar.valueDecorators)
+class Bar extends BarBase<Foo> {
+  static Map<Type, ValueDecoratorFunction> valueDecorators() =>
+      {typeOf<BarBase<Foo>>(): (value) => Bar.of(value)};
+
+  Bar();
+
+  factory Bar.of(BarBase other) => Bar()..foo = other.foo;
+}
+
+@jsonSerializable
 @Json(typeNameProperty: 'technicalName', ignoreNullMembers: true)
 class EntityModel<T> {
   final String parentUuid;
