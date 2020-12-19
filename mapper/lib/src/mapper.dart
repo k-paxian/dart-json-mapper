@@ -114,17 +114,6 @@ class JsonMapper {
   factory JsonMapper() => instance;
 
   JsonMapper._internal() {
-    for (var classMirror in _serializable.annotatedClasses) {
-      final jsonMeta = ClassInfo(classMirror).getMeta();
-      if (jsonMeta != null && jsonMeta.valueDecorators != null) {
-        _inlineValueDecorators.addAll(jsonMeta.valueDecorators());
-      }
-      if (classMirror.hasReflectedType) {
-        classes[classMirror.reflectedType.toString()] = classMirror;
-      } else if (classMirror.hasDynamicReflectedType) {
-        classes[classMirror.dynamicReflectedType.toString()] = classMirror;
-      }
-    }
     useAdapter(dartCoreAdapter);
     useAdapter(dartCollectionAdapter);
   }
@@ -148,10 +137,31 @@ class JsonMapper {
   }
 
   void _updateInternalMaps() {
+    _enumerateAnnotatedClasses((ClassInfo classInfo) {
+      final jsonMeta = classInfo.getMeta();
+      if (jsonMeta != null && jsonMeta.valueDecorators != null) {
+        _inlineValueDecorators.addAll(jsonMeta.valueDecorators());
+      }
+      if (classInfo.reflectedType != null) {
+        classes[classInfo.reflectedType.toString()] = classInfo.classMirror;
+      }
+    });
+
     enumValues = _enumValues;
     converters = _converters;
     typeInfoDecorators = _typeInfoDecorators;
     valueDecorators = _valueDecorators;
+
+    _enumerateAnnotatedClasses((ClassInfo classInfo) {
+      if (classInfo.superClass != null) {
+        final superClassInfo = ClassInfo(classInfo.superClass);
+        final superClassTypeInfo = _getTypeInfo(superClassInfo.reflectedType);
+        if (superClassTypeInfo.isWithMixin) {
+          classes[superClassTypeInfo.mixinTypeName] =
+              classes[superClassTypeInfo.typeName];
+        }
+      }
+    });
   }
 
   void info() {
@@ -244,7 +254,7 @@ class JsonMapper {
   }
 
   TypeInfo _detectObjectType(dynamic objectInstance, Type objectType,
-      JsonMap objectJsonMap, DeserializationOptions options) {
+      JsonMap objectJsonMap, DeserializationContext context) {
     final objectClassMirror = classes[objectType.toString()];
     final objectClassInfo = ClassInfo(objectClassMirror);
     final Json meta = objectClassInfo.metaData
@@ -255,7 +265,7 @@ class JsonMapper {
     }
     final typeInfo = _getTypeInfo(objectType ?? objectInstance.runtimeType);
 
-    final typeNameProperty = _getTypeNameProperty(meta, options);
+    final typeNameProperty = _getTypeNameProperty(meta, context.options);
     final String typeName = objectJsonMap != null &&
             typeNameProperty != null &&
             objectJsonMap.hasProperty(typeNameProperty)
@@ -417,6 +427,12 @@ class JsonMapper {
               options is SerializationOptions &&
                   options.ignoreNullMembers == true) &&
           value == null);
+
+  void _enumerateAnnotatedClasses(Function visitor) {
+    _serializable.annotatedClasses.forEach((classMirror) {
+      visitor(ClassInfo(classMirror));
+    });
+  }
 
   void _enumeratePublicProperties(InstanceMirror instanceMirror,
       JsonMap jsonMap, DeserializationOptions options, Function visitor) {
@@ -808,8 +824,7 @@ class JsonMapper {
     }
 
     final jsonMap = JsonMap(convertedJsonValue);
-    typeInfo = _detectObjectType(
-        null, context.typeInfo.type, jsonMap, context.options);
+    typeInfo = _detectObjectType(null, context.typeInfo.type, jsonMap, context);
     final cm = classes[typeInfo.typeName] ?? classes[typeInfo.genericTypeName];
     if (cm == null) {
       throw MissingAnnotationOnTypeError(typeInfo.type);

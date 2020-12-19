@@ -2,13 +2,13 @@ import 'package:dart_json_mapper/dart_json_mapper.dart';
 import 'package:test/test.dart';
 
 @jsonSerializable
-class A {
-  B content;
+class AA {
+  BB content;
 }
 
 @jsonSerializable
-class B {
-  List<A> content;
+class BB {
+  List<AA> content;
 }
 
 void testSpecialCases() {
@@ -18,12 +18,12 @@ void testSpecialCases() {
       final json = '{"content":{"content":[]}}';
 
       // when
-      final target = JsonMapper.deserialize<A>(json);
+      final target = JsonMapper.deserialize<AA>(json);
 
       // then
-      expect(target, TypeMatcher<A>());
-      expect(target.content, TypeMatcher<B>());
-      expect(target.content.content, TypeMatcher<List<A>>());
+      expect(target, TypeMatcher<AA>());
+      expect(target.content, TypeMatcher<BB>());
+      expect(target.content.content, TypeMatcher<List<AA>>());
     });
   });
 }

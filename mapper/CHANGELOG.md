@@ -1,3 +1,7 @@
+## 1.7.5
+
+* #103, feat: Mixins Deserialization support introduced
+
 ## 1.7.4
 
 * #100, fix: Naming conflicts in generated file. Prefixes introduced

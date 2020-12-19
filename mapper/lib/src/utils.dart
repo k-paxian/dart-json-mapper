@@ -139,6 +139,23 @@ class ClassInfo {
     return result;
   }
 
+  ClassMirror get superClass {
+    try {
+      return classMirror.superclass;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  Type get reflectedType {
+    if (classMirror.hasReflectedType) {
+      return classMirror.reflectedType;
+    } else if (classMirror.hasDynamicReflectedType) {
+      return classMirror.dynamicReflectedType;
+    }
+    return null;
+  }
+
   MethodMirror getJsonAnySetter([dynamic scheme]) =>
       getJsonSetter(null, scheme);
 

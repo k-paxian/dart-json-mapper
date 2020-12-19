@@ -9,6 +9,7 @@ import 'test.errors.dart';
 import 'test.generics.dart';
 import 'test.inheritance.dart';
 import 'test.integration.dart';
+import 'test.mixins.dart';
 import 'test.name.casing.dart';
 import 'test.name.path.dart';
 import 'test.partial.deserialization.dart';
@@ -21,6 +22,7 @@ void main() {
   initializeJsonMapper().info();
 
   testScheme();
+  testMixinCases();
   testNameCasing();
   testErrorHandling();
   testConverters();

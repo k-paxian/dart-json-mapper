@@ -30,6 +30,7 @@ guided by the annotated classes **only**, as the result types information is acc
 * [Documentation][docs]
 * [Configuration use cases](#format-datetime--num-types)
     * [Extended classes](#inherited-classes-derived-from-abstract--base-class)
+    * [Classes with Mixins](#classes-enhanced-with-mixins-derived-from-abstract-class)
     * [Immutable classes](#example-with-immutable-class)
     * [Get or Set fields](#get-or-set-fields)
     * [Constructor parameters](#constructor-parameters)
@@ -557,6 +558,43 @@ final Stakeholder target = JsonMapper.deserialize(json);
 // then
 expect(target.businesses[0], TypeMatcher<Startup>());
 expect(target.businesses[1], TypeMatcher<Hotel>());
+```
+
+## Classes enhanced with Mixins derived from abstract class
+
+Similar configuration as above also works well for class mixins
+
+```dart
+@Json(typeNameProperty: 'type')
+@jsonSerializable
+abstract class A {}
+
+@jsonSerializable
+mixin B on A {}
+
+@jsonSerializable
+class C extends A with B {}
+
+@jsonSerializable
+class MixinContainer {
+  final Set<int> ints;
+  final B b;
+
+  const MixinContainer(this.ints, this.b);
+}
+
+// given
+final json = r'''{"ints":[1,2,3],"b":{"type":"C"}}''';
+final instance = MixinContainer({1, 2, 3}, C());
+
+// when
+final targetJson = JsonMapper.serialize(instance);
+final target = JsonMapper.deserialize<MixinContainer>(targetJson);
+
+// then
+expect(targetJson, json);
+expect(target, TypeMatcher<MixinContainer>());
+expect(target.b, TypeMatcher<C>());
 ```
 
 ## Serialization template

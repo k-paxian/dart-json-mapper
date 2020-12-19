@@ -15,6 +15,8 @@ class TypeInfo {
   Type genericType;
   String genericTypeName;
 
+  String mixinTypeName;
+
   Iterable<Type> parameters = []; // Type<T, K, V, etc.>
 
   bool isDynamic;
@@ -24,6 +26,7 @@ class TypeInfo {
   bool isSet;
   bool isIterable;
   bool isEnum;
+  bool isWithMixin;
 
   TypeInfo(this.type);
 
@@ -82,6 +85,14 @@ class DefaultTypeInfoDecorator implements ITypeInfoDecorator {
     final typeName = type != null ? type.toString() : '';
 
     typeInfo.typeName = typeName;
+
+    final mixinTypeNames = detectMixinTypeName(typeInfo);
+    typeInfo.isWithMixin = mixinTypeNames.isNotEmpty;
+    if (typeInfo.isWithMixin) {
+      typeInfo.typeName = mixinTypeNames.first;
+      typeInfo.mixinTypeName = mixinTypeNames.last;
+    }
+
     typeInfo.isDynamic = typeName == 'dynamic';
     typeInfo.isList =
         typeName.indexOf('List<') == 0 || isUnmodifiableListView(typeInfo);
@@ -143,6 +154,14 @@ class DefaultTypeInfoDecorator implements ITypeInfoDecorator {
   String detectScalarTypeName(TypeInfo typeInfo) => typeInfo.isIterable
       ? RegExp('<(.+)>').allMatches(typeInfo.typeName).first.group(1)
       : null;
+
+  Iterable<String> detectMixinTypeName(TypeInfo typeInfo) {
+    final mixinPattern = RegExp('Type\(\.\.(.+) with \.(.+)\)');
+    return mixinPattern.hasMatch(typeInfo.typeName)
+        ? mixinPattern.allMatches(typeInfo.typeName).first.groups([2, 3]).map(
+            (e) => e.replaceAll('.', '').replaceAll(')', ''))
+        : [];
+  }
 
   String detectGenericTypeName(
           TypeInfo typeInfo) =>
