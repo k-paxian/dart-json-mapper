@@ -45,6 +45,11 @@ class DeserializationOptions {
       this.typeNameProperty,
       this.template,
       this.processAnnotatedMembersOnly});
+
+  @override
+  String toString() => '$scheme$caseStyle'
+      '$typeNameProperty$template'
+      '$processAnnotatedMembersOnly';
 }
 
 const defaultSerializationOptions = SerializationOptions(indent: ' ');
@@ -87,6 +92,18 @@ class DeserializationContext {
 
   const DeserializationContext(
       {this.options, this.jsonPropertyMeta, this.classMeta, this.typeInfo});
+
+  @override
+  int get hashCode => '$options$jsonPropertyMeta$classMeta'.hashCode;
+
+  @override
+  bool operator ==(Object other) {
+    final otherContext = (other as DeserializationContext);
+
+    return otherContext.options == options &&
+        otherContext.jsonPropertyMeta == jsonPropertyMeta &&
+        otherContext.classMeta == classMeta;
+  }
 }
 
 class SerializationContext extends DeserializationContext {

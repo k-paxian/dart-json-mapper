@@ -3,6 +3,7 @@ library json_mapper.test;
 import '_test.mapper.g.dart' show initializeJsonMapper;
 import 'test.collections.dart';
 import 'test.constructors.dart';
+import 'test.converters.caching.dart';
 import 'test.converters.dart';
 import 'test.enums.dart';
 import 'test.errors.dart';
@@ -22,6 +23,7 @@ void main() {
   initializeJsonMapper().info();
 
   testScheme();
+  testConvertersCaching();
   testMixinCases();
   testNameCasing();
   testErrorHandling();

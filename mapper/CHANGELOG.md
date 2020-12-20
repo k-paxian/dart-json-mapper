@@ -1,3 +1,7 @@
+## 1.7.6
+
+* #104, fix: Custom converter results cache layer does not work as expected
+
 ## 1.7.5
 
 * #103, feat: Mixins Deserialization support introduced

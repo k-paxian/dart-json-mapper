@@ -78,6 +78,11 @@ class Json {
       this.ignoreNullMembers,
       this.processAnnotatedMembersOnly,
       this.name});
+
+  @override
+  String toString() => '$name$allowCircularReferences$scheme$valueDecorators'
+      '$typeNameProperty$caseStyle'
+      '$ignoreNullMembers$processAnnotatedMembersOnly';
 }
 
 /// [jsonProperty] is used as a shorthand metadata w/o "()"
@@ -130,6 +135,11 @@ class JsonProperty {
       this.converter,
       this.defaultValue,
       this.converterParams});
+
+  @override
+  String toString() => '$name$ignore$scheme$ignoreForSerialization'
+      '$ignoreForDeserialization$ignoreIfNull'
+      '$converter$defaultValue$converterParams';
 }
 
 /// [jsonSerializable] is used as shorthand metadata, marking classes targeted

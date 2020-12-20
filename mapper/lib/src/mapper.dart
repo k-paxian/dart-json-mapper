@@ -43,7 +43,7 @@ class JsonMapper {
     instance._processedObjects.clear();
     final serializedObject = instance._serializeObject(object, context);
     return (serializedObject is String ||
-            serializedObject is num) // Do not enclose to quotes ""
+            serializedObject is num) // Pass numbers and strings "as is"
         ? serializedObject
         : _getJsonEncoder(context).convert(serializedObject);
   }
