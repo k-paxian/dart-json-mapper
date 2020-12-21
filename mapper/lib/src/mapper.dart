@@ -11,7 +11,7 @@ import 'utils.dart';
 /// from / to JSON string
 class JsonMapper {
   static final JsonMapper instance = JsonMapper._internal();
-  final JsonDecoder _jsonDecoder = JsonDecoder();
+  static final JsonDecoder _jsonDecoder = JsonDecoder();
   final _serializable = const JsonSerializable();
   final Map<String, ClassMirror> classes = {};
   final Map<int, IAdapter> adapters = {};
@@ -29,27 +29,24 @@ class JsonMapper {
   Map<Type, ValueDecoratorFunction> valueDecorators = {};
   Map<Type, List> enumValues = {};
 
-  /// Converts Dart object to JSON
+  /// Converts Dart object to JSON String
   static dynamic toJson(Object object,
       [SerializationOptions options = defaultSerializationOptions]) {
     return serialize(object, options);
   }
 
-  /// Converts Dart object to JSON
-  static dynamic serialize(Object object,
+  /// Converts Dart object to JSON String
+  static String serialize(Object object,
       [SerializationOptions options = defaultSerializationOptions]) {
     final context = SerializationContext(
         options: options, typeInfo: instance._getTypeInfo(object.runtimeType));
     instance._processedObjects.clear();
     final serializedObject = instance._serializeObject(object, context);
-    return (serializedObject is String ||
-            serializedObject is num) // Pass numbers and strings "as is"
-        ? serializedObject
-        : _getJsonEncoder(context).convert(serializedObject);
+    return _getJsonEncoder(context).convert(serializedObject);
   }
 
-  /// Converts JSON to Dart object of type T
-  static T deserialize<T>(dynamic jsonValue,
+  /// Converts JSON String to Dart object of type T
+  static T deserialize<T>(String jsonValue,
       [DeserializationOptions options = defaultDeserializationOptions]) {
     final targetType = T != dynamic
         ? T
@@ -60,12 +57,12 @@ class JsonMapper {
         ? true
         : throw MissingTypeForDeserializationError());
     return instance._deserializeObject(
-        jsonValue,
+        jsonValue != null ? _jsonDecoder.convert(jsonValue) : null,
         DeserializationContext(
             options: options, typeInfo: instance._getTypeInfo(targetType)));
   }
 
-  /// Converts JSON to Dart object of type T
+  /// Converts JSON String to Dart object of type T
   static T fromJson<T>(dynamic jsonValue,
       [DeserializationOptions options = defaultDeserializationOptions]) {
     return deserialize<T>(jsonValue, options);

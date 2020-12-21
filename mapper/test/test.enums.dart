@@ -100,7 +100,7 @@ void testEnums() {
       final target = JsonMapper.deserialize<Color>(targetJson);
 
       // then
-      expect(targetJson, r'Green');
+      expect(targetJson, r'"Green"');
       expect(target, Color.Green);
     });
 
@@ -117,7 +117,7 @@ void testEnums() {
 
     test('Unknown Enum Value', () {
       // given
-      final json = r'Purple';
+      final json = r'"Purple"';
 
       // when
       final target = JsonMapper.deserialize<Color>(json);
