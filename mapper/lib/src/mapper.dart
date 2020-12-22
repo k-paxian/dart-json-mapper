@@ -30,7 +30,7 @@ class JsonMapper {
   Map<Type, List> enumValues = {};
 
   /// Converts Dart object to JSON String
-  static dynamic toJson(Object object,
+  static String toJson(Object object,
       [SerializationOptions options = defaultSerializationOptions]) {
     return serialize(object, options);
   }
@@ -63,7 +63,7 @@ class JsonMapper {
   }
 
   /// Converts JSON String to Dart object of type T
-  static T fromJson<T>(dynamic jsonValue,
+  static T fromJson<T>(String jsonValue,
       [DeserializationOptions options = defaultDeserializationOptions]) {
     return deserialize<T>(jsonValue, options);
   }

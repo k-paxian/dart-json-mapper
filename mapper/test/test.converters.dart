@@ -155,7 +155,7 @@ void testConverters() {
       final target = JsonMapper.fromJson<RegExp>(json);
 
       // then
-      expect(json, '"${source}"');
+      expect(json, '"$source"');
       expect(target.pattern, instance.pattern);
       expect(target, TypeMatcher<RegExp>());
       expect(target, instance);
@@ -171,7 +171,7 @@ void testConverters() {
       final target = JsonMapper.fromJson<Uri>(json);
 
       // then
-      expect(json, '"${uri}"');
+      expect(json, '"$uri"');
       expect(target, TypeMatcher<Uri>());
       expect(target, instance);
     });
