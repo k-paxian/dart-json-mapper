@@ -35,8 +35,8 @@ class JsonMapper {
     return serialize(object, options);
   }
 
-  /// Converts Dart object to JSON
-  static dynamic serialize(Object object,
+  /// Converts Dart object to JSON String
+  static String serialize(Object object,
       [SerializationOptions options = defaultSerializationOptions]) {
     final context = SerializationContext(
         options: options, typeInfo: instance._getTypeInfo(object.runtimeType));
