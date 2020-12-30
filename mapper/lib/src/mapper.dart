@@ -31,9 +31,8 @@ class JsonMapper {
 
   /// Converts Dart object to JSON String
   static String toJson(Object object,
-      [SerializationOptions options = defaultSerializationOptions]) {
-    return serialize(object, options);
-  }
+          [SerializationOptions options = defaultSerializationOptions]) =>
+      serialize(object, options);
 
   /// Converts Dart object to JSON String
   static String serialize(Object object,
@@ -41,8 +40,8 @@ class JsonMapper {
     final context = SerializationContext(
         options: options, typeInfo: instance._getTypeInfo(object.runtimeType));
     instance._processedObjects.clear();
-    final serializedObject = instance._serializeObject(object, context);
-    return _getJsonEncoder(context).convert(serializedObject);
+    return _getJsonEncoder(context)
+        .convert(instance._serializeObject(object, context));
   }
 
   /// Converts JSON String to Dart object of type T
@@ -64,39 +63,30 @@ class JsonMapper {
 
   /// Converts JSON String to Dart object of type T
   static T fromJson<T>(String jsonValue,
-      [DeserializationOptions options = defaultDeserializationOptions]) {
-    return deserialize<T>(jsonValue, options);
-  }
+          [DeserializationOptions options = defaultDeserializationOptions]) =>
+      deserialize<T>(jsonValue, options);
 
   /// Converts Dart object to Map<String, dynamic>
   static Map<String, dynamic> toMap(Object object,
-      [SerializationOptions options = defaultSerializationOptions]) {
-    return deserialize<Map<String, dynamic>>(
-        serialize(object, options), options);
-  }
+          [SerializationOptions options = defaultSerializationOptions]) =>
+      deserialize<Map<String, dynamic>>(serialize(object, options), options);
 
   /// Converts Map<String, dynamic> to Dart object instance
   static T fromMap<T>(Map<String, dynamic> map,
-      [SerializationOptions options = defaultSerializationOptions]) {
-    return deserialize<T>(
-        _getJsonEncoder(SerializationContext(options: options)).convert(map),
-        options);
-  }
+          [SerializationOptions options = defaultSerializationOptions]) =>
+      deserialize<T>(
+          _getJsonEncoder(SerializationContext(options: options)).convert(map),
+          options);
 
   /// Clone Dart object of type T
-  static T clone<T>(T object) {
-    return fromJson<T>(toJson(object));
-  }
+  static T clone<T>(T object) => fromJson<T>(toJson(object));
 
   /// Alias for clone method to copy Dart object of type T
-  static T copy<T>(T object) {
-    return clone(object);
-  }
+  static T copy<T>(T object) => clone(object);
 
   /// Copy Dart object of type T & merge it with Map<String, dynamic>
-  static T copyWith<T>(T object, Map<String, dynamic> map) {
-    return fromMap<T>(toMap(object)..addAll(map));
-  }
+  static T copyWith<T>(T object, Map<String, dynamic> map) =>
+      fromMap<T>(toMap(object)..addAll(map));
 
   static JsonEncoder _getJsonEncoder(SerializationContext context) =>
       context.serializationOptions.indent != null &&
@@ -161,9 +151,8 @@ class JsonMapper {
     });
   }
 
-  void info() {
-    adapters.forEach((priority, adapter) => print('$priority : $adapter'));
-  }
+  void info() =>
+      adapters.forEach((priority, adapter) => print('$priority : $adapter'));
 
   Map<Type, List> get _enumValues {
     final result = {};
@@ -211,7 +200,7 @@ class JsonMapper {
   String _getObjectKey(Object object) =>
       '${object.runtimeType}-${object.hashCode}';
 
-  ProcessedObjectDescriptor getObjectProcessed(Object object, int level) {
+  ProcessedObjectDescriptor _getObjectProcessed(Object object, int level) {
     ProcessedObjectDescriptor result;
 
     if (object.runtimeType.toString() == 'Null' ||
@@ -297,15 +286,6 @@ class JsonMapper {
       }
     });
 
-    return result;
-  }
-
-  ValueDecoratorFunction _getValueDecorator(
-      JsonProperty jsonProperty, Type type) {
-    ValueDecoratorFunction result;
-    if (result == null && valueDecorators[type] != null) {
-      result = valueDecorators[type];
-    }
     return result;
   }
 
@@ -396,16 +376,14 @@ class JsonMapper {
     return computedValue;
   }
 
-  dynamic _applyValueDecorator(dynamic value, TypeInfo typeInfo,
-      [JsonProperty meta]) {
-    final valueDecoratorFunction = _getValueDecorator(meta, typeInfo.type);
-    // TODO: Relocate Set handling out of mapper to converter/value decorator/etc.
-    if (typeInfo.isSet && value is! Set && value is Iterable) {
-      value = Set.from(value);
+  dynamic _applyValueDecorator(dynamic value, TypeInfo typeInfo) {
+    if (valueDecorators[typeInfo.genericType] != null) {
+      value = valueDecorators[typeInfo.genericType](value);
     }
-    return valueDecoratorFunction != null && value != null
-        ? valueDecoratorFunction(value)
-        : value;
+    if (valueDecorators[typeInfo.type] != null) {
+      value = valueDecorators[typeInfo.type](value);
+    }
+    return value;
   }
 
   bool _isFieldIgnored(
@@ -700,7 +678,8 @@ class JsonMapper {
         ? context.options.template ?? <String, dynamic>{}
         : <String, dynamic>{};
     final result = JsonMap(initialMap, jsonMeta);
-    final processedObjectDescriptor = getObjectProcessed(object, context.level);
+    final processedObjectDescriptor =
+        _getObjectProcessed(object, context.level);
     if (processedObjectDescriptor != null &&
         processedObjectDescriptor.levelsCount > 1) {
       final allowanceIsSet =
@@ -782,8 +761,7 @@ class JsonMapper {
                     classMeta: context.classMeta)))
             .toList()
         : null;
-    return _applyValueDecorator(
-        value, context.typeInfo, context.jsonPropertyMeta);
+    return _applyValueDecorator(value, context.typeInfo);
   }
 
   Object _deserializeObject(dynamic jsonValue, DeserializationContext context) {
@@ -799,8 +777,7 @@ class JsonMapper {
       if (typeInfo.isIterable && jsonValue == convertedValue) {
         convertedValue = _deserializeIterable(jsonValue, context);
       }
-      return _applyValueDecorator(
-          convertedValue, typeInfo, context.jsonPropertyMeta);
+      return _applyValueDecorator(convertedValue, typeInfo);
     }
 
     var convertedJsonValue;
@@ -888,8 +865,7 @@ class JsonMapper {
             _getConvertedValue(converter, fieldValue, null, newContext);
       }
       if (!isGetterOnly) {
-        fieldValue =
-            _applyValueDecorator(fieldValue, typeInfo, meta) ?? defaultValue;
+        fieldValue = _applyValueDecorator(fieldValue, typeInfo) ?? defaultValue;
         im.invokeSetter(name, fieldValue);
         mappedFields.add(jsonName);
       }
@@ -916,7 +892,6 @@ class JsonMapper {
       });
     }
 
-    return _applyValueDecorator(
-        objectInstance, typeInfo, context.jsonPropertyMeta);
+    return _applyValueDecorator(objectInstance, typeInfo);
   }
 }

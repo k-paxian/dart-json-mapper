@@ -88,6 +88,8 @@ final dartCoreAdapter =
   typeOf<List<bool>>(): (value) => value.cast<bool>(),
   typeOf<List<Symbol>>(): (value) => value.cast<Symbol>(),
   typeOf<List<BigInt>>(): (value) => value.cast<BigInt>(),
+  typeOf<Set>(): (value) =>
+      value is! Set && value is Iterable ? Set.from(value) : value,
   typeOf<Set<Uri>>(): (value) => value.cast<Uri>(),
   typeOf<Set<RegExp>>(): (value) => value.cast<RegExp>(),
   typeOf<Set<String>>(): (value) => value.cast<String>(),
