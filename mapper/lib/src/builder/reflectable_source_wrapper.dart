@@ -111,9 +111,10 @@ ${_renderEnumValues()}
 });\n''';
   }
 
-  String _renderLibraryAdapterRegistration() {
+  String _renderLibraryAdapterRegistration(String input) {
+    final hasReflectableOutput = input.indexOf(REFLECTABLE_INIT_METHOD) > 0;
     return '''
-  $REFLECTABLE_INIT_METHOD_PATCH();
+  ${hasReflectableOutput ? '$REFLECTABLE_INIT_METHOD_PATCH();' : ''}
   [...adapters, $_libraryAdapterId].forEach((x) => JsonMapper().useAdapter(x));
   return JsonMapper();
 }''';
@@ -179,7 +180,7 @@ ${_renderEnumValues()}
         '\n' +
         INIT_METHOD +
         '\n' +
-        _renderLibraryAdapterRegistration();
+        _renderLibraryAdapterRegistration(input);
     return input.replaceFirst(
             REFLECTABLE_INIT_METHOD, REFLECTABLE_INIT_METHOD_PATCH) +
         PATCH;

@@ -1,3 +1,8 @@
+## 1.7.7
+
+* #106, fix: Do not generate invalid code when there is no main entry point provided, in case of library package for instance.
+
+
 ## 1.7.6
 
 * #104, fix: Custom converter results cache layer does not work as expected
