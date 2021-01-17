@@ -817,6 +817,7 @@ class JsonMapper {
                 _getPositionalArguments(cm, jsonMap, context),
                 namedArguments));
     final im = _safeGetInstanceMirror(objectInstance);
+    final inheritedPublicFieldNames = classInfo.inheritedPublicFieldNames;
     final mappedFields = namedArguments.keys
         .map((Symbol symbol) =>
             RegExp('"(.+)"').allMatches(symbol.toString()).first.group(1))
@@ -864,7 +865,12 @@ class JsonMapper {
         fieldValue =
             _getConvertedValue(converter, fieldValue, null, newContext);
       }
-      if (!isGetterOnly) {
+      if (isGetterOnly) {
+        if (inheritedPublicFieldNames.contains(name) &&
+            !mappedFields.contains(jsonName)) {
+          mappedFields.add(jsonName);
+        }
+      } else {
         fieldValue = _applyValueDecorator(fieldValue, typeInfo) ?? defaultValue;
         im.invokeSetter(name, fieldValue);
         mappedFields.add(jsonName);

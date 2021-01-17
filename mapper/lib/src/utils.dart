@@ -229,6 +229,17 @@ class ClassInfo {
         .toList();
   }
 
+  List<String> get inheritedPublicFieldNames {
+    final result = <String>[];
+    publicFieldNames.forEach((e) {
+      final dm = getDeclarationMirror(e);
+      if (_safeGetParentClassMirror(dm) != classMirror) {
+        result.add(e);
+      }
+    });
+    return result;
+  }
+
   ClassMirror _safeGetParentClassMirror(DeclarationMirror declarationMirror) {
     ClassMirror result;
     try {

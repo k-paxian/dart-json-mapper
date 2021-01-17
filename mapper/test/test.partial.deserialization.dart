@@ -15,7 +15,18 @@ class IgnoreMembers {
 }
 
 @jsonSerializable
-class UnmappedProperties {
+abstract class AnyObject {
+  @JsonProperty(name: 'in')
+  final String location;
+
+  @jsonConstructor
+  AnyObject({
+    this.location,
+  });
+}
+
+@jsonSerializable
+class UnmappedProperties extends AnyObject {
   String name;
 
   @JsonProperty(ignore: true)
@@ -23,6 +34,10 @@ class UnmappedProperties {
 
   @jsonProperty
   void unmappedSet(String name, dynamic value) {
+    if (name == 'in') {
+      throw Error();
+    }
+
     extraPropsMap[name] = value;
   }
 
@@ -81,7 +96,7 @@ void testPartialDeserialization() {
 
     test('Unmapped properties deserialization & serialization', () {
       // given
-      final json = '''{"name":"Bob","extra1":1,"extra2":"xxx"}''';
+      final json = '''{"in":null,"name":"Bob","extra1":1,"extra2":"xxx"}''';
 
       // when
       final instance = JsonMapper.deserialize<UnmappedProperties>(json);

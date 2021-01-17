@@ -1,7 +1,7 @@
 ## 1.7.7
 
 * #106, fix: Do not generate invalid code when there is no main entry point provided, in case of library package for instance.
-
+* #107, fix: Unmapped properties contains inherited readonly entries with custom json name
 
 ## 1.7.6
 
