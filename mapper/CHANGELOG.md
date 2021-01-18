@@ -2,6 +2,8 @@
 
 * #106, fix: Do not generate invalid code when there is no main entry point provided, in case of library package for instance.
 * #107, fix: Unmapped properties contains inherited readonly entries with custom json name
+* #108, feat: Introduced `JsonProperty.required` to mark field as mandatory to be present in the JSON payload
+* #109, feat: Introduced `JsonProperty.notNull` to mark field as mandatory to be present in the JSON payload & cannot be NULL
 
 ## 1.7.6
 

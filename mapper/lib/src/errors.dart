@@ -1,5 +1,43 @@
 abstract class JsonMapperError extends Error {}
 
+abstract class FieldCannotBeNullError extends JsonMapperError {
+  factory FieldCannotBeNullError(String fieldName, {String message}) =
+      _FieldCannotBeNullErrorImpl;
+}
+
+class _FieldCannotBeNullErrorImpl extends JsonMapperError
+    implements FieldCannotBeNullError {
+  final String _fieldName;
+  final String _message;
+
+  _FieldCannotBeNullErrorImpl(String fieldName, {String message})
+      : _fieldName = fieldName,
+        _message = message;
+
+  @override
+  String toString() =>
+      'Field "${_fieldName}" cannot be NULL. ${_message ?? 'Please specify valid value in JSON payload'}.';
+}
+
+abstract class FieldIsRequiredError extends JsonMapperError {
+  factory FieldIsRequiredError(String fieldName, {String message}) =
+      _FieldIsRequiredErrorImpl;
+}
+
+class _FieldIsRequiredErrorImpl extends JsonMapperError
+    implements FieldIsRequiredError {
+  final String _fieldName;
+  final String _message;
+
+  _FieldIsRequiredErrorImpl(String fieldName, {String message})
+      : _fieldName = fieldName,
+        _message = message;
+
+  @override
+  String toString() =>
+      'Field "${_fieldName}" is required. ${_message ?? 'And has to be provided in JSON payload'}.';
+}
+
 abstract class CircularReferenceError extends JsonMapperError {
   factory CircularReferenceError(Object object) = _CircularReferenceErrorImpl;
 }

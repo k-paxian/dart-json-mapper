@@ -832,7 +832,16 @@ class JsonMapper {
         scalarType,
         TypeInfo typeInfo) {
       final defaultValue = meta?.defaultValue;
-      if (!jsonMap.hasProperty(jsonName) || mappedFields.contains(name)) {
+      final hasJsonProperty = jsonMap.hasProperty(jsonName);
+      var fieldValue = jsonMap.getPropertyValue(jsonName);
+      if (JsonProperty.isNotNull(meta) &&
+          (!hasJsonProperty || (fieldValue == null))) {
+        throw FieldCannotBeNullError(name, message: meta.notNullMessage);
+      }
+      if (!hasJsonProperty || mappedFields.contains(name)) {
+        if (!hasJsonProperty && JsonProperty.isRequired(meta)) {
+          throw FieldIsRequiredError(name, message: meta.requiredMessage);
+        }
         if (defaultValue != null && !isGetterOnly) {
           im.invokeSetter(name, defaultValue);
         }
@@ -843,7 +852,6 @@ class JsonMapper {
           typeInfo: typeInfo,
           jsonPropertyMeta: meta,
           classMeta: context.classMeta);
-      var fieldValue = jsonMap.getPropertyValue(jsonName);
       if (fieldValue is Iterable) {
         fieldValue = fieldValue
             .map((item) => _deserializeObject(

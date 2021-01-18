@@ -27,6 +27,15 @@ class UnAnnotatedEnumField {
   Sex sex = Sex.Female;
 }
 
+@jsonSerializable
+class ObjectWithRequiredField {
+  @JsonProperty(requiredMessage: 'This Value is critically important')
+  String value;
+
+  @JsonProperty(notNullMessage: 'This Value2 cannot be null')
+  String value2;
+}
+
 typedef ErrorGeneratorFunction = dynamic Function();
 dynamic catchError(ErrorGeneratorFunction errorGenerator) {
   var targetError;
@@ -40,6 +49,36 @@ dynamic catchError(ErrorGeneratorFunction errorGenerator) {
 
 void testErrorHandling() {
   group('[Verify error handling]', () {
+    test('Required fields presence check during deserialization', () {
+      final json = '''{}''';
+      // Deserialize w/o satisfied required fields should NOT be fine
+      final error = catchError(
+          () => JsonMapper.deserialize<ObjectWithRequiredField>(json));
+      expect(error.toString(),
+          'Field "value" is required. This Value is critically important.');
+      expect(error, TypeMatcher<FieldIsRequiredError>());
+    });
+
+    test('NotNull fields value check during deserialization', () {
+      final json = '''{"value":null,"value2":null}''';
+      // Deserialize w/o satisfied notNull fields should NOT be fine
+      final error = catchError(
+          () => JsonMapper.deserialize<ObjectWithRequiredField>(json));
+      expect(error.toString(),
+          'Field "value2" cannot be NULL. This Value2 cannot be null.');
+      expect(error, TypeMatcher<FieldCannotBeNullError>());
+    });
+
+    test('NotNull fields presence & value check during deserialization', () {
+      final json = '''{"value":null}''';
+      // Deserialize w/o satisfied notNull fields should NOT be fine
+      final error = catchError(
+          () => JsonMapper.deserialize<ObjectWithRequiredField>(json));
+      expect(error.toString(),
+          'Field "value2" cannot be NULL. This Value2 cannot be null.');
+      expect(error, TypeMatcher<FieldCannotBeNullError>());
+    });
+
     test('Circular reference detection during serialization', () {
       final car = Car('VW', Color.Blue);
       car.replacement = car;

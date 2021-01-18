@@ -101,12 +101,35 @@ class JsonProperty {
   ///           name: 'foo/bar/baz'
   final String name;
 
+  /// Defines an optional message to be thrown as an explanation to why is
+  /// this field needs to be provided in incoming JSON payload object
+  /// If this message is provided it's treated as if [required] is set to `true`
+  final String requiredMessage;
+
+  /// Defines an optional message to be thrown as an explanation to why is
+  /// this field needs to be not NULL in incoming JSON payload object
+  /// If this message is provided it's treated as if [notNull] is set to `true`
+  final String notNullMessage;
+
   /// Declares custom converter instance, to be used for annotated field
   /// serialization / deserialization
   final ICustomConverter converter;
 
   /// Map of named parameters to be passed to the custom converter instance
   final Map<String, dynamic> converterParams;
+
+  /// Declares annotated field as required for deserialization process
+  /// i.e needs to be present explicitly in incoming JSON payload object
+  /// Optional custom message [requiredMessage] could be provided as well
+  /// Mild obligation
+  final bool required;
+
+  /// Declares annotated field as NOT NULL for deserialization process
+  /// i.e needs to be present in incoming JSON payload object as not NULL value
+  /// Optional custom message [notNullMessage] could be provided as well
+  /// Strict obligation
+  /// If notNull is `true` [required] attribute is ignored
+  final bool notNull;
 
   /// Declares annotated field as ignored so it will be excluded from
   /// serialization / deserialization process
@@ -128,7 +151,11 @@ class JsonProperty {
   const JsonProperty(
       {this.scheme,
       this.name,
+      this.required,
+      this.notNull,
       this.ignore,
+      this.requiredMessage,
+      this.notNullMessage,
       this.ignoreForSerialization,
       this.ignoreForDeserialization,
       this.ignoreIfNull,
@@ -136,9 +163,17 @@ class JsonProperty {
       this.defaultValue,
       this.converterParams});
 
+  static bool isRequired(JsonProperty jsonProperty) =>
+      jsonProperty != null &&
+      (jsonProperty.required == true || jsonProperty.requiredMessage != null);
+
+  static bool isNotNull(JsonProperty jsonProperty) =>
+      jsonProperty != null &&
+      (jsonProperty.notNull == true || jsonProperty.notNullMessage != null);
+
   @override
   String toString() => '$name$ignore$scheme$ignoreForSerialization'
-      '$ignoreForDeserialization$ignoreIfNull'
+      '$ignoreForDeserialization$ignoreIfNull$notNull$required'
       '$converter$defaultValue$converterParams';
 }
 
