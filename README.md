@@ -896,8 +896,8 @@ Example: `'foo', 'bar', 'foo/bar/baz'`
     * *scheme* dynamic [Scheme](#schemes) marker to associate this meta information with particular mapping scheme
     * *converter* Declares custom converter instance, to be used for annotated field serialization / deserialization 
     * *converterParams* A `Map<String, dynamic>` of named parameters to be passed to the converter instance
-    * *notNull* A bool declares annotated field as NOT NULL for deserialization process
-    * *required* A bool declares annotated field as required for deserialization process i.e. needs to be present explicitly in incoming JSON payload object
+    * *notNull* A bool declares annotated field as NOT NULL for serialization / deserialization process
+    * *required* A bool declares annotated field as required for serialization / deserialization process i.e. needs to be present explicitly
     * *ignore* A bool declares annotated field as ignored so it will be excluded from serialization / deserialization process
     * *ignoreForSerialization* A bool declares annotated field as excluded from serialization process
     * *ignoreForDeserialization* A bool declares annotated field as excluded from deserialization process

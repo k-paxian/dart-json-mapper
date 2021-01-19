@@ -37,6 +37,7 @@ class Json {
 
   /// Null class members
   /// will be excluded from serialization process
+  /// unless [JsonProperty.required] or [JsonProperty.notNull] is given to `true`
   final bool ignoreNullMembers;
 
   /// Process only annotated class members
@@ -118,17 +119,20 @@ class JsonProperty {
   /// Map of named parameters to be passed to the custom converter instance
   final Map<String, dynamic> converterParams;
 
-  /// Declares annotated field as required for deserialization process
+  /// Declares annotated field as required for serialization / deserialization process
   /// i.e needs to be present explicitly in incoming JSON payload object
   /// Optional custom message [requiredMessage] could be provided as well
   /// Mild obligation
+  /// If set to `true` states of [ignore], [ignoreForDeserialization],
+  /// [ignoreForSerialization], [ignoreIfNull], [Json.ignoreNullMembers] has no meaning.
   final bool required;
 
-  /// Declares annotated field as NOT NULL for deserialization process
+  /// Declares annotated field as NOT NULL for serialization / deserialization process
   /// i.e needs to be present in incoming JSON payload object as not NULL value
   /// Optional custom message [notNullMessage] could be provided as well
   /// Strict obligation
-  /// If notNull is `true` [required] attribute is ignored
+  /// If set to `true` states of [required], [ignore], [ignoreForDeserialization],
+  /// [ignoreForSerialization], [ignoreIfNull], [Json.ignoreNullMembers] has no meaning.
   final bool notNull;
 
   /// Declares annotated field as ignored so it will be excluded from

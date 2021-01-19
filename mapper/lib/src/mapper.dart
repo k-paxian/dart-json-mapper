@@ -391,17 +391,18 @@ class JsonMapper {
           Json classMeta,
           JsonProperty meta,
           DeserializationOptions options]) =>
-      (meta != null &&
-          ((meta.ignore == true ||
-                  (meta.ignoreForSerialization == true &&
-                      options is SerializationOptions) ||
-                  (meta.ignoreForDeserialization == true &&
-                      options is! SerializationOptions)) ||
-              meta.ignoreIfNull == true && value == null)) ||
-      ((classMeta != null && classMeta.ignoreNullMembers == true ||
-              options is SerializationOptions &&
-                  options.ignoreNullMembers == true) &&
-          value == null);
+      ((meta != null &&
+              ((meta.ignore == true ||
+                      (meta.ignoreForSerialization == true &&
+                          options is SerializationOptions) ||
+                      (meta.ignoreForDeserialization == true &&
+                          options is! SerializationOptions)) ||
+                  meta.ignoreIfNull == true && value == null)) ||
+          ((classMeta != null && classMeta.ignoreNullMembers == true ||
+                  options is SerializationOptions &&
+                      options.ignoreNullMembers == true) &&
+              value == null)) &&
+      !(JsonProperty.isRequired(meta) || JsonProperty.isNotNull(meta));
 
   void _enumerateAnnotatedClasses(Function visitor) {
     _serializable.annotatedClasses.forEach((classMirror) {
@@ -413,6 +414,16 @@ class JsonMapper {
       JsonMap jsonMap, DeserializationOptions options, Function visitor) {
     final classInfo = ClassInfo(instanceMirror.type);
     final classMeta = classInfo.getMeta(options.scheme);
+    final checkFieldConstraints = (dynamic value, String name,
+        dynamic hasJsonProperty, JsonProperty fieldMeta) {
+      if (JsonProperty.isNotNull(fieldMeta) &&
+          (hasJsonProperty == false || (value == null))) {
+        throw FieldCannotBeNullError(name, message: fieldMeta.notNullMessage);
+      }
+      if (hasJsonProperty == false && JsonProperty.isRequired(fieldMeta)) {
+        throw FieldIsRequiredError(name, message: fieldMeta.requiredMessage);
+      }
+    };
 
     for (var name in classInfo.publicFieldNames) {
       var jsonName = name;
@@ -434,16 +445,13 @@ class JsonMapper {
       jsonName =
           transformFieldName(jsonName, _getCaseStyle(classMeta, options));
 
-      dynamic value = instanceMirror.invokeGetter(name);
+      var value = instanceMirror.invokeGetter(name);
       if (value == null && jsonMap != null) {
-        if (_isFieldIgnored(
-            jsonMap.getPropertyValue(jsonName), classMeta, meta, options)) {
-          continue;
-        }
-      } else {
-        if (_isFieldIgnored(value, classMeta, meta, options)) {
-          continue;
-        }
+        value = jsonMap.getPropertyValue(jsonName);
+      }
+      checkFieldConstraints(value, name, jsonMap?.hasProperty(jsonName), meta);
+      if (_isFieldIgnored(value, classMeta, meta, options)) {
+        continue;
       }
       visitor(
           name,
@@ -459,22 +467,18 @@ class JsonMapper {
 
     classInfo.enumerateJsonGetters((MethodMirror mm, JsonProperty meta) {
       final name = mm.simpleName;
-      final value = instanceMirror.invoke(mm.simpleName, []);
       final jsonName =
           transformFieldName(meta.name, _getCaseStyle(classMeta, options));
       final declarationType = _getDeclarationType(mm);
 
+      var value = instanceMirror.invoke(mm.simpleName, []);
       if (value == null && jsonMap != null) {
-        if (_isFieldIgnored(
-            jsonMap.getPropertyValue(jsonName), classMeta, meta, options)) {
-          return;
-        }
-      } else {
-        if (_isFieldIgnored(value, classMeta, meta, options)) {
-          return;
-        }
+        value = jsonMap.getPropertyValue(jsonName);
       }
-
+      checkFieldConstraints(value, name, jsonMap?.hasProperty(jsonName), meta);
+      if (_isFieldIgnored(value, classMeta, meta, options)) {
+        return;
+      }
       visitor(
           name,
           jsonName,
@@ -661,14 +665,10 @@ class JsonMapper {
     }
 
     if (im == null || im.type == null) {
-      if (im != null) {
-        throw MissingEnumValuesError(object.runtimeType);
+      if (context.serializationOptions.ignoreUnknownTypes == true) {
+        return null;
       } else {
-        if (context.serializationOptions.ignoreUnknownTypes == true) {
-          return null;
-        } else {
-          throw MissingAnnotationOnTypeError(object.runtimeType);
-        }
+        throw MissingAnnotationOnTypeError(object.runtimeType);
       }
     }
 
@@ -784,8 +784,8 @@ class JsonMapper {
     try {
       convertedJsonValue =
           (jsonValue is String) ? _jsonDecoder.convert(jsonValue) : jsonValue;
-    } on FormatException {
-      throw MissingEnumValuesError(typeInfo.type);
+    } on FormatException catch (exception) {
+      throw JsonFormatError(context, formatException: exception);
     }
 
     if (typeInfo.isIterable ||
@@ -834,14 +834,7 @@ class JsonMapper {
       final defaultValue = meta?.defaultValue;
       final hasJsonProperty = jsonMap.hasProperty(jsonName);
       var fieldValue = jsonMap.getPropertyValue(jsonName);
-      if (JsonProperty.isNotNull(meta) &&
-          (!hasJsonProperty || (fieldValue == null))) {
-        throw FieldCannotBeNullError(name, message: meta.notNullMessage);
-      }
       if (!hasJsonProperty || mappedFields.contains(name)) {
-        if (!hasJsonProperty && JsonProperty.isRequired(meta)) {
-          throw FieldIsRequiredError(name, message: meta.requiredMessage);
-        }
         if (defaultValue != null && !isGetterOnly) {
           im.invokeSetter(name, defaultValue);
         }

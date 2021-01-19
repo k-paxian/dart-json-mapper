@@ -1,4 +1,24 @@
+import './model/index.dart';
+
 abstract class JsonMapperError extends Error {}
+
+abstract class JsonFormatError extends JsonMapperError {
+  factory JsonFormatError(DeserializationContext context,
+      {FormatException formatException}) = _JsonFormatErrorImpl;
+}
+
+class _JsonFormatErrorImpl extends JsonMapperError implements JsonFormatError {
+  final DeserializationContext _context;
+  final FormatException _formatException;
+
+  _JsonFormatErrorImpl(DeserializationContext context,
+      {FormatException formatException})
+      : _context = context,
+        _formatException = formatException;
+
+  @override
+  String toString() => _formatException.toString();
+}
 
 abstract class FieldCannotBeNullError extends JsonMapperError {
   factory FieldCannotBeNullError(String fieldName, {String message}) =
@@ -67,21 +87,6 @@ class _MissingAnnotationOnTypeErrorImpl extends JsonMapperError
   String toString() =>
       "It seems your class '${_type.toString()}' has not been annotated "
       'with @jsonSerializable';
-}
-
-abstract class MissingEnumValuesError extends JsonMapperError {
-  factory MissingEnumValuesError(Type type) = _MissingEnumValuesErrorImpl;
-}
-
-class _MissingEnumValuesErrorImpl extends JsonMapperError
-    implements MissingEnumValuesError {
-  final Type _type;
-
-  _MissingEnumValuesErrorImpl(Type type) : _type = type;
-
-  @override
-  String toString() => 'It seems your Enum class field is missing annotation:\n'
-      '@JsonProperty(enumValues: ${_type.toString()}.values)';
 }
 
 abstract class MissingTypeForDeserializationError extends JsonMapperError {

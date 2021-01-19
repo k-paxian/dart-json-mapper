@@ -34,6 +34,31 @@ class ObjectWithRequiredField {
 
   @JsonProperty(notNullMessage: 'This Value2 cannot be null')
   String value2;
+
+  ObjectWithRequiredField({this.value, this.value2});
+}
+
+@jsonSerializable
+@Json(ignoreNullMembers: true)
+class ObjectWithRequiredNullableField {
+  @JsonProperty(
+      requiredMessage: 'This Value is critically important',
+      ignoreForDeserialization: true,
+      ignoreForSerialization: true,
+      ignoreIfNull: true,
+      ignore: true)
+  String value;
+
+  @JsonProperty(
+      notNullMessage: 'This Value2 cannot be null',
+      required: true,
+      ignoreForDeserialization: true,
+      ignoreForSerialization: true,
+      ignoreIfNull: true,
+      ignore: true)
+  String value2;
+
+  ObjectWithRequiredNullableField({this.value, this.value2});
 }
 
 typedef ErrorGeneratorFunction = dynamic Function();
@@ -79,6 +104,33 @@ void testErrorHandling() {
       expect(error, TypeMatcher<FieldCannotBeNullError>());
     });
 
+    test('NotNull fields presence & value check during serialization', () {
+      final instance = ObjectWithRequiredField(value: null, value2: null);
+      expect(catchError(() => JsonMapper.serialize(instance)),
+          TypeMatcher<FieldCannotBeNullError>());
+    });
+
+    test(
+        'NotNull fields presence & value check during serialization'
+        '[required], [ignore], [ignoreForDeserialization], '
+        '[ignoreForSerialization], [ignoreIfNull], '
+        '[Json.ignoreNullMembers] has no meaning', () {
+      final instance = ObjectWithRequiredNullableField();
+      expect(catchError(() => JsonMapper.serialize(instance)),
+          TypeMatcher<FieldCannotBeNullError>());
+    });
+
+    test(
+        'Should be no error if NotNull field has value'
+        '[required], [ignore], [ignoreForDeserialization], '
+        '[ignoreForSerialization], [ignoreIfNull], '
+        '[Json.ignoreNullMembers] has no meaning', () {
+      final instance = ObjectWithRequiredNullableField(value2: '');
+      final json = JsonMapper.serialize(instance, compactOptions);
+      expect(json, '{"value":null,"value2":""}');
+      expect(catchError(() => JsonMapper.serialize(instance)), null);
+    });
+
     test('Circular reference detection during serialization', () {
       final car = Car('VW', Color.Blue);
       car.replacement = car;
@@ -102,14 +154,6 @@ void testErrorHandling() {
     test('Missing annotation on class', () {
       expect(catchError(() => JsonMapper.serialize(UnAnnotated())),
           TypeMatcher<MissingAnnotationOnTypeError>());
-    });
-
-    test('Missing annotation on Enum field', () {
-      final json = '''{"sex":"Sex.Female"}''';
-      // Deserialize unannotated enum should NOT be fine
-      expect(
-          catchError(() => JsonMapper.deserialize<UnAnnotatedEnumField>(json)),
-          TypeMatcher<MissingEnumValuesError>());
     });
 
     test('Missing target type for deserialization', () {
