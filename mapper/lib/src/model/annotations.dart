@@ -116,8 +116,8 @@ class JsonProperty {
   /// serialization / deserialization
   final ICustomConverter converter;
 
-  /// Map of named parameters to be passed to the custom converter instance
-  final Map<String, dynamic> converterParams;
+  /// Map of parameters to be passed to the converter instance
+  final Map converterParams;
 
   /// Declares annotated field as required for serialization / deserialization process
   /// i.e needs to be present explicitly in incoming JSON payload object

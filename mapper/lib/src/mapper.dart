@@ -27,7 +27,7 @@ class JsonMapper {
   Map<Type, ICustomConverter> converters = {};
   Map<int, ITypeInfoDecorator> typeInfoDecorators = {};
   Map<Type, ValueDecoratorFunction> valueDecorators = {};
-  Map<Type, List> enumValues = {};
+  Map<Type, dynamic> enumValues = {};
 
   /// Converts Dart object to JSON String
   static String toJson(Object object,
@@ -124,6 +124,7 @@ class JsonMapper {
   }
 
   void _updateInternalMaps() {
+    _convertedValuesCache.clear();
     _enumerateAnnotatedClasses((ClassInfo classInfo) {
       final jsonMeta = classInfo.getMeta();
       if (jsonMeta != null && jsonMeta.valueDecorators != null) {
@@ -154,12 +155,12 @@ class JsonMapper {
   void info() =>
       adapters.forEach((priority, adapter) => print('$priority : $adapter'));
 
-  Map<Type, List> get _enumValues {
+  Map<Type, dynamic> get _enumValues {
     final result = {};
     adapters.values.forEach((IAdapter adapter) {
       result.addAll(adapter.enumValues);
     });
-    return result.cast<Type, List>();
+    return result.cast<Type, dynamic>();
   }
 
   Map<Type, ICustomConverter> get _converters {
@@ -332,9 +333,23 @@ class JsonMapper {
       result = converters[Enum];
     }
     if (result is ICustomEnumConverter) {
-      (result as ICustomEnumConverter).setEnumValues(enumValues[targetType]);
+      (result as ICustomEnumConverter).setEnumValues(
+          _getEnumValues(enumValues[targetType]),
+          mapping: _getEnumMapping(enumValues[targetType]));
     }
     return result;
+  }
+
+  Map<dynamic, dynamic> _getEnumMapping(dynamic descriptor) {
+    return descriptor is IEnumDescriptor ? descriptor.mapping : null;
+  }
+
+  Iterable _getEnumValues(dynamic descriptor) {
+    if (descriptor is Iterable) {
+      return descriptor;
+    }
+    final enumDescriptor = descriptor as IEnumDescriptor;
+    return enumDescriptor?.values;
   }
 
   dynamic _getConvertedValue(ICustomConverter converter, dynamic value,

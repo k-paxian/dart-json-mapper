@@ -1,6 +1,7 @@
 ## 1.7.8
 
 * #108, #109, feat: Flags `JsonProperty.notNull` `JsonProperty.required` spanned over serialization / deserialization process consistently
+* #110, feat: Support for `String` / `Num` Enum values mappings introduced
 
 ## 1.7.7
 

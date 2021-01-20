@@ -20,7 +20,7 @@ abstract class IAdapter {
   String get refUrl;
   Map<Type, ICustomConverter> get converters;
   Map<Type, ValueDecoratorFunction> get valueDecorators;
-  Map<Type, List> get enumValues;
+  Map<Type, dynamic> get enumValues;
   Map<int, ITypeInfoDecorator> get typeInfoDecorators;
 }
 
@@ -39,7 +39,7 @@ class JsonMapperAdapter implements IAdapter {
   @override
   final Map<int, ITypeInfoDecorator> typeInfoDecorators;
   @override
-  final Map<Type, List> enumValues;
+  final Map<Type, dynamic> enumValues;
 
   const JsonMapperAdapter(
       {this.converters = const {},

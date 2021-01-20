@@ -7,9 +7,18 @@ enum ThirdParty { A, B, C }
 
 @jsonSerializable
 class ShortEnumConverter {
+  @JsonProperty(converterParams: {ThirdParty.B: 'Be'})
   ThirdParty party;
 
   ShortEnumConverter({this.party});
+}
+
+@jsonSerializable
+class EnumMappingsOverrideTest {
+  @JsonProperty(converterParams: {ThirdParty.B: 'Be'})
+  List<ThirdParty> parties = [];
+
+  EnumMappingsOverrideTest({this.parties});
 }
 
 @jsonSerializable
@@ -290,6 +299,116 @@ void testEnums() {
       expect(target.colorsSet.length, 2);
       expect(target.colorsSet.first, Color.Black);
       expect(target.colorsSet.last, Color.Blue);
+    });
+
+    test('Enum with custom String values mapping', () {
+      // given
+      final instance = [ThirdParty.A, ThirdParty.B, ThirdParty.C];
+      final adapter = JsonMapperAdapter(valueDecorators: {
+        typeOf<List<ThirdParty>>(): (value) => value.cast<ThirdParty>(),
+      }, enumValues: {
+        ThirdParty: EnumDescriptor(
+            values: ThirdParty.values,
+            mapping: <ThirdParty, String>{
+              ThirdParty.A: 'AAA',
+              ThirdParty.B: 'BBB',
+              ThirdParty.C: 'CCC'
+            })
+      });
+
+      // when
+      JsonMapper().useAdapter(adapter);
+
+      final targetJson = JsonMapper.serialize(instance, compactOptions);
+      final target = JsonMapper.deserialize<List<ThirdParty>>(targetJson);
+
+      JsonMapper().removeAdapter(adapter);
+
+      // then
+      expect(targetJson, '''["AAA","BBB","CCC"]''');
+      expect(target, instance);
+    });
+
+    test('Enum with custom Num values mapping', () {
+      // given
+      final instance = [ThirdParty.A, ThirdParty.B, ThirdParty.C];
+      final adapter = JsonMapperAdapter(valueDecorators: {
+        typeOf<List<ThirdParty>>(): (value) => value.cast<ThirdParty>(),
+      }, enumValues: {
+        ThirdParty: EnumDescriptor(
+            values: ThirdParty.values,
+            mapping: <ThirdParty, num>{
+              ThirdParty.A: -2.22,
+              ThirdParty.B: 1120,
+              ThirdParty.C: 1.2344
+            })
+      });
+
+      // when
+      JsonMapper().useAdapter(adapter);
+
+      final targetJson = JsonMapper.serialize(instance, compactOptions);
+      final target = JsonMapper.deserialize<List<ThirdParty>>(targetJson);
+
+      JsonMapper().removeAdapter(adapter);
+
+      // then
+      expect(targetJson, '''[-2.22,1120,1.2344]''');
+      expect(target, instance);
+    });
+
+    test('Enum mappings could be given on a field level as `converterParams`',
+        () {
+      // given
+      final instance = ShortEnumConverter(party: ThirdParty.B);
+      final adapter =
+          JsonMapperAdapter(enumValues: {ThirdParty: ThirdParty.values});
+
+      // when
+      JsonMapper().useAdapter(adapter);
+
+      final targetJson = JsonMapper.serialize(instance, compactOptions);
+      final target = JsonMapper.deserialize<ShortEnumConverter>(targetJson);
+
+      JsonMapper().removeAdapter(adapter);
+
+      // then
+      expect(targetJson, '''{"party":"Be"}''');
+      expect(target, TypeMatcher<ShortEnumConverter>());
+      expect(target.party, ThirdParty.B);
+    });
+
+    test(
+        'Enum mappings could be given on a field level as `converterParams` '
+        'to override global Enum mappings', () {
+      // given
+      final instance = EnumMappingsOverrideTest(
+          parties: [ThirdParty.A, ThirdParty.B, ThirdParty.C]);
+      final adapter = JsonMapperAdapter(valueDecorators: {
+        typeOf<List<ThirdParty>>(): (value) => value.cast<ThirdParty>(),
+      }, enumValues: {
+        ThirdParty: EnumDescriptor(
+            values: ThirdParty.values,
+            mapping: <ThirdParty, String>{
+              ThirdParty.A: 'A_A',
+              ThirdParty.B: 'BBB',
+              ThirdParty.C: 'C_C'
+            })
+      });
+
+      // when
+      JsonMapper().useAdapter(adapter);
+
+      final targetJson = JsonMapper.serialize(instance, compactOptions);
+      final target =
+          JsonMapper.deserialize<EnumMappingsOverrideTest>(targetJson);
+
+      JsonMapper().removeAdapter(adapter);
+
+      // then
+      expect(targetJson, '''{"parties":["A_A","Be","C_C"]}''');
+      expect(target, TypeMatcher<EnumMappingsOverrideTest>());
+      expect(target.parties.elementAt(1), ThirdParty.B);
     });
   });
 }

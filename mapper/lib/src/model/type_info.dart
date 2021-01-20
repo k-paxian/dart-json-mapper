@@ -41,7 +41,7 @@ abstract class ITypeInfoDecorator {
   void init(
       Map<String, ClassMirror> knownClasses,
       Map<Type, ValueDecoratorFunction> valueDecorators,
-      Map<Type, List> enumValues);
+      Map<Type, dynamic> enumValues);
   TypeInfo decorate(TypeInfo typeInfo);
 }
 
@@ -51,7 +51,7 @@ final defaultTypeInfoDecorator = DefaultTypeInfoDecorator();
 class DefaultTypeInfoDecorator implements ITypeInfoDecorator {
   Map<String, ClassMirror> _knownClasses;
   Iterable<Type> _valueDecoratorTypes;
-  Map<Type, List> _enumValues;
+  Map<Type, dynamic> _enumValues;
 
   bool isBigInt(TypeInfo typeInfo) =>
       typeInfo.typeName == 'BigInt' || typeInfo.typeName == '_BigIntImpl';
@@ -241,7 +241,7 @@ class DefaultTypeInfoDecorator implements ITypeInfoDecorator {
   void init(
       Map<String, ClassMirror> knownClasses,
       Map<Type, ValueDecoratorFunction> valueDecorators,
-      Map<Type, List> enumValues) {
+      Map<Type, dynamic> enumValues) {
     _knownClasses = knownClasses;
     _valueDecoratorTypes = valueDecorators.keys;
     _enumValues = enumValues;

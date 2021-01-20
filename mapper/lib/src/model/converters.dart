@@ -34,7 +34,7 @@ abstract class ICustomMapConverter {
 
 /// Abstract class for custom Enum converters implementations
 abstract class ICustomEnumConverter {
-  void setEnumValues(Iterable enumValues);
+  void setEnumValues(Iterable enumValues, {Map mapping});
 }
 
 /// Abstract class for composite converters relying on other converters
@@ -160,7 +160,7 @@ class EnumConverter implements ICustomConverter, ICustomEnumConverter {
   }
 
   @override
-  void setEnumValues(Iterable enumValues) {
+  void setEnumValues(Iterable enumValues, {Map mapping}) {
     _enumValues = enumValues;
   }
 }
@@ -172,14 +172,14 @@ class EnumConverterShort implements ICustomConverter, ICustomEnumConverter {
   EnumConverterShort() : super();
 
   Iterable _enumValues = [];
+  Map _mapping = {};
 
   @override
   Object fromJSON(dynamic jsonValue, [DeserializationContext context]) {
     dynamic convert(value) => _enumValues.firstWhere(
         (eValue) =>
-            transformFieldName(
-                eValue.toString().split('.').last, _getCaseStyle(context)) ==
-            value.toString().split('.').last,
+            _transformValue(value, context) ==
+            _transformValue(eValue, context, doubleMapping: true),
         orElse: () => null);
     return jsonValue is Iterable
         ? jsonValue.map(convert).toList()
@@ -188,19 +188,43 @@ class EnumConverterShort implements ICustomConverter, ICustomEnumConverter {
 
   @override
   dynamic toJSON(Object object, [SerializationContext context]) {
-    dynamic convert(value) => value != null
-        ? transformFieldName(
-            value.toString().split('.').last, _getCaseStyle(context))
-        : null;
+    dynamic convert(value) =>
+        value != null ? _transformValue(value, context) : null;
     return (object is Iterable)
         ? object.map(convert).toList()
         : convert(object);
   }
 
   @override
-  void setEnumValues(Iterable<dynamic> enumValues) {
+  void setEnumValues(Iterable<dynamic> enumValues, {Map mapping}) {
     _enumValues = enumValues;
+    if (mapping != null) {
+      _mapping = {};
+      _mapping.addAll(mapping);
+    }
   }
+
+  dynamic _transformValue(dynamic value, DeserializationContext context,
+      {bool doubleMapping = false}) {
+    final mapping = {};
+    mapping.addAll(_mapping);
+    if (context.jsonPropertyMeta != null &&
+        context.jsonPropertyMeta.converterParams != null) {
+      mapping.addAll(context.jsonPropertyMeta.converterParams);
+    }
+    value = _mapValue(value, mapping);
+    if (doubleMapping) {
+      value = _mapValue(value, mapping);
+    }
+    if (value is String) {
+      value = transformFieldName(value, _getCaseStyle(context));
+    }
+    return value;
+  }
+
+  dynamic _mapValue(dynamic value, Map mapping) => mapping.containsKey(value)
+      ? mapping[value]
+      : value.toString().split('.').last;
 
   CaseStyle _getCaseStyle(DeserializationContext context) =>
       context.classMeta != null && context.classMeta.caseStyle != null
@@ -224,8 +248,8 @@ class ConstEnumConverterNumeric
       _enumConverterNumeric.toJSON(object, context);
 
   @override
-  void setEnumValues(Iterable<dynamic> enumValues) {
-    _enumConverterNumeric.setEnumValues(enumValues);
+  void setEnumValues(Iterable<dynamic> enumValues, {Map mapping}) {
+    _enumConverterNumeric.setEnumValues(enumValues, mapping: mapping);
   }
 }
 
@@ -248,7 +272,7 @@ class EnumConverterNumeric implements ICustomConverter, ICustomEnumConverter {
   }
 
   @override
-  void setEnumValues(Iterable<dynamic> enumValues) {
+  void setEnumValues(Iterable<dynamic> enumValues, {Map mapping}) {
     _enumValues = enumValues;
   }
 }

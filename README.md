@@ -492,6 +492,35 @@ Generally, we always have to bear in mind following cases around Enums:
     Enum`.values` refers to a list of all possible enum values, it's a handy built in capability of all
     enum based types. Without providing all values it's not possible to traverse it's values properly.
 
+    * How to configure Dart Enums to have `String` / `num` values to be sent to the JSON?
+
+    While registering those enums via adapter it is possible to specify value mappings for each enum:
+    ```dart
+    import 'package:some_package' show ThirdPartyEnum, ThirdPartyEnum2;
+
+    JsonMapper().useAdapter(
+        JsonMapperAdapter(enumValues: {
+            ThirdPartyEnum: ThirdPartyEnum.values,
+           ThirdPartyEnum2: EnumDescriptor(
+                                values: ThirdPartyEnum2.values,
+                               mapping: <ThirdPartyEnum2, String>{
+                                          ThirdPartyEnum2.A: 'AAA',
+                                          ThirdPartyEnum2.B: 'BBB',
+                                          ThirdPartyEnum2.C: 'CCC'
+                                        }
+                            ),
+           ThirdPartyEnum3: EnumDescriptor(
+                                values: ThirdPartyEnum3.values,
+                               mapping: <ThirdPartyEnum3, num>{
+                                          ThirdPartyEnum3.A: -1.2,
+                                          ThirdPartyEnum3.B: 2323,
+                                          ThirdPartyEnum3.C: 1.2344
+                                        }
+                            )
+        })
+    );
+    ```
+
 
 There are few enum converters provided out of the box:
 
@@ -895,7 +924,7 @@ the property named as this param value
 Example: `'foo', 'bar', 'foo/bar/baz'`
     * *scheme* dynamic [Scheme](#schemes) marker to associate this meta information with particular mapping scheme
     * *converter* Declares custom converter instance, to be used for annotated field serialization / deserialization 
-    * *converterParams* A `Map<String, dynamic>` of named parameters to be passed to the converter instance
+    * *converterParams* A `Map` of parameters to be passed to the converter instance
     * *notNull* A bool declares annotated field as NOT NULL for serialization / deserialization process
     * *required* A bool declares annotated field as required for serialization / deserialization process i.e. needs to be present explicitly
     * *ignore* A bool declares annotated field as ignored so it will be excluded from serialization / deserialization process
