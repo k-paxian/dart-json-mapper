@@ -524,7 +524,7 @@ Generally, we always have to bear in mind following cases around Enums:
 
 There are few enum converters provided out of the box:
 
-* `enumConverterShort` produces values like: ["Red", "Blue", "Green"]
+* `enumConverterShort` produces values like: ["Red", "Blue", "Green"], unless custom value mappings provided
 * `enumConverter` produces values like: ["Color.Red", "Color.Blue", "Color.Green"]
 * `enumConverterNumeric` produces values like: [0, 1, 2]
 
