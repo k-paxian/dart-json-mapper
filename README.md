@@ -60,6 +60,7 @@ Please add the following dependencies to your `pubspec.yaml`:
 dependencies:
   dart_json_mapper:
 dev_dependencies:
+  reflectable:
   build_runner:
 ```
 
