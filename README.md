@@ -38,6 +38,7 @@ guided by the annotated classes **only**, as the result types information is acc
     * [DateTime / num types](#format-datetime--num-types)
     * [Iterable types](#iterable-types)
     * [Enum types](#enum-types)
+    * [Enums having String / num types](#enums-having-string--num-values)
     * [Name casing styles](#name-casing-styles-pascal-kebab-snake-snakeallcaps)
     * [Serialization template](#serialization-template)
     * [Deserialization template](#deserialization-template)
@@ -511,7 +512,7 @@ void main() {
 }
 ```
 
-## Enums having `String` / `num` / `Type` values
+## Enums having `String` / `num` values
 
 What are the options if you would like to serialize / deserialize Enum values as custom values?
 
@@ -1069,7 +1070,7 @@ JsonMapper()
 [12]: https://www.baeldung.com/jackson-annotations
 [13]: https://pub.dev/packages/build#implementing-your-own-builders
 [14]: https://pub.dev/packages/super_enum
-[15]: https://github.com/rrousselGit/freezed
+[15]: https://pub.dev/packages/freezed
 
 [obfuscation]: https://flutter.dev/docs/deployment/obfuscate
 

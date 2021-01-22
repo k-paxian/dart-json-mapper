@@ -357,6 +357,27 @@ void testEnums() {
       expect(target, instance);
     });
 
+    test('Enum with defaultValue on unknown entries', () {
+      // given
+      final json = '''["A","D","C"]''';
+      final adapter = JsonMapperAdapter(valueDecorators: {
+        typeOf<List<ThirdParty>>(): (value) => value.cast<ThirdParty>(),
+      }, enumValues: {
+        ThirdParty: EnumDescriptor(
+            values: ThirdParty.values, defaultValue: ThirdParty.B)
+      });
+
+      // when
+      JsonMapper().useAdapter(adapter);
+
+      final target = JsonMapper.deserialize<List<ThirdParty>>(json);
+
+      JsonMapper().removeAdapter(adapter);
+
+      // then
+      expect(target, [ThirdParty.A, ThirdParty.B, ThirdParty.C]);
+    });
+
     test('Enum mappings could be given on a field level as `converterParams`',
         () {
       // given

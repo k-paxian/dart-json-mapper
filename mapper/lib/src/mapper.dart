@@ -335,6 +335,7 @@ class JsonMapper {
     if (result is ICustomEnumConverter) {
       (result as ICustomEnumConverter).setEnumValues(
           _getEnumValues(enumValues[targetType]),
+          defaultValue: _getEnumDefaultValue(enumValues[targetType]),
           mapping: _getEnumMapping(enumValues[targetType]));
     }
     return result;
@@ -342,6 +343,10 @@ class JsonMapper {
 
   Map<dynamic, dynamic> _getEnumMapping(dynamic descriptor) {
     return descriptor is IEnumDescriptor ? descriptor.mapping : null;
+  }
+
+  dynamic _getEnumDefaultValue(dynamic descriptor) {
+    return descriptor is IEnumDescriptor ? descriptor.defaultValue : null;
   }
 
   Iterable _getEnumValues(dynamic descriptor) {

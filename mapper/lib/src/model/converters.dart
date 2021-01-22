@@ -34,7 +34,7 @@ abstract class ICustomMapConverter {
 
 /// Abstract class for custom Enum converters implementations
 abstract class ICustomEnumConverter {
-  void setEnumValues(Iterable enumValues, {Map mapping});
+  void setEnumValues(Iterable enumValues, {Map mapping, dynamic defaultValue});
 }
 
 /// Abstract class for composite converters relying on other converters
@@ -160,7 +160,7 @@ class EnumConverter implements ICustomConverter, ICustomEnumConverter {
   }
 
   @override
-  void setEnumValues(Iterable enumValues, {Map mapping}) {
+  void setEnumValues(Iterable enumValues, {Map mapping, dynamic defaultValue}) {
     _enumValues = enumValues;
   }
 }
@@ -173,14 +173,17 @@ class EnumConverterShort implements ICustomConverter, ICustomEnumConverter {
 
   Iterable _enumValues = [];
   Map _mapping = {};
+  dynamic _defaultValue;
 
   @override
   Object fromJSON(dynamic jsonValue, [DeserializationContext context]) {
-    dynamic convert(value) => _enumValues.firstWhere(
-        (eValue) =>
-            _transformValue(value, context) ==
-            _transformValue(eValue, context, doubleMapping: true),
-        orElse: () => null);
+    dynamic convert(value) =>
+        _enumValues.firstWhere(
+            (eValue) =>
+                _transformValue(value, context) ==
+                _transformValue(eValue, context, doubleMapping: true),
+            orElse: () => null) ??
+        _defaultValue;
     return jsonValue is Iterable
         ? jsonValue.map(convert).toList()
         : convert(jsonValue);
@@ -196,8 +199,10 @@ class EnumConverterShort implements ICustomConverter, ICustomEnumConverter {
   }
 
   @override
-  void setEnumValues(Iterable<dynamic> enumValues, {Map mapping}) {
+  void setEnumValues(Iterable<dynamic> enumValues,
+      {Map mapping, dynamic defaultValue}) {
     _enumValues = enumValues;
+    _defaultValue = defaultValue;
     if (mapping != null) {
       _mapping = {};
       _mapping.addAll(mapping);
@@ -248,7 +253,8 @@ class ConstEnumConverterNumeric
       _enumConverterNumeric.toJSON(object, context);
 
   @override
-  void setEnumValues(Iterable<dynamic> enumValues, {Map mapping}) {
+  void setEnumValues(Iterable<dynamic> enumValues,
+      {Map mapping, dynamic defaultValue}) {
     _enumConverterNumeric.setEnumValues(enumValues, mapping: mapping);
   }
 }
@@ -272,7 +278,8 @@ class EnumConverterNumeric implements ICustomConverter, ICustomEnumConverter {
   }
 
   @override
-  void setEnumValues(Iterable<dynamic> enumValues, {Map mapping}) {
+  void setEnumValues(Iterable<dynamic> enumValues,
+      {Map mapping, dynamic defaultValue}) {
     _enumValues = enumValues;
   }
 }

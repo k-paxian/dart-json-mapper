@@ -1,3 +1,7 @@
+## 1.7.9
+
+* #110, feat: Support for Enum `EnumDescriptor.defultValue` on unknown values during deserialization
+
 ## 1.7.8
 
 * #108, #109, feat: Flags `JsonProperty.notNull` `JsonProperty.required` spanned over serialization / deserialization process consistently

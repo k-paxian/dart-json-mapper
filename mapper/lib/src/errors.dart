@@ -17,7 +17,8 @@ class _JsonFormatErrorImpl extends JsonMapperError implements JsonFormatError {
         _formatException = formatException;
 
   @override
-  String toString() => _formatException.toString();
+  String toString() =>
+      '${_context.toString()} \n ${_formatException.toString()}';
 }
 
 abstract class FieldCannotBeNullError extends JsonMapperError {
