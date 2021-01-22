@@ -203,8 +203,8 @@ class EnumConverterShort implements ICustomConverter, ICustomEnumConverter {
       {Map mapping, dynamic defaultValue}) {
     _enumValues = enumValues;
     _defaultValue = defaultValue;
+    _mapping = {};
     if (mapping != null) {
-      _mapping = {};
       _mapping.addAll(mapping);
     }
   }
