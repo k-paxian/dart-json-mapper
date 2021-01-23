@@ -1,0 +1,6 @@
+include: package:pedantic/analysis_options.yaml
+analyzer:
+  exclude:
+    - /*.mapper.g.dart
+  strong-mode:
+    implicit-casts: true

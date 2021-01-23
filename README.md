@@ -38,7 +38,7 @@ guided by the annotated classes **only**, as the result types information is acc
     * [DateTime / num types](#format-datetime--num-types)
     * [Iterable types](#iterable-types)
     * [Enum types](#enum-types)
-    * [Enums having String / num types](#enums-having-string--num-values)
+    * [Enums having String / num values](#enums-having-string--num-values)
     * [Name casing styles](#name-casing-styles-pascal-kebab-snake-snakeallcaps)
     * [Serialization template](#serialization-template)
     * [Deserialization template](#deserialization-template)
@@ -48,6 +48,7 @@ guided by the annotated classes **only**, as the result types information is acc
     * [Objects cloning](#objects-cloning)
 * [Adapters](#complementary-adapter-libraries)
     * [How to use adapter?](#complementary-adapter-libraries)
+    * [![pub package](https://img.shields.io/pub/v/dart_json_mapper_built.svg)](https://pub.dartlang.org/packages/dart_json_mapper_built) | [dart_json_mapper_built](adapters/built) | [Built Collection][16]
     * [![pub package](https://img.shields.io/pub/v/dart_json_mapper_mobx.svg)](https://pub.dartlang.org/packages/dart_json_mapper_mobx) | [dart_json_mapper_mobx](adapters/mobx) | [MobX][7]
     * [![pub package](https://img.shields.io/pub/v/dart_json_mapper_fixnum.svg)](https://pub.dartlang.org/packages/dart_json_mapper_fixnum) | [dart_json_mapper_fixnum](adapters/fixnum) | [Fixnum][8]
     * [![pub package](https://img.shields.io/pub/v/dart_json_mapper_flutter.svg)](https://pub.dartlang.org/packages/dart_json_mapper_flutter) | [dart_json_mapper_flutter](adapters/flutter) | [Flutter][11]
@@ -60,7 +61,6 @@ Please add the following dependencies to your `pubspec.yaml`:
 dependencies:
   dart_json_mapper:
 dev_dependencies:
-  reflectable:
   build_runner:
 ```
 
@@ -1056,6 +1056,7 @@ JsonMapper()
    .useAdapter(fixnumAdapter)
    .useAdapter(flutterAdapter)
    .useAdapter(mobXAdapter)
+   .useAdapter(builtAdapter)
    .info(); // print out a list of used adapters to console
 ```
 
@@ -1072,6 +1073,7 @@ JsonMapper()
 [13]: https://pub.dev/packages/build#implementing-your-own-builders
 [14]: https://pub.dev/packages/super_enum
 [15]: https://pub.dev/packages/freezed
+[16]: https://pub.dev/packages/built_collection
 
 [obfuscation]: https://flutter.dev/docs/deployment/obfuscate
 
