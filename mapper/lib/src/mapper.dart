@@ -559,6 +559,10 @@ class JsonMapper {
               options: context.options,
               typeInfo: paramTypeInfo,
               jsonPropertyMeta: meta,
+              parentJsonMaps: <JsonMap>[
+                ...(context.parentJsonMaps ?? []),
+                jsonMap
+              ],
               classMeta: context.classMeta));
       visitor(param, name, jsonName, classMeta, meta, value ?? defaultValue,
           paramTypeInfo);
@@ -651,6 +655,7 @@ class JsonMapper {
               DeserializationContext(
                   options: deserializationContext.options,
                   typeInfo: _getTypeInfo(type),
+                  parentJsonMaps: deserializationContext.parentJsonMaps,
                   jsonPropertyMeta: deserializationContext.jsonPropertyMeta,
                   classMeta: deserializationContext.classMeta)));
     }
@@ -775,8 +780,8 @@ class JsonMapper {
                 item,
                 DeserializationContext(
                     options: context.options,
-                    typeInfo:
-                        _getTypeInfo(_getScalarType(context.typeInfo.type)),
+                    typeInfo: _getTypeInfo(context.typeInfo.scalarType),
+                    parentJsonMaps: context.parentJsonMaps,
                     jsonPropertyMeta: context.jsonPropertyMeta,
                     classMeta: context.classMeta)))
             .toList()
@@ -817,7 +822,7 @@ class JsonMapper {
       return convertedJsonValue;
     }
 
-    final jsonMap = JsonMap(convertedJsonValue);
+    final jsonMap = JsonMap(convertedJsonValue, null, context.parentJsonMaps);
     typeInfo = _detectObjectType(null, context.typeInfo.type, jsonMap, context);
     final cm = classes[typeInfo.typeName] ?? classes[typeInfo.genericTypeName];
     if (cm == null) {
@@ -860,10 +865,12 @@ class JsonMapper {
         }
         return;
       }
+      final parentMaps = <JsonMap>[...(context.parentJsonMaps ?? []), jsonMap];
       final newContext = DeserializationContext(
           options: context.options,
           typeInfo: typeInfo,
           jsonPropertyMeta: meta,
+          parentJsonMaps: parentMaps,
           classMeta: context.classMeta);
       if (fieldValue is Iterable) {
         fieldValue = fieldValue
@@ -873,6 +880,7 @@ class JsonMapper {
                     options: context.options,
                     typeInfo: _getTypeInfo(scalarType),
                     jsonPropertyMeta: meta,
+                    parentJsonMaps: parentMaps,
                     classMeta: context.classMeta)))
             .toList();
       } else {

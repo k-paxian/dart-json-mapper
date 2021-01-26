@@ -1,3 +1,7 @@
+## 1.7.10
+
+* #111, feat: Support for relative reference to parent field from nested object "../id"
+
 ## 1.7.9
 
 * #110, feat: Support for Enum `EnumDescriptor.defultValue` on unknown values during deserialization

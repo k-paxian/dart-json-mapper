@@ -1,3 +1,4 @@
+import '../utils.dart';
 import 'annotations.dart';
 import 'name_casing.dart';
 import 'type_info.dart';
@@ -85,9 +86,14 @@ class DeserializationContext {
   final JsonProperty jsonPropertyMeta;
   final Json classMeta;
   final TypeInfo typeInfo;
+  final Iterable<JsonMap> parentJsonMaps;
 
   const DeserializationContext(
-      {this.options, this.jsonPropertyMeta, this.classMeta, this.typeInfo});
+      {this.options,
+      this.jsonPropertyMeta,
+      this.classMeta,
+      this.typeInfo,
+      this.parentJsonMaps});
 
   @override
   int get hashCode => '$options$jsonPropertyMeta$classMeta'.hashCode;

@@ -27,7 +27,7 @@ import 'main.mapper.g.dart' show initializeJsonMapper;
 
 @jsonSerializable
 class ImmutableClass {
-  final BuiltList list;
+  final BuiltList<int> list;
 
   const ImmutableClass(this.list);
 }

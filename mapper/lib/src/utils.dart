@@ -9,9 +9,10 @@ class JsonMap {
   final PATH_DELIMITER = '/';
 
   Map<String, dynamic> map;
+  List<JsonMap> parentMaps = [];
   Json jsonMeta;
 
-  JsonMap(this.map, [this.jsonMeta]);
+  JsonMap(this.map, [this.jsonMeta, this.parentMaps]);
 
   bool hasProperty(String name) {
     return _isPathExists(_getPath(name));
@@ -57,6 +58,15 @@ class JsonMap {
     var existingSegmentsCount = 0;
     segments.forEach((segment) {
       final idx = int.tryParse(segment);
+      if (segment == '..') {
+        final nearestParent = parentMaps
+            .lastWhere((element) => element.map != current, orElse: () => null);
+        if (nearestParent != null) {
+          current = nearestParent.map;
+          existingSegmentsCount++;
+        }
+        return;
+      }
       if (current is List &&
           idx != null &&
           (current.length > idx) &&
