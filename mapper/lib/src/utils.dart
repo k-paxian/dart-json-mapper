@@ -310,12 +310,16 @@ class ClassInfo {
       result = null;
     }
     if (result == null) {
-      classMirror.instanceMembers
-          .forEach((memberName, MethodMirror methodMirror) {
-        if (memberName == name) {
-          result = methodMirror;
-        }
-      });
+      try {
+        classMirror.instanceMembers
+            .forEach((memberName, MethodMirror methodMirror) {
+          if (memberName == name) {
+            result = methodMirror;
+          }
+        });
+      } catch (error) {
+        result = null;
+      }
     }
     return result;
   }
