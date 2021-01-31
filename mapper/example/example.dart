@@ -50,14 +50,6 @@ class Person {
   List<Car> vehicles = [Car('Tesla', Color.Black), Car('BMW', Color.Red)];
 
   String get fullName => '${name} ${lastName}';
-
-  @override
-  String toString() {
-    return 'Person{skills: $skills, lastPromotionDate: '
-        '$lastPromotionDate, hireDate: $hireDate, married: $married, name: '
-        '$name, salary: $salary, dob: $dob, age: $age, lastName: $lastName, '
-        'eyeColor: $eyeColor, hairColor: $hairColor, vehicles: $vehicles}';
-  }
 }
 
 void main() {

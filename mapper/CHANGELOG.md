@@ -1,6 +1,8 @@
 ## 1.7.10
 
 * #111, feat: Support for relative reference to parent field from nested object "../id"
+* #112, feat: Introduce support for field aliases. `@JsonProperty(name: ['alias', 'fullName', 'name'])`
+* #77, fix: Flutter for Web: Dynamic call with too many arguments
 
 ## 1.7.9
 

@@ -96,11 +96,13 @@ class JsonProperty {
   final dynamic scheme;
 
   /// Defines RFC 6901 JSON [pointer]
-  /// Denotes the json property name/path to be used for mapping to the annotated field
+  /// Denotes the json property name/path/aliases to be used for mapping to the annotated field
   /// Example:  name: 'foo'
   ///           name: 'bar'
   ///           name: 'foo/bar/baz'
-  final String name;
+  ///           name: '../foo'
+  ///           name: ['foo', 'bar', 'baz']  'foo' - primary, 'bar', 'baz' - aliases
+  final dynamic name;
 
   /// Defines an optional message to be thrown as an explanation to why is
   /// this field needs to be provided in incoming JSON payload object
@@ -174,6 +176,23 @@ class JsonProperty {
   static bool isNotNull(JsonProperty jsonProperty) =>
       jsonProperty != null &&
       (jsonProperty.notNull == true || jsonProperty.notNullMessage != null);
+
+  static String getPrimaryName(JsonProperty jsonProperty) =>
+      jsonProperty != null &&
+              jsonProperty.name is Iterable &&
+              jsonProperty.name.isNotEmpty
+          ? jsonProperty.name.first
+          : jsonProperty.name;
+
+  static List<String> getAliases(JsonProperty jsonProperty) =>
+      jsonProperty != null &&
+              jsonProperty.name is Iterable &&
+              jsonProperty.name.length > 1
+          ? jsonProperty.name
+              .where((x) => x != getPrimaryName(jsonProperty))
+              .toList()
+              .cast<String>()
+          : [];
 
   @override
   String toString() => '$name$ignore$scheme$ignoreForSerialization'

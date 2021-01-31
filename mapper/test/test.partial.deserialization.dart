@@ -15,6 +15,17 @@ class IgnoreMembers {
 }
 
 @jsonSerializable
+class FieldAliasObject {
+  // alias ?? fullName ?? name
+  @JsonProperty(name: ['alias', 'fullName', 'name'])
+  final String name;
+
+  const FieldAliasObject({
+    this.name,
+  });
+}
+
+@jsonSerializable
 abstract class AnyObject {
   @JsonProperty(name: 'in')
   final String location;
@@ -92,6 +103,27 @@ void testPartialDeserialization() {
       final json = JsonMapper.serialize(instance, compactOptions);
       // then
       expect(json, '''{"nextCatId":"c0","nextDogId":"h1"}''');
+    });
+
+    test('Field aliases, main ?? alias1 ?? alias2 ?? ...', () {
+      // given
+      final json = '''{"alias":"007"}''';
+      final json2 = '''{"alias":null,"fullName":"James Bond"}''';
+      final json3 = '''{"name":"Bond"}''';
+      final json4 = '''{"name":"Bond","fullName":"James Bond"}''';
+      final instance = FieldAliasObject(name: '007');
+      // when
+      final targetJson = JsonMapper.serialize(instance, compactOptions);
+      final target = JsonMapper.deserialize<FieldAliasObject>(json);
+      final target2 = JsonMapper.deserialize<FieldAliasObject>(json2);
+      final target3 = JsonMapper.deserialize<FieldAliasObject>(json3);
+      final target4 = JsonMapper.deserialize<FieldAliasObject>(json4);
+      // then
+      expect(targetJson, json);
+      expect(target.name, '007');
+      expect(target2.name, 'James Bond');
+      expect(target3.name, 'Bond');
+      expect(target4.name, 'James Bond');
     });
 
     test('Unmapped properties deserialization & serialization', () {

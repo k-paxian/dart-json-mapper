@@ -446,13 +446,14 @@ class JsonMapper {
     };
 
     for (var name in classInfo.publicFieldNames) {
-      var jsonName = name;
       final declarationMirror = classInfo.getDeclarationMirror(name);
       if (declarationMirror == null) {
         continue;
       }
       final declarationType = _getDeclarationType(declarationMirror);
       final isGetterOnly = classInfo.isGetterOnly(name);
+
+      var jsonName = name;
       final meta =
           classInfo.getDeclarationMeta(declarationMirror, options.scheme);
       if (meta == null &&
@@ -460,7 +461,7 @@ class JsonMapper {
         continue;
       }
       if (meta != null && meta.name != null) {
-        jsonName = meta.name;
+        jsonName = JsonProperty.getPrimaryName(meta);
       }
       jsonName =
           transformFieldName(jsonName, _getCaseStyle(classMeta, options));
@@ -468,8 +469,18 @@ class JsonMapper {
       var value = instanceMirror.invokeGetter(name);
       if (value == null && jsonMap != null) {
         value = jsonMap.getPropertyValue(jsonName);
+        if (value == null || !jsonMap.hasProperty(jsonName)) {
+          JsonProperty.getAliases(meta).forEach((alias) {
+            if (value != null || !jsonMap.hasProperty(alias)) {
+              return;
+            }
+            jsonName = alias;
+            value = jsonMap.getPropertyValue(jsonName);
+          });
+        }
       }
       checkFieldConstraints(value, name, jsonMap?.hasProperty(jsonName), meta);
+
       if (_isFieldIgnored(value, classMeta, meta, options)) {
         continue;
       }
@@ -487,8 +498,8 @@ class JsonMapper {
 
     classInfo.enumerateJsonGetters((MethodMirror mm, JsonProperty meta) {
       final name = mm.simpleName;
-      final jsonName =
-          transformFieldName(meta.name, _getCaseStyle(classMeta, options));
+      final jsonName = transformFieldName(
+          JsonProperty.getPrimaryName(meta), _getCaseStyle(classMeta, options));
       final declarationType = _getDeclarationType(mm);
 
       var value = instanceMirror.invoke(mm.simpleName, []);
@@ -545,7 +556,7 @@ class JsonMapper {
               declarationMirror, context.options.scheme) ??
           classInfo.getDeclarationMeta(param, context.options.scheme);
       if (meta != null && meta.name != null) {
-        jsonName = meta.name;
+        jsonName = JsonProperty.getPrimaryName(meta);
       }
       jsonName = transformFieldName(
           jsonName, _getCaseStyle(classMeta, context.options));
@@ -553,6 +564,15 @@ class JsonMapper {
       var value = jsonMap.hasProperty(jsonName)
           ? jsonMap.getPropertyValue(jsonName) ?? defaultValue
           : defaultValue;
+      if (value == null || !jsonMap.hasProperty(jsonName)) {
+        JsonProperty.getAliases(meta).forEach((alias) {
+          if (value != null || !jsonMap.hasProperty(alias)) {
+            return;
+          }
+          jsonName = alias;
+          value = jsonMap.getPropertyValue(jsonName);
+        });
+      }
       value = _deserializeObject(
           value,
           DeserializationContext(

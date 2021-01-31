@@ -107,12 +107,19 @@ class ClassInfo {
               (scheme == null && m.scheme == null))),
       orElse: () => null);
 
-  JsonProperty getDeclarationMeta(DeclarationMirror dm, [dynamic scheme]) =>
-      lookupDeclarationMetaData(dm).firstWhere(
-          (m) => (m is JsonProperty &&
+  JsonProperty getDeclarationMeta(DeclarationMirror dm, [dynamic scheme]) {
+    final all = getAllDeclarationMeta(dm, scheme);
+    return all.isNotEmpty ? all.last : null;
+  }
+
+  List<JsonProperty> getAllDeclarationMeta(DeclarationMirror dm,
+          [dynamic scheme]) =>
+      lookupDeclarationMetaData(dm)
+          .where((m) => (m is JsonProperty &&
               ((scheme != null && m.scheme == scheme) ||
-                  (scheme == null && m.scheme == null))),
-          orElse: () => null);
+                  (scheme == null && m.scheme == null))))
+          .toList()
+          .cast<JsonProperty>();
 
   JsonConstructor hasConstructorMeta(DeclarationMirror dm, [dynamic scheme]) =>
       lookupDeclarationMetaData(dm).firstWhere(

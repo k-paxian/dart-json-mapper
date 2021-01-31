@@ -44,6 +44,7 @@ guided by the annotated classes **only**, as the result types information is acc
     * [Deserialization template](#deserialization-template)
     * [Custom types](#custom-types)
     * [Nesting](#nesting-configuration)
+    * [Name aliases](#name-aliases-configuration)
     * [Schemes](#schemes)
     * [Objects cloning](#objects-cloning)
 * [Adapters](#complementary-adapter-libraries)
@@ -132,8 +133,8 @@ So for development time, use `watch` like this
 > pub run build_runner watch --delete-conflicting-outputs
 ```
 
-Each time you modify your project code, all *.mapper.g.dart files will be updated as well.
-- Next step is to add "*.mapper.g.dart" to your .gitignore
+Each time you modify your project code, all `*.mapper.g.dart` files will be updated as well.
+- Next step is to add `*.mapper.g.dart` to your .gitignore
 - And this is it, you are all set and ready to go. Happy coding!
 
 ## Format DateTime / num types
@@ -788,6 +789,80 @@ this means all class fields will be nested under this 'root/foo/bar' path in Jso
 
 `name` is compliant with [RFC 6901][rfc6901] JSON pointer
 
+## Relative path reference to parent field from nested object "../id"
+
+When it's handy to refer to the parent fields values, it's possible to use path like notation "../"
+
+```json
+[
+  {"id":1,"name":"category1","products":[
+         {"id":3629,"name":"Apple","features":[{"id":9,"name":"Red Color"}]},
+         {"id":5674,"name":"Banana"}]},
+  {"id":2,"name":"category2","products":[
+         {"id":7834,"name":"Car"},
+         {"id":2386,"name":"Truck"}
+   ]}
+]
+```
+
+```dart
+@jsonSerializable
+class Feature {
+  @JsonProperty(name: '../../id', ignoreForSerialization: true)
+  num categoryId;
+
+  @JsonProperty(name: '../id', ignoreForSerialization: true)
+  num productId;
+
+  num id;
+  String name;
+
+  Feature({this.name, this.id});
+}
+
+@jsonSerializable
+class Product {
+  @JsonProperty(name: '../id', ignoreForSerialization: true)
+  num categoryId;
+
+  num id;
+  String name;
+
+  @JsonProperty(ignoreIfNull: true)
+  List<Feature> features;
+
+  Product({this.name, this.id, this.features});
+}
+
+@jsonSerializable
+class ProductCategory {
+  num id;
+  String name;
+  List<Product> products;
+
+  ProductCategory({this.id, this.name, this.products});
+}
+```
+
+## Name aliases configuration
+
+For cases when aliasing technique is desired, it's possible to optionally merge / route *many* json properties
+into *one* class field. First name from the list is treated as *primary* i.e. used for serialization
+direction. The rest of items are treated as aliases joined by the `??` operation.
+
+```dart
+@jsonSerializable
+class FieldAliasObject {
+  // same as => alias ?? fullName ?? name
+  @JsonProperty(name: ['alias', 'fullName', 'name'])
+  final String name;
+
+  const FieldAliasObject({
+    this.name,
+  });
+}
+```
+
 ## Schemes
 
 Scheme - is a set of annotations associated with common scheme id.
@@ -935,8 +1010,8 @@ the property named as this param value
     * *allowCircularReferences* As of `int` type. Allows certain number of circular object references during serialization.
     * *scheme* dynamic [Scheme](#schemes) marker to associate this meta information with particular mapping scheme
 * `@JsonProperty(...)` It's an **optional** class member annotation, describes JSON Object property mapping.
-    * *name* Defines [RFC 6901][rfc6901] JSON pointer, denotes the name/path to be used for property mapping relative to the class *root nesting*
-Example: `'foo', 'bar', 'foo/bar/baz'`
+    * *name* Defines [RFC 6901][rfc6901] JSON pointer, denotes the name/path/aliases to be used for property mapping relative to the class *root nesting*
+Example: `'foo', 'bar', 'foo/bar/baz', ['foo', 'bar', 'baz'], '../foo/bar'`
     * *scheme* dynamic [Scheme](#schemes) marker to associate this meta information with particular mapping scheme
     * *converter* Declares custom converter instance, to be used for annotated field serialization / deserialization 
     * *converterParams* A `Map` of parameters to be passed to the converter instance
