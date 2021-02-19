@@ -11,7 +11,9 @@ class ReflectableSourceWrapper {
   final REFLECTABLE_INIT_METHOD = 'initializeReflectable';
   final REFLECTABLE_INIT_METHOD_PATCH = '_initializeReflectable';
   final INIT_METHOD =
-      'JsonMapper initializeJsonMapper({Iterable<JsonMapperAdapter> adapters = const []}) {';
+      '''Future<JsonMapper> initializeJsonMapperAsync({Iterable<JsonMapperAdapter> adapters = const []}) => Future(() => initializeJsonMapper(adapters: adapters));
+
+JsonMapper initializeJsonMapper({Iterable<JsonMapperAdapter> adapters = const []}) {''';
 
   LibraryVisitor _libraryVisitor;
 
