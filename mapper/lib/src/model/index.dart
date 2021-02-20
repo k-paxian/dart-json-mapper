@@ -36,11 +36,15 @@ class DeserializationOptions {
   /// - for Serialization output it could be an instance of Map<String, dynamic>
   final dynamic template;
 
+  /// Declares the type to deserialize to
+  final Type type;
+
   const DeserializationOptions(
       {this.scheme,
       this.caseStyle,
       this.typeNameProperty,
       this.template,
+      this.type,
       this.processAnnotatedMembersOnly});
 
   @override
