@@ -126,6 +126,13 @@ class SerializationContext extends DeserializationContext {
   SerializationOptions get serializationOptions => options;
 }
 
+/// Describes resolved property name and value
+class PropertyDescriptor {
+  String name;
+  dynamic value;
+  PropertyDescriptor(this.name, this.value);
+}
+
 class ProcessedObjectDescriptor {
   dynamic object;
   Map<int, int> usages = {}; // level : usagesCounter

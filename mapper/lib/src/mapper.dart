@@ -452,33 +452,24 @@ class JsonMapper {
       }
       final declarationType = _getDeclarationType(declarationMirror);
       final isGetterOnly = classInfo.isGetterOnly(name);
-
-      var jsonName = name;
       final meta =
           classInfo.getDeclarationMeta(declarationMirror, options.scheme);
       if (meta == null &&
           _getProcessAnnotatedMembersOnly(classMeta, options) == true) {
         continue;
       }
-      if (meta != null && meta.name != null) {
-        jsonName = JsonProperty.getPrimaryName(meta);
-      }
-      jsonName =
-          transformFieldName(jsonName, _getCaseStyle(classMeta, options));
 
-      var value = instanceMirror.invokeGetter(name);
-      if (value == null && jsonMap != null) {
-        value = jsonMap.getPropertyValue(jsonName);
-        if (value == null || !jsonMap.hasProperty(jsonName)) {
-          JsonProperty.getAliases(meta).forEach((alias) {
-            if (value != null || !jsonMap.hasProperty(alias)) {
-              return;
-            }
-            jsonName = alias;
-            value = jsonMap.getPropertyValue(jsonName);
-          });
+      final property = _resolveProperty(name, jsonMap, options, classMeta, meta,
+          (name, jsonName, _) {
+        var result = instanceMirror.invokeGetter(name);
+        if (result == null && jsonMap != null) {
+          result = jsonMap.getPropertyValue(jsonName);
         }
-      }
+        return result;
+      });
+      final jsonName = property.name;
+      final value = property.value;
+
       checkFieldConstraints(value, name, jsonMap?.hasProperty(jsonName), meta);
 
       if (_isFieldIgnored(value, classMeta, meta, options)) {
@@ -523,6 +514,36 @@ class JsonMapper {
     }, options.scheme);
   }
 
+  PropertyDescriptor _resolveProperty(
+      String name,
+      JsonMap jsonMap,
+      DeserializationOptions options,
+      Json classMeta,
+      JsonProperty meta,
+      Function getValueByName) {
+    var jsonName = name;
+
+    if (meta != null && meta.name != null) {
+      jsonName = JsonProperty.getPrimaryName(meta);
+    }
+    jsonName = transformFieldName(jsonName, _getCaseStyle(classMeta, options));
+    var value =
+        getValueByName(name, jsonName, meta != null ? meta.defaultValue : null);
+    if (jsonMap != null &&
+        meta != null &&
+        (value == null || !jsonMap.hasProperty(jsonName))) {
+      JsonProperty.getAliases(meta).forEach((alias) {
+        jsonName = transformFieldName(alias, _getCaseStyle(classMeta, options));
+        if (value != null || !jsonMap.hasProperty(jsonName)) {
+          return;
+        }
+        value = jsonMap.getPropertyValue(jsonName);
+      });
+    }
+
+    return PropertyDescriptor(jsonName, value);
+  }
+
   void _enumerateConstructorParameters(ClassMirror classMirror, JsonMap jsonMap,
       DeserializationContext context, Function filter, Function visitor) {
     final classInfo = ClassInfo(classMirror);
@@ -551,28 +572,22 @@ class JsonMapper {
       paramTypeInfo = paramTypeInfo.isDynamic
           ? _getTypeInfo(_getDeclarationType(declarationMirror))
           : paramTypeInfo;
-      var jsonName = name;
       final meta = classInfo.getDeclarationMeta(
               declarationMirror, context.options.scheme) ??
           classInfo.getDeclarationMeta(param, context.options.scheme);
-      if (meta != null && meta.name != null) {
-        jsonName = JsonProperty.getPrimaryName(meta);
-      }
-      jsonName = transformFieldName(
-          jsonName, _getCaseStyle(classMeta, context.options));
-      final defaultValue = meta != null ? meta.defaultValue : null;
-      var value = jsonMap.hasProperty(jsonName)
-          ? jsonMap.getPropertyValue(jsonName) ?? defaultValue
-          : defaultValue;
-      if (value == null || !jsonMap.hasProperty(jsonName)) {
-        JsonProperty.getAliases(meta).forEach((alias) {
-          if (value != null || !jsonMap.hasProperty(alias)) {
-            return;
-          }
-          jsonName = alias;
-          value = jsonMap.getPropertyValue(jsonName);
-        });
-      }
+
+      final property = _resolveProperty(
+          name,
+          jsonMap,
+          context.options,
+          classMeta,
+          meta,
+          (_, jsonName, defaultValue) => jsonMap.hasProperty(jsonName)
+              ? jsonMap.getPropertyValue(jsonName) ?? defaultValue
+              : defaultValue);
+      final jsonName = property.name;
+      var value = property.value;
+
       value = _deserializeObject(
           value,
           DeserializationContext(
@@ -584,8 +599,7 @@ class JsonMapper {
                 jsonMap
               ],
               classMeta: context.classMeta));
-      visitor(param, name, jsonName, classMeta, meta, value ?? defaultValue,
-          paramTypeInfo);
+      visitor(param, name, jsonName, classMeta, meta, value, paramTypeInfo);
     });
   }
 

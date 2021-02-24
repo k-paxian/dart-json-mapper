@@ -1,3 +1,8 @@
+## 1.7.11
+
+* #115, fix: Null pointer on Flutter AOT app build
+* #114, introduce async init method `initializeJsonMapperAsync`
+
 ## 1.7.10
 
 * #111, feat: Support for relative reference to parent field from nested object "../id"
