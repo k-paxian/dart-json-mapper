@@ -1,3 +1,7 @@
+## 1.7.12
+
+* #117, fix: Cached values from converters made more accurate in terms of different types
+
 ## 1.7.11
 
 * #115, fix: Null pointer on Flutter AOT app build

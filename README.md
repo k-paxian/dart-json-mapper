@@ -933,7 +933,7 @@ Or if you would like to override some properties for the clonned object instance
 final car = Car('Tesla S3', Color.Black);
 
 // when
-final cloneCar = JsonMapper.copyWith(car, {'color': Color.Blue}); // overriding Black by Blue
+final cloneCar = JsonMapper.copyWith(car, {'color': 'Blue'}); // overriding Black by Blue
 
 // then
 expect(cloneCar == car, false);

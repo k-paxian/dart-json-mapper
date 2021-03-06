@@ -39,7 +39,7 @@ void testIntegration() {
       final car = Car('Tesla S3', Color.Black);
 
       // when
-      final instance = JsonMapper.copyWith(car, {'color': Color.Blue});
+      final instance = JsonMapper.copyWith(car, {'color': 'Blue'});
 
       // then
       expect(instance == car, false);

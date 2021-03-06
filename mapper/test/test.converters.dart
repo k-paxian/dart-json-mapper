@@ -6,6 +6,20 @@ import 'package:test/test.dart';
 import './model/index.dart';
 
 @jsonSerializable
+enum MyEnumA { first, second }
+
+@jsonSerializable
+enum MyEnumB { foo, bar }
+
+@jsonSerializable
+class MyClass {
+  MyEnumA enumA;
+  MyEnumB enumB;
+
+  MyClass(this.enumA, this.enumB);
+}
+
+@jsonSerializable
 enum NumericEnumTestColor {
   Red,
   Blue,
@@ -320,6 +334,13 @@ void testConverters() {
       final myEnum = JsonMapper.deserialize<MyEnum>(json2);
       // then
       expect(myEnum, MyEnum.valueA);
+
+      // when
+      final json3 = JsonMapper.serialize(MyClass(MyEnumA.first, MyEnumB.foo));
+      final myEnumClass = JsonMapper.deserialize<MyClass>(json3);
+      // then
+      expect(myEnumClass.enumA, MyEnumA.first);
+      expect(myEnumClass.enumB, MyEnumB.foo);
 
       JsonMapper().removeAdapter(adapter);
     });

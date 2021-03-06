@@ -180,18 +180,18 @@ class JsonProperty {
   static String getPrimaryName(JsonProperty jsonProperty) =>
       jsonProperty != null
           ? jsonProperty.name is Iterable && jsonProperty.name.isNotEmpty
-          ? jsonProperty.name.first
-          : jsonProperty.name
+              ? jsonProperty.name.first
+              : jsonProperty.name
           : null;
 
   static List<String> getAliases(JsonProperty jsonProperty) =>
       jsonProperty != null &&
-          jsonProperty.name is Iterable &&
-          jsonProperty.name.length > 1
+              jsonProperty.name is Iterable &&
+              jsonProperty.name.length > 1
           ? jsonProperty.name
-          .where((x) => x != getPrimaryName(jsonProperty))
-          .toList()
-          .cast<String>()
+              .where((x) => x != getPrimaryName(jsonProperty))
+              .toList()
+              .cast<String>()
           : [];
 
   @override
