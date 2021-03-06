@@ -138,10 +138,12 @@ class _$SpaceTrackSerializer implements StructuredSerializer<SpaceTrack> {
       serializers.serialize(object.tLELINE2,
           specifiedType: const FullType(String)),
     ];
-    if (object.dECAYDATE != null) {
+    Object value;
+    value = object.dECAYDATE;
+    if (value != null) {
       result
         ..add('DECAY_DATE')
-        ..add(serializers.serialize(object.dECAYDATE,
+        ..add(serializers.serialize(value,
             specifiedType: const FullType(String)));
     }
     return result;
@@ -156,7 +158,7 @@ class _$SpaceTrackSerializer implements StructuredSerializer<SpaceTrack> {
     while (iterator.moveNext()) {
       final key = iterator.current as String;
       iterator.moveNext();
-      final dynamic value = iterator.current;
+      final Object value = iterator.current;
       switch (key) {
         case 'CCSDS_OMM_VERS':
           result.cCSDSOMMVERS = serializers.deserialize(value,
@@ -364,7 +366,7 @@ class _$RecordSerializer implements StructuredSerializer<Record> {
     while (iterator.moveNext()) {
       final key = iterator.current as String;
       iterator.moveNext();
-      final dynamic value = iterator.current;
+      final Object value = iterator.current;
       switch (key) {
         case 'spaceTrack':
           result.spaceTrack.replace(serializers.deserialize(value,
@@ -519,126 +521,70 @@ class _$SpaceTrack extends SpaceTrack {
       this.tLELINE1,
       this.tLELINE2})
       : super._() {
-    if (cCSDSOMMVERS == null) {
-      throw new BuiltValueNullFieldError('SpaceTrack', 'cCSDSOMMVERS');
-    }
-    if (cOMMENT == null) {
-      throw new BuiltValueNullFieldError('SpaceTrack', 'cOMMENT');
-    }
-    if (cREATIONDATE == null) {
-      throw new BuiltValueNullFieldError('SpaceTrack', 'cREATIONDATE');
-    }
-    if (oRIGINATOR == null) {
-      throw new BuiltValueNullFieldError('SpaceTrack', 'oRIGINATOR');
-    }
-    if (oBJECTNAME == null) {
-      throw new BuiltValueNullFieldError('SpaceTrack', 'oBJECTNAME');
-    }
-    if (oBJECTID == null) {
-      throw new BuiltValueNullFieldError('SpaceTrack', 'oBJECTID');
-    }
-    if (cENTERNAME == null) {
-      throw new BuiltValueNullFieldError('SpaceTrack', 'cENTERNAME');
-    }
-    if (rEFFRAME == null) {
-      throw new BuiltValueNullFieldError('SpaceTrack', 'rEFFRAME');
-    }
-    if (tIMESYSTEM == null) {
-      throw new BuiltValueNullFieldError('SpaceTrack', 'tIMESYSTEM');
-    }
-    if (mEANELEMENTTHEORY == null) {
-      throw new BuiltValueNullFieldError('SpaceTrack', 'mEANELEMENTTHEORY');
-    }
-    if (ePOCH == null) {
-      throw new BuiltValueNullFieldError('SpaceTrack', 'ePOCH');
-    }
-    if (mEANMOTION == null) {
-      throw new BuiltValueNullFieldError('SpaceTrack', 'mEANMOTION');
-    }
-    if (eCCENTRICITY == null) {
-      throw new BuiltValueNullFieldError('SpaceTrack', 'eCCENTRICITY');
-    }
-    if (iNCLINATION == null) {
-      throw new BuiltValueNullFieldError('SpaceTrack', 'iNCLINATION');
-    }
-    if (rAOFASCNODE == null) {
-      throw new BuiltValueNullFieldError('SpaceTrack', 'rAOFASCNODE');
-    }
-    if (aRGOFPERICENTER == null) {
-      throw new BuiltValueNullFieldError('SpaceTrack', 'aRGOFPERICENTER');
-    }
-    if (mEANANOMALY == null) {
-      throw new BuiltValueNullFieldError('SpaceTrack', 'mEANANOMALY');
-    }
-    if (ePHEMERISTYPE == null) {
-      throw new BuiltValueNullFieldError('SpaceTrack', 'ePHEMERISTYPE');
-    }
-    if (cLASSIFICATIONTYPE == null) {
-      throw new BuiltValueNullFieldError('SpaceTrack', 'cLASSIFICATIONTYPE');
-    }
-    if (nORADCATID == null) {
-      throw new BuiltValueNullFieldError('SpaceTrack', 'nORADCATID');
-    }
-    if (eLEMENTSETNO == null) {
-      throw new BuiltValueNullFieldError('SpaceTrack', 'eLEMENTSETNO');
-    }
-    if (rEVATEPOCH == null) {
-      throw new BuiltValueNullFieldError('SpaceTrack', 'rEVATEPOCH');
-    }
-    if (bSTAR == null) {
-      throw new BuiltValueNullFieldError('SpaceTrack', 'bSTAR');
-    }
-    if (mEANMOTIONDOT == null) {
-      throw new BuiltValueNullFieldError('SpaceTrack', 'mEANMOTIONDOT');
-    }
-    if (mEANMOTIONDDOT == null) {
-      throw new BuiltValueNullFieldError('SpaceTrack', 'mEANMOTIONDDOT');
-    }
-    if (sEMIMAJORAXIS == null) {
-      throw new BuiltValueNullFieldError('SpaceTrack', 'sEMIMAJORAXIS');
-    }
-    if (pERIOD == null) {
-      throw new BuiltValueNullFieldError('SpaceTrack', 'pERIOD');
-    }
-    if (aPOAPSIS == null) {
-      throw new BuiltValueNullFieldError('SpaceTrack', 'aPOAPSIS');
-    }
-    if (pERIAPSIS == null) {
-      throw new BuiltValueNullFieldError('SpaceTrack', 'pERIAPSIS');
-    }
-    if (oBJECTTYPE == null) {
-      throw new BuiltValueNullFieldError('SpaceTrack', 'oBJECTTYPE');
-    }
-    if (rCSSIZE == null) {
-      throw new BuiltValueNullFieldError('SpaceTrack', 'rCSSIZE');
-    }
-    if (cOUNTRYCODE == null) {
-      throw new BuiltValueNullFieldError('SpaceTrack', 'cOUNTRYCODE');
-    }
-    if (lAUNCHDATE == null) {
-      throw new BuiltValueNullFieldError('SpaceTrack', 'lAUNCHDATE');
-    }
-    if (sITE == null) {
-      throw new BuiltValueNullFieldError('SpaceTrack', 'sITE');
-    }
-    if (dECAYED == null) {
-      throw new BuiltValueNullFieldError('SpaceTrack', 'dECAYED');
-    }
-    if (fILE == null) {
-      throw new BuiltValueNullFieldError('SpaceTrack', 'fILE');
-    }
-    if (gPID == null) {
-      throw new BuiltValueNullFieldError('SpaceTrack', 'gPID');
-    }
-    if (tLELINE0 == null) {
-      throw new BuiltValueNullFieldError('SpaceTrack', 'tLELINE0');
-    }
-    if (tLELINE1 == null) {
-      throw new BuiltValueNullFieldError('SpaceTrack', 'tLELINE1');
-    }
-    if (tLELINE2 == null) {
-      throw new BuiltValueNullFieldError('SpaceTrack', 'tLELINE2');
-    }
+    BuiltValueNullFieldError.checkNotNull(
+        cCSDSOMMVERS, 'SpaceTrack', 'cCSDSOMMVERS');
+    BuiltValueNullFieldError.checkNotNull(cOMMENT, 'SpaceTrack', 'cOMMENT');
+    BuiltValueNullFieldError.checkNotNull(
+        cREATIONDATE, 'SpaceTrack', 'cREATIONDATE');
+    BuiltValueNullFieldError.checkNotNull(
+        oRIGINATOR, 'SpaceTrack', 'oRIGINATOR');
+    BuiltValueNullFieldError.checkNotNull(
+        oBJECTNAME, 'SpaceTrack', 'oBJECTNAME');
+    BuiltValueNullFieldError.checkNotNull(oBJECTID, 'SpaceTrack', 'oBJECTID');
+    BuiltValueNullFieldError.checkNotNull(
+        cENTERNAME, 'SpaceTrack', 'cENTERNAME');
+    BuiltValueNullFieldError.checkNotNull(rEFFRAME, 'SpaceTrack', 'rEFFRAME');
+    BuiltValueNullFieldError.checkNotNull(
+        tIMESYSTEM, 'SpaceTrack', 'tIMESYSTEM');
+    BuiltValueNullFieldError.checkNotNull(
+        mEANELEMENTTHEORY, 'SpaceTrack', 'mEANELEMENTTHEORY');
+    BuiltValueNullFieldError.checkNotNull(ePOCH, 'SpaceTrack', 'ePOCH');
+    BuiltValueNullFieldError.checkNotNull(
+        mEANMOTION, 'SpaceTrack', 'mEANMOTION');
+    BuiltValueNullFieldError.checkNotNull(
+        eCCENTRICITY, 'SpaceTrack', 'eCCENTRICITY');
+    BuiltValueNullFieldError.checkNotNull(
+        iNCLINATION, 'SpaceTrack', 'iNCLINATION');
+    BuiltValueNullFieldError.checkNotNull(
+        rAOFASCNODE, 'SpaceTrack', 'rAOFASCNODE');
+    BuiltValueNullFieldError.checkNotNull(
+        aRGOFPERICENTER, 'SpaceTrack', 'aRGOFPERICENTER');
+    BuiltValueNullFieldError.checkNotNull(
+        mEANANOMALY, 'SpaceTrack', 'mEANANOMALY');
+    BuiltValueNullFieldError.checkNotNull(
+        ePHEMERISTYPE, 'SpaceTrack', 'ePHEMERISTYPE');
+    BuiltValueNullFieldError.checkNotNull(
+        cLASSIFICATIONTYPE, 'SpaceTrack', 'cLASSIFICATIONTYPE');
+    BuiltValueNullFieldError.checkNotNull(
+        nORADCATID, 'SpaceTrack', 'nORADCATID');
+    BuiltValueNullFieldError.checkNotNull(
+        eLEMENTSETNO, 'SpaceTrack', 'eLEMENTSETNO');
+    BuiltValueNullFieldError.checkNotNull(
+        rEVATEPOCH, 'SpaceTrack', 'rEVATEPOCH');
+    BuiltValueNullFieldError.checkNotNull(bSTAR, 'SpaceTrack', 'bSTAR');
+    BuiltValueNullFieldError.checkNotNull(
+        mEANMOTIONDOT, 'SpaceTrack', 'mEANMOTIONDOT');
+    BuiltValueNullFieldError.checkNotNull(
+        mEANMOTIONDDOT, 'SpaceTrack', 'mEANMOTIONDDOT');
+    BuiltValueNullFieldError.checkNotNull(
+        sEMIMAJORAXIS, 'SpaceTrack', 'sEMIMAJORAXIS');
+    BuiltValueNullFieldError.checkNotNull(pERIOD, 'SpaceTrack', 'pERIOD');
+    BuiltValueNullFieldError.checkNotNull(aPOAPSIS, 'SpaceTrack', 'aPOAPSIS');
+    BuiltValueNullFieldError.checkNotNull(pERIAPSIS, 'SpaceTrack', 'pERIAPSIS');
+    BuiltValueNullFieldError.checkNotNull(
+        oBJECTTYPE, 'SpaceTrack', 'oBJECTTYPE');
+    BuiltValueNullFieldError.checkNotNull(rCSSIZE, 'SpaceTrack', 'rCSSIZE');
+    BuiltValueNullFieldError.checkNotNull(
+        cOUNTRYCODE, 'SpaceTrack', 'cOUNTRYCODE');
+    BuiltValueNullFieldError.checkNotNull(
+        lAUNCHDATE, 'SpaceTrack', 'lAUNCHDATE');
+    BuiltValueNullFieldError.checkNotNull(sITE, 'SpaceTrack', 'sITE');
+    BuiltValueNullFieldError.checkNotNull(dECAYED, 'SpaceTrack', 'dECAYED');
+    BuiltValueNullFieldError.checkNotNull(fILE, 'SpaceTrack', 'fILE');
+    BuiltValueNullFieldError.checkNotNull(gPID, 'SpaceTrack', 'gPID');
+    BuiltValueNullFieldError.checkNotNull(tLELINE0, 'SpaceTrack', 'tLELINE0');
+    BuiltValueNullFieldError.checkNotNull(tLELINE1, 'SpaceTrack', 'tLELINE1');
+    BuiltValueNullFieldError.checkNotNull(tLELINE2, 'SpaceTrack', 'tLELINE2');
   }
 
   @override
@@ -959,48 +905,49 @@ class SpaceTrackBuilder implements Builder<SpaceTrack, SpaceTrackBuilder> {
   SpaceTrackBuilder();
 
   SpaceTrackBuilder get _$this {
-    if (_$v != null) {
-      _cCSDSOMMVERS = _$v.cCSDSOMMVERS;
-      _cOMMENT = _$v.cOMMENT;
-      _cREATIONDATE = _$v.cREATIONDATE;
-      _oRIGINATOR = _$v.oRIGINATOR;
-      _oBJECTNAME = _$v.oBJECTNAME;
-      _oBJECTID = _$v.oBJECTID;
-      _cENTERNAME = _$v.cENTERNAME;
-      _rEFFRAME = _$v.rEFFRAME;
-      _tIMESYSTEM = _$v.tIMESYSTEM;
-      _mEANELEMENTTHEORY = _$v.mEANELEMENTTHEORY;
-      _ePOCH = _$v.ePOCH;
-      _mEANMOTION = _$v.mEANMOTION;
-      _eCCENTRICITY = _$v.eCCENTRICITY;
-      _iNCLINATION = _$v.iNCLINATION;
-      _rAOFASCNODE = _$v.rAOFASCNODE;
-      _aRGOFPERICENTER = _$v.aRGOFPERICENTER;
-      _mEANANOMALY = _$v.mEANANOMALY;
-      _ePHEMERISTYPE = _$v.ePHEMERISTYPE;
-      _cLASSIFICATIONTYPE = _$v.cLASSIFICATIONTYPE;
-      _nORADCATID = _$v.nORADCATID;
-      _eLEMENTSETNO = _$v.eLEMENTSETNO;
-      _rEVATEPOCH = _$v.rEVATEPOCH;
-      _bSTAR = _$v.bSTAR;
-      _mEANMOTIONDOT = _$v.mEANMOTIONDOT;
-      _mEANMOTIONDDOT = _$v.mEANMOTIONDDOT;
-      _sEMIMAJORAXIS = _$v.sEMIMAJORAXIS;
-      _pERIOD = _$v.pERIOD;
-      _aPOAPSIS = _$v.aPOAPSIS;
-      _pERIAPSIS = _$v.pERIAPSIS;
-      _oBJECTTYPE = _$v.oBJECTTYPE;
-      _rCSSIZE = _$v.rCSSIZE;
-      _cOUNTRYCODE = _$v.cOUNTRYCODE;
-      _lAUNCHDATE = _$v.lAUNCHDATE;
-      _sITE = _$v.sITE;
-      _dECAYDATE = _$v.dECAYDATE;
-      _dECAYED = _$v.dECAYED;
-      _fILE = _$v.fILE;
-      _gPID = _$v.gPID;
-      _tLELINE0 = _$v.tLELINE0;
-      _tLELINE1 = _$v.tLELINE1;
-      _tLELINE2 = _$v.tLELINE2;
+    final $v = _$v;
+    if ($v != null) {
+      _cCSDSOMMVERS = $v.cCSDSOMMVERS;
+      _cOMMENT = $v.cOMMENT;
+      _cREATIONDATE = $v.cREATIONDATE;
+      _oRIGINATOR = $v.oRIGINATOR;
+      _oBJECTNAME = $v.oBJECTNAME;
+      _oBJECTID = $v.oBJECTID;
+      _cENTERNAME = $v.cENTERNAME;
+      _rEFFRAME = $v.rEFFRAME;
+      _tIMESYSTEM = $v.tIMESYSTEM;
+      _mEANELEMENTTHEORY = $v.mEANELEMENTTHEORY;
+      _ePOCH = $v.ePOCH;
+      _mEANMOTION = $v.mEANMOTION;
+      _eCCENTRICITY = $v.eCCENTRICITY;
+      _iNCLINATION = $v.iNCLINATION;
+      _rAOFASCNODE = $v.rAOFASCNODE;
+      _aRGOFPERICENTER = $v.aRGOFPERICENTER;
+      _mEANANOMALY = $v.mEANANOMALY;
+      _ePHEMERISTYPE = $v.ePHEMERISTYPE;
+      _cLASSIFICATIONTYPE = $v.cLASSIFICATIONTYPE;
+      _nORADCATID = $v.nORADCATID;
+      _eLEMENTSETNO = $v.eLEMENTSETNO;
+      _rEVATEPOCH = $v.rEVATEPOCH;
+      _bSTAR = $v.bSTAR;
+      _mEANMOTIONDOT = $v.mEANMOTIONDOT;
+      _mEANMOTIONDDOT = $v.mEANMOTIONDDOT;
+      _sEMIMAJORAXIS = $v.sEMIMAJORAXIS;
+      _pERIOD = $v.pERIOD;
+      _aPOAPSIS = $v.aPOAPSIS;
+      _pERIAPSIS = $v.pERIAPSIS;
+      _oBJECTTYPE = $v.oBJECTTYPE;
+      _rCSSIZE = $v.rCSSIZE;
+      _cOUNTRYCODE = $v.cOUNTRYCODE;
+      _lAUNCHDATE = $v.lAUNCHDATE;
+      _sITE = $v.sITE;
+      _dECAYDATE = $v.dECAYDATE;
+      _dECAYED = $v.dECAYED;
+      _fILE = $v.fILE;
+      _gPID = $v.gPID;
+      _tLELINE0 = $v.tLELINE0;
+      _tLELINE1 = $v.tLELINE1;
+      _tLELINE2 = $v.tLELINE2;
       _$v = null;
     }
     return this;
@@ -1008,9 +955,7 @@ class SpaceTrackBuilder implements Builder<SpaceTrack, SpaceTrackBuilder> {
 
   @override
   void replace(SpaceTrack other) {
-    if (other == null) {
-      throw new ArgumentError.notNull('other');
-    }
+    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$SpaceTrack;
   }
 
@@ -1023,47 +968,56 @@ class SpaceTrackBuilder implements Builder<SpaceTrack, SpaceTrackBuilder> {
   _$SpaceTrack build() {
     final _$result = _$v ??
         new _$SpaceTrack._(
-            cCSDSOMMVERS: cCSDSOMMVERS,
-            cOMMENT: cOMMENT,
-            cREATIONDATE: cREATIONDATE,
-            oRIGINATOR: oRIGINATOR,
-            oBJECTNAME: oBJECTNAME,
-            oBJECTID: oBJECTID,
-            cENTERNAME: cENTERNAME,
-            rEFFRAME: rEFFRAME,
-            tIMESYSTEM: tIMESYSTEM,
-            mEANELEMENTTHEORY: mEANELEMENTTHEORY,
-            ePOCH: ePOCH,
-            mEANMOTION: mEANMOTION,
-            eCCENTRICITY: eCCENTRICITY,
-            iNCLINATION: iNCLINATION,
-            rAOFASCNODE: rAOFASCNODE,
-            aRGOFPERICENTER: aRGOFPERICENTER,
-            mEANANOMALY: mEANANOMALY,
-            ePHEMERISTYPE: ePHEMERISTYPE,
-            cLASSIFICATIONTYPE: cLASSIFICATIONTYPE,
-            nORADCATID: nORADCATID,
-            eLEMENTSETNO: eLEMENTSETNO,
-            rEVATEPOCH: rEVATEPOCH,
-            bSTAR: bSTAR,
-            mEANMOTIONDOT: mEANMOTIONDOT,
-            mEANMOTIONDDOT: mEANMOTIONDDOT,
-            sEMIMAJORAXIS: sEMIMAJORAXIS,
-            pERIOD: pERIOD,
-            aPOAPSIS: aPOAPSIS,
-            pERIAPSIS: pERIAPSIS,
-            oBJECTTYPE: oBJECTTYPE,
-            rCSSIZE: rCSSIZE,
-            cOUNTRYCODE: cOUNTRYCODE,
-            lAUNCHDATE: lAUNCHDATE,
-            sITE: sITE,
+            cCSDSOMMVERS: BuiltValueNullFieldError.checkNotNull(
+                cCSDSOMMVERS, 'SpaceTrack', 'cCSDSOMMVERS'),
+            cOMMENT: BuiltValueNullFieldError.checkNotNull(
+                cOMMENT, 'SpaceTrack', 'cOMMENT'),
+            cREATIONDATE: BuiltValueNullFieldError.checkNotNull(
+                cREATIONDATE, 'SpaceTrack', 'cREATIONDATE'),
+            oRIGINATOR: BuiltValueNullFieldError.checkNotNull(
+                oRIGINATOR, 'SpaceTrack', 'oRIGINATOR'),
+            oBJECTNAME: BuiltValueNullFieldError.checkNotNull(
+                oBJECTNAME, 'SpaceTrack', 'oBJECTNAME'),
+            oBJECTID: BuiltValueNullFieldError.checkNotNull(
+                oBJECTID, 'SpaceTrack', 'oBJECTID'),
+            cENTERNAME: BuiltValueNullFieldError.checkNotNull(
+                cENTERNAME, 'SpaceTrack', 'cENTERNAME'),
+            rEFFRAME: BuiltValueNullFieldError.checkNotNull(
+                rEFFRAME, 'SpaceTrack', 'rEFFRAME'),
+            tIMESYSTEM: BuiltValueNullFieldError.checkNotNull(
+                tIMESYSTEM, 'SpaceTrack', 'tIMESYSTEM'),
+            mEANELEMENTTHEORY: BuiltValueNullFieldError.checkNotNull(mEANELEMENTTHEORY, 'SpaceTrack', 'mEANELEMENTTHEORY'),
+            ePOCH: BuiltValueNullFieldError.checkNotNull(ePOCH, 'SpaceTrack', 'ePOCH'),
+            mEANMOTION: BuiltValueNullFieldError.checkNotNull(mEANMOTION, 'SpaceTrack', 'mEANMOTION'),
+            eCCENTRICITY: BuiltValueNullFieldError.checkNotNull(eCCENTRICITY, 'SpaceTrack', 'eCCENTRICITY'),
+            iNCLINATION: BuiltValueNullFieldError.checkNotNull(iNCLINATION, 'SpaceTrack', 'iNCLINATION'),
+            rAOFASCNODE: BuiltValueNullFieldError.checkNotNull(rAOFASCNODE, 'SpaceTrack', 'rAOFASCNODE'),
+            aRGOFPERICENTER: BuiltValueNullFieldError.checkNotNull(aRGOFPERICENTER, 'SpaceTrack', 'aRGOFPERICENTER'),
+            mEANANOMALY: BuiltValueNullFieldError.checkNotNull(mEANANOMALY, 'SpaceTrack', 'mEANANOMALY'),
+            ePHEMERISTYPE: BuiltValueNullFieldError.checkNotNull(ePHEMERISTYPE, 'SpaceTrack', 'ePHEMERISTYPE'),
+            cLASSIFICATIONTYPE: BuiltValueNullFieldError.checkNotNull(cLASSIFICATIONTYPE, 'SpaceTrack', 'cLASSIFICATIONTYPE'),
+            nORADCATID: BuiltValueNullFieldError.checkNotNull(nORADCATID, 'SpaceTrack', 'nORADCATID'),
+            eLEMENTSETNO: BuiltValueNullFieldError.checkNotNull(eLEMENTSETNO, 'SpaceTrack', 'eLEMENTSETNO'),
+            rEVATEPOCH: BuiltValueNullFieldError.checkNotNull(rEVATEPOCH, 'SpaceTrack', 'rEVATEPOCH'),
+            bSTAR: BuiltValueNullFieldError.checkNotNull(bSTAR, 'SpaceTrack', 'bSTAR'),
+            mEANMOTIONDOT: BuiltValueNullFieldError.checkNotNull(mEANMOTIONDOT, 'SpaceTrack', 'mEANMOTIONDOT'),
+            mEANMOTIONDDOT: BuiltValueNullFieldError.checkNotNull(mEANMOTIONDDOT, 'SpaceTrack', 'mEANMOTIONDDOT'),
+            sEMIMAJORAXIS: BuiltValueNullFieldError.checkNotNull(sEMIMAJORAXIS, 'SpaceTrack', 'sEMIMAJORAXIS'),
+            pERIOD: BuiltValueNullFieldError.checkNotNull(pERIOD, 'SpaceTrack', 'pERIOD'),
+            aPOAPSIS: BuiltValueNullFieldError.checkNotNull(aPOAPSIS, 'SpaceTrack', 'aPOAPSIS'),
+            pERIAPSIS: BuiltValueNullFieldError.checkNotNull(pERIAPSIS, 'SpaceTrack', 'pERIAPSIS'),
+            oBJECTTYPE: BuiltValueNullFieldError.checkNotNull(oBJECTTYPE, 'SpaceTrack', 'oBJECTTYPE'),
+            rCSSIZE: BuiltValueNullFieldError.checkNotNull(rCSSIZE, 'SpaceTrack', 'rCSSIZE'),
+            cOUNTRYCODE: BuiltValueNullFieldError.checkNotNull(cOUNTRYCODE, 'SpaceTrack', 'cOUNTRYCODE'),
+            lAUNCHDATE: BuiltValueNullFieldError.checkNotNull(lAUNCHDATE, 'SpaceTrack', 'lAUNCHDATE'),
+            sITE: BuiltValueNullFieldError.checkNotNull(sITE, 'SpaceTrack', 'sITE'),
             dECAYDATE: dECAYDATE,
-            dECAYED: dECAYED,
-            fILE: fILE,
-            gPID: gPID,
-            tLELINE0: tLELINE0,
-            tLELINE1: tLELINE1,
-            tLELINE2: tLELINE2);
+            dECAYED: BuiltValueNullFieldError.checkNotNull(dECAYED, 'SpaceTrack', 'dECAYED'),
+            fILE: BuiltValueNullFieldError.checkNotNull(fILE, 'SpaceTrack', 'fILE'),
+            gPID: BuiltValueNullFieldError.checkNotNull(gPID, 'SpaceTrack', 'gPID'),
+            tLELINE0: BuiltValueNullFieldError.checkNotNull(tLELINE0, 'SpaceTrack', 'tLELINE0'),
+            tLELINE1: BuiltValueNullFieldError.checkNotNull(tLELINE1, 'SpaceTrack', 'tLELINE1'),
+            tLELINE2: BuiltValueNullFieldError.checkNotNull(tLELINE2, 'SpaceTrack', 'tLELINE2'));
     replace(_$result);
     return _$result;
   }
@@ -1084,18 +1038,10 @@ class _$Record extends Record {
 
   _$Record._({this.spaceTrack, this.version, this.launch, this.id})
       : super._() {
-    if (spaceTrack == null) {
-      throw new BuiltValueNullFieldError('Record', 'spaceTrack');
-    }
-    if (version == null) {
-      throw new BuiltValueNullFieldError('Record', 'version');
-    }
-    if (launch == null) {
-      throw new BuiltValueNullFieldError('Record', 'launch');
-    }
-    if (id == null) {
-      throw new BuiltValueNullFieldError('Record', 'id');
-    }
+    BuiltValueNullFieldError.checkNotNull(spaceTrack, 'Record', 'spaceTrack');
+    BuiltValueNullFieldError.checkNotNull(version, 'Record', 'version');
+    BuiltValueNullFieldError.checkNotNull(launch, 'Record', 'launch');
+    BuiltValueNullFieldError.checkNotNull(id, 'Record', 'id');
   }
 
   @override
@@ -1158,11 +1104,12 @@ class RecordBuilder implements Builder<Record, RecordBuilder> {
   RecordBuilder();
 
   RecordBuilder get _$this {
-    if (_$v != null) {
-      _spaceTrack = _$v.spaceTrack?.toBuilder();
-      _version = _$v.version;
-      _launch = _$v.launch;
-      _id = _$v.id;
+    final $v = _$v;
+    if ($v != null) {
+      _spaceTrack = $v.spaceTrack.toBuilder();
+      _version = $v.version;
+      _launch = $v.launch;
+      _id = $v.id;
       _$v = null;
     }
     return this;
@@ -1170,9 +1117,7 @@ class RecordBuilder implements Builder<Record, RecordBuilder> {
 
   @override
   void replace(Record other) {
-    if (other == null) {
-      throw new ArgumentError.notNull('other');
-    }
+    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$Record;
   }
 
@@ -1188,9 +1133,11 @@ class RecordBuilder implements Builder<Record, RecordBuilder> {
       _$result = _$v ??
           new _$Record._(
               spaceTrack: spaceTrack.build(),
-              version: version,
-              launch: launch,
-              id: id);
+              version: BuiltValueNullFieldError.checkNotNull(
+                  version, 'Record', 'version'),
+              launch: BuiltValueNullFieldError.checkNotNull(
+                  launch, 'Record', 'launch'),
+              id: BuiltValueNullFieldError.checkNotNull(id, 'Record', 'id'));
     } catch (_) {
       String _$failedField;
       try {
