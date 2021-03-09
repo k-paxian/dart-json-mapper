@@ -266,21 +266,28 @@ class EnumConverterNumeric implements ICustomConverter, ICustomEnumConverter {
   EnumConverterNumeric() : super();
 
   var _enumValues = [];
+  dynamic _defaultValue;
 
   @override
   Object fromJSON(dynamic jsonValue, [DeserializationContext context]) {
-    return jsonValue is int ? _enumValues[jsonValue] : jsonValue;
+    return jsonValue is int
+        ? jsonValue < _enumValues.length && jsonValue >= 0
+            ? _enumValues[jsonValue]
+            : _defaultValue
+        : jsonValue;
   }
 
   @override
   dynamic toJSON(Object object, [SerializationContext context]) {
-    return _enumValues.indexOf(object);
+    final valueIndex = _enumValues.indexOf(object);
+    return valueIndex >= 0 ? valueIndex : _defaultValue;
   }
 
   @override
   void setEnumValues(Iterable<dynamic> enumValues,
       {Map mapping, dynamic defaultValue}) {
     _enumValues = enumValues;
+    _defaultValue = defaultValue;
   }
 }
 

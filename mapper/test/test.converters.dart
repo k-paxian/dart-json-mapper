@@ -20,6 +20,12 @@ class MyClass {
 }
 
 @jsonSerializable
+class MyClassWoConstructor {
+  MyEnumA enumA;
+  MyEnumB enumB;
+}
+
+@jsonSerializable
 enum NumericEnumTestColor {
   Red,
   Blue,
@@ -341,6 +347,14 @@ void testConverters() {
       // then
       expect(myEnumClass.enumA, MyEnumA.first);
       expect(myEnumClass.enumB, MyEnumB.foo);
+
+      // when
+      final json4 = JsonMapper.serialize(MyClassWoConstructor());
+      final myEnumEmptyClass =
+          JsonMapper.deserialize<MyClassWoConstructor>(json4);
+      // then
+      expect(myEnumEmptyClass.enumA, null);
+      expect(myEnumEmptyClass.enumB, null);
 
       JsonMapper().removeAdapter(adapter);
     });

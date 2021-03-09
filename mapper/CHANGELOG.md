@@ -1,3 +1,7 @@
+## 1.7.13
+
+* #118, fix: Add defaultValue handling for `enumConverterNumeric`
+
 ## 1.7.12
 
 * #117, fix: Cached values from converters made more accurate in terms of different types
