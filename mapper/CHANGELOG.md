@@ -1,6 +1,7 @@
 ## 1.7.13
 
 * #118, fix: Add defaultValue handling for `enumConverterNumeric`
+* #77, fix: Flutter for Web: Dynamic call with too many arguments. Arguments: [Instance of 'NativeJavaScriptObject']
 
 ## 1.7.12
 

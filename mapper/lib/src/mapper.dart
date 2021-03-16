@@ -642,6 +642,12 @@ class JsonMapper {
         result[Symbol(name)] = value;
       }
     });
+
+    if (kIsWeb) {
+      // No named arguments in JS :(
+      return <Symbol, dynamic>{};
+    }
+
     return result;
   }
 

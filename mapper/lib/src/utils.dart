@@ -4,6 +4,8 @@ import 'model/index.dart';
 
 Type typeOf<T>() => T;
 
+const kIsWeb = identical(0, 0.0);
+
 /// Provides logic for traversing Json object tree
 class JsonMap {
   final PATH_DELIMITER = '/';
