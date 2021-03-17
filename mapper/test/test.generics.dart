@@ -12,7 +12,7 @@ void testGenerics() {
 
       // when
       final targetJson = bar.toJson();
-      final BarBase<Foo> target = Bar().fromJson(json)!;
+      final target = Bar().fromJson(json)!;
 
       // then
       expect(targetJson, json);

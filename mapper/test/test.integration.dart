@@ -74,7 +74,7 @@ void testIntegration() {
       final person = JsonMapper.deserialize<Person>(personJson);
       final deserializationMs = stopwatch.elapsedMilliseconds;
       final json = JsonMapper.serialize(person);
-      print('Deserialization executed in ${deserializationMs} ms');
+      print('Deserialization executed in $deserializationMs ms');
       print(
           'Serialization executed in ${stopwatch.elapsedMilliseconds - deserializationMs} ms');
       // then

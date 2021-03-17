@@ -106,10 +106,10 @@ class DefaultTypeInfoDecorator implements ITypeInfoDecorator {
     typeInfo.scalarType = detectScalarType(typeInfo);
     typeInfo.genericType = detectGenericType(typeInfo);
 
-    if (typeName != null && _knownClasses[typeName] != null) {
+    if (_knownClasses[typeName] != null) {
       typeInfo.isEnum = _knownClasses[typeName]!.isEnum;
     } else {
-      if (typeName != null && _enumValues[type!] != null) {
+      if (_enumValues[type!] != null) {
         typeInfo.isEnum = _enumValues[type] != null;
       }
     }
@@ -164,8 +164,7 @@ class DefaultTypeInfoDecorator implements ITypeInfoDecorator {
         : [];
   }
 
-  String? detectGenericTypeName(
-          TypeInfo typeInfo) =>
+  String? detectGenericTypeName(TypeInfo typeInfo) =>
       typeInfo.typeName!.contains('<')
           ? typeInfo.typeName!.substring(0, typeInfo.typeName!.indexOf('<')) +
               '<' +
@@ -225,10 +224,10 @@ class DefaultTypeInfoDecorator implements ITypeInfoDecorator {
         if (_knownClasses[name] != null) {
           return _knownClasses[name]!.reflectedType;
         }
-        final resultFromDecorators = _valueDecoratorTypes
-            .firstWhereOrNull((t) => t.toString() == name);
-        final resultFromEnums = _enumValues.keys
-            .firstWhereOrNull((t) => t.toString() == name);
+        final resultFromDecorators =
+            _valueDecoratorTypes.firstWhereOrNull((t) => t.toString() == name);
+        final resultFromEnums =
+            _enumValues.keys.firstWhereOrNull((t) => t.toString() == name);
         return resultFromDecorators ?? resultFromEnums ?? dynamic;
     }
   }

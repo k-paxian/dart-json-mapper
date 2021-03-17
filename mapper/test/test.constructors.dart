@@ -14,7 +14,7 @@ class BusinessObject {
 
   @jsonConstructor
   BusinessObject.fromJson(
-      @JsonProperty(name: 'LogistikTeileInOrdnung') String processed)
+      @JsonProperty(name: 'LogistikTeileInOrdnung') String? processed)
       : logisticsChecked = processed != null && processed != 'null',
         logisticsOK = processed == 'true';
 }
@@ -24,18 +24,14 @@ class LogisticsItem {
   final bool logisticsChecked;
   final bool logisticsOK;
 
-  LogisticsItem(@JsonProperty(name: 'LogistikTeileInOrdnung') String processed)
+  LogisticsItem(@JsonProperty(name: 'LogistikTeileInOrdnung') String? processed)
       : logisticsChecked = processed != null && processed != 'null',
         logisticsOK = processed == 'true';
 }
 
 @jsonSerializable
 class User {
-  String? _email;
-
-  String? get email => _email;
-
-  set email(String? email) => _email = email;
+  String? email;
 }
 
 @jsonSerializable
