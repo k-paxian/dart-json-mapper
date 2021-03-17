@@ -1,3 +1,11 @@
+## 2.0.2
+
+* update changelog
+
+## 2.0.1
+
+* add readme
+
 ## 2.0.0
 
 * #97, null safety support

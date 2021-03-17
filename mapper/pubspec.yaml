@@ -1,5 +1,5 @@
 name: dart_json_mapper
-version: 2.0.0
+version: 2.0.2
 description: >
   This package allows programmers to annotate Dart objects in order to
   serialize / deserialize them from / to JSON.
@@ -7,7 +7,7 @@ homepage: https://github.com/k-paxian/dart-json-mapper
 environment:
   sdk: '>=2.12.0 <3.0.0'
 dependencies:
-  analyzer: '>=1.1.0'
+  analyzer: '^1.1.0'
   build: ^2.0.0
   intl: ^0.17.0
   reflectable: ^3.0.0
