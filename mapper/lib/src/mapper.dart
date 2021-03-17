@@ -1,6 +1,7 @@
 import 'dart:convert' show JsonEncoder, JsonDecoder;
 import 'dart:math';
 
+import 'package:collection/collection.dart' show IterableExtension;
 import 'package:reflectable/reflectable.dart';
 
 import 'errors.dart';
@@ -13,15 +14,15 @@ class JsonMapper {
   static final JsonMapper instance = JsonMapper._internal();
   static final JsonDecoder _jsonDecoder = JsonDecoder();
   final _serializable = const JsonSerializable();
-  final Map<String, ClassMirror> classes = {};
+  final Map<String?, ClassMirror?> classes = {};
   final Map<int, IAdapter> adapters = {};
   final Map<String, ProcessedObjectDescriptor> _processedObjects = {};
   final Map<Type, ValueDecoratorFunction> _inlineValueDecorators = {};
-  final Map<Type, TypeInfo> _typeInfoCache = {};
+  final Map<Type?, TypeInfo> _typeInfoCache = {};
   final Map<
-          ICustomConverter,
+          ICustomConverter?,
           Map<ConversionDirection,
-              Map<DeserializationContext, Map<dynamic, dynamic>>>>
+              Map<DeserializationContext?, Map<dynamic, dynamic>>>>
       _convertedValuesCache = {};
 
   Map<Type, ICustomConverter> converters = {};
@@ -30,12 +31,12 @@ class JsonMapper {
   Map<Type, dynamic> enumValues = {};
 
   /// Converts Dart object to JSON String
-  static String toJson(Object object,
+  static String toJson(Object? object,
           [SerializationOptions options = defaultSerializationOptions]) =>
       serialize(object, options);
 
   /// Converts Dart object to JSON String
-  static String serialize(Object object,
+  static String serialize(Object? object,
       [SerializationOptions options = defaultSerializationOptions]) {
     final context = SerializationContext(
         options: options, typeInfo: instance._getTypeInfo(object.runtimeType));
@@ -45,7 +46,7 @@ class JsonMapper {
   }
 
   /// Converts JSON String to Dart object of type T
-  static T deserialize<T>(String jsonValue,
+  static T? deserialize<T>(String? jsonValue,
       [DeserializationOptions options = defaultDeserializationOptions]) {
     final targetType = T != dynamic
         ? T
@@ -58,45 +59,46 @@ class JsonMapper {
     return instance._deserializeObject(
         jsonValue != null ? _jsonDecoder.convert(jsonValue) : null,
         DeserializationContext(
-            options: options, typeInfo: instance._getTypeInfo(targetType)));
+            options: options,
+            typeInfo: instance._getTypeInfo(targetType))) as T?;
   }
 
   /// Converts JSON String to Dart object of type T
-  static T fromJson<T>(String jsonValue,
+  static T? fromJson<T>(String jsonValue,
           [DeserializationOptions options = defaultDeserializationOptions]) =>
       deserialize<T>(jsonValue, options);
 
   /// Converts Dart object to Map<String, dynamic>
-  static Map<String, dynamic> toMap(Object object,
+  static Map<String, dynamic>? toMap(Object? object,
           [SerializationOptions options = defaultSerializationOptions]) =>
       deserialize<Map<String, dynamic>>(serialize(object, options), options);
 
   /// Converts Map<String, dynamic> to Dart object instance
-  static T fromMap<T>(Map<String, dynamic> map,
+  static T? fromMap<T>(Map<String, dynamic>? map,
           [SerializationOptions options = defaultSerializationOptions]) =>
       deserialize<T>(
           _getJsonEncoder(SerializationContext(options: options)).convert(map),
           options);
 
   /// Clone Dart object of type T
-  static T clone<T>(T object) => fromJson<T>(toJson(object));
+  static T? clone<T>(T object) => fromJson<T>(toJson(object));
 
   /// Alias for clone method to copy Dart object of type T
-  static T copy<T>(T object) => clone(object);
+  static T? copy<T>(T object) => clone(object);
 
   /// Copy Dart object of type T & merge it with Map<String, dynamic>
-  static T copyWith<T>(T object, Map<String, dynamic> map) =>
-      fromMap<T>(toMap(object)..addAll(map));
+  static T? copyWith<T>(T object, Map<String, dynamic> map) =>
+      fromMap<T>(toMap(object)?..addAll(map));
 
   static JsonEncoder _getJsonEncoder(SerializationContext context) =>
-      context.serializationOptions.indent != null &&
-              context.serializationOptions.indent.isNotEmpty
+      context.serializationOptions!.indent != null &&
+              context.serializationOptions!.indent!.isNotEmpty
           ? JsonEncoder.withIndent(
-              context.serializationOptions.indent, _toEncodable(context))
+              context.serializationOptions!.indent, _toEncodable(context))
           : JsonEncoder(_toEncodable(context));
 
   static dynamic _toEncodable(SerializationContext context) =>
-      (Object object) => instance._serializeObject(object, context);
+      (Object? object) => instance._serializeObject(object, context);
 
   factory JsonMapper() => instance;
 
@@ -105,13 +107,14 @@ class JsonMapper {
     useAdapter(dartCollectionAdapter);
   }
 
-  JsonMapper useAdapter(IAdapter adapter, [int priority]) {
+  JsonMapper useAdapter(IAdapter adapter, [int? priority]) {
     if (adapters.containsValue(adapter)) {
       return this;
     }
-    final nextPriority = priority ?? adapters.keys.isNotEmpty
-        ? adapters.keys.reduce((value, item) => max(value, item)) + 1
-        : 0;
+    final nextPriority = priority ??
+        (adapters.keys.isNotEmpty
+            ? adapters.keys.reduce((value, item) => max(value, item)) + 1
+            : 0);
     adapters[nextPriority] = adapter;
     _updateInternalMaps();
     return this;
@@ -128,7 +131,7 @@ class JsonMapper {
     _enumerateAnnotatedClasses((ClassInfo classInfo) {
       final jsonMeta = classInfo.getMeta();
       if (jsonMeta != null && jsonMeta.valueDecorators != null) {
-        _inlineValueDecorators.addAll(jsonMeta.valueDecorators());
+        _inlineValueDecorators.addAll(jsonMeta.valueDecorators!());
       }
       if (classInfo.reflectedType != null) {
         classes[classInfo.reflectedType.toString()] = classInfo.classMirror;
@@ -188,8 +191,8 @@ class JsonMapper {
     return Map.fromIterable(result).cast<int, ITypeInfoDecorator>();
   }
 
-  InstanceMirror _safeGetInstanceMirror(Object object) {
-    InstanceMirror result;
+  InstanceMirror? _safeGetInstanceMirror(Object object) {
+    InstanceMirror? result;
     try {
       result = _serializable.reflect(object);
     } catch (error) {
@@ -201,8 +204,8 @@ class JsonMapper {
   String _getObjectKey(Object object) =>
       '${object.runtimeType}-${object.hashCode}';
 
-  ProcessedObjectDescriptor _getObjectProcessed(Object object, int level) {
-    ProcessedObjectDescriptor result;
+  ProcessedObjectDescriptor? _getObjectProcessed(Object object, int level) {
+    ProcessedObjectDescriptor? result;
 
     if (object.runtimeType.toString() == 'Null' ||
         object.runtimeType.toString() == 'bool') {
@@ -212,16 +215,16 @@ class JsonMapper {
     final key = _getObjectKey(object);
     if (_processedObjects.containsKey(key)) {
       result = _processedObjects[key];
-      result.logUsage(level);
+      result!.logUsage(level);
     } else {
       result = _processedObjects[key] = ProcessedObjectDescriptor(object);
     }
     return result;
   }
 
-  TypeInfo _getTypeInfo(Type type) {
+  TypeInfo _getTypeInfo(Type? type) {
     if (_typeInfoCache[type] != null) {
-      return _typeInfoCache[type];
+      return _typeInfoCache[type]!;
     }
     var result = TypeInfo(type);
     typeInfoDecorators.values.forEach((ITypeInfoDecorator decorator) {
@@ -232,20 +235,20 @@ class JsonMapper {
     return result;
   }
 
-  Type _getGenericParameterTypeByIndex(
+  Type? _getGenericParameterTypeByIndex(
       num parameterIndex, TypeInfo genericType) {
     return genericType.isGeneric &&
             genericType.parameters.length - 1 >= parameterIndex
-        ? genericType.parameters.elementAt(parameterIndex)
+        ? genericType.parameters.elementAt(parameterIndex as int)
         : null;
   }
 
-  TypeInfo _detectObjectType(dynamic objectInstance, Type objectType,
+  TypeInfo? _detectObjectType(dynamic objectInstance, Type? objectType,
       JsonMap objectJsonMap, DeserializationContext context) {
     final objectClassMirror = classes[objectType.toString()];
     final objectClassInfo = ClassInfo(objectClassMirror);
-    final Json meta = objectClassInfo.metaData
-        .firstWhere((m) => m is Json, orElse: () => null);
+    final meta =
+        objectClassInfo.metaData.firstWhereOrNull((m) => m is Json) as Json?;
 
     if (objectInstance is Map<String, dynamic>) {
       objectJsonMap = JsonMap(objectInstance, meta);
@@ -253,19 +256,18 @@ class JsonMapper {
     final typeInfo = _getTypeInfo(objectType ?? objectInstance.runtimeType);
 
     final typeNameProperty = _getTypeNameProperty(meta, context.options);
-    final String typeName = objectJsonMap != null &&
-            typeNameProperty != null &&
-            objectJsonMap.hasProperty(typeNameProperty)
-        ? objectJsonMap.getPropertyValue(typeNameProperty)
-        : typeInfo.typeName;
+    final String? typeName =
+        typeNameProperty != null && objectJsonMap.hasProperty(typeNameProperty)
+            ? objectJsonMap.getPropertyValue(typeNameProperty)
+            : typeInfo.typeName;
 
     final type = classes[typeName] != null
-        ? classes[typeName].reflectedType
+        ? classes[typeName]!.reflectedType
         : typeInfo.type;
     return _getTypeInfo(type);
   }
 
-  Type _getScalarType(Type type) {
+  Type? _getScalarType(Type type) {
     var result = dynamic;
     final typeInfo = _getTypeInfo(type);
     final scalarTypeName = typeInfo.scalarTypeName;
@@ -277,7 +279,7 @@ class JsonMapper {
 
     /// Custom Types annotated with [@jsonSerializable]
     if (classes[scalarTypeName] != null) {
-      return classes[scalarTypeName].reflectedType;
+      return classes[scalarTypeName]!.reflectedType;
     }
 
     /// Search through value decorators for scalarType match
@@ -291,7 +293,7 @@ class JsonMapper {
   }
 
   Type _getDeclarationType(DeclarationMirror mirror) {
-    var result = dynamic;
+    Type? result = dynamic;
     VariableMirror variable;
     MethodMirror method;
 
@@ -313,9 +315,9 @@ class JsonMapper {
     return result ??= dynamic;
   }
 
-  ICustomConverter _getConverter(
-      JsonProperty jsonProperty, Type declarationType,
-      [Type valueType, InstanceMirror im]) {
+  ICustomConverter? _getConverter(
+      JsonProperty? jsonProperty, Type? declarationType,
+      [Type? valueType, InstanceMirror? im]) {
     var result = jsonProperty != null ? jsonProperty.converter : null;
     var targetType = declarationType;
     if (declarationType == dynamic && valueType != null) {
@@ -323,25 +325,25 @@ class JsonMapper {
     }
 
     final typeInfo = _getTypeInfo(targetType);
-    if (result == null && converters[typeInfo.type] != null) {
-      result = converters[typeInfo.type];
+    if (result == null && converters[typeInfo.type!] != null) {
+      result = converters[typeInfo.type!];
     }
     if (result == null && converters[typeInfo.genericType] != null) {
       result = converters[typeInfo.genericType];
     }
-    if (result == null && enumValues[targetType] != null) {
+    if (result == null && enumValues[targetType!] != null) {
       result = converters[Enum];
     }
     if (result is ICustomEnumConverter) {
       (result as ICustomEnumConverter).setEnumValues(
-          _getEnumValues(enumValues[targetType]),
+          _getEnumValues(enumValues[targetType!]),
           defaultValue: _getEnumDefaultValue(enumValues[targetType]),
           mapping: _getEnumMapping(enumValues[targetType]));
     }
     return result;
   }
 
-  Map<dynamic, dynamic> _getEnumMapping(dynamic descriptor) {
+  Map<dynamic, dynamic>? _getEnumMapping(dynamic descriptor) {
     return descriptor is IEnumDescriptor ? descriptor.mapping : null;
   }
 
@@ -349,27 +351,27 @@ class JsonMapper {
     return descriptor is IEnumDescriptor ? descriptor.defaultValue : null;
   }
 
-  Iterable _getEnumValues(dynamic descriptor) {
+  Iterable? _getEnumValues(dynamic descriptor) {
     if (descriptor is Iterable) {
       return descriptor;
     }
-    final enumDescriptor = descriptor as IEnumDescriptor;
+    final enumDescriptor = descriptor as IEnumDescriptor?;
     return enumDescriptor?.values;
   }
 
-  dynamic _getConvertedValue(ICustomConverter converter, dynamic value,
-      [SerializationContext serializationContext,
-      DeserializationContext deserializationContext]) {
+  dynamic _getConvertedValue(ICustomConverter? converter, dynamic value,
+      [SerializationContext? serializationContext,
+      DeserializationContext? deserializationContext]) {
     final context = serializationContext ?? deserializationContext;
     final direction = serializationContext != null
         ? ConversionDirection.toJson
         : ConversionDirection.fromJson;
     if (_convertedValuesCache.containsKey(converter) &&
-        _convertedValuesCache[converter].containsKey(direction) &&
-        _convertedValuesCache[converter][direction].containsKey(context) &&
-        _convertedValuesCache[converter][direction][context]
+        _convertedValuesCache[converter]!.containsKey(direction) &&
+        _convertedValuesCache[converter]![direction]!.containsKey(context) &&
+        _convertedValuesCache[converter]![direction]![context]!
             .containsKey(value)) {
-      return _convertedValuesCache[converter][direction][context][value];
+      return _convertedValuesCache[converter]![direction]![context]![value];
     }
 
     final computedValue = converter == null
@@ -384,33 +386,33 @@ class JsonMapper {
                 context: {value: computedValue}
               }
             });
-    _convertedValuesCache[converter].putIfAbsent(
+    _convertedValuesCache[converter]!.putIfAbsent(
         direction,
         () => {
               context: {value: computedValue}
             });
-    _convertedValuesCache[converter][direction]
+    _convertedValuesCache[converter]![direction]!
         .putIfAbsent(context, () => {value: computedValue});
-    _convertedValuesCache[converter][direction][context]
+    _convertedValuesCache[converter]![direction]![context]!
         .putIfAbsent(value, () => computedValue);
     return computedValue;
   }
 
   dynamic _applyValueDecorator(dynamic value, TypeInfo typeInfo) {
     if (valueDecorators[typeInfo.genericType] != null) {
-      value = valueDecorators[typeInfo.genericType](value);
+      value = valueDecorators[typeInfo.genericType]!(value);
     }
-    if (valueDecorators[typeInfo.type] != null) {
-      value = valueDecorators[typeInfo.type](value);
+    if (valueDecorators[typeInfo.type!] != null) {
+      value = valueDecorators[typeInfo.type!]!(value);
     }
     return value;
   }
 
   bool _isFieldIgnored(
           [dynamic value,
-          Json classMeta,
-          JsonProperty meta,
-          DeserializationOptions options]) =>
+          Json? classMeta,
+          JsonProperty? meta,
+          DeserializationOptions? options]) =>
       ((meta != null &&
               ((meta.ignore == true ||
                       (meta.ignoreForSerialization == true &&
@@ -431,17 +433,17 @@ class JsonMapper {
   }
 
   void _enumeratePublicProperties(InstanceMirror instanceMirror,
-      JsonMap jsonMap, DeserializationOptions options, Function visitor) {
+      JsonMap? jsonMap, DeserializationOptions options, Function visitor) {
     final classInfo = ClassInfo(instanceMirror.type);
     final classMeta = classInfo.getMeta(options.scheme);
     final checkFieldConstraints = (dynamic value, String name,
-        dynamic hasJsonProperty, JsonProperty fieldMeta) {
+        dynamic hasJsonProperty, JsonProperty? fieldMeta) {
       if (JsonProperty.isNotNull(fieldMeta) &&
           (hasJsonProperty == false || (value == null))) {
-        throw FieldCannotBeNullError(name, message: fieldMeta.notNullMessage);
+        throw FieldCannotBeNullError(name, message: fieldMeta!.notNullMessage);
       }
       if (hasJsonProperty == false && JsonProperty.isRequired(fieldMeta)) {
-        throw FieldIsRequiredError(name, message: fieldMeta.requiredMessage);
+        throw FieldIsRequiredError(name, message: fieldMeta!.requiredMessage);
       }
     };
 
@@ -467,7 +469,7 @@ class JsonMapper {
         }
         return result;
       });
-      final jsonName = property.name;
+      final jsonName = property.name!;
       final value = property.value;
 
       checkFieldConstraints(value, name, jsonMap?.hasProperty(jsonName), meta);
@@ -489,8 +491,8 @@ class JsonMapper {
 
     classInfo.enumerateJsonGetters((MethodMirror mm, JsonProperty meta) {
       final name = mm.simpleName;
-      final jsonName = transformFieldName(
-          JsonProperty.getPrimaryName(meta), _getCaseStyle(classMeta, options));
+      final jsonName = transformFieldName(JsonProperty.getPrimaryName(meta),
+          _getCaseStyle(classMeta, options))!;
       final declarationType = _getDeclarationType(mm);
 
       var value = instanceMirror.invoke(mm.simpleName, []);
@@ -516,12 +518,12 @@ class JsonMapper {
 
   PropertyDescriptor _resolveProperty(
       String name,
-      JsonMap jsonMap,
-      DeserializationOptions options,
-      Json classMeta,
-      JsonProperty meta,
+      JsonMap? jsonMap,
+      DeserializationOptions? options,
+      Json? classMeta,
+      JsonProperty? meta,
       Function getValueByName) {
-    var jsonName = name;
+    String? jsonName = name;
 
     if (meta != null && meta.name != null) {
       jsonName = JsonProperty.getPrimaryName(meta);
@@ -531,13 +533,13 @@ class JsonMapper {
         getValueByName(name, jsonName, meta != null ? meta.defaultValue : null);
     if (jsonMap != null &&
         meta != null &&
-        (value == null || !jsonMap.hasProperty(jsonName))) {
-      JsonProperty.getAliases(meta).forEach((alias) {
+        (value == null || !jsonMap.hasProperty(jsonName!))) {
+      JsonProperty.getAliases(meta)!.forEach((alias) {
         jsonName = transformFieldName(alias, _getCaseStyle(classMeta, options));
-        if (value != null || !jsonMap.hasProperty(jsonName)) {
+        if (value != null || !jsonMap.hasProperty(jsonName!)) {
           return;
         }
-        value = jsonMap.getPropertyValue(jsonName);
+        value = jsonMap.getPropertyValue(jsonName!);
       });
     }
 
@@ -547,9 +549,9 @@ class JsonMapper {
   void _enumerateConstructorParameters(ClassMirror classMirror, JsonMap jsonMap,
       DeserializationContext context, Function filter, Function visitor) {
     final classInfo = ClassInfo(classMirror);
-    final classMeta = classInfo.getMeta(context.options.scheme);
+    final classMeta = classInfo.getMeta(context.options!.scheme);
     final scheme =
-        classMeta != null ? classMeta.scheme : context.options.scheme;
+        classMeta != null ? classMeta.scheme : context.options!.scheme;
     final methodMirror = classInfo.getJsonConstructor(scheme);
     if (methodMirror == null) {
       return;
@@ -566,15 +568,15 @@ class JsonMapper {
               ? param.dynamicReflectedType
               : _getGenericParameterTypeByIndex(
                       methodMirror.parameters.indexOf(param),
-                      context.typeInfo) ??
+                      context.typeInfo!) ??
                   dynamic;
       var paramTypeInfo = _getTypeInfo(paramType);
       paramTypeInfo = paramTypeInfo.isDynamic
           ? _getTypeInfo(_getDeclarationType(declarationMirror))
           : paramTypeInfo;
       final meta = classInfo.getDeclarationMeta(
-              declarationMirror, context.options.scheme) ??
-          classInfo.getDeclarationMeta(param, context.options.scheme);
+              declarationMirror, context.options!.scheme) ??
+          classInfo.getDeclarationMeta(param, context.options!.scheme);
 
       final property = _resolveProperty(
           name,
@@ -603,27 +605,26 @@ class JsonMapper {
     });
   }
 
-  CaseStyle _getCaseStyle(Json meta, DeserializationOptions options) =>
+  CaseStyle? _getCaseStyle(Json? meta, DeserializationOptions? options) =>
       meta != null && meta.caseStyle != null
           ? meta.caseStyle
-          : options.caseStyle;
+          : options!.caseStyle;
 
-  String _getTypeNameProperty(Json meta, DeserializationOptions options) =>
+  String? _getTypeNameProperty(Json? meta, DeserializationOptions? options) =>
       meta != null && meta.typeNameProperty != null
           ? meta.typeNameProperty
-          : options.typeNameProperty;
+          : options!.typeNameProperty;
 
-  bool _getProcessAnnotatedMembersOnly(
-          Json meta, DeserializationOptions options) =>
+  bool? _getProcessAnnotatedMembersOnly(
+          Json? meta, DeserializationOptions options) =>
       meta != null && meta.processAnnotatedMembersOnly != null
           ? meta.processAnnotatedMembersOnly
           : options.processAnnotatedMembersOnly;
 
-  void _dumpTypeNameToObjectProperty(
-      JsonMap object, ClassMirror classMirror, DeserializationOptions options) {
+  void _dumpTypeNameToObjectProperty(JsonMap object, ClassMirror classMirror,
+      DeserializationOptions? options) {
     final classInfo = ClassInfo(classMirror);
-    final Json meta =
-        classInfo.metaData.firstWhere((m) => m is Json, orElse: () => null);
+    final meta = classInfo.metaData.firstWhereOrNull((m) => m is Json) as Json?;
     final typeNameProperty = _getTypeNameProperty(meta, options);
     if (typeNameProperty != null) {
       final typeInfo = _getTypeInfo(classMirror.reflectedType);
@@ -631,13 +632,13 @@ class JsonMapper {
     }
   }
 
-  Map<Symbol, dynamic> _getNamedArguments(ClassMirror cm, JsonMap jsonMap,
-      [DeserializationContext context]) {
+  Map<Symbol, dynamic> _getNamedArguments(
+      ClassMirror cm, JsonMap jsonMap, DeserializationContext context) {
     final result = <Symbol, dynamic>{};
 
     _enumerateConstructorParameters(
-        cm, jsonMap, context, (param) => param.isNamed,
-        (param, name, jsonName, classMeta, meta, value, TypeInfo typeInfo) {
+        cm, jsonMap, context, (param) => param.isNamed, (param, name, jsonName,
+            classMeta, JsonProperty? meta, value, TypeInfo typeInfo) {
       if (!_isFieldIgnored(value, classMeta, meta, context.options)) {
         result[Symbol(name)] = value;
       }
@@ -651,13 +652,13 @@ class JsonMapper {
     return result;
   }
 
-  List _getPositionalArguments(ClassMirror cm, JsonMap jsonMap,
-      [DeserializationContext context]) {
+  List _getPositionalArguments(
+      ClassMirror cm, JsonMap jsonMap, DeserializationContext context) {
     final result = [];
 
     _enumerateConstructorParameters(
         cm, jsonMap, context, (param) => !param.isOptional && !param.isNamed,
-        (param, name, jsonName, classMeta, JsonProperty meta, value,
+        (param, name, jsonName, classMeta, JsonProperty? meta, value,
             TypeInfo typeInfo) {
       result.add(_isFieldIgnored(value, classMeta, meta, context.options)
           ? null
@@ -669,8 +670,8 @@ class JsonMapper {
 
   void _configureConverter(ICustomConverter converter,
       {dynamic value,
-      SerializationContext serializationContext,
-      DeserializationContext deserializationContext}) {
+      SerializationContext? serializationContext,
+      DeserializationContext? deserializationContext}) {
     if (converter is ICompositeConverter) {
       (converter as ICompositeConverter).setGetConverterFunction(_getConverter);
       (converter as ICompositeConverter)
@@ -682,7 +683,7 @@ class JsonMapper {
     if (converter is ICustomMapConverter) {
       final instance = value ??
           (deserializationContext != null
-              ? deserializationContext.options.template
+              ? deserializationContext.options!.template
               : null);
       (converter as ICustomMapConverter).setMapInstance(instance);
     }
@@ -693,7 +694,7 @@ class JsonMapper {
           (o, type) => _deserializeObject(
               o,
               DeserializationContext(
-                  options: deserializationContext.options,
+                  options: deserializationContext!.options,
                   typeInfo: _getTypeInfo(type),
                   parentJsonMaps: deserializationContext.parentJsonMaps,
                   jsonPropertyMeta: deserializationContext.jsonPropertyMeta,
@@ -701,20 +702,18 @@ class JsonMapper {
     }
   }
 
-  dynamic _serializeIterable(Iterable object, SerializationContext context) {
-    return object != null
-        ? object.map((item) => _serializeObject(item, context)).toList()
-        : null;
+  dynamic _serializeIterable(Iterable object, SerializationContext? context) {
+    return object.map((item) => _serializeObject(item, context)).toList();
   }
 
-  dynamic _serializeObject(Object object, SerializationContext context) {
+  dynamic _serializeObject(Object? object, SerializationContext? context) {
     if (object == null) {
       return object;
     }
 
     final im = _safeGetInstanceMirror(object);
     final converter =
-        _getConverter(context.jsonPropertyMeta, object.runtimeType, null, im);
+        _getConverter(context!.jsonPropertyMeta, object.runtimeType, null, im);
     if (converter != null) {
       _configureConverter(converter,
           value: object, serializationContext: context);
@@ -729,8 +728,8 @@ class JsonMapper {
       return _serializeIterable(object, context);
     }
 
-    if (im == null || im.type == null) {
-      if (context.serializationOptions.ignoreUnknownTypes == true) {
+    if (im == null) {
+      if (context.serializationOptions!.ignoreUnknownTypes == true) {
         return null;
       } else {
         throw MissingAnnotationOnTypeError(object.runtimeType);
@@ -738,9 +737,9 @@ class JsonMapper {
     }
 
     final classInfo = ClassInfo(im.type);
-    final jsonMeta = classInfo.getMeta(context.options.scheme);
+    final jsonMeta = classInfo.getMeta(context.options!.scheme);
     final initialMap = context.level == 0
-        ? context.options.template ?? <String, dynamic>{}
+        ? context.options!.template ?? <String, dynamic>{}
         : <String, dynamic>{};
     final result = JsonMap(initialMap, jsonMeta);
     final processedObjectDescriptor =
@@ -748,10 +747,10 @@ class JsonMapper {
     if (processedObjectDescriptor != null &&
         processedObjectDescriptor.levelsCount > 1) {
       final allowanceIsSet =
-          (jsonMeta != null && jsonMeta.allowCircularReferences > 0);
+          (jsonMeta != null && jsonMeta.allowCircularReferences! > 0);
       final allowanceExceeded = (allowanceIsSet &&
               processedObjectDescriptor.levelsCount >
-                  jsonMeta.allowCircularReferences)
+                  jsonMeta!.allowCircularReferences!)
           ? true
           : null;
       if (allowanceExceeded == true) {
@@ -762,20 +761,20 @@ class JsonMapper {
       }
     }
     _dumpTypeNameToObjectProperty(result, im.type, context.options);
-    _enumeratePublicProperties(im, null, context.options, (name,
+    _enumeratePublicProperties(im, null, context.options!, (name,
         jsonName,
         value,
         isGetterOnly,
-        JsonProperty meta,
+        JsonProperty? meta,
         converter,
         scalarType,
         TypeInfo typeInfo) {
-      if (value == null && meta != null && meta.defaultValue != null) {
-        result.setPropertyValue(jsonName, meta.defaultValue);
+      if (value == null && meta?.defaultValue != null) {
+        result.setPropertyValue(jsonName, meta?.defaultValue);
       } else {
         var convertedValue;
         final newContext = SerializationContext(
-            options: context.options,
+            options: context.options as SerializationOptions?,
             level: context.level + 1,
             jsonPropertyMeta: meta,
             classMeta: jsonMeta,
@@ -803,16 +802,16 @@ class JsonMapper {
 
     final jsonAnyGetter = classInfo.getJsonAnyGetter();
     if (jsonAnyGetter != null) {
-      final anyMap = im.invoke(jsonAnyGetter.simpleName, []);
-      result.map.addAll(anyMap);
+      final anyMap = im.invoke(jsonAnyGetter.simpleName, [])!;
+      result.map.addAll(anyMap as Map<String, dynamic>);
     }
 
     return result.map;
   }
 
-  Object _deserializeIterable(
+  Object? _deserializeIterable(
       dynamic jsonValue, DeserializationContext context) {
-    Iterable jsonList =
+    Iterable? jsonList =
         (jsonValue is String) ? _jsonDecoder.convert(jsonValue) : jsonValue;
     final value = jsonList != null
         ? jsonList
@@ -820,20 +819,21 @@ class JsonMapper {
                 item,
                 DeserializationContext(
                     options: context.options,
-                    typeInfo: _getTypeInfo(context.typeInfo.scalarType),
+                    typeInfo: _getTypeInfo(context.typeInfo!.scalarType),
                     parentJsonMaps: context.parentJsonMaps,
                     jsonPropertyMeta: context.jsonPropertyMeta,
                     classMeta: context.classMeta)))
             .toList()
         : null;
-    return _applyValueDecorator(value, context.typeInfo);
+    return _applyValueDecorator(value, context.typeInfo!);
   }
 
-  Object _deserializeObject(dynamic jsonValue, DeserializationContext context) {
+  Object? _deserializeObject(
+      dynamic jsonValue, DeserializationContext context) {
     if (jsonValue == null) {
       return null;
     }
-    var typeInfo = context.typeInfo;
+    var typeInfo = context.typeInfo!;
     final converter = _getConverter(context.jsonPropertyMeta, typeInfo.type);
     if (converter != null) {
       _configureConverter(converter, deserializationContext: context);
@@ -862,37 +862,39 @@ class JsonMapper {
       return convertedJsonValue;
     }
 
-    final jsonMap = JsonMap(convertedJsonValue, null, context.parentJsonMaps);
-    typeInfo = _detectObjectType(null, context.typeInfo.type, jsonMap, context);
+    final jsonMap = JsonMap(
+        convertedJsonValue, null, context.parentJsonMaps as List<JsonMap>?);
+    typeInfo =
+        _detectObjectType(null, context.typeInfo!.type, jsonMap, context)!;
     final cm = classes[typeInfo.typeName] ?? classes[typeInfo.genericTypeName];
     if (cm == null) {
       throw MissingAnnotationOnTypeError(typeInfo.type);
     }
     final classInfo = ClassInfo(cm);
-    jsonMap.jsonMeta = classInfo.getMeta(context.options.scheme);
+    jsonMap.jsonMeta = classInfo.getMeta(context.options!.scheme);
 
     final namedArguments = _getNamedArguments(cm, jsonMap, context);
-    final objectInstance = context.options.template ??
+    final objectInstance = context.options!.template ??
         (cm.isEnum
             ? null
             : cm.newInstance(
                 classInfo
-                    .getJsonConstructor(context.options.scheme)
+                    .getJsonConstructor(context.options!.scheme)!
                     .constructorName,
                 _getPositionalArguments(cm, jsonMap, context),
                 namedArguments));
-    final im = _safeGetInstanceMirror(objectInstance);
+    final im = _safeGetInstanceMirror(objectInstance)!;
     final inheritedPublicFieldNames = classInfo.inheritedPublicFieldNames;
     final mappedFields = namedArguments.keys
         .map((Symbol symbol) =>
             RegExp('"(.+)"').allMatches(symbol.toString()).first.group(1))
         .toList();
 
-    _enumeratePublicProperties(im, jsonMap, context.options, (name,
+    _enumeratePublicProperties(im, jsonMap, context.options!, (name,
         jsonName,
         value,
         isGetterOnly,
-        JsonProperty meta,
+        JsonProperty? meta,
         converter,
         scalarType,
         TypeInfo typeInfo) {
@@ -953,10 +955,10 @@ class JsonMapper {
             !mappedFields.contains(field) && field != typeNameProperty)
         .toList();
     if (unmappedFields.isNotEmpty) {
-      final jsonAnySetter = classInfo.getJsonAnySetter(context.options.scheme);
+      final jsonAnySetter = classInfo.getJsonAnySetter(context.options!.scheme);
       unmappedFields.forEach((field) {
         final jsonSetter =
-            classInfo.getJsonSetter(field, context.options.scheme) ??
+            classInfo.getJsonSetter(field, context.options!.scheme) ??
                 jsonAnySetter;
         final params = jsonSetter == jsonAnySetter
             ? [field, jsonMap.map[field]]

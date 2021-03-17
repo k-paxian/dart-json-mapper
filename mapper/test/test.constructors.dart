@@ -31,16 +31,16 @@ class LogisticsItem {
 
 @jsonSerializable
 class User {
-  String _email;
+  String? _email;
 
-  String get email => _email;
+  String? get email => _email;
 
-  set email(String email) => _email = email;
+  set email(String? email) => _email = email;
 }
 
 @jsonSerializable
 class Fo {
-  final Bar bar;
+  final Bar? bar;
   final String message;
 
   Fo(this.bar, this.message);
@@ -79,7 +79,7 @@ class PtDerived extends Base<Pt> {
 }
 
 @jsonSerializable
-class PtDerived2 extends Base<Pt> {
+class PtDerived2 extends Base<Pt?> {
   final Pt pt;
   PtDerived2(this.pt) : super(null);
 }
@@ -101,8 +101,8 @@ class PositionalParametersClass {
 
 @jsonSerializable
 class OptionalParametersClass {
-  String firstName;
-  String lastName;
+  String? firstName;
+  String? lastName;
 
   OptionalParametersClass([this.firstName, this.lastName]);
 }
@@ -110,15 +110,15 @@ class OptionalParametersClass {
 @jsonSerializable
 class PartiallyOptionalParametersClass {
   String firstName;
-  String lastName;
+  String? lastName;
 
   PartiallyOptionalParametersClass(this.firstName, [this.lastName]);
 }
 
 @jsonSerializable
 class NamedParametersClass {
-  String firstName;
-  String lastName;
+  String? firstName;
+  String? lastName;
 
   NamedParametersClass({this.firstName, this.lastName});
 }
@@ -126,18 +126,18 @@ class NamedParametersClass {
 @jsonSerializable
 @Json(ignoreNullMembers: true)
 class IgnoreNullMembersClass {
-  String firstName;
-  String lastName;
-  String middleName;
+  String? firstName;
+  String? lastName;
+  String? middleName;
 
   IgnoreNullMembersClass({this.firstName, this.middleName, this.lastName});
 }
 
 @jsonSerializable
 class IgnoreNullMembersFromOptionsClass {
-  String firstName;
-  String lastName;
-  String middleName;
+  String? firstName;
+  String? lastName;
+  String? middleName;
 
   IgnoreNullMembersFromOptionsClass(
       {this.firstName, this.middleName, this.lastName});
@@ -145,46 +145,46 @@ class IgnoreNullMembersFromOptionsClass {
 
 @jsonSerializable
 class IgnoredFieldClass {
-  String firstName;
+  String? firstName;
 
   @JsonProperty(ignore: true)
-  String lastName;
+  String? lastName;
 
   @JsonProperty(ignoreIfNull: true)
-  String middleName;
+  String? middleName;
 
   IgnoredFieldClass({this.firstName, this.middleName, this.lastName});
 }
 
 @jsonSerializable
 class IgnoredFieldClassWoConstructor {
-  String firstName;
+  String? firstName;
 
   @JsonProperty(ignore: true)
-  String lastName;
+  String? lastName;
 
   @JsonProperty(ignoreIfNull: true)
-  String middleName;
+  String? middleName;
 }
 
 @jsonSerializable
 class CropArea {
-  num top;
-  num left;
-  num right;
-  num bottom;
+  num? top;
+  num? left;
+  num? right;
+  num? bottom;
 }
 
 @jsonSerializable
 class ImmutableDefault {
   @JsonProperty(
       defaultValue: {'top': 0.0, 'left': 1.0, 'right': 1.0, 'bottom': 0.0})
-  final CropArea cropArea;
+  final CropArea? cropArea;
 
   @JsonProperty(defaultValue: 1)
-  final int id;
-  final String name;
-  final Car car;
+  final int? id;
+  final String? name;
+  final Car? car;
 
   const ImmutableDefault({this.cropArea, this.id, this.name, this.car});
 }
@@ -193,9 +193,9 @@ class ImmutableDefault {
 @Json(processAnnotatedMembersOnly: true)
 class ImmutableDefault2 {
   @JsonProperty(defaultValue: 1)
-  final int id;
-  final String name;
-  final Car car;
+  final int? id;
+  final String? name;
+  final Car? car;
 
   const ImmutableDefault2({this.id, this.name, this.car});
 }
@@ -205,12 +205,12 @@ const customConverter = CustomConverter();
 class CustomConverter implements ICustomConverter {
   const CustomConverter();
   @override
-  dynamic fromJSON(dynamic jsonValue, [DeserializationContext context]) {
+  dynamic fromJSON(dynamic jsonValue, [DeserializationContext? context]) {
     return jsonValue + 1;
   }
 
   @override
-  dynamic toJSON(dynamic object, [SerializationContext context]) {
+  dynamic toJSON(dynamic object, [SerializationContext? context]) {
     throw UnimplementedError();
   }
 }
@@ -280,7 +280,7 @@ void testConstructors() {
       var json = '''{"id": 42,  "number": 2}''';
       // when
       final target = JsonMapper.deserialize<Record>(
-          json, DeserializationOptions(processAnnotatedMembersOnly: true));
+          json, DeserializationOptions(processAnnotatedMembersOnly: true))!;
       // then
       expect(target.number, 3);
     });
@@ -290,7 +290,7 @@ void testConstructors() {
       final json = '{"bar":null,"message":"hello world"}';
       final target = Fo(null, 'hello world');
       // when
-      final instance = JsonMapper.deserialize<Fo>(json);
+      final instance = JsonMapper.deserialize<Fo>(json)!;
       final targetJson = JsonMapper.serialize(target, compactOptions);
       // then
       expect(instance.message, 'hello world');
@@ -304,12 +304,12 @@ void testConstructors() {
       final pTarget = PtDerived(Pt());
       final ptTarget2 = PtDerived2(Pt());
       // when
-      final instance = JsonMapper.deserialize<Derived>(json);
+      final instance = JsonMapper.deserialize<Derived>(json)!;
       final targetJson = JsonMapper.serialize(target, compactOptions);
       final pTargetJson = JsonMapper.serialize(pTarget, compactOptions);
       final ptTarget2Json = JsonMapper.serialize(ptTarget2, compactOptions);
-      final pTargetBack = JsonMapper.deserialize<PtDerived>(pTargetJson);
-      final ptTarget2Back = JsonMapper.deserialize<PtDerived2>(ptTarget2Json);
+      final pTargetBack = JsonMapper.deserialize<PtDerived>(pTargetJson)!;
+      final ptTarget2Back = JsonMapper.deserialize<PtDerived2>(ptTarget2Json)!;
       // then
       expect(instance.value, 'Bob');
       expect(targetJson, json);
@@ -326,7 +326,7 @@ void testConstructors() {
       user.email = 'a@a.com';
       // when
       final json = JsonMapper.serialize(user, compactOptions);
-      final target = JsonMapper.deserialize<User>(json);
+      final target = JsonMapper.deserialize<User>(json)!;
       // then
       expect(json, '{"email":"a@a.com"}');
       expect(target, TypeMatcher<User>());
@@ -337,7 +337,7 @@ void testConstructors() {
       // given
       final json = '{"LogistikTeileInOrdnung":"true"}';
       // when
-      final instance = JsonMapper.deserialize<LogisticsItem>(json);
+      final instance = JsonMapper.deserialize<LogisticsItem>(json)!;
       // then
       expect(instance.logisticsOK, true);
       expect(instance.logisticsChecked, true);
@@ -347,7 +347,7 @@ void testConstructors() {
       // given
       final json = '{"LogistikTeileInOrdnung":"true"}';
       // when
-      final instance = JsonMapper.deserialize<BusinessObject>(json);
+      final instance = JsonMapper.deserialize<BusinessObject>(json)!;
       // then
       expect(instance.logisticsOK, true);
       expect(instance.logisticsChecked, true);
@@ -357,7 +357,7 @@ void testConstructors() {
       // given
       // when
       final instance =
-          JsonMapper.deserialize<StringListClass>('{"list":["Bob","Marley"]}');
+          JsonMapper.deserialize<StringListClass>('{"list":["Bob","Marley"]}')!;
       // then
       expect(instance.list.length, 2);
     });
@@ -422,9 +422,9 @@ void testConstructors() {
       expect(target, '{"firstName":"Bob"}');
 
       // when
-      final instance2 = JsonMapper.deserialize<IgnoredFieldClass>(json);
+      final instance2 = JsonMapper.deserialize<IgnoredFieldClass>(json)!;
       final instance3 =
-          JsonMapper.deserialize<IgnoredFieldClassWoConstructor>(json);
+          JsonMapper.deserialize<IgnoredFieldClassWoConstructor>(json)!;
 
       // then
       expect(instance2.firstName, 'Bob');
@@ -486,16 +486,16 @@ void testConstructors() {
 
       // when
       final targetJson = JsonMapper.serialize(i);
-      final target = JsonMapper.deserialize<ImmutableDefault>(json);
+      final target = JsonMapper.deserialize<ImmutableDefault>(json)!;
 
       // then
       expect(targetJson, immutableJson);
 
       expect(target.id, 1);
       expect(target.cropArea, TypeMatcher<CropArea>());
-      expect(target.cropArea.left, 1);
-      expect(target.cropArea.right, 1);
-      expect(target.cropArea.bottom, 0);
+      expect(target.cropArea!.left, 1);
+      expect(target.cropArea!.right, 1);
+      expect(target.cropArea!.bottom, 0);
     });
   });
 }

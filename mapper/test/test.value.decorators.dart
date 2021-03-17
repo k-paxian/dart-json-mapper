@@ -5,10 +5,10 @@ import './model/index.dart';
 
 @jsonSerializable
 class NavbarTab {
-  final String icon;
+  final String? icon;
   @JsonProperty(defaultValue: 'car')
-  final String title;
-  final bool on;
+  final String? title;
+  final bool? on;
   NavbarTab({this.icon, this.title, this.on});
 }
 
@@ -27,11 +27,11 @@ class NavbarConfig {
       this.backgroundColor,
       this.fontSize});
 
-  final Map<String, NavbarTab> tabs;
-  final String activeColor;
-  final String inactiveColor;
-  final String backgroundColor;
-  final double fontSize;
+  final Map<String, NavbarTab>? tabs;
+  final String? activeColor;
+  final String? inactiveColor;
+  final String? backgroundColor;
+  final double? fontSize;
 }
 
 @jsonSerializable
@@ -65,11 +65,11 @@ class Customer {
 @jsonSerializable
 class ServiceOrderItemModel {
   @JsonProperty(name: 'Id')
-  final int id;
+  final int? id;
   @JsonProperty(name: 'Sequence')
-  final int sequence;
+  final int? sequence;
   @JsonProperty(name: 'Description')
-  final String description;
+  final String? description;
 
   const ServiceOrderItemModel({this.id, this.sequence, this.description});
 }
@@ -77,24 +77,24 @@ class ServiceOrderItemModel {
 @jsonSerializable
 class ServiceOrderModel {
   @JsonProperty(name: 'Id')
-  int id;
+  int? id;
   @JsonProperty(name: 'Number')
-  int number;
+  int? number;
   @JsonProperty(name: 'CustomerId')
-  int customerId;
+  int? customerId;
   @JsonProperty(name: 'Customer')
-  Customer customer;
+  Customer? customer;
   @JsonProperty(name: 'ExpertId')
-  int expertId;
+  int? expertId;
   @JsonProperty(name: 'Start')
-  DateTime start;
+  DateTime? start;
   @JsonProperty(name: 'Items')
-  List<ServiceOrderItemModel> items;
+  List<ServiceOrderItemModel>? items;
 
   @JsonProperty(name: 'End')
-  DateTime end;
+  DateTime? end;
   @JsonProperty(name: 'Resume')
-  String resume;
+  String? resume;
 
   ServiceOrderModel({
     this.id,
@@ -114,7 +114,7 @@ class Item {}
 
 @jsonSerializable
 class ListOfLists {
-  List<List<Item>> lists;
+  List<List<Item>>? lists;
 }
 
 void testValueDecorators() {
@@ -169,13 +169,13 @@ void testValueDecorators() {
       };
 
       // when
-      final target = JsonMapper.fromMap<NavbarConfig>(jsonMap);
+      final target = JsonMapper.fromMap<NavbarConfig>(jsonMap)!;
 
       // then
       expect(target, TypeMatcher<NavbarConfig>());
-      expect(target.tabs['home'].title, 'Home');
-      expect(target.tabs['sections'].title, 'car');
-      expect(target.tabs['x'].title, 'car');
+      expect(target.tabs!['home']!.title, 'Home');
+      expect(target.tabs!['sections']!.title, 'car');
+      expect(target.tabs!['x']!.title, 'car');
     });
 
     test('Inherited List<String> property', () {
@@ -186,7 +186,7 @@ void testValueDecorators() {
       test.mailingList.add('test33333@test.com');
       // when
       final json = JsonMapper.serialize(test, compactOptions);
-      final instance = JsonMapper.deserialize<TestChain>(json);
+      final instance = JsonMapper.deserialize<TestChain>(json)!;
       // then
       expect(json,
           '''{"mailingList":["test12345@test.com","test2222@test.com","test33333@test.com"]}''');
@@ -196,8 +196,8 @@ void testValueDecorators() {
 
     test('Set<int> / List<int> using default value decorators', () {
       // when
-      final targetSet = JsonMapper.deserialize<Set<int>>(intListJson);
-      final targetList = JsonMapper.deserialize<List<int>>(intListJson);
+      final targetSet = JsonMapper.deserialize<Set<int>>(intListJson)!;
+      final targetList = JsonMapper.deserialize<List<int>>(intListJson)!;
 
       // then
       expect(targetSet.length, 3);
@@ -208,7 +208,7 @@ void testValueDecorators() {
 
     test('Inline value decorators', () {
       // when
-      final target = JsonMapper.deserialize<NoticeList>('{"list":[{},{}]}');
+      final target = JsonMapper.deserialize<NoticeList>('{"list":[{},{}]}')!;
 
       // then
       expect(target.list.first, TypeMatcher<NoticeItem>());
@@ -228,7 +228,7 @@ void testValueDecorators() {
 
       // given
       // when
-      final target = JsonMapper.deserialize<Set<Car>>(carListJson);
+      final target = JsonMapper.deserialize<Set<Car>>(carListJson)!;
 
       // then
       expect(target.length, 1);
@@ -240,7 +240,7 @@ void testValueDecorators() {
     test('Custom List<Car> value decorator', () {
       // given
       // when
-      final target = JsonMapper.deserialize<List<Car>>(carListJson);
+      final target = JsonMapper.deserialize<List<Car>>(carListJson)!;
 
       // then
       expect(target.length, 1);
@@ -253,7 +253,7 @@ void testValueDecorators() {
       // given
       // when
       final target =
-          JsonMapper.deserialize<List<ServiceOrderModel>>(ordersListJson);
+          JsonMapper.deserialize<List<ServiceOrderModel>>(ordersListJson)!;
 
       // then
       expect(target.length, 1);
@@ -277,14 +277,14 @@ void testValueDecorators() {
       JsonMapper().useAdapter(adapter);
 
       // when
-      final target = JsonMapper.deserialize<ListOfLists>(json);
+      final target = JsonMapper.deserialize<ListOfLists>(json)!;
 
       // then
-      expect(target.lists.length, 2);
-      expect(target.lists.first.length, 2);
-      expect(target.lists.last.length, 3);
-      expect(target.lists.first.first, TypeMatcher<Item>());
-      expect(target.lists.last.first, TypeMatcher<Item>());
+      expect(target.lists?.length, 2);
+      expect(target.lists?.first.length, 2);
+      expect(target.lists?.last.length, 3);
+      expect(target.lists?.first.first, TypeMatcher<Item>());
+      expect(target.lists?.last.first, TypeMatcher<Item>());
 
       JsonMapper().removeAdapter(adapter);
     });

@@ -24,28 +24,28 @@ class Json {
   ///           name: 'bar'
   ///           name: 'foo/bar/baz'
   ///           name: '#/foo/0/baz'
-  final String name;
+  final String? name;
 
   /// Declares necessity for annotated class and all its subclasses to dump their own type name to the
   /// custom named json property.
-  final String typeNameProperty;
+  final String? typeNameProperty;
 
   /// The most popular ways to combine words into a single string
   /// Based on assumption: That all Dart class fields initially
   /// given as CaseStyle.Camel
-  final CaseStyle caseStyle;
+  final CaseStyle? caseStyle;
 
   /// Null class members
   /// will be excluded from serialization process
   /// unless [JsonProperty.required] or [JsonProperty.notNull] is given to `true`
-  final bool ignoreNullMembers;
+  final bool? ignoreNullMembers;
 
   /// Process only annotated class members
-  final bool processAnnotatedMembersOnly;
+  final bool? processAnnotatedMembersOnly;
 
   /// Allow circular object references during serialization
   /// for annotated class. Presume You know what you are doing
-  final int allowCircularReferences;
+  final int? allowCircularReferences;
 
   /// Static function to return a Map of Inline value decorators
   ///
@@ -65,7 +65,7 @@ class Json {
   ///   const NoticeList(this.list);
   /// }
   ///
-  final Map<Type, ValueDecoratorFunction> Function() valueDecorators;
+  final Map<Type, ValueDecoratorFunction> Function()? valueDecorators;
 
   /// Scheme marker to associate this meta information with particular mapping scheme
   final dynamic scheme;
@@ -107,19 +107,19 @@ class JsonProperty {
   /// Defines an optional message to be thrown as an explanation to why is
   /// this field needs to be provided in incoming JSON payload object
   /// If this message is provided it's treated as if [required] is set to `true`
-  final String requiredMessage;
+  final String? requiredMessage;
 
   /// Defines an optional message to be thrown as an explanation to why is
   /// this field needs to be not NULL in incoming JSON payload object
   /// If this message is provided it's treated as if [notNull] is set to `true`
-  final String notNullMessage;
+  final String? notNullMessage;
 
   /// Declares custom converter instance, to be used for annotated field
   /// serialization / deserialization
-  final ICustomConverter converter;
+  final ICustomConverter? converter;
 
   /// Map of parameters to be passed to the converter instance
-  final Map converterParams;
+  final Map? converterParams;
 
   /// Declares annotated field as required for serialization / deserialization process
   /// i.e needs to be present explicitly in incoming JSON payload object
@@ -127,7 +127,7 @@ class JsonProperty {
   /// Mild obligation
   /// If set to `true` states of [ignore], [ignoreForDeserialization],
   /// [ignoreForSerialization], [ignoreIfNull], [Json.ignoreNullMembers] has no meaning.
-  final bool required;
+  final bool? required;
 
   /// Declares annotated field as NOT NULL for serialization / deserialization process
   /// i.e needs to be present in incoming JSON payload object as not NULL value
@@ -135,21 +135,21 @@ class JsonProperty {
   /// Strict obligation
   /// If set to `true` states of [required], [ignore], [ignoreForDeserialization],
   /// [ignoreForSerialization], [ignoreIfNull], [Json.ignoreNullMembers] has no meaning.
-  final bool notNull;
+  final bool? notNull;
 
   /// Declares annotated field as ignored so it will be excluded from
   /// serialization / deserialization process
-  final bool ignore;
+  final bool? ignore;
 
   /// Declares annotated field as excluded from serialization process
-  final bool ignoreForSerialization;
+  final bool? ignoreForSerialization;
 
   /// Declares annotated field as excluded from deserialization process
-  final bool ignoreForDeserialization;
+  final bool? ignoreForDeserialization;
 
   /// Declares annotated field as ignored if it's value is null so it
   /// will be excluded from serialization / deserialization process
-  final bool ignoreIfNull;
+  final bool? ignoreIfNull;
 
   /// Final field default value
   final dynamic defaultValue;
@@ -169,22 +169,22 @@ class JsonProperty {
       this.defaultValue,
       this.converterParams});
 
-  static bool isRequired(JsonProperty jsonProperty) =>
+  static bool isRequired(JsonProperty? jsonProperty) =>
       jsonProperty != null &&
       (jsonProperty.required == true || jsonProperty.requiredMessage != null);
 
-  static bool isNotNull(JsonProperty jsonProperty) =>
+  static bool isNotNull(JsonProperty? jsonProperty) =>
       jsonProperty != null &&
       (jsonProperty.notNull == true || jsonProperty.notNullMessage != null);
 
-  static String getPrimaryName(JsonProperty jsonProperty) =>
+  static String? getPrimaryName(JsonProperty? jsonProperty) =>
       jsonProperty != null
           ? jsonProperty.name is Iterable && jsonProperty.name.isNotEmpty
               ? jsonProperty.name.first
               : jsonProperty.name
           : null;
 
-  static List<String> getAliases(JsonProperty jsonProperty) =>
+  static List<String>? getAliases(JsonProperty? jsonProperty) =>
       jsonProperty != null &&
               jsonProperty.name is Iterable &&
               jsonProperty.name.length > 1

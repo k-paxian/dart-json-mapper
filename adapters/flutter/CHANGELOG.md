@@ -1,3 +1,7 @@
+## 2.0.0
+
+* null safety support
+
 ## 1.0.3
 
 * Support for new code converters contract

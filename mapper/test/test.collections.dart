@@ -19,7 +19,7 @@ void testCollections() {
       // when
       final json = JsonMapper.serialize(instance, compactOptions);
       final target =
-          JsonMapper.deserialize<UnmodifiableMapView<String, int>>(json);
+          JsonMapper.deserialize<UnmodifiableMapView<String, int>>(json)!;
 
       // then
       expect(json, '{"a":1,"b":2,"c":3}');
@@ -46,7 +46,7 @@ void testCollections() {
 
       // when
       final json = JsonMapper.serialize(instance, compactOptions);
-      final target = JsonMapper.deserialize<UnmodifiableListView<int>>(json);
+      final target = JsonMapper.deserialize<UnmodifiableListView<int>>(json)!;
 
       // then
       expect(json, '[1,2,3]');
@@ -69,7 +69,7 @@ void testCollections() {
 
       // when
       final json = JsonMapper.serialize(instance, compactOptions);
-      final target = JsonMapper.deserialize<HashSet<int>>(json);
+      final target = JsonMapper.deserialize<HashSet<int>>(json)!;
 
       // then
       expect(json, '[1,2,3]');
@@ -92,7 +92,7 @@ void testCollections() {
 
       // when
       final json = JsonMapper.serialize(instance, compactOptions);
-      final target = JsonMapper.deserialize<HashMap<String, int>>(json);
+      final target = JsonMapper.deserialize<HashMap<String, int>>(json)!;
 
       // then
       expect(json, '{"c":3,"a":1,"b":2}');
@@ -119,7 +119,7 @@ void testCollections() {
 
       // when
       final json = JsonMapper.serialize(instance, compactOptions);
-      final target = JsonMapper.deserialize<HashMap<int, String>>(json);
+      final target = JsonMapper.deserialize<HashMap<int, String>>(json)!;
 
       // then
       // https://stackoverflow.com/questions/9304528/why-json-allows-only-string-to-be-a-key

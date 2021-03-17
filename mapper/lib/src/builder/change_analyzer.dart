@@ -5,7 +5,7 @@ import 'library_visitor.dart';
 
 class ChangeAnalyzer {
   LibraryVisitor visitorA;
-  LibraryVisitor visitorB;
+  LibraryVisitor? visitorB;
 
   ChangeAnalyzer(this.visitorA, this.visitorB);
 
@@ -19,18 +19,18 @@ class ChangeAnalyzer {
 
   bool get hasChanges {
     final classElementsA = visitorA.visitedPublicAnnotatedClassElements;
-    final classElementsB = visitorB.visitedPublicAnnotatedClassElements;
+    final classElementsB = visitorB!.visitedPublicAnnotatedClassElements;
 
     final annotatedClassesCountChanged =
         classElementsA.length != classElementsB.length;
-    var anyAnnotatedClassChanged;
+    late var anyAnnotatedClassChanged;
 
     if (!annotatedClassesCountChanged) {
       final classesMapA = getClassesMap(classElementsA.values);
       final classesMapB = getClassesMap(classElementsB.values);
       anyAnnotatedClassChanged = classesMapA.keys
           .map((className) => classesMapA[className] != classesMapB[className])
-          .fold(false, (value, element) => value || element);
+          .fold(false, (dynamic value, element) => value || element);
     }
 
     return annotatedClassesCountChanged || anyAnnotatedClassChanged;

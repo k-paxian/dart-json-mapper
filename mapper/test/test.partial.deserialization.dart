@@ -6,10 +6,10 @@ import './model/index.dart';
 @jsonSerializable
 class IgnoreMembers {
   @JsonProperty(ignoreForDeserialization: true)
-  String name;
+  String? name;
 
   @JsonProperty(ignoreForSerialization: true)
-  String title;
+  String? title;
 
   IgnoreMembers({this.name, this.title});
 }
@@ -18,7 +18,7 @@ class IgnoreMembers {
 class FieldAliasObject {
   // alias ?? fullName ?? name
   @JsonProperty(name: ['alias', 'fullName', 'name'])
-  final String name;
+  final String? name;
 
   const FieldAliasObject({
     this.name,
@@ -28,7 +28,7 @@ class FieldAliasObject {
 @jsonSerializable
 abstract class AnyObject {
   @JsonProperty(name: 'in')
-  final String location;
+  final String? location;
 
   @jsonConstructor
   AnyObject({
@@ -38,7 +38,7 @@ abstract class AnyObject {
 
 @jsonSerializable
 class UnmappedProperties extends AnyObject {
-  String name;
+  String? name;
 
   @JsonProperty(ignore: true)
   Map<String, dynamic> extraPropsMap = {};
@@ -60,14 +60,14 @@ class UnmappedProperties extends AnyObject {
 
 @jsonSerializable
 class AllPrivateFields {
-  String _name;
-  String _lastName;
+  String? _name;
+  String? _lastName;
 
   set name(dynamic value) {
     _name = value;
   }
 
-  String get name => _name;
+  String? get name => _name;
 
   @JsonProperty(name: 'lastName')
   void setLastName(dynamic value) {
@@ -75,7 +75,7 @@ class AllPrivateFields {
   }
 
   @JsonProperty(name: 'lastName')
-  String getLastName() => _lastName;
+  String? getLastName() => _lastName;
 }
 
 void testPartialDeserialization() {
@@ -87,7 +87,7 @@ void testPartialDeserialization() {
  "lastName": "Marley"
 }''';
       // when
-      final target = JsonMapper.deserialize<Person>(partialPersonJson);
+      final target = JsonMapper.deserialize<Person>(partialPersonJson)!;
       // then
       expect(target.name, 'Bob'); // set from JSON
       expect(target.lastName, 'Marley'); // set from JSON
@@ -114,10 +114,10 @@ void testPartialDeserialization() {
       final instance = FieldAliasObject(name: '007');
       // when
       final targetJson = JsonMapper.serialize(instance, compactOptions);
-      final target = JsonMapper.deserialize<FieldAliasObject>(json);
-      final target2 = JsonMapper.deserialize<FieldAliasObject>(json2);
-      final target3 = JsonMapper.deserialize<FieldAliasObject>(json3);
-      final target4 = JsonMapper.deserialize<FieldAliasObject>(json4);
+      final target = JsonMapper.deserialize<FieldAliasObject>(json)!;
+      final target2 = JsonMapper.deserialize<FieldAliasObject>(json2)!;
+      final target3 = JsonMapper.deserialize<FieldAliasObject>(json3)!;
+      final target4 = JsonMapper.deserialize<FieldAliasObject>(json4)!;
       // then
       expect(targetJson, json);
       expect(target.name, '007');
@@ -131,7 +131,7 @@ void testPartialDeserialization() {
       final json = '''{"in":null,"name":"Bob","extra1":1,"extra2":"xxx"}''';
 
       // when
-      final instance = JsonMapper.deserialize<UnmappedProperties>(json);
+      final instance = JsonMapper.deserialize<UnmappedProperties>(json)!;
 
       // then
       expect(instance.name, 'Bob');
@@ -150,7 +150,7 @@ void testPartialDeserialization() {
       final json = '''{"name":"Bob","lastName":"Marley"}''';
 
       // when
-      final instance = JsonMapper.deserialize<AllPrivateFields>(json);
+      final instance = JsonMapper.deserialize<AllPrivateFields>(json)!;
 
       // then
       expect(instance.name, 'Bob');
@@ -168,7 +168,7 @@ void testPartialDeserialization() {
       final json = '''{"name":"Bob","title":"Marley"}''';
 
       // when
-      final instance = JsonMapper.deserialize<IgnoreMembers>(json);
+      final instance = JsonMapper.deserialize<IgnoreMembers>(json)!;
 
       // then
       expect(instance.name, null);

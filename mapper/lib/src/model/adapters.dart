@@ -17,7 +17,7 @@ import 'value_decorators.dart';
 abstract class IAdapter {
   String get title;
   String get url;
-  String get refUrl;
+  String? get refUrl;
   Map<Type, ICustomConverter> get converters;
   Map<Type, ValueDecoratorFunction> get valueDecorators;
   Map<Type, dynamic> get enumValues;
@@ -31,7 +31,7 @@ class JsonMapperAdapter implements IAdapter {
   @override
   final String url;
   @override
-  final String refUrl;
+  final String? refUrl;
   @override
   final Map<Type, ICustomConverter> converters;
   @override

@@ -3,12 +3,12 @@ import 'package:test/test.dart';
 
 @jsonSerializable
 class AA {
-  BB content;
+  BB? content;
 }
 
 @jsonSerializable
 class BB {
-  List<AA> content;
+  List<AA>? content;
 }
 
 void testSpecialCases() {
@@ -18,12 +18,12 @@ void testSpecialCases() {
       final json = '{"content":{"content":[]}}';
 
       // when
-      final target = JsonMapper.deserialize<AA>(json);
+      final target = JsonMapper.deserialize<AA>(json)!;
 
       // then
       expect(target, TypeMatcher<AA>());
       expect(target.content, TypeMatcher<BB>());
-      expect(target.content.content, TypeMatcher<List<AA>>());
+      expect(target.content!.content, TypeMatcher<List<AA>>());
     });
   });
 }

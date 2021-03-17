@@ -1,3 +1,7 @@
+## 2.0.0
+
+* #97, null safety support
+
 ## 1.7.13
 
 * #118, fix: Add defaultValue handling for `enumConverterNumeric`

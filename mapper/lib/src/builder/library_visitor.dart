@@ -6,10 +6,10 @@ import '../model/annotations.dart';
 class LibraryVisitor extends RecursiveElementVisitor {
   Map<num, ClassElement> visitedPublicClassElements = {};
   Map<num, ClassElement> visitedPublicAnnotatedClassElements = {};
-  Map<String, LibraryElement> visitedLibraries = {};
+  Map<String, LibraryElement?> visitedLibraries = {};
 
   final _annotationClassName = jsonSerializable.runtimeType.toString();
-  String packageName;
+  String? packageName;
 
   LibraryVisitor(this.packageName);
 
@@ -33,8 +33,8 @@ class LibraryVisitor extends RecursiveElementVisitor {
       if (element.metadata.isNotEmpty &&
           element.metadata.any((meta) =>
               meta
-                  .computeConstantValue()
-                  .type
+                  .computeConstantValue()!
+                  .type!
                   .getDisplayString(withNullability: false) ==
               _annotationClassName)) {
         visitedPublicAnnotatedClassElements.putIfAbsent(
@@ -44,14 +44,14 @@ class LibraryVisitor extends RecursiveElementVisitor {
     super.visitClassElement(element);
   }
 
-  void _visitLibrary(LibraryElement element) {
+  void _visitLibrary(LibraryElement? element) {
     final identifier = element != null ? element.identifier : null;
     if (identifier != null &&
         !visitedLibraries.containsKey(identifier) &&
         (identifier.startsWith('asset:') ||
-            identifier.startsWith(packageName))) {
+            identifier.startsWith(packageName!))) {
       visitedLibraries.putIfAbsent(identifier, () => element);
-      element.visitChildren(this);
+      element!.visitChildren(this);
     }
   }
 }

@@ -21,8 +21,8 @@ class MyClass {
 
 @jsonSerializable
 class MyClassWoConstructor {
-  MyEnumA enumA;
-  MyEnumB enumB;
+  MyEnumA? enumA;
+  MyEnumB? enumB;
 }
 
 @jsonSerializable
@@ -44,16 +44,16 @@ class Timestamp {
   Timestamp(this.stamp, this.i);
 }
 
-class CustomStringConverter implements ICustomConverter<String> {
+class CustomStringConverter implements ICustomConverter<String?> {
   const CustomStringConverter() : super();
 
   @override
-  String fromJSON(dynamic jsonValue, [DeserializationContext context]) {
+  String? fromJSON(dynamic jsonValue, [DeserializationContext? context]) {
     return jsonValue;
   }
 
   @override
-  dynamic toJSON(String object, [SerializationContext context]) {
+  dynamic toJSON(String? object, [SerializationContext? context]) {
     return '_${object}_';
   }
 }
@@ -74,12 +74,12 @@ class BigIntData {
 
 @jsonSerializable
 class Model {
-  DateTime data;
+  DateTime? data;
 }
 
 @jsonSerializable
 class DurationModel {
-  Duration data;
+  Duration? data;
 }
 
 @jsonSerializable
@@ -100,7 +100,7 @@ class CustomListContainer {
 
 @jsonSerializable
 class InlineJsonContainer {
-  Map<String, dynamic> dataHash;
+  Map<String, dynamic>? dataHash;
 }
 
 @jsonSerializable
@@ -113,7 +113,7 @@ void testConverters() {
       final json = '{"a":"abc","b":3}';
 
       // when
-      final target = JsonMapper.deserialize<Map<String, dynamic>>(json);
+      final target = JsonMapper.deserialize<Map<String, dynamic>>(json)!;
 
       // then
       expect(target, TypeMatcher<Map<String, dynamic>>());
@@ -132,12 +132,12 @@ void testConverters() {
     }''';
 
       // when
-      final target = JsonMapper.deserialize<InlineJsonContainer>(json);
+      final target = JsonMapper.deserialize<InlineJsonContainer>(json)!;
 
       // then
       expect(target, TypeMatcher<InlineJsonContainer>());
-      expect(target.dataHash['id'], '3098');
-      expect(target.dataHash['number'], 1);
+      expect(target.dataHash?['id'], '3098');
+      expect(target.dataHash?['number'], 1);
     });
 
     test('DateConverter', () {
@@ -146,7 +146,7 @@ void testConverters() {
 
       // when
       final json = JsonMapper.toJson(instance);
-      final target = JsonMapper.fromJson<Model>(json);
+      final target = JsonMapper.fromJson<Model>(json)!;
 
       // then
       expect(target.data, instance.data);
@@ -159,7 +159,7 @@ void testConverters() {
 
       // when
       final json = JsonMapper.toJson(instance);
-      final target = JsonMapper.fromJson<DurationModel>(json);
+      final target = JsonMapper.fromJson<DurationModel>(json)!;
 
       // then
       expect(target.data, instance.data);
@@ -172,7 +172,7 @@ void testConverters() {
 
       // when
       final json = JsonMapper.toJson(instance);
-      final target = JsonMapper.fromJson<RegExp>(json);
+      final target = JsonMapper.fromJson<RegExp>(json)!;
 
       // then
       expect(json, '"$source"');
@@ -199,7 +199,7 @@ void testConverters() {
     test('BigInt converter', () {
       // given
       final rawString = '1234567890000000012345678900';
-      final json = '{"bigInt":"${rawString}"}';
+      final json = '{"bigInt":"$rawString"}';
 
       // when
       final targetJson = JsonMapper.serialize(
@@ -208,7 +208,7 @@ void testConverters() {
       expect(targetJson, json);
 
       // when
-      final target = JsonMapper.deserialize<BigIntData>(json);
+      final target = JsonMapper.deserialize<BigIntData>(json)!;
       // then
       expect(rawString, target.bigInt.toString());
     });
@@ -225,7 +225,7 @@ void testConverters() {
       expect(targetJson, json);
 
       // when
-      final target = JsonMapper.deserialize<BinaryData>(json);
+      final target = JsonMapper.deserialize<BinaryData>(json)!;
       // then
       expect(rawString, String.fromCharCodes(target.data));
     });
@@ -295,7 +295,7 @@ void testConverters() {
       final json = '''{"list":[{}, {}],"set":[{}, {}]}''';
 
       // when
-      final target = JsonMapper.deserialize<CustomListContainer>(json);
+      final target = JsonMapper.deserialize<CustomListContainer>(json)!;
 
       // then
       expect(target.list, TypeMatcher<List<ListItem>>());
@@ -316,7 +316,7 @@ void testConverters() {
 
       // when
       final myModel = JsonMapper.fromMap<MyCarModel>(
-          json, SerializationOptions(ignoreUnknownTypes: true));
+          json, SerializationOptions(ignoreUnknownTypes: true))!;
 
       // then
       expect(myModel.model, 'Tesla');
@@ -343,7 +343,7 @@ void testConverters() {
 
       // when
       final json3 = JsonMapper.serialize(MyClass(MyEnumA.first, MyEnumB.foo));
-      final myEnumClass = JsonMapper.deserialize<MyClass>(json3);
+      final myEnumClass = JsonMapper.deserialize<MyClass>(json3)!;
       // then
       expect(myEnumClass.enumA, MyEnumA.first);
       expect(myEnumClass.enumB, MyEnumB.foo);
@@ -351,7 +351,7 @@ void testConverters() {
       // when
       final json4 = JsonMapper.serialize(MyClassWoConstructor());
       final myEnumEmptyClass =
-          JsonMapper.deserialize<MyClassWoConstructor>(json4);
+          JsonMapper.deserialize<MyClassWoConstructor>(json4)!;
       // then
       expect(myEnumEmptyClass.enumA, null);
       expect(myEnumEmptyClass.enumB, null);

@@ -3,12 +3,12 @@ import 'package:test/test.dart';
 
 const myCustomConverter = _MyCustomConverter();
 
-class _MyCustomConverter implements ICustomConverter<String> {
+class _MyCustomConverter implements ICustomConverter<String?> {
   static int callsCount = 0;
   const _MyCustomConverter();
 
   @override
-  String fromJSON(dynamic jsonValue, [DeserializationContext context]) {
+  String? fromJSON(dynamic jsonValue, [DeserializationContext? context]) {
     callsCount++;
     if (jsonValue is int) return jsonValue.toString();
     if (jsonValue is String) return jsonValue;
@@ -16,7 +16,7 @@ class _MyCustomConverter implements ICustomConverter<String> {
   }
 
   @override
-  dynamic toJSON(String object, [SerializationContext context]) {
+  dynamic toJSON(String? object, [SerializationContext? context]) {
     throw UnimplementedError();
   }
 }

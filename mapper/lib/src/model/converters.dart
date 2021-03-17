@@ -2,6 +2,7 @@ import 'dart:convert' show base64Decode, base64Encode;
 import 'dart:convert' show JsonDecoder;
 import 'dart:typed_data' show Uint8List;
 
+import 'package:collection/collection.dart' show IterableExtension;
 import 'package:intl/intl.dart';
 
 import 'annotations.dart';
@@ -9,32 +10,33 @@ import 'index.dart';
 
 typedef SerializeObjectFunction = dynamic Function(Object object);
 typedef DeserializeObjectFunction = dynamic Function(Object object, Type type);
-typedef GetConverterFunction = ICustomConverter Function(
-    JsonProperty jsonProperty, Type declarationType);
+typedef GetConverterFunction = ICustomConverter? Function(
+    JsonProperty? jsonProperty, Type? declarationType);
 typedef GetConvertedValueFunction = dynamic Function(
-    ICustomConverter converter, dynamic value,
-    [SerializationContext serializationContext,
-    DeserializationContext deserializationContext]);
+    ICustomConverter? converter, dynamic value,
+    [SerializationContext? serializationContext,
+    DeserializationContext? deserializationContext]);
 
 /// Abstract class for custom converters implementations
 abstract class ICustomConverter<T> {
-  dynamic toJSON(T object, [SerializationContext context]);
-  T fromJSON(dynamic jsonValue, [DeserializationContext context]);
+  dynamic toJSON(T object, [SerializationContext? context]);
+  T fromJSON(dynamic jsonValue, [DeserializationContext? context]);
 }
 
 /// Abstract class for custom iterable converters implementations
 abstract class ICustomIterableConverter {
-  void setIterableInstance(Iterable instance);
+  void setIterableInstance(Iterable? instance);
 }
 
 /// Abstract class for custom map converters implementations
 abstract class ICustomMapConverter {
-  void setMapInstance(Map instance);
+  void setMapInstance(Map? instance);
 }
 
 /// Abstract class for custom Enum converters implementations
 abstract class ICustomEnumConverter {
-  void setEnumValues(Iterable enumValues, {Map mapping, dynamic defaultValue});
+  void setEnumValues(Iterable? enumValues,
+      {Map? mapping, dynamic defaultValue});
 }
 
 /// Abstract class for composite converters relying on other converters
@@ -55,9 +57,9 @@ abstract class IRecursiveConverter {
 /// by the [JsonProperty] meta
 class BaseCustomConverter {
   const BaseCustomConverter() : super();
-  dynamic getConverterParameter(String name, [JsonProperty jsonProperty]) {
+  dynamic getConverterParameter(String name, [JsonProperty? jsonProperty]) {
     return jsonProperty != null && jsonProperty.converterParams != null
-        ? jsonProperty.converterParams[name]
+        ? jsonProperty.converterParams![name]
         : null;
   }
 }
@@ -69,8 +71,8 @@ class DateConverter extends BaseCustomConverter implements ICustomConverter {
   const DateConverter() : super();
 
   @override
-  Object fromJSON(dynamic jsonValue, [DeserializationContext context]) {
-    final format = getDateFormat(context.jsonPropertyMeta);
+  Object? fromJSON(dynamic jsonValue, [DeserializationContext? context]) {
+    final format = getDateFormat(context!.jsonPropertyMeta);
 
     if (jsonValue is String) {
       return format != null
@@ -82,10 +84,10 @@ class DateConverter extends BaseCustomConverter implements ICustomConverter {
   }
 
   @override
-  dynamic toJSON(Object object, [SerializationContext context]) {
-    final format = getDateFormat(context.jsonPropertyMeta);
+  dynamic toJSON(Object? object, [SerializationContext? context]) {
+    final format = getDateFormat(context!.jsonPropertyMeta);
     return format != null && object != null && !(object is String)
-        ? format.format(object)
+        ? format.format(object as DateTime)
         : (object is List)
             ? object.map((item) => item.toString()).toList()
             : object != null
@@ -93,8 +95,8 @@ class DateConverter extends BaseCustomConverter implements ICustomConverter {
                 : null;
   }
 
-  DateFormat getDateFormat([JsonProperty jsonProperty]) {
-    String format = getConverterParameter('format', jsonProperty);
+  DateFormat? getDateFormat([JsonProperty? jsonProperty]) {
+    String? format = getConverterParameter('format', jsonProperty);
     return format != null ? DateFormat(format) : null;
   }
 }
@@ -106,27 +108,27 @@ class NumberConverter extends BaseCustomConverter implements ICustomConverter {
   const NumberConverter() : super();
 
   @override
-  Object fromJSON(dynamic jsonValue, [DeserializationContext context]) {
-    final format = getNumberFormat(context.jsonPropertyMeta);
+  Object? fromJSON(dynamic jsonValue, [DeserializationContext? context]) {
+    final format = getNumberFormat(context!.jsonPropertyMeta);
     return format != null && (jsonValue is String)
-        ? getNumberFormat(context.jsonPropertyMeta).parse(jsonValue)
+        ? getNumberFormat(context.jsonPropertyMeta)!.parse(jsonValue)
         : (jsonValue is String)
             ? num.tryParse(jsonValue) ?? jsonValue
             : jsonValue;
   }
 
   @override
-  dynamic toJSON(Object object, [SerializationContext context]) {
-    final format = getNumberFormat(context.jsonPropertyMeta);
+  dynamic toJSON(Object? object, [SerializationContext? context]) {
+    final format = getNumberFormat(context!.jsonPropertyMeta);
     return object != null && format != null
-        ? getNumberFormat(context.jsonPropertyMeta).format(object)
+        ? getNumberFormat(context.jsonPropertyMeta)!.format(object)
         : (object is String)
             ? num.tryParse(object)
             : object;
   }
 
-  NumberFormat getNumberFormat([JsonProperty jsonProperty]) {
-    String format = getConverterParameter('format', jsonProperty);
+  NumberFormat? getNumberFormat([JsonProperty? jsonProperty]) {
+    String? format = getConverterParameter('format', jsonProperty);
     return format != null ? NumberFormat(format) : null;
   }
 }
@@ -139,11 +141,11 @@ final enumConverter = EnumConverter();
 class EnumConverter implements ICustomConverter, ICustomEnumConverter {
   EnumConverter() : super();
 
-  Iterable _enumValues = [];
+  Iterable? _enumValues = [];
 
   @override
-  Object fromJSON(dynamic jsonValue, [DeserializationContext context]) {
-    dynamic convert(value) => _enumValues.firstWhere(
+  Object? fromJSON(dynamic jsonValue, [DeserializationContext? context]) {
+    dynamic convert(value) => _enumValues!.firstWhere(
         (eValue) => eValue.toString() == value.toString(),
         orElse: () => null);
     return jsonValue is Iterable
@@ -152,7 +154,7 @@ class EnumConverter implements ICustomConverter, ICustomEnumConverter {
   }
 
   @override
-  dynamic toJSON(Object object, [SerializationContext context]) {
+  dynamic toJSON(Object? object, [SerializationContext? context]) {
     dynamic convert(value) => value.toString();
     return (object is Iterable)
         ? object.map(convert).toList()
@@ -160,7 +162,8 @@ class EnumConverter implements ICustomConverter, ICustomEnumConverter {
   }
 
   @override
-  void setEnumValues(Iterable enumValues, {Map mapping, dynamic defaultValue}) {
+  void setEnumValues(Iterable? enumValues,
+      {Map? mapping, dynamic defaultValue}) {
     _enumValues = enumValues;
   }
 }
@@ -171,18 +174,16 @@ final enumConverterShort = EnumConverterShort();
 class EnumConverterShort implements ICustomConverter, ICustomEnumConverter {
   EnumConverterShort() : super();
 
-  Iterable _enumValues = [];
+  Iterable? _enumValues = [];
   Map _mapping = {};
   dynamic _defaultValue;
 
   @override
-  Object fromJSON(dynamic jsonValue, [DeserializationContext context]) {
+  Object? fromJSON(dynamic jsonValue, [DeserializationContext? context]) {
     dynamic convert(value) =>
-        _enumValues.firstWhere(
-            (eValue) =>
-                _transformValue(value, context) ==
-                _transformValue(eValue, context, doubleMapping: true),
-            orElse: () => null) ??
+        _enumValues!.firstWhereOrNull((eValue) =>
+            _transformValue(value, context!) ==
+            _transformValue(eValue, context, doubleMapping: true)) ??
         _defaultValue;
     return jsonValue is Iterable
         ? jsonValue.map(convert).toList()
@@ -190,17 +191,17 @@ class EnumConverterShort implements ICustomConverter, ICustomEnumConverter {
   }
 
   @override
-  dynamic toJSON(Object object, [SerializationContext context]) {
+  dynamic toJSON(Object? object, [SerializationContext? context]) {
     dynamic convert(value) =>
-        value != null ? _transformValue(value, context) : null;
+        value != null ? _transformValue(value, context!) : null;
     return (object is Iterable)
         ? object.map(convert).toList()
         : convert(object);
   }
 
   @override
-  void setEnumValues(Iterable<dynamic> enumValues,
-      {Map mapping, dynamic defaultValue}) {
+  void setEnumValues(Iterable<dynamic>? enumValues,
+      {Map? mapping, dynamic defaultValue}) {
     _enumValues = enumValues;
     _defaultValue = defaultValue;
     _mapping = {};
@@ -214,8 +215,8 @@ class EnumConverterShort implements ICustomConverter, ICustomEnumConverter {
     final mapping = {};
     mapping.addAll(_mapping);
     if (context.jsonPropertyMeta != null &&
-        context.jsonPropertyMeta.converterParams != null) {
-      mapping.addAll(context.jsonPropertyMeta.converterParams);
+        context.jsonPropertyMeta!.converterParams != null) {
+      mapping.addAll(context.jsonPropertyMeta!.converterParams!);
     }
     value = _mapValue(value, mapping);
     if (doubleMapping) {
@@ -231,10 +232,10 @@ class EnumConverterShort implements ICustomConverter, ICustomEnumConverter {
       ? mapping[value]
       : value.toString().split('.').last;
 
-  CaseStyle _getCaseStyle(DeserializationContext context) =>
-      context.classMeta != null && context.classMeta.caseStyle != null
-          ? context.classMeta.caseStyle
-          : context.options.caseStyle;
+  CaseStyle? _getCaseStyle(DeserializationContext context) =>
+      context.classMeta != null && context.classMeta!.caseStyle != null
+          ? context.classMeta!.caseStyle
+          : context.options!.caseStyle;
 }
 
 const enumConverterNumeric = ConstEnumConverterNumeric();
@@ -245,16 +246,16 @@ class ConstEnumConverterNumeric
   const ConstEnumConverterNumeric();
 
   @override
-  Object fromJSON(jsonValue, [DeserializationContext context]) =>
+  Object? fromJSON(jsonValue, [DeserializationContext? context]) =>
       _enumConverterNumeric.fromJSON(jsonValue, context);
 
   @override
-  dynamic toJSON(object, [SerializationContext context]) =>
+  dynamic toJSON(object, [SerializationContext? context]) =>
       _enumConverterNumeric.toJSON(object, context);
 
   @override
-  void setEnumValues(Iterable<dynamic> enumValues,
-      {Map mapping, dynamic defaultValue}) {
+  void setEnumValues(Iterable<dynamic>? enumValues,
+      {Map? mapping, dynamic defaultValue}) {
     _enumConverterNumeric.setEnumValues(enumValues, mapping: mapping);
   }
 }
@@ -265,28 +266,28 @@ final _enumConverterNumeric = EnumConverterNumeric();
 class EnumConverterNumeric implements ICustomConverter, ICustomEnumConverter {
   EnumConverterNumeric() : super();
 
-  var _enumValues = [];
+  List<dynamic>? _enumValues = [];
   dynamic _defaultValue;
 
   @override
-  Object fromJSON(dynamic jsonValue, [DeserializationContext context]) {
+  Object? fromJSON(dynamic jsonValue, [DeserializationContext? context]) {
     return jsonValue is int
-        ? jsonValue < _enumValues.length && jsonValue >= 0
-            ? _enumValues[jsonValue]
+        ? jsonValue < _enumValues!.length && jsonValue >= 0
+            ? _enumValues![jsonValue]
             : _defaultValue
         : jsonValue;
   }
 
   @override
-  dynamic toJSON(Object object, [SerializationContext context]) {
-    final valueIndex = _enumValues.indexOf(object);
+  dynamic toJSON(Object? object, [SerializationContext? context]) {
+    final valueIndex = _enumValues!.indexOf(object);
     return valueIndex >= 0 ? valueIndex : _defaultValue;
   }
 
   @override
-  void setEnumValues(Iterable<dynamic> enumValues,
-      {Map mapping, dynamic defaultValue}) {
-    _enumValues = enumValues;
+  void setEnumValues(Iterable<dynamic>? enumValues,
+      {Map? mapping, dynamic defaultValue}) {
+    _enumValues = enumValues as List<dynamic>?;
     _defaultValue = defaultValue;
   }
 }
@@ -298,12 +299,12 @@ class SymbolConverter implements ICustomConverter {
   const SymbolConverter() : super();
 
   @override
-  Object fromJSON(dynamic jsonValue, [DeserializationContext context]) {
+  Object? fromJSON(dynamic jsonValue, [DeserializationContext? context]) {
     return jsonValue is String ? Symbol(jsonValue) : jsonValue;
   }
 
   @override
-  dynamic toJSON(Object object, [SerializationContext context]) {
+  dynamic toJSON(Object? object, [SerializationContext? context]) {
     return object != null
         ? RegExp('"(.+)"').allMatches(object.toString()).first.group(1)
         : null;
@@ -313,16 +314,18 @@ class SymbolConverter implements ICustomConverter {
 const durationConverter = DurationConverter();
 
 /// DurationConverter converter for [Duration] type
-class DurationConverter implements ICustomConverter<Duration> {
+class DurationConverter implements ICustomConverter<Duration?> {
   const DurationConverter() : super();
 
   @override
-  Duration fromJSON(dynamic jsonValue, [DeserializationContext context]) {
-    return jsonValue is num ? Duration(microseconds: jsonValue) : jsonValue;
+  Duration? fromJSON(dynamic jsonValue, [DeserializationContext? context]) {
+    return jsonValue is num
+        ? Duration(microseconds: jsonValue as int)
+        : jsonValue;
   }
 
   @override
-  dynamic toJSON(Duration object, [SerializationContext context]) {
+  dynamic toJSON(Duration? object, [SerializationContext? context]) {
     return object != null ? object.inMicroseconds : null;
   }
 }
@@ -334,12 +337,12 @@ class Uint8ListConverter implements ICustomConverter {
   const Uint8ListConverter() : super();
 
   @override
-  Object fromJSON(dynamic jsonValue, [DeserializationContext context]) {
+  Object? fromJSON(dynamic jsonValue, [DeserializationContext? context]) {
     return jsonValue is String ? base64Decode(jsonValue) : jsonValue;
   }
 
   @override
-  dynamic toJSON(Object object, [SerializationContext context]) {
+  dynamic toJSON(Object? object, [SerializationContext? context]) {
     return object is Uint8List ? base64Encode(object) : object;
   }
 }
@@ -351,12 +354,12 @@ class BigIntConverter implements ICustomConverter {
   const BigIntConverter() : super();
 
   @override
-  Object fromJSON(dynamic jsonValue, [DeserializationContext context]) {
+  Object? fromJSON(dynamic jsonValue, [DeserializationContext? context]) {
     return jsonValue is String ? BigInt.tryParse(jsonValue) : jsonValue;
   }
 
   @override
-  dynamic toJSON(Object object, [SerializationContext context]) {
+  dynamic toJSON(Object? object, [SerializationContext? context]) {
     return object is BigInt ? object.toString() : object;
   }
 }
@@ -365,18 +368,21 @@ final mapConverter = MapConverter();
 
 /// [Map<K, V>] converter
 class MapConverter
-    implements ICustomConverter<Map>, IRecursiveConverter, ICustomMapConverter {
+    implements
+        ICustomConverter<Map?>,
+        IRecursiveConverter,
+        ICustomMapConverter {
   MapConverter() : super();
 
-  SerializeObjectFunction _serializeObject;
-  DeserializeObjectFunction _deserializeObject;
-  Map _instance;
+  late SerializeObjectFunction _serializeObject;
+  late DeserializeObjectFunction _deserializeObject;
+  Map? _instance;
   final _jsonDecoder = JsonDecoder();
 
   @override
-  Map fromJSON(dynamic jsonValue, [DeserializationContext context]) {
+  Map? fromJSON(dynamic jsonValue, [DeserializationContext? context]) {
     var result = jsonValue;
-    final _typeInfo = context.typeInfo;
+    final _typeInfo = context!.typeInfo;
     if (jsonValue is String) {
       result = _jsonDecoder.convert(jsonValue);
     }
@@ -387,7 +393,7 @@ class MapConverter
             _deserializeObject(value, _typeInfo.parameters.last)));
       }
       if (_instance != null && _instance is Map) {
-        result.forEach((key, value) => _instance[key] = value);
+        result.forEach((key, value) => _instance![key] = value);
         result = _instance;
       }
     }
@@ -395,8 +401,8 @@ class MapConverter
   }
 
   @override
-  dynamic toJSON(Map object, [SerializationContext context]) =>
-      object.map((key, value) =>
+  dynamic toJSON(Map? object, [SerializationContext? context]) =>
+      object!.map((key, value) =>
           MapEntry(_serializeObject(key).toString(), _serializeObject(value)));
 
   @override
@@ -411,7 +417,7 @@ class MapConverter
   }
 
   @override
-  void setMapInstance(Map instance) {
+  void setMapInstance(Map? instance) {
     _instance = instance;
   }
 }
@@ -423,14 +429,14 @@ class DefaultIterableConverter
     implements ICustomConverter, ICustomIterableConverter, ICompositeConverter {
   DefaultIterableConverter() : super();
 
-  Iterable _instance;
-  GetConverterFunction _getConverter;
-  GetConvertedValueFunction _getConvertedValue;
+  Iterable? _instance;
+  late GetConverterFunction _getConverter;
+  late GetConvertedValueFunction _getConvertedValue;
 
   @override
-  dynamic fromJSON(dynamic jsonValue, [DeserializationContext context]) {
+  dynamic fromJSON(dynamic jsonValue, [DeserializationContext? context]) {
     dynamic convert(item) => _getConvertedValue(
-        _getConverter(context.jsonPropertyMeta, context.typeInfo.scalarType),
+        _getConverter(context!.jsonPropertyMeta, context.typeInfo!.scalarType),
         item,
         null,
         context);
@@ -450,12 +456,12 @@ class DefaultIterableConverter
   }
 
   @override
-  dynamic toJSON(dynamic object, [SerializationContext context]) {
+  dynamic toJSON(dynamic object, [SerializationContext? context]) {
     return object;
   }
 
   @override
-  void setIterableInstance(Iterable instance) {
+  void setIterableInstance(Iterable? instance) {
     _instance = instance;
   }
 
@@ -474,31 +480,31 @@ class DefaultIterableConverter
 const uriConverter = UriConverter();
 
 /// Uri converter
-class UriConverter implements ICustomConverter<Uri> {
+class UriConverter implements ICustomConverter<Uri?> {
   const UriConverter() : super();
 
   @override
-  Uri fromJSON(dynamic jsonValue, [DeserializationContext context]) =>
+  Uri? fromJSON(dynamic jsonValue, [DeserializationContext? context]) =>
       jsonValue is String ? Uri.tryParse(jsonValue) : jsonValue;
 
   @override
-  String toJSON(Uri object, [SerializationContext context]) =>
+  String toJSON(Uri? object, [SerializationContext? context]) =>
       object.toString();
 }
 
 const regExpConverter = RegExpConverter();
 
 /// RegExp converter
-class RegExpConverter implements ICustomConverter<RegExp> {
+class RegExpConverter implements ICustomConverter<RegExp?> {
   const RegExpConverter() : super();
 
   @override
-  RegExp fromJSON(dynamic jsonValue, [DeserializationContext context]) =>
+  RegExp? fromJSON(dynamic jsonValue, [DeserializationContext? context]) =>
       jsonValue is String ? RegExp(jsonValue) : jsonValue;
 
   @override
-  dynamic toJSON(RegExp object, [SerializationContext context]) =>
-      object.pattern;
+  dynamic toJSON(RegExp? object, [SerializationContext? context]) =>
+      object!.pattern;
 }
 
 const defaultConverter = DefaultConverter();
@@ -508,9 +514,9 @@ class DefaultConverter implements ICustomConverter {
   const DefaultConverter() : super();
 
   @override
-  Object fromJSON(dynamic jsonValue, [DeserializationContext context]) =>
+  Object? fromJSON(dynamic jsonValue, [DeserializationContext? context]) =>
       jsonValue;
 
   @override
-  dynamic toJSON(Object object, [SerializationContext context]) => object;
+  dynamic toJSON(Object? object, [SerializationContext? context]) => object;
 }

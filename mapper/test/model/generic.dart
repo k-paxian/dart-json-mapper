@@ -7,11 +7,11 @@ class Foo {}
 
 @jsonSerializable
 class BarBase<T> {
-  T foo;
+  T? foo;
 
   BarBase({this.foo});
 
-  BarBase<T> fromJson(dynamic json) => JsonMapper.deserialize<BarBase<T>>(json);
+  BarBase<T>? fromJson(dynamic json) => JsonMapper.deserialize<BarBase<T>>(json);
 
   dynamic toJson() =>
       JsonMapper.serialize(this, SerializationOptions(indent: ''));
@@ -31,11 +31,11 @@ class Bar extends BarBase<Foo> {
 @jsonSerializable
 @Json(typeNameProperty: 'technicalName', ignoreNullMembers: true)
 class EntityModel<T> {
-  final String parentUuid;
-  final String uuid;
+  final String? parentUuid;
+  final String? uuid;
 
   @JsonProperty(ignore: true)
-  final T entity;
+  final T? entity;
 
   static Map<String, dynamic> entityProperties = {};
 
@@ -45,32 +45,32 @@ class EntityModel<T> {
       parentUuid: other.parentUuid, uuid: other.uuid, entity: other.entity);
 
   @jsonProperty
-  Map<String, dynamic> entityToJson() => JsonMapper.toMap(entity);
+  Map<String, dynamic>? entityToJson() => JsonMapper.toMap(entity);
 
   @jsonProperty
   void setEntityPropertyFromJson(String name, dynamic value) {
     entityProperties[name] = value;
   }
 
-  T newEntityFromModelJson(Map<String, dynamic> entityModelJson) {
+  T? newEntityFromModelJson(Map<String, dynamic>? entityModelJson) {
     fromJson(entityModelJson);
     return JsonMapper.fromMap<T>(entityProperties);
   }
 
-  T newEntityFromJson(Map<String, dynamic> entityJson) =>
+  T? newEntityFromJson(Map<String, dynamic> entityJson) =>
       JsonMapper.fromMap<T>(entityJson);
 
-  EntityModel<T> fromJson(Map<String, dynamic> modelJson) =>
+  EntityModel<T>? fromJson(Map<String, dynamic>? modelJson) =>
       JsonMapper.fromMap<EntityModel<T>>(modelJson);
 
-  Map<String, dynamic> toJson() => JsonMapper.toMap(this);
+  Map<String, dynamic>? toJson() => JsonMapper.toMap(this);
 }
 
 @jsonSerializable
 @Json(typeNameProperty: 'technicalName', ignoreNullMembers: true)
 abstract class AbstractEntityModel<T> {
-  final String parentUuid;
-  final String uuid;
+  final String? parentUuid;
+  final String? uuid;
 
   const AbstractEntityModel({this.parentUuid, this.uuid});
 
@@ -78,21 +78,21 @@ abstract class AbstractEntityModel<T> {
 
   T merge(T other);
 
-  T fromJson(Map<String, dynamic> jsonData) {
+  T? fromJson(Map<String, dynamic> jsonData) {
     return JsonMapper.fromMap<T>(jsonData);
   }
 
-  Map<String, dynamic> toJson() {
+  Map<String, dynamic>? toJson() {
     return JsonMapper.toMap(this);
   }
 }
 
 @jsonSerializable
 class MyCarModel extends AbstractEntityModel<Car> {
-  final String model;
-  final Color color;
+  final String? model;
+  final Color? color;
 
-  const MyCarModel({String parentUuid, String uuid, this.model, this.color})
+  const MyCarModel({String? parentUuid, String? uuid, this.model, this.color})
       : super(parentUuid: parentUuid, uuid: uuid);
 
   @override

@@ -16,7 +16,7 @@ class FlutterClass {
   FlutterClass(this.color);
 }
 
-main() {
+void main() {
   initializeJsonMapper(adapters: [flutterAdapter]);
 
   print(JsonMapper.serialize(FlutterClass(Color(0x003f4f5f))));

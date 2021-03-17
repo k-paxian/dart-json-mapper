@@ -6,10 +6,10 @@ import './model/index.dart';
 @jsonSerializable
 @Json(caseStyle: CaseStyle.Kebab)
 class NameCaseObjectOverride {
-  String mainTitle;
-  String description;
-  bool hasMainProperty;
-  Color primaryColor;
+  String? mainTitle;
+  String? description;
+  bool? hasMainProperty;
+  Color? primaryColor;
 
   NameCaseObjectOverride(
       {this.mainTitle,
@@ -20,9 +20,9 @@ class NameCaseObjectOverride {
 
 @jsonSerializable
 class NameCaseObject {
-  String mainTitle;
-  String description;
-  bool hasMainProperty;
+  String? mainTitle;
+  String? description;
+  bool? hasMainProperty;
   Color primaryColor;
 
   NameCaseObject(
@@ -115,7 +115,7 @@ void testNameCasing() {
             '''{"MAIN_TITLE":"title","DESCRIPTION":"desc","HAS_MAIN_PROPERTY":true,"PRIMARY_COLOR":"GRAY_METALLIC"}''';
         // when
         final instance = JsonMapper.deserialize<NameCaseObject>(
-            json, DeserializationOptions(caseStyle: CaseStyle.SnakeAllCaps));
+            json, DeserializationOptions(caseStyle: CaseStyle.SnakeAllCaps))!;
         // then
         expect(instance.mainTitle, 'title');
         expect(instance.description, 'desc');
@@ -129,7 +129,7 @@ void testNameCasing() {
             '''{"main_title":"title","description":"desc","has_main_property":true,"primary_color":"gray_metallic"}''';
         // when
         final instance = JsonMapper.deserialize<NameCaseObject>(
-            json, DeserializationOptions(caseStyle: CaseStyle.Snake));
+            json, DeserializationOptions(caseStyle: CaseStyle.Snake))!;
         // then
         expect(instance.mainTitle, 'title');
         expect(instance.description, 'desc');
@@ -143,7 +143,7 @@ void testNameCasing() {
             '''{"MainTitle":"title","Description":"desc","HasMainProperty":true,"PrimaryColor":"GrayMetallic"}''';
         // when
         final instance = JsonMapper.deserialize<NameCaseObject>(
-            json, DeserializationOptions(caseStyle: CaseStyle.Pascal));
+            json, DeserializationOptions(caseStyle: CaseStyle.Pascal))!;
         // then
         expect(instance.mainTitle, 'title');
         expect(instance.description, 'desc');
@@ -157,7 +157,7 @@ void testNameCasing() {
             '''{"main-title":"title","description":"desc","has-main-property":true,"primary-color":"gray-metallic"}''';
         // when
         final instance = JsonMapper.deserialize<NameCaseObject>(
-            json, DeserializationOptions(caseStyle: CaseStyle.Kebab));
+            json, DeserializationOptions(caseStyle: CaseStyle.Kebab))!;
         // then
         expect(instance.mainTitle, 'title');
         expect(instance.description, 'desc');

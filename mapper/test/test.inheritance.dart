@@ -7,7 +7,7 @@ enum BusinessType { Private, Public }
 @jsonSerializable
 @Json(typeNameProperty: 'typeName')
 abstract class Business {
-  String name;
+  String? name;
   BusinessType type = BusinessType.Private;
 }
 
@@ -34,16 +34,16 @@ class Stakeholder {
 }
 
 class DataModel {
-  String id;
+  String? id;
   DataModel({this.id});
 }
 
 abstract class AbstractUser extends DataModel {
-  final String email;
+  late final String? email;
 
   AbstractUser copyWith({
-    String id,
-    String email,
+    String? id,
+    String? email,
   });
 
   factory AbstractUser(String id) = UserImpl.newUser;
@@ -52,9 +52,9 @@ abstract class AbstractUser extends DataModel {
 @jsonSerializable
 class UserImpl extends DataModel implements AbstractUser {
   @override
-  final String email;
+  late final String? email;
 
-  UserImpl({String id, this.email}) : super(id: id);
+  UserImpl({String? id, this.email}) : super(id: id);
 
   factory UserImpl.newUser(String id) {
     return UserImpl(
@@ -63,7 +63,7 @@ class UserImpl extends DataModel implements AbstractUser {
   }
 
   @override
-  AbstractUser copyWith({String email, String id}) {
+  AbstractUser copyWith({String? email, String? id}) {
     return UserImpl(id: id ?? this.id, email: email ?? this.email);
   }
 }
@@ -78,7 +78,7 @@ void testInheritance() {
 
       // when
       final json = JsonMapper.serialize(jack);
-      final target = JsonMapper.deserialize<Stakeholder>(json);
+      final target = JsonMapper.deserialize<Stakeholder>(json)!;
 
       // then
       expect(target.businesses[0], TypeMatcher<Startup>());
@@ -91,8 +91,8 @@ void testInheritance() {
       final options = SerializationOptions(typeNameProperty: '@type');
 
       // when
-      final map = JsonMapper.toMap(user, options);
-      final newUser = JsonMapper.fromMap<AbstractUser>(map, options);
+      final map = JsonMapper.toMap(user, options)!;
+      final newUser = JsonMapper.fromMap<AbstractUser>(map, options)!;
 
       // then
       expect(map.containsKey('@type'), true);

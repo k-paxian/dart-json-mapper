@@ -8,18 +8,18 @@ enum Color { Red, Blue, Gray, GrayMetallic, Green, Brown, Yellow, Black, White }
 @jsonSerializable
 class Car {
   @JsonProperty(name: 'modelName')
-  String model;
+  String? model;
 
-  Color color;
+  Color? color;
 
   @JsonProperty(ignoreIfNull: true)
-  Car replacement;
+  Car? replacement;
 
   Car(this.model, this.color);
 }
 
 extension TitledCar on Car {
-  String get title => '${model}-${color}';
+  String get title => '$model-$color';
 }
 
 @jsonSerializable
@@ -49,7 +49,7 @@ class Person {
 
   @JsonProperty(converterParams: {'format': '##.##'})
   num salary = 1200000.246;
-  num dob;
+  num? dob;
   num age = 36;
 
   var lastName = 'Gump';
@@ -78,7 +78,7 @@ class Person {
 
   List<Car> vehicles = [Car('Tesla', Color.Black), Car('BMW', Color.Red)];
 
-  String get fullName => '${name} ${lastName}';
+  String get fullName => '$name $lastName';
 
   Person();
 }

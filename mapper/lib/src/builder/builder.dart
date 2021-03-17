@@ -1,12 +1,13 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:build/build.dart';
+// ignore: import_of_legacy_library_into_null_safe
 import 'package:reflectable/src/builder_implementation.dart';
 
 import 'reflectable_source_wrapper.dart';
 
 class DartJsonMapperBuilder implements Builder {
   BuilderOptions builderOptions;
-  Map<String, ReflectableSourceWrapper> wrappersMap = {};
+  Map<String, ReflectableSourceWrapper?> wrappersMap = {};
 
   DartJsonMapperBuilder(this.builderOptions);
 
@@ -37,7 +38,7 @@ class DartJsonMapperBuilder implements Builder {
     final incrementalBuild = wrappersMap[inputLibrary.identifier] != null;
     final wrapper = getWrapperForLibrary(inputLibrary);
     if (incrementalBuild && wrapper.hasNoIncrementalChanges(inputLibrary)) {
-      await buildStep.writeAsString(outputId, wrapper.lastOutput);
+      await buildStep.writeAsString(outputId, wrapper.lastOutput!);
       return;
     }
     final resolver = buildStep.resolver;
@@ -50,7 +51,7 @@ class DartJsonMapperBuilder implements Builder {
         inputLibrary,
         visibleLibraries,
         _formatted, []);
-    final wrappedSource = wrapper.wrap(generatedSource);
+    final wrappedSource = wrapper.wrap(generatedSource)!;
     await buildStep.writeAsString(outputId, wrappedSource);
   }
 }

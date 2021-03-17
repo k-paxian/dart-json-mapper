@@ -30,10 +30,10 @@ class UnAnnotatedEnumField {
 @jsonSerializable
 class ObjectWithRequiredField {
   @JsonProperty(requiredMessage: 'This Value is critically important')
-  String value;
+  String? value;
 
   @JsonProperty(notNullMessage: 'This Value2 cannot be null')
-  String value2;
+  String? value2;
 
   ObjectWithRequiredField({this.value, this.value2});
 }
@@ -47,7 +47,7 @@ class ObjectWithRequiredNullableField {
       ignoreForSerialization: true,
       ignoreIfNull: true,
       ignore: true)
-  String value;
+  String? value;
 
   @JsonProperty(
       notNullMessage: 'This Value2 cannot be null',
@@ -56,7 +56,7 @@ class ObjectWithRequiredNullableField {
       ignoreForSerialization: true,
       ignoreIfNull: true,
       ignore: true)
-  String value2;
+  String? value2;
 
   ObjectWithRequiredNullableField({this.value, this.value2});
 }

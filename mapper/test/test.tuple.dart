@@ -52,7 +52,7 @@ void testTupleCases() {
 
       // when
       final targetJson = JsonMapper.serialize(instance);
-      final target = JsonMapper.deserialize<ConcreteClass>(targetJson);
+      final target = JsonMapper.deserialize<ConcreteClass>(targetJson)!;
 
       // then
       expect(targetJson, json);

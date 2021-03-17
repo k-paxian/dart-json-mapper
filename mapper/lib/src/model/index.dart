@@ -19,17 +19,17 @@ class DeserializationOptions {
   /// The most popular ways to combine words into a single string
   /// Based on assumption: That all Dart class fields initially
   /// given as CaseStyle.Camel
-  final CaseStyle caseStyle;
+  final CaseStyle? caseStyle;
 
   /// Scheme to be used
   final dynamic scheme;
 
   /// Declares necessity for all annotated classes and all their subclasses
   /// to dump their own type name to the custom named json property.
-  final String typeNameProperty;
+  final String? typeNameProperty;
 
   /// Process annotated class members only
-  final bool processAnnotatedMembersOnly;
+  final bool? processAnnotatedMembersOnly;
 
   /// Template Instance
   /// - for Deserialization output it could be a typed Iterable<T>, or Map<K, V>, or else
@@ -53,16 +53,16 @@ const defaultSerializationOptions = SerializationOptions(indent: ' ');
 
 class SerializationOptions extends DeserializationOptions {
   /// Indentation
-  final String indent;
+  final String? indent;
 
   /// Null class members
   /// will be excluded from serialization process
-  final bool ignoreNullMembers;
+  final bool? ignoreNullMembers;
 
   /// Class members having Unknown types
   /// will be excluded from serialization process
   /// Java Jackson's "@JsonIgnoreProperties(ignoreUnknown = true)"
-  final bool ignoreUnknownTypes;
+  final bool? ignoreUnknownTypes;
 
   const SerializationOptions(
       {scheme,
@@ -82,11 +82,11 @@ class SerializationOptions extends DeserializationOptions {
 }
 
 class DeserializationContext {
-  final DeserializationOptions options;
-  final JsonProperty jsonPropertyMeta;
-  final Json classMeta;
-  final TypeInfo typeInfo;
-  final Iterable<JsonMap> parentJsonMaps;
+  final DeserializationOptions? options;
+  final JsonProperty? jsonPropertyMeta;
+  final Json? classMeta;
+  final TypeInfo? typeInfo;
+  final Iterable<JsonMap>? parentJsonMaps;
 
   const DeserializationContext(
       {this.options,
@@ -104,7 +104,7 @@ class DeserializationContext {
 
     return otherContext.options == options &&
         otherContext.jsonPropertyMeta == jsonPropertyMeta &&
-        otherContext.typeInfo.typeName == typeInfo.typeName &&
+        otherContext.typeInfo!.typeName == typeInfo!.typeName &&
         otherContext.classMeta == classMeta;
   }
 }
@@ -114,7 +114,7 @@ class SerializationContext extends DeserializationContext {
 
   const SerializationContext(
       {this.level = 0,
-      SerializationOptions options,
+      SerializationOptions? options,
       jsonPropertyMeta,
       classMeta,
       typeInfo})
@@ -124,12 +124,13 @@ class SerializationContext extends DeserializationContext {
             classMeta: classMeta,
             typeInfo: typeInfo);
 
-  SerializationOptions get serializationOptions => options;
+  SerializationOptions? get serializationOptions =>
+      options as SerializationOptions?;
 }
 
 /// Describes resolved property name and value
 class PropertyDescriptor {
-  String name;
+  String? name;
   dynamic value;
   PropertyDescriptor(this.name, this.value);
 }
@@ -146,7 +147,7 @@ class ProcessedObjectDescriptor {
 
   void logUsage(int level) {
     if (usages.containsKey(level)) {
-      usages[level]++;
+      usages.update(level, (value) => ++value);
     } else {
       usages[level] = 1;
     }

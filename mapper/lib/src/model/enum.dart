@@ -5,18 +5,18 @@ abstract class Enum {}
 
 /// Enum descriptor, values, mappings, etc
 abstract class IEnumDescriptor {
-  Iterable values;
+  Iterable? values;
   dynamic defaultValue;
-  Map mapping;
+  Map? mapping;
 }
 
 /// EnumDescriptor
 class EnumDescriptor implements IEnumDescriptor {
   @override
-  Map mapping;
+  Map? mapping;
 
   @override
-  Iterable values;
+  Iterable? values;
 
   @override
   var defaultValue;

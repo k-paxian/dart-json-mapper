@@ -12,7 +12,7 @@ void testGenerics() {
 
       // when
       final targetJson = bar.toJson();
-      final target = Bar().fromJson(json);
+      final BarBase<Foo> target = Bar().fromJson(json)!;
 
       // then
       expect(targetJson, json);
@@ -59,7 +59,7 @@ void testGenerics() {
       // when
       final modelJson = carModel.toJson();
       final entityJson = carModel.entityToJson();
-      final entityInstance = carModel.newEntityFromModelJson(modelJson);
+      final entityInstance = carModel.newEntityFromModelJson(modelJson)!;
 
       // then
       expect(modelJson, <String, dynamic>{

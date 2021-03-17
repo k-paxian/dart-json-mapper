@@ -9,8 +9,8 @@ void testIntegration() {
       // given
       final car = Car('Tesla S3', Color.Black);
       // when
-      final targetMap = JsonMapper.toMap(car);
-      final targetCar = JsonMapper.fromMap<Car>(targetMap);
+      final targetMap = JsonMapper.toMap(car)!;
+      final targetCar = JsonMapper.fromMap<Car>(targetMap)!;
 
       // then
       expect(targetMap, TypeMatcher<Map<String, dynamic>>());
@@ -26,7 +26,7 @@ void testIntegration() {
       // given
       final car = Car('Tesla S3', Color.Black);
       // when
-      final clone = JsonMapper.clone(car);
+      final clone = JsonMapper.clone(car)!;
 
       // then
       expect(clone == car, false);
@@ -39,7 +39,7 @@ void testIntegration() {
       final car = Car('Tesla S3', Color.Black);
 
       // when
-      final instance = JsonMapper.copyWith(car, {'color': 'Blue'});
+      final instance = JsonMapper.copyWith(car, {'color': 'Blue'})!;
 
       // then
       expect(instance == car, false);

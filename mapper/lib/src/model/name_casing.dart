@@ -8,18 +8,18 @@ String toWords(String input) => input
     .toLowerCase();
 
 String capitalize(String input) => input.replaceFirstMapped(
-    RegExp('(^|\s)[a-z]'), (match) => match.group(0).toUpperCase());
+    RegExp('(^|\s)[a-z]'), (match) => match.group(0)!.toUpperCase());
 
-String transformFieldName(String input, CaseStyle caseStyle) {
+String? transformFieldName(String? input, CaseStyle? caseStyle) {
   switch (caseStyle) {
     case CaseStyle.Kebab:
-      return toWords(input).replaceAll(' ', '-');
+      return toWords(input!).replaceAll(' ', '-');
     case CaseStyle.Snake:
-      return toWords(input).replaceAll(' ', '_');
+      return toWords(input!).replaceAll(' ', '_');
     case CaseStyle.SnakeAllCaps:
-      return toWords(input).replaceAll(' ', '_').toUpperCase();
+      return toWords(input!).replaceAll(' ', '_').toUpperCase();
     case CaseStyle.Pascal:
-      return toWords(input).split(' ').map((word) => capitalize(word)).join();
+      return toWords(input!).split(' ').map((word) => capitalize(word)).join();
     default:
       return input;
   }

@@ -4,15 +4,15 @@ abstract class JsonMapperError extends Error {}
 
 abstract class JsonFormatError extends JsonMapperError {
   factory JsonFormatError(DeserializationContext context,
-      {FormatException formatException}) = _JsonFormatErrorImpl;
+      {FormatException? formatException}) = _JsonFormatErrorImpl;
 }
 
 class _JsonFormatErrorImpl extends JsonMapperError implements JsonFormatError {
   final DeserializationContext _context;
-  final FormatException _formatException;
+  final FormatException? _formatException;
 
   _JsonFormatErrorImpl(DeserializationContext context,
-      {FormatException formatException})
+      {FormatException? formatException})
       : _context = context,
         _formatException = formatException;
 
@@ -22,41 +22,41 @@ class _JsonFormatErrorImpl extends JsonMapperError implements JsonFormatError {
 }
 
 abstract class FieldCannotBeNullError extends JsonMapperError {
-  factory FieldCannotBeNullError(String fieldName, {String message}) =
+  factory FieldCannotBeNullError(String fieldName, {String? message}) =
       _FieldCannotBeNullErrorImpl;
 }
 
 class _FieldCannotBeNullErrorImpl extends JsonMapperError
     implements FieldCannotBeNullError {
   final String _fieldName;
-  final String _message;
+  final String? _message;
 
-  _FieldCannotBeNullErrorImpl(String fieldName, {String message})
+  _FieldCannotBeNullErrorImpl(String fieldName, {String? message})
       : _fieldName = fieldName,
         _message = message;
 
   @override
   String toString() =>
-      'Field "${_fieldName}" cannot be NULL. ${_message ?? 'Please specify valid value in JSON payload'}.';
+      'Field "$_fieldName" cannot be NULL. ${_message ?? 'Please specify valid value in JSON payload'}.';
 }
 
 abstract class FieldIsRequiredError extends JsonMapperError {
-  factory FieldIsRequiredError(String fieldName, {String message}) =
+  factory FieldIsRequiredError(String fieldName, {String? message}) =
       _FieldIsRequiredErrorImpl;
 }
 
 class _FieldIsRequiredErrorImpl extends JsonMapperError
     implements FieldIsRequiredError {
   final String _fieldName;
-  final String _message;
+  final String? _message;
 
-  _FieldIsRequiredErrorImpl(String fieldName, {String message})
+  _FieldIsRequiredErrorImpl(String fieldName, {String? message})
       : _fieldName = fieldName,
         _message = message;
 
   @override
   String toString() =>
-      'Field "${_fieldName}" is required. ${_message ?? 'And has to be provided in JSON payload'}.';
+      'Field "$_fieldName" is required. ${_message ?? 'And has to be provided in JSON payload'}.';
 }
 
 abstract class CircularReferenceError extends JsonMapperError {
@@ -74,15 +74,15 @@ class _CircularReferenceErrorImpl extends JsonMapperError
 }
 
 abstract class MissingAnnotationOnTypeError extends JsonMapperError {
-  factory MissingAnnotationOnTypeError(Type type) =
+  factory MissingAnnotationOnTypeError(Type? type) =
       _MissingAnnotationOnTypeErrorImpl;
 }
 
 class _MissingAnnotationOnTypeErrorImpl extends JsonMapperError
     implements MissingAnnotationOnTypeError {
-  final Type _type;
+  final Type? _type;
 
-  _MissingAnnotationOnTypeErrorImpl(Type type) : _type = type;
+  _MissingAnnotationOnTypeErrorImpl(Type? type) : _type = type;
 
   @override
   String toString() =>

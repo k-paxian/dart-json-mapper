@@ -16,7 +16,7 @@ class ColorConverter implements ICustomConverter<Color> {
   const ColorConverter() : super();
 
   @override
-  Color fromJSON(dynamic jsonValue, [DeserializationContext context]) {
+  Color fromJSON(dynamic jsonValue, [DeserializationContext? context]) {
     return jsonValue is Color
         ? jsonValue
         : jsonValue is String
@@ -25,7 +25,7 @@ class ColorConverter implements ICustomConverter<Color> {
   }
 
   @override
-  dynamic toJSON(Color object, [SerializationContext context]) {
+  dynamic toJSON(Color object, [SerializationContext? context]) {
     return object is Color ? colorToString(object) : object;
   }
 
@@ -39,10 +39,10 @@ class ColorConverter implements ICustomConverter<Color> {
 
   Color parseColor(String value) {
     return Color.fromARGB(
-        int.tryParse(value.substring(1, 3), radix: 16),
-        int.tryParse(value.substring(3, 5), radix: 16),
-        int.tryParse(value.substring(5, 7), radix: 16),
-        int.tryParse(value.substring(7), radix: 16));
+        int.tryParse(value.substring(1, 3), radix: 16)!,
+        int.tryParse(value.substring(3, 5), radix: 16)!,
+        int.tryParse(value.substring(5, 7), radix: 16)!,
+        int.tryParse(value.substring(7), radix: 16)!);
   }
 }
 

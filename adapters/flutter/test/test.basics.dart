@@ -14,7 +14,7 @@ void testBasics() {
     // given
     final color = Color(0x113f4f5f);
     final rawString = '#113F4F5F';
-    final json = '{"color":"${rawString}"}';
+    final json = '{"color":"$rawString"}';
 
     // when
     final targetJson = JsonMapper.serialize(FlutterData(color), compactOptions);
@@ -22,7 +22,7 @@ void testBasics() {
     expect(targetJson, json);
 
     // when
-    final target = JsonMapper.deserialize<FlutterData>(json);
+    final target = JsonMapper.deserialize<FlutterData>(json)!;
     // then
     expect(target.color, color);
   });

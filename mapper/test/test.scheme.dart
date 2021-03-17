@@ -21,42 +21,42 @@ class Object {
 class Address {
   @JsonProperty(name: 'first_name', scheme: Scheme.B)
   @JsonProperty(name: 'firstname', scheme: Scheme.A)
-  String firstName;
+  String? firstName;
 
   @JsonProperty(name: 'last_name', scheme: Scheme.B)
   @JsonProperty(name: 'lastname', scheme: Scheme.A)
-  String lastName;
+  String? lastName;
 
   @JsonProperty(name: 'email', scheme: Scheme.B)
   @JsonProperty(name: 'email', scheme: Scheme.A)
-  String email;
+  String? email;
 
   @JsonProperty(name: 'phone', scheme: Scheme.B)
   @JsonProperty(name: 'telephone', scheme: Scheme.A)
-  String phoneNumber;
+  String? phoneNumber;
 
   @JsonProperty(name: 'country', scheme: Scheme.B)
   @JsonProperty(name: 'country_id', scheme: Scheme.A)
-  String country;
+  String? country;
 
   @JsonProperty(name: 'city', scheme: Scheme.B)
   @JsonProperty(name: 'city', scheme: Scheme.A)
-  String city;
+  String? city;
 
   @JsonProperty(name: 'postcode', scheme: Scheme.B)
   @JsonProperty(name: 'postcode', scheme: Scheme.A)
-  String zipCode;
+  String? zipCode;
 
   @JsonProperty(name: 'address_1', scheme: Scheme.B)
-  String street;
+  String? street;
 
   @JsonProperty(name: 'street', scheme: Scheme.A)
-  List<String> streetList;
+  List<String>? streetList;
 
-  String id;
-  String district;
+  String? id;
+  String? district;
 
-  static Address fromJson(dynamic jsonValue, {Scheme scheme = Scheme.A}) =>
+  static Address? fromJson(dynamic jsonValue, {Scheme scheme = Scheme.A}) =>
       JsonMapper.fromJson<Address>(
           jsonValue,
           DeserializationOptions(
@@ -90,7 +90,7 @@ void testScheme() {
       final json = '''{"root":{"title":"Scheme A"}}''';
       // when
       final instance = JsonMapper.deserialize<Object>(
-          json, DeserializationOptions(scheme: Scheme.A));
+          json, DeserializationOptions(scheme: Scheme.A))!;
       // then
       expect(instance, TypeMatcher<Object>());
       expect(instance.title, 'Scheme A');
@@ -111,7 +111,7 @@ void testScheme() {
       final json = '''{"_":{"title_test":"Scheme B"}}''';
       // when
       final instance = JsonMapper.deserialize<Object>(
-          json, DeserializationOptions(scheme: Scheme.B));
+          json, DeserializationOptions(scheme: Scheme.B))!;
       // then
       expect(instance, TypeMatcher<Object>());
       expect(instance.title, 'Scheme B');
@@ -130,7 +130,7 @@ void testScheme() {
       // given
       final json = '''{"default":{"title":"No Scheme"}}''';
       // when
-      final instance = JsonMapper.deserialize<Object>(json);
+      final instance = JsonMapper.deserialize<Object>(json)!;
       // then
       expect(instance, TypeMatcher<Object>());
       expect(instance.title, 'No Scheme');

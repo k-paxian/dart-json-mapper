@@ -33,7 +33,7 @@ void testMixinCases() {
 
       // when
       final targetJson = JsonMapper.serialize(instance, compactOptions);
-      final target = JsonMapper.deserialize<MixinContainer>(targetJson);
+      final target = JsonMapper.deserialize<MixinContainer>(targetJson)!;
 
       // then
       expect(targetJson, json);

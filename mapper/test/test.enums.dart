@@ -8,7 +8,7 @@ enum ThirdParty { A, B, C }
 @jsonSerializable
 class ShortEnumConverter {
   @JsonProperty(converterParams: {ThirdParty.B: 'Be'})
-  ThirdParty party;
+  ThirdParty? party;
 
   ShortEnumConverter({this.party});
 }
@@ -16,26 +16,26 @@ class ShortEnumConverter {
 @jsonSerializable
 class EnumMappingsOverrideTest {
   @JsonProperty(converterParams: {ThirdParty.B: 'Be'})
-  List<ThirdParty> parties = [];
+  List<ThirdParty>? parties = [];
 
   EnumMappingsOverrideTest({this.parties});
 }
 
 @jsonSerializable
 class EnumIterables {
-  ThirdParty party;
-  Color color;
+  ThirdParty? party;
+  Color? color;
   List<ThirdParty> parties = [];
-  List<Color> colors;
-  Set<Color> colorsSet;
+  List<Color>? colors;
+  Set<Color>? colorsSet;
   Map<Color, int> colorPriorities = <Color, int>{};
   Map<ThirdParty, int> partyPriorities = <ThirdParty, int>{};
 }
 
 @jsonSerializable
 class EnumIterablesWithConstructor {
-  List<Color> colors;
-  Set<Color> colorsSet;
+  List<Color>? colors;
+  Set<Color>? colorsSet;
 
   EnumIterablesWithConstructor({this.colors, this.colorsSet});
 }
@@ -43,7 +43,7 @@ class EnumIterablesWithConstructor {
 @jsonSerializable
 class StylingModel {
   const StylingModel({this.primary});
-  final String primary;
+  final String? primary;
 }
 
 @jsonSerializable
@@ -52,7 +52,7 @@ enum Category { First, Second, Third }
 @jsonSerializable
 class DefaultCategory {
   @JsonProperty(defaultValue: Category.First)
-  Category category;
+  Category? category;
 }
 
 @jsonSerializable
@@ -91,7 +91,7 @@ void testEnums() {
       JsonMapper().useAdapter(adapter);
 
       final targetJson = JsonMapper.serialize(instance, compactOptions);
-      final target = JsonMapper.deserialize<ShortEnumConverter>(targetJson);
+      final target = JsonMapper.deserialize<ShortEnumConverter>(targetJson)!;
 
       // then
       expect(targetJson, '{"party":"A"}');
@@ -115,7 +115,7 @@ void testEnums() {
 
     test('Null Enum Value', () {
       // given
-      final instance = null;
+      final dynamic instance = null;
 
       // when
       final target = JsonMapper.deserialize<Color>(instance);
@@ -140,7 +140,7 @@ void testEnums() {
       final json = r'{"category":"Fourth"}';
 
       // when
-      final target = JsonMapper.deserialize<DefaultCategory>(json);
+      final target = JsonMapper.deserialize<DefaultCategory>(json)!;
 
       // then
       expect(target.category, Category.First);
@@ -177,7 +177,7 @@ void testEnums() {
 
       // when
       final targetJson = JsonMapper.serialize(split, compactOptions);
-      final instance = JsonMapper.deserialize<Split>(targetJson);
+      final instance = JsonMapper.deserialize<Split>(targetJson)!;
 
       // then
       expect(json, targetJson);
@@ -200,13 +200,13 @@ void testEnums() {
 
       // when
       final targetJson = JsonMapper.serialize(split, compactOptions);
-      final instance = JsonMapper.deserialize<SplitModel>(targetJson);
+      final instance = JsonMapper.deserialize<SplitModel>(targetJson)!;
 
       // then
       expect(json, targetJson);
       expect(instance, TypeMatcher<SplitModel>());
       expect(instance.values[Category.First], TypeMatcher<StylingModel>());
-      expect(instance.values[Category.Second].primary, '2');
+      expect(instance.values[Category.Second]!.primary, '2');
     });
 
     test('Enum Iterable instance', () {
@@ -215,8 +215,8 @@ void testEnums() {
 
       // when
       final targetJson = JsonMapper.serialize(instance, compactOptions);
-      final targetList = JsonMapper.deserialize<List<Color>>(targetJson);
-      final targetSet = JsonMapper.deserialize<Set<Color>>(targetJson);
+      final targetList = JsonMapper.deserialize<List<Color>>(targetJson)!;
+      final targetSet = JsonMapper.deserialize<Set<Color>>(targetJson)!;
 
       // then
       expect(targetJson, '["Black","Blue"]');
@@ -252,7 +252,7 @@ void testEnums() {
       JsonMapper().useAdapter(adapter);
 
       final targetJson = JsonMapper.serialize(instance, compactOptions);
-      final target = JsonMapper.deserialize<EnumIterables>(targetJson);
+      final target = JsonMapper.deserialize<EnumIterables>(targetJson)!;
 
       JsonMapper().removeAdapter(adapter);
 
@@ -268,12 +268,12 @@ void testEnums() {
       expect(target.partyPriorities,
           <ThirdParty, int>{ThirdParty.A: 1, ThirdParty.B: 2});
       expect(target.color, Color.GrayMetallic);
-      expect(target.colors.length, 2);
-      expect(target.colors.first, Color.Black);
-      expect(target.colors.last, Color.Blue);
-      expect(target.colorsSet.length, 2);
-      expect(target.colorsSet.first, Color.Black);
-      expect(target.colorsSet.last, Color.Blue);
+      expect(target.colors?.length, 2);
+      expect(target.colors?.first, Color.Black);
+      expect(target.colors?.last, Color.Blue);
+      expect(target.colorsSet?.length, 2);
+      expect(target.colorsSet?.first, Color.Black);
+      expect(target.colorsSet?.last, Color.Blue);
     });
 
     test('EnumIterablesWithConstructor', () {
@@ -285,20 +285,20 @@ void testEnums() {
       // when
       final targetJson = JsonMapper.serialize(instance, compactOptions);
       final target =
-          JsonMapper.deserialize<EnumIterablesWithConstructor>(targetJson);
+          JsonMapper.deserialize<EnumIterablesWithConstructor>(targetJson)!;
 
       // then
       expect(targetJson,
           '{"colors":["Black","Blue"],"colorsSet":["Black","Blue"]}');
 
       expect(target, TypeMatcher<EnumIterablesWithConstructor>());
-      expect(target.colors.length, 2);
-      expect(target.colors.first, Color.Black);
-      expect(target.colors.last, Color.Blue);
+      expect(target.colors!.length, 2);
+      expect(target.colors!.first, Color.Black);
+      expect(target.colors!.last, Color.Blue);
 
-      expect(target.colorsSet.length, 2);
-      expect(target.colorsSet.first, Color.Black);
-      expect(target.colorsSet.last, Color.Blue);
+      expect(target.colorsSet!.length, 2);
+      expect(target.colorsSet!.first, Color.Black);
+      expect(target.colorsSet!.last, Color.Blue);
     });
 
     test('Enum with custom String values mapping', () {
@@ -389,7 +389,7 @@ void testEnums() {
       JsonMapper().useAdapter(adapter);
 
       final targetJson = JsonMapper.serialize(instance, compactOptions);
-      final target = JsonMapper.deserialize<ShortEnumConverter>(targetJson);
+      final target = JsonMapper.deserialize<ShortEnumConverter>(targetJson)!;
 
       JsonMapper().removeAdapter(adapter);
 
@@ -422,14 +422,14 @@ void testEnums() {
 
       final targetJson = JsonMapper.serialize(instance, compactOptions);
       final target =
-          JsonMapper.deserialize<EnumMappingsOverrideTest>(targetJson);
+          JsonMapper.deserialize<EnumMappingsOverrideTest>(targetJson)!;
 
       JsonMapper().removeAdapter(adapter);
 
       // then
       expect(targetJson, '''{"parties":["A_A","Be","C_C"]}''');
       expect(target, TypeMatcher<EnumMappingsOverrideTest>());
-      expect(target.parties.elementAt(1), ThirdParty.B);
+      expect(target.parties!.elementAt(1), ThirdParty.B);
     });
   });
 }
