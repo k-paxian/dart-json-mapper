@@ -11,7 +11,8 @@ class BarBase<T> {
 
   BarBase({this.foo});
 
-  BarBase<T>? fromJson(dynamic json) => JsonMapper.deserialize<BarBase<T>>(json);
+  BarBase<T>? fromJson(dynamic json) =>
+      JsonMapper.deserialize<BarBase<T>>(json);
 
   dynamic toJson() =>
       JsonMapper.serialize(this, SerializationOptions(indent: ''));

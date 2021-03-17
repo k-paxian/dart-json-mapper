@@ -1,3 +1,7 @@
+## 2.0.4
+
+* improve pub score for static analysis
+
 ## 2.0.3
 
 * improve pub score for static analysis

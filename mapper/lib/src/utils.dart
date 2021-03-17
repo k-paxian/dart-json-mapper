@@ -62,8 +62,8 @@ class JsonMap {
     segments.forEach((segment) {
       final idx = int.tryParse(segment);
       if (segment == '..') {
-        final nearestParent = parentMaps!
-            .lastWhereOrNull((element) => element.map != current);
+        final nearestParent =
+            parentMaps!.lastWhereOrNull((element) => element.map != current);
         if (nearestParent != null) {
           current = nearestParent.map;
           existingSegmentsCount++;
@@ -104,8 +104,8 @@ class ClassInfo {
 
   ClassInfo(this.classMirror);
 
-  Json? getMeta([dynamic scheme]) => metaData.firstWhereOrNull(
-      (m) => (m is Json &&
+  Json? getMeta([dynamic scheme]) =>
+      metaData.firstWhereOrNull((m) => (m is Json &&
           ((scheme != null && m.scheme == scheme) ||
               (scheme == null && m.scheme == null)))) as Json?;
 
@@ -124,8 +124,8 @@ class ClassInfo {
           .cast<JsonProperty>();
 
   JsonConstructor? hasConstructorMeta(DeclarationMirror dm, [dynamic scheme]) =>
-      lookupDeclarationMetaData(dm).firstWhereOrNull(
-          (m) => (m is JsonConstructor &&
+      lookupDeclarationMetaData(dm).firstWhereOrNull((m) =>
+          (m is JsonConstructor &&
               ((scheme != null && m.scheme == scheme) ||
                   (scheme == null && m.scheme == null)))) as JsonConstructor?;
 
@@ -212,8 +212,8 @@ class ClassInfo {
   MethodMirror? getJsonConstructor([dynamic scheme]) {
     MethodMirror? result;
     try {
-      result =
-          classMirror!.declarations.values.firstWhereOrNull((DeclarationMirror dm) {
+      result = classMirror!.declarations.values
+          .firstWhereOrNull((DeclarationMirror dm) {
         return !dm.isPrivate &&
             dm is MethodMirror &&
             dm.isConstructor &&
@@ -224,7 +224,8 @@ class ClassInfo {
     }
 
     return result ??
-        classMirror!.declarations.values.firstWhereOrNull((DeclarationMirror dm) {
+        classMirror!.declarations.values
+            .firstWhereOrNull((DeclarationMirror dm) {
           return !dm.isPrivate && dm is MethodMirror && dm.isConstructor;
         }) as MethodMirror?;
   }
