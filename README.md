@@ -560,7 +560,7 @@ later they will be handled according to the configuration given w/o annotating t
 ## Inherited classes derived from abstract / base class
 
 Please use complementary `@Json(discriminatorProperty: 'type')` annotation for **abstract or base** class
-to specify which class field(`type` in this snipped below) will be used to store a value for distinguishing concrete subclass type.
+to specify which class field(`type` in this snippet below) will be used to store a value for distinguishing concrete subclass type.
 
 Please use complementary `@Json(discriminatorValue: <your property value>)` annotation for **subclasses**
 derived from abstract or base class. If this annotation omitted, **class name** will be used as `discriminatorValue`
