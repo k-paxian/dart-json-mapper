@@ -377,16 +377,6 @@ void testConstructors() {
       expect(target, '{"firstName":"Bob"}');
     });
 
-    test('typeNameProperty as global option', () {
-      // given
-      final instance = PtDerived(Pt());
-      // when
-      final target = JsonMapper.serialize(instance,
-          SerializationOptions(indent: '', typeNameProperty: '@type'));
-      // then
-      expect(target, '{"@type":"PtDerived","value":{"@type":"Pt"}}');
-    });
-
     test('processAnnotatedMembersOnly global option', () {
       // given
       final instance = ImmutableDefault();

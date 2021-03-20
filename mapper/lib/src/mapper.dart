@@ -1,7 +1,6 @@
 import 'dart:convert' show JsonEncoder, JsonDecoder;
 import 'dart:math';
 
-import 'package:collection/collection.dart' show IterableExtension;
 import 'package:reflectable/reflectable.dart';
 
 import 'errors.dart';
@@ -14,11 +13,12 @@ class JsonMapper {
   static final JsonMapper instance = JsonMapper._internal();
   static final JsonDecoder _jsonDecoder = JsonDecoder();
   final _serializable = const JsonSerializable();
-  final Map<String?, ClassMirror?> classes = {};
-  final Map<int, IAdapter> adapters = {};
+  final Map<String, ClassMirror?> _classes = {};
+  final Map<int, IAdapter> _adapters = {};
   final Map<String, ProcessedObjectDescriptor> _processedObjects = {};
   final Map<Type, ValueDecoratorFunction> _inlineValueDecorators = {};
-  final Map<Type?, TypeInfo> _typeInfoCache = {};
+  final Map<Type, TypeInfo> _typeInfoCache = {};
+  final Map<dynamic, Type> _discriminatorToType = {};
   final Map<
           ICustomConverter?,
           Map<ConversionDirection,
@@ -108,33 +108,40 @@ class JsonMapper {
   }
 
   JsonMapper useAdapter(IAdapter adapter, [int? priority]) {
-    if (adapters.containsValue(adapter)) {
+    if (_adapters.containsValue(adapter)) {
       return this;
     }
     final nextPriority = priority ??
-        (adapters.keys.isNotEmpty
-            ? adapters.keys.reduce((value, item) => max(value, item)) + 1
+        (_adapters.keys.isNotEmpty
+            ? _adapters.keys.reduce((value, item) => max(value, item)) + 1
             : 0);
-    adapters[nextPriority] = adapter;
+    _adapters[nextPriority] = adapter;
     _updateInternalMaps();
     return this;
   }
 
   JsonMapper removeAdapter(IAdapter adapter) {
-    adapters.removeWhere((priority, x) => x == adapter);
+    _adapters.removeWhere((priority, x) => x == adapter);
     _updateInternalMaps();
     return this;
   }
 
   void _updateInternalMaps() {
     _convertedValuesCache.clear();
+    _discriminatorToType.clear();
     _enumerateAnnotatedClasses((ClassInfo classInfo) {
       final jsonMeta = classInfo.getMeta();
       if (jsonMeta != null && jsonMeta.valueDecorators != null) {
         _inlineValueDecorators.addAll(jsonMeta.valueDecorators!());
       }
       if (classInfo.reflectedType != null) {
-        classes[classInfo.reflectedType.toString()] = classInfo.classMirror;
+        _classes[classInfo.reflectedType.toString()] = classInfo.classMirror;
+      }
+      if (jsonMeta != null &&
+          jsonMeta.discriminatorValue != null &&
+          classInfo.reflectedType != null) {
+        _discriminatorToType.putIfAbsent(
+            jsonMeta.discriminatorValue, () => classInfo.reflectedType!);
       }
     });
 
@@ -146,21 +153,23 @@ class JsonMapper {
     _enumerateAnnotatedClasses((ClassInfo classInfo) {
       if (classInfo.superClass != null) {
         final superClassInfo = ClassInfo(classInfo.superClass);
-        final superClassTypeInfo = _getTypeInfo(superClassInfo.reflectedType);
-        if (superClassTypeInfo.isWithMixin) {
-          classes[superClassTypeInfo.mixinTypeName] =
-              classes[superClassTypeInfo.typeName];
+        final superClassTypeInfo = superClassInfo.reflectedType != null
+            ? _getTypeInfo(superClassInfo.reflectedType!)
+            : null;
+        if (superClassTypeInfo != null && superClassTypeInfo.isWithMixin) {
+          _classes[superClassTypeInfo.mixinTypeName!] =
+              _classes[superClassTypeInfo.typeName];
         }
       }
     });
   }
 
   void info() =>
-      adapters.forEach((priority, adapter) => print('$priority : $adapter'));
+      _adapters.forEach((priority, adapter) => print('$priority : $adapter'));
 
   Map<Type, dynamic> get _enumValues {
     final result = {};
-    adapters.values.forEach((IAdapter adapter) {
+    _adapters.values.forEach((IAdapter adapter) {
       result.addAll(adapter.enumValues);
     });
     return result.cast<Type, dynamic>();
@@ -168,7 +177,7 @@ class JsonMapper {
 
   Map<Type, ICustomConverter> get _converters {
     final result = {};
-    adapters.values.forEach((IAdapter adapter) {
+    _adapters.values.forEach((IAdapter adapter) {
       result.addAll(adapter.converters);
     });
     return result.cast<Type, ICustomConverter>();
@@ -177,7 +186,7 @@ class JsonMapper {
   Map<Type, ValueDecoratorFunction> get _valueDecorators {
     final result = {};
     result.addAll(_inlineValueDecorators);
-    adapters.values.forEach((IAdapter adapter) {
+    _adapters.values.forEach((IAdapter adapter) {
       result.addAll(adapter.valueDecorators);
     });
     return result.cast<Type, ValueDecoratorFunction>();
@@ -185,7 +194,7 @@ class JsonMapper {
 
   Map<int, ITypeInfoDecorator> get _typeInfoDecorators {
     final result = [];
-    adapters.values.forEach((IAdapter adapter) {
+    _adapters.values.forEach((IAdapter adapter) {
       result.addAll(adapter.typeInfoDecorators.values);
     });
     return Map.fromIterable(result).cast<int, ITypeInfoDecorator>();
@@ -222,13 +231,13 @@ class JsonMapper {
     return result;
   }
 
-  TypeInfo _getTypeInfo(Type? type) {
+  TypeInfo _getTypeInfo(Type type) {
     if (_typeInfoCache[type] != null) {
       return _typeInfoCache[type]!;
     }
     var result = TypeInfo(type);
     typeInfoDecorators.values.forEach((ITypeInfoDecorator decorator) {
-      decorator.init(classes, valueDecorators, enumValues);
+      decorator.init(_classes, valueDecorators, enumValues);
       result = decorator.decorate(result);
     });
     _typeInfoCache[type] = result;
@@ -245,26 +254,39 @@ class JsonMapper {
 
   TypeInfo? _detectObjectType(dynamic objectInstance, Type? objectType,
       JsonMap objectJsonMap, DeserializationContext context) {
-    final objectClassMirror = classes[objectType.toString()];
-    final objectClassInfo = ClassInfo(objectClassMirror);
-    final meta =
-        objectClassInfo.metaData.firstWhereOrNull((m) => m is Json) as Json?;
+    final objectClassInfo = ClassInfo(_classes[objectType.toString()]);
+    final meta = objectClassInfo.getMeta(context.options?.scheme);
 
     if (objectInstance is Map<String, dynamic>) {
       objectJsonMap = JsonMap(objectInstance, meta);
     }
     final typeInfo = _getTypeInfo(objectType ?? objectInstance.runtimeType);
 
-    final typeNameProperty = _getTypeNameProperty(meta, context.options);
-    final String? typeName =
-        typeNameProperty != null && objectJsonMap.hasProperty(typeNameProperty)
-            ? objectJsonMap.getPropertyValue(typeNameProperty)
-            : typeInfo.typeName;
+    final discriminatorProperty =
+        _getDiscriminatorProperty(objectClassInfo, context.options);
+    final discriminatorValue = discriminatorProperty != null &&
+            objectJsonMap.hasProperty(discriminatorProperty)
+        ? objectJsonMap.getPropertyValue(discriminatorProperty)
+        : null;
+    if (discriminatorProperty != null && discriminatorValue != null) {
+      final declarationMirror =
+          objectClassInfo.getDeclarationMirror(discriminatorProperty);
+      if (declarationMirror != null) {
+        final discriminatorType = _getDeclarationType(declarationMirror);
+        final value = _deserializeObject(
+            discriminatorValue,
+            DeserializationContext(
+                options: context.options,
+                typeInfo: _getTypeInfo(discriminatorType)));
+        return _getTypeInfo(_discriminatorToType[value]!);
+      }
+    }
+    final String? typeName = discriminatorValue ?? typeInfo.typeName;
 
-    final type = classes[typeName] != null
-        ? classes[typeName]!.reflectedType
+    final type = _classes[typeName] != null
+        ? _classes[typeName]!.reflectedType
         : typeInfo.type;
-    return _getTypeInfo(type);
+    return type != null ? _getTypeInfo(type) : null;
   }
 
   Type? _getScalarType(Type type) {
@@ -278,8 +300,8 @@ class JsonMapper {
     }
 
     /// Custom Types annotated with [@jsonSerializable]
-    if (classes[scalarTypeName] != null) {
-      return classes[scalarTypeName]!.reflectedType;
+    if (_classes[scalarTypeName] != null) {
+      return _classes[scalarTypeName]!.reflectedType;
     }
 
     /// Search through value decorators for scalarType match
@@ -324,11 +346,15 @@ class JsonMapper {
       targetType = valueType;
     }
 
-    final typeInfo = _getTypeInfo(targetType);
-    if (result == null && converters[typeInfo.type!] != null) {
+    final typeInfo = targetType != null ? _getTypeInfo(targetType) : null;
+    if (result == null &&
+        typeInfo != null &&
+        converters[typeInfo.type!] != null) {
       result = converters[typeInfo.type!];
     }
-    if (result == null && converters[typeInfo.genericType] != null) {
+    if (result == null &&
+        typeInfo != null &&
+        converters[typeInfo.genericType] != null) {
       result = converters[typeInfo.genericType];
     }
     if (result == null && enumValues[targetType!] != null) {
@@ -610,10 +636,12 @@ class JsonMapper {
           ? meta.caseStyle
           : options!.caseStyle;
 
-  String? _getTypeNameProperty(Json? meta, DeserializationOptions? options) =>
-      meta != null && meta.typeNameProperty != null
-          ? meta.typeNameProperty
-          : options!.typeNameProperty;
+  String? _getDiscriminatorProperty(
+          ClassInfo classInfo, DeserializationOptions? options) =>
+      classInfo
+          .getMetaWhere((Json meta) => meta.discriminatorProperty != null,
+              options?.scheme)
+          ?.discriminatorProperty;
 
   bool? _getProcessAnnotatedMembersOnly(
           Json? meta, DeserializationOptions options) =>
@@ -621,14 +649,19 @@ class JsonMapper {
           ? meta.processAnnotatedMembersOnly
           : options.processAnnotatedMembersOnly;
 
-  void _dumpTypeNameToObjectProperty(JsonMap object, ClassMirror classMirror,
-      DeserializationOptions? options) {
+  void _dumpDiscriminatorToObjectProperty(JsonMap object,
+      ClassMirror classMirror, DeserializationOptions? options) {
     final classInfo = ClassInfo(classMirror);
-    final meta = classInfo.metaData.firstWhereOrNull((m) => m is Json) as Json?;
-    final typeNameProperty = _getTypeNameProperty(meta, options);
-    if (typeNameProperty != null) {
+    final discriminatorProperty = _getDiscriminatorProperty(classInfo, options);
+    if (discriminatorProperty != null) {
       final typeInfo = _getTypeInfo(classMirror.reflectedType);
-      object.setPropertyValue(typeNameProperty, typeInfo.typeName);
+      final lastMeta = classInfo.getMeta(options?.scheme);
+      final discriminatorValue =
+          (lastMeta != null && lastMeta.discriminatorValue != null
+                  ? lastMeta.discriminatorValue
+                  : typeInfo.typeName) ??
+              typeInfo.typeName;
+      object.setPropertyValue(discriminatorProperty, discriminatorValue);
     }
   }
 
@@ -760,7 +793,7 @@ class JsonMapper {
         throw CircularReferenceError(object);
       }
     }
-    _dumpTypeNameToObjectProperty(result, im.type, context.options);
+    _dumpDiscriminatorToObjectProperty(result, im.type, context.options);
     _enumeratePublicProperties(im, null, context.options!, (name,
         jsonName,
         value,
@@ -819,7 +852,7 @@ class JsonMapper {
                 item,
                 DeserializationContext(
                     options: context.options,
-                    typeInfo: _getTypeInfo(context.typeInfo!.scalarType),
+                    typeInfo: _getTypeInfo(context.typeInfo!.scalarType!),
                     parentJsonMaps: context.parentJsonMaps,
                     jsonPropertyMeta: context.jsonPropertyMeta,
                     classMeta: context.classMeta)))
@@ -866,7 +899,8 @@ class JsonMapper {
         convertedJsonValue, null, context.parentJsonMaps as List<JsonMap>?);
     typeInfo =
         _detectObjectType(null, context.typeInfo!.type, jsonMap, context)!;
-    final cm = classes[typeInfo.typeName] ?? classes[typeInfo.genericTypeName];
+    final cm =
+        _classes[typeInfo.typeName] ?? _classes[typeInfo.genericTypeName];
     if (cm == null) {
       throw MissingAnnotationOnTypeError(typeInfo.type);
     }
@@ -949,7 +983,7 @@ class JsonMapper {
     });
 
     final typeNameProperty =
-        _getTypeNameProperty(jsonMap.jsonMeta, context.options);
+        _getDiscriminatorProperty(classInfo, context.options);
     final unmappedFields = jsonMap.map.keys
         .where((field) =>
             !mappedFields.contains(field) && field != typeNameProperty)

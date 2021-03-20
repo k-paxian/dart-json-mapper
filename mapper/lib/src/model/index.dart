@@ -24,10 +24,6 @@ class DeserializationOptions {
   /// Scheme to be used
   final dynamic scheme;
 
-  /// Declares necessity for all annotated classes and all their subclasses
-  /// to dump their own type name to the custom named json property.
-  final String? typeNameProperty;
-
   /// Process annotated class members only
   final bool? processAnnotatedMembersOnly;
 
@@ -39,13 +35,12 @@ class DeserializationOptions {
   const DeserializationOptions(
       {this.scheme,
       this.caseStyle,
-      this.typeNameProperty,
       this.template,
       this.processAnnotatedMembersOnly});
 
   @override
   String toString() => '$scheme$caseStyle'
-      '$typeNameProperty$template'
+      '$template'
       '$processAnnotatedMembersOnly';
 }
 
@@ -67,7 +62,6 @@ class SerializationOptions extends DeserializationOptions {
   const SerializationOptions(
       {scheme,
       caseStyle,
-      typeNameProperty,
       template,
       processAnnotatedMembersOnly,
       this.indent,
@@ -77,7 +71,6 @@ class SerializationOptions extends DeserializationOptions {
             scheme: scheme,
             template: template,
             caseStyle: caseStyle,
-            typeNameProperty: typeNameProperty,
             processAnnotatedMembersOnly: processAnnotatedMembersOnly);
 }
 

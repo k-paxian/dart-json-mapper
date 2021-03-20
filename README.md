@@ -559,20 +559,27 @@ later they will be handled according to the configuration given w/o annotating t
 
 ## Inherited classes derived from abstract / base class
 
-Please use complementary `@Json(typeNameProperty: 'typeName')` annotation for subclasses
-derived from abstract or base class. This way _dart-json-mapper_
-will dump the concrete object type to the JSON output during serialization process.
-This ensures, that _dart-json-mapper_ will be able to reconstruct the object with
-the proper type during deserialization process.
+Please use complementary `@Json(discriminatorProperty: 'type')` annotation for **abstract or base** class
+to specify which class field(`type` in this snipped below) will be used to store a value for distinguishing concrete subclass type.
+
+Please use complementary `@Json(discriminatorValue: <your property value>)` annotation for **subclasses**
+derived from abstract or base class. If this annotation omitted, **class name** will be used as `discriminatorValue`
+
+This ensures, that _dart-json-mapper_ will be able to reconstruct the object with the proper type during deserialization process.
 
 ``` dart
 @jsonSerializable
-@Json(typeNameProperty: 'typeName')
+enum BusinessType { Private, Public }
+
+@jsonSerializable
+@Json(discriminatorProperty: 'type')
 abstract class Business {
-  String name;
+  String? name;
+  BusinessType? type;
 }
 
 @jsonSerializable
+@Json(discriminatorValue: BusinessType.Private)
 class Hotel extends Business {
   int stars;
 
@@ -580,6 +587,7 @@ class Hotel extends Business {
 }
 
 @jsonSerializable
+@Json(discriminatorValue: BusinessType.Public)
 class Startup extends Business {
   int userCount;
 
@@ -611,7 +619,7 @@ expect(target.businesses[1], TypeMatcher<Hotel>());
 Similar configuration as above also works well for class mixins
 
 ```dart
-@Json(typeNameProperty: 'type')
+@Json(discriminatorProperty: 'type')
 @jsonSerializable
 abstract class A {}
 
@@ -1002,8 +1010,8 @@ Why it's not a `@JsonObject()`? just for you to type less characters :smile:
     * *name* Defines [RFC 6901][rfc6901] JSON pointer, denotes the json Object root name/path to be used for mapping.
 Example: `'foo', 'bar', 'foo/bar/baz'`
     * *caseStyle* The most popular ways to combine words into a single string. Based on assumption: That all Dart class fields initially given as CaseStyle.Camel
-    * *typeNameProperty* declares the necessity for annotated class and all it's subclasses to dump their own type name to
-the property named as this param value
+    * *discriminatorProperty* Defines a class property to be used as a source of truth for discrimination logic in a hierarchy of inherited classes. Usually used on annotation of [abstract] class
+    * *discriminatorValue* Defines a custom override value for a discriminator. Usually used on annotations of subclasses, to distinguish it from each other. Default value: <Annotated class name>
     * *valueDecorators* Provides an inline way to specify a static function which will return a Map of value decorators, to support type casting activities for Map<K, V>, and other generic Iterables<T> instead of global adapter approach
     * *ignoreNullMembers* If set to `true` Null class members will be excluded from serialization process
     * *processAnnotatedMembersOnly* If set to `true` Only annotated class members will be processed

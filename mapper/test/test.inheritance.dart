@@ -5,13 +5,14 @@ import 'package:test/test.dart';
 enum BusinessType { Private, Public }
 
 @jsonSerializable
-@Json(typeNameProperty: 'typeName')
+@Json(discriminatorProperty: 'type')
 abstract class Business {
   String? name;
-  BusinessType type = BusinessType.Private;
+  BusinessType? type;
 }
 
 @jsonSerializable
+@Json(discriminatorValue: BusinessType.Private)
 class Hotel extends Business {
   int stars;
 
@@ -19,6 +20,7 @@ class Hotel extends Business {
 }
 
 @jsonSerializable
+@Json(discriminatorValue: BusinessType.Public)
 class Startup extends Business {
   int userCount;
 
@@ -38,6 +40,8 @@ class DataModel {
   DataModel({this.id});
 }
 
+@jsonSerializable
+@Json(discriminatorProperty: '@type')
 abstract class AbstractUser extends DataModel {
   late final String? email;
 
@@ -70,9 +74,8 @@ class UserImpl extends DataModel implements AbstractUser {
 
 void testInheritance() {
   group('[Verify inheritance cases]', () {
-    test(
-        'Should dump typeName to json property when'
-        " @Json(typeNameProperty: 'typeName')", () {
+    test('Should distinguish inherited classes by discriminator property value',
+        () {
       // given
       final jack = Stakeholder('Jack', [Startup(10), Hotel(4)]);
 
@@ -82,17 +85,18 @@ void testInheritance() {
 
       // then
       expect(target.businesses[0], TypeMatcher<Startup>());
+      expect(target.businesses[0].type, BusinessType.Public);
       expect(target.businesses[1], TypeMatcher<Hotel>());
+      expect(target.businesses[1].type, BusinessType.Private);
     });
 
     test('implements AbstractUser', () {
       // given
       final user = UserImpl(id: 'xxx', email: 'x@x.com');
-      final options = SerializationOptions(typeNameProperty: '@type');
 
       // when
-      final map = JsonMapper.toMap(user, options)!;
-      final newUser = JsonMapper.fromMap<AbstractUser>(map, options)!;
+      final map = JsonMapper.toMap(user)!;
+      final newUser = JsonMapper.fromMap<AbstractUser>(map)!;
 
       // then
       expect(map.containsKey('@type'), true);

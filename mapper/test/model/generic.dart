@@ -30,7 +30,7 @@ class Bar extends BarBase<Foo> {
 }
 
 @jsonSerializable
-@Json(typeNameProperty: 'technicalName', ignoreNullMembers: true)
+@Json(discriminatorProperty: 'technicalName', ignoreNullMembers: true)
 class EntityModel<T> {
   final String? parentUuid;
   final String? uuid;
@@ -68,7 +68,7 @@ class EntityModel<T> {
 }
 
 @jsonSerializable
-@Json(typeNameProperty: 'technicalName', ignoreNullMembers: true)
+@Json(discriminatorProperty: 'technicalName', ignoreNullMembers: true)
 abstract class AbstractEntityModel<T> {
   final String? parentUuid;
   final String? uuid;

@@ -3,7 +3,7 @@ import 'package:test/test.dart';
 
 import 'model/model.dart';
 
-@Json(typeNameProperty: 'type')
+@Json(discriminatorProperty: 'type')
 @jsonSerializable
 abstract class A {}
 

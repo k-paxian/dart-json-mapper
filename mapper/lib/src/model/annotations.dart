@@ -26,9 +26,14 @@ class Json {
   ///           name: '#/foo/0/baz'
   final String? name;
 
-  /// Declares necessity for annotated class and all its subclasses to dump their own type name to the
-  /// custom named json property.
-  final String? typeNameProperty;
+  /// Defines a class property to be used as a source of truth for discrimination logic
+  /// in a hierarchy of inherited classes. Usually used on annotation of [abstract] class
+  final String? discriminatorProperty;
+
+  /// Defines a custom override value for a discriminator
+  /// Usually used on annotations of subclasses, to distinguish it from each other
+  /// Default value: <Annotated class name>
+  final dynamic discriminatorValue;
 
   /// The most popular ways to combine words into a single string
   /// Based on assumption: That all Dart class fields initially
@@ -74,7 +79,8 @@ class Json {
       {this.allowCircularReferences,
       this.valueDecorators,
       this.scheme,
-      this.typeNameProperty,
+      this.discriminatorProperty,
+      this.discriminatorValue,
       this.caseStyle,
       this.ignoreNullMembers,
       this.processAnnotatedMembersOnly,
@@ -82,7 +88,7 @@ class Json {
 
   @override
   String toString() => '$name$allowCircularReferences$scheme$valueDecorators'
-      '$typeNameProperty$caseStyle'
+      '$discriminatorProperty$discriminatorValue$caseStyle'
       '$ignoreNullMembers$processAnnotatedMembersOnly';
 }
 

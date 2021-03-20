@@ -1,3 +1,9 @@
+## 2.0.5
+
+* #120, Support for subclass using a discriminator property `@Json(typeNameProperty)` => `@Json(discriminatorProperty)`
+        For migration from old versions just replace all `typeNameProperty` by `discriminatorProperty`.
+        Global option `DeserializationOptions.typeNameProperty` has been removed.
+
 ## 2.0.4
 
 * improve pub score for static analysis

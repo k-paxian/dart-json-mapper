@@ -104,8 +104,14 @@ class ClassInfo {
 
   ClassInfo(this.classMirror);
 
-  Json? getMeta([dynamic scheme]) =>
-      metaData.firstWhereOrNull((m) => (m is Json &&
+  Json? getMeta([dynamic scheme]) => _metaData.firstWhereOrNull((m) =>
+      (m is Json &&
+          ((scheme != null && m.scheme == scheme) ||
+              (scheme == null && m.scheme == null)))) as Json?;
+
+  Json? getMetaWhere(Function whereFunction, [dynamic scheme]) =>
+      _metaData.firstWhereOrNull((m) => (m is Json &&
+          whereFunction(m) == true &&
           ((scheme != null && m.scheme == scheme) ||
               (scheme == null && m.scheme == null)))) as Json?;
 
@@ -129,7 +135,7 @@ class ClassInfo {
               ((scheme != null && m.scheme == scheme) ||
                   (scheme == null && m.scheme == null)))) as JsonConstructor?;
 
-  List<Object> get metaData {
+  List<Object> get _metaData {
     return lookupClassMetaData(classMirror);
   }
 
@@ -285,6 +291,9 @@ class ClassInfo {
     }
     final result = [...classMirror.metadata];
     result.addAll(lookupClassMetaData(_safeGetSuperClassMirror(classMirror)));
+    classMirror.superinterfaces.forEach((element) {
+      result.addAll(lookupClassMetaData(element));
+    });
     return result;
   }
 
