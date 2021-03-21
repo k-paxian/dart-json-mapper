@@ -1011,7 +1011,7 @@ Why it's not a `@JsonObject()`? just for you to type less characters :smile:
 Example: `'foo', 'bar', 'foo/bar/baz'`
     * *caseStyle* The most popular ways to combine words into a single string. Based on assumption: That all Dart class fields initially given as CaseStyle.Camel
     * *discriminatorProperty* Defines a class property to be used as a source of truth for discrimination logic in a hierarchy of inherited classes. Usually used on annotation of [abstract] class
-    * *discriminatorValue* Defines a custom override value for a discriminator. Usually used on annotations of subclasses, to distinguish it from each other. Default value: <Annotated class name>
+    * *discriminatorValue* Defines a custom override value for a discriminator. Usually used on annotations of subclasses, to distinguish it from each other. Default value: annotated _class name_
     * *valueDecorators* Provides an inline way to specify a static function which will return a Map of value decorators, to support type casting activities for Map<K, V>, and other generic Iterables<T> instead of global adapter approach
     * *ignoreNullMembers* If set to `true` Null class members will be excluded from serialization process
     * *processAnnotatedMembersOnly* If set to `true` Only annotated class members will be processed
