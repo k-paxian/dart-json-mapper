@@ -33,7 +33,7 @@ class DeserializationOptions {
   final dynamic template;
 
   /// Declares the type to deserialize to
-  final Type type;
+  final Type? type;
 
   const DeserializationOptions(
       {this.scheme,
