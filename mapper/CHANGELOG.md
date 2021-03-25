@@ -1,3 +1,7 @@
+## 2.0.6
+
+* #121, Support deserialization from type variable
+
 ## 2.0.5
 
 * #120, Support for subclass using a discriminator property `@Json(typeNameProperty)` => `@Json(discriminatorProperty)`
