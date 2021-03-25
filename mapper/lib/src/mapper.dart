@@ -52,7 +52,7 @@ class JsonMapper {
         ? T
         : options.template != null
             ? options.template.runtimeType
-            : dynamic;
+            : options.type ?? dynamic;
     assert(targetType != dynamic
         ? true
         : throw MissingTypeForDeserializationError());

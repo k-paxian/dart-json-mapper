@@ -80,5 +80,20 @@ void testIntegration() {
       // then
       expect(json, personJson);
     });
+
+    test('Deserialize with type property', () {
+      // given
+      final carJson = '{"modelName": "Tesla S3", "color": "Black"}';
+      final type = Car;
+
+      // when
+      final instance =
+          JsonMapper.deserialize(carJson, DeserializationOptions(type: type));
+
+      // then
+      expect(instance.runtimeType, Car);
+      expect(instance.color, Color.Black);
+      expect(instance.model, 'Tesla S3');
+    });
   });
 }
