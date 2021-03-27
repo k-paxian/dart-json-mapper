@@ -1,15 +1,112 @@
 import 'dart:convert' show JsonEncoder, JsonDecoder;
 import 'dart:math';
 
-import 'package:reflectable/reflectable.dart';
+import 'package:reflectable/reflectable.dart'
+    show
+        ClassMirror,
+        InstanceMirror,
+        DeclarationMirror,
+        ParameterMirror,
+        VariableMirror,
+        MethodMirror;
 
 import 'errors.dart';
 import 'model/index.dart';
 import 'utils.dart';
 
-/// Singleton class providing static methods for Dart objects conversion
-/// from / to JSON string
+/// Singleton class providing mostly static methods conversion of previously
+/// annotated by [JsonSerializable] Dart objects from / to JSON string
 class JsonMapper {
+  /// Converts an instance of Dart object to JSON String
+  static String serialize(Object? object,
+      [SerializationOptions options = defaultSerializationOptions]) {
+    final context = SerializationContext(
+        options: options, typeInfo: instance._getTypeInfo(object.runtimeType));
+    instance._processedObjects.clear();
+    return _getJsonEncoder(context)
+        .convert(instance._serializeObject(object, context));
+  }
+
+  /// Converts JSON String to Dart object instance of type T
+  static T? deserialize<T>(String? jsonValue,
+      [DeserializationOptions options = defaultDeserializationOptions]) {
+    final targetType = T != dynamic
+        ? T
+        : options.template != null
+            ? options.template.runtimeType
+            : options.type ?? dynamic;
+    assert(targetType != dynamic
+        ? true
+        : throw MissingTypeForDeserializationError());
+    return instance._deserializeObject(
+        jsonValue != null ? _jsonDecoder.convert(jsonValue) : null,
+        DeserializationContext(
+            options: options,
+            typeInfo: instance._getTypeInfo(targetType))) as T?;
+  }
+
+  /// Converts Dart object to JSON String
+  static String toJson(Object? object,
+          [SerializationOptions options = defaultSerializationOptions]) =>
+      serialize(object, options);
+
+  /// Converts JSON String to Dart object of type T
+  static T? fromJson<T>(String jsonValue,
+          [DeserializationOptions options = defaultDeserializationOptions]) =>
+      deserialize<T>(jsonValue, options);
+
+  /// Converts Dart object to Map<String, dynamic>
+  static Map<String, dynamic>? toMap(Object? object,
+          [SerializationOptions options = defaultSerializationOptions]) =>
+      deserialize<Map<String, dynamic>>(serialize(object, options), options);
+
+  /// Converts Map<String, dynamic> to Dart object instance of type T
+  static T? fromMap<T>(Map<String, dynamic>? map,
+          [SerializationOptions options = defaultSerializationOptions]) =>
+      deserialize<T>(
+          _getJsonEncoder(SerializationContext(options: options)).convert(map),
+          options);
+
+  /// Clone Dart object of type T
+  static T? clone<T>(T object) => fromJson<T>(toJson(object));
+
+  /// Alias for clone method to copy Dart object of type T
+  static T? copy<T>(T object) => clone(object);
+
+  /// Copy Dart object of type T & merge it with Map<String, dynamic>
+  static T? copyWith<T>(T object, Map<String, dynamic> map) =>
+      fromMap<T>(toMap(object)?..addAll(map));
+
+  /// Registers an instance of [IAdapter] with the mapper engine
+  /// Adapters are meant to be used as a pluggable extensions, widening
+  /// the number of supported types to be seamlessly converted to/from JSON
+  JsonMapper useAdapter(IAdapter adapter, [int? priority]) {
+    if (_adapters.containsValue(adapter)) {
+      return this;
+    }
+    final nextPriority = priority ??
+        (_adapters.keys.isNotEmpty
+            ? _adapters.keys.reduce((value, item) => max(value, item)) + 1
+            : 0);
+    _adapters[nextPriority] = adapter;
+    _updateInternalMaps();
+    return this;
+  }
+
+  /// De-registers previously registered adapter using [useAdapter] method
+  JsonMapper removeAdapter(IAdapter adapter) {
+    _adapters.removeWhere((priority, x) => x == adapter);
+    _updateInternalMaps();
+    return this;
+  }
+
+  /// Prints out current mapper configuration to the console
+  /// List of currently registered adapters and their priorities
+  void info() =>
+      _adapters.forEach((priority, adapter) => print('$priority : $adapter'));
+
+  /// Private implementation area onwards /////////////////////////////////////
+
   static final JsonMapper instance = JsonMapper._internal();
   static final JsonDecoder _jsonDecoder = JsonDecoder();
   final _serializable = const JsonSerializable();
@@ -30,66 +127,6 @@ class JsonMapper {
   Map<Type, ValueDecoratorFunction> valueDecorators = {};
   Map<Type, dynamic> enumValues = {};
 
-  /// Converts Dart object to JSON String
-  static String toJson(Object? object,
-          [SerializationOptions options = defaultSerializationOptions]) =>
-      serialize(object, options);
-
-  /// Converts Dart object to JSON String
-  static String serialize(Object? object,
-      [SerializationOptions options = defaultSerializationOptions]) {
-    final context = SerializationContext(
-        options: options, typeInfo: instance._getTypeInfo(object.runtimeType));
-    instance._processedObjects.clear();
-    return _getJsonEncoder(context)
-        .convert(instance._serializeObject(object, context));
-  }
-
-  /// Converts JSON String to Dart object of type T
-  static T? deserialize<T>(String? jsonValue,
-      [DeserializationOptions options = defaultDeserializationOptions]) {
-    final targetType = T != dynamic
-        ? T
-        : options.template != null
-            ? options.template.runtimeType
-            : options.type ?? dynamic;
-    assert(targetType != dynamic
-        ? true
-        : throw MissingTypeForDeserializationError());
-    return instance._deserializeObject(
-        jsonValue != null ? _jsonDecoder.convert(jsonValue) : null,
-        DeserializationContext(
-            options: options,
-            typeInfo: instance._getTypeInfo(targetType))) as T?;
-  }
-
-  /// Converts JSON String to Dart object of type T
-  static T? fromJson<T>(String jsonValue,
-          [DeserializationOptions options = defaultDeserializationOptions]) =>
-      deserialize<T>(jsonValue, options);
-
-  /// Converts Dart object to Map<String, dynamic>
-  static Map<String, dynamic>? toMap(Object? object,
-          [SerializationOptions options = defaultSerializationOptions]) =>
-      deserialize<Map<String, dynamic>>(serialize(object, options), options);
-
-  /// Converts Map<String, dynamic> to Dart object instance
-  static T? fromMap<T>(Map<String, dynamic>? map,
-          [SerializationOptions options = defaultSerializationOptions]) =>
-      deserialize<T>(
-          _getJsonEncoder(SerializationContext(options: options)).convert(map),
-          options);
-
-  /// Clone Dart object of type T
-  static T? clone<T>(T object) => fromJson<T>(toJson(object));
-
-  /// Alias for clone method to copy Dart object of type T
-  static T? copy<T>(T object) => clone(object);
-
-  /// Copy Dart object of type T & merge it with Map<String, dynamic>
-  static T? copyWith<T>(T object, Map<String, dynamic> map) =>
-      fromMap<T>(toMap(object)?..addAll(map));
-
   static JsonEncoder _getJsonEncoder(SerializationContext context) =>
       context.serializationOptions!.indent != null &&
               context.serializationOptions!.indent!.isNotEmpty
@@ -105,25 +142,6 @@ class JsonMapper {
   JsonMapper._internal() {
     useAdapter(dartCoreAdapter);
     useAdapter(dartCollectionAdapter);
-  }
-
-  JsonMapper useAdapter(IAdapter adapter, [int? priority]) {
-    if (_adapters.containsValue(adapter)) {
-      return this;
-    }
-    final nextPriority = priority ??
-        (_adapters.keys.isNotEmpty
-            ? _adapters.keys.reduce((value, item) => max(value, item)) + 1
-            : 0);
-    _adapters[nextPriority] = adapter;
-    _updateInternalMaps();
-    return this;
-  }
-
-  JsonMapper removeAdapter(IAdapter adapter) {
-    _adapters.removeWhere((priority, x) => x == adapter);
-    _updateInternalMaps();
-    return this;
   }
 
   void _updateInternalMaps() {
@@ -163,9 +181,6 @@ class JsonMapper {
       }
     });
   }
-
-  void info() =>
-      _adapters.forEach((priority, adapter) => print('$priority : $adapter'));
 
   Map<Type, dynamic> get _enumValues {
     final result = {};
@@ -385,13 +400,9 @@ class JsonMapper {
     return enumDescriptor?.values;
   }
 
-  dynamic _getConvertedValue(ICustomConverter? converter, dynamic value,
-      [SerializationContext? serializationContext,
-      DeserializationContext? deserializationContext]) {
-    final context = serializationContext ?? deserializationContext;
-    final direction = serializationContext != null
-        ? ConversionDirection.toJson
-        : ConversionDirection.fromJson;
+  dynamic _getConvertedValue(ICustomConverter converter, dynamic value,
+      DeserializationContext context) {
+    final direction = context.direction;
     if (_convertedValuesCache.containsKey(converter) &&
         _convertedValuesCache[converter]!.containsKey(direction) &&
         _convertedValuesCache[converter]![direction]!.containsKey(context) &&
@@ -400,11 +411,9 @@ class JsonMapper {
       return _convertedValuesCache[converter]![direction]![context]![value];
     }
 
-    final computedValue = converter == null
-        ? value
-        : direction == ConversionDirection.fromJson
-            ? converter.fromJSON(value, deserializationContext)
-            : converter.toJSON(value, serializationContext);
+    final computedValue = direction == ConversionDirection.fromJson
+        ? converter.fromJSON(value, context)
+        : converter.toJSON(value, context as SerializationContext);
     _convertedValuesCache.putIfAbsent(
         converter,
         () => {
@@ -870,8 +879,7 @@ class JsonMapper {
     final converter = _getConverter(context.jsonPropertyMeta, typeInfo.type);
     if (converter != null) {
       _configureConverter(converter, deserializationContext: context);
-      var convertedValue =
-          _getConvertedValue(converter, jsonValue, null, context);
+      var convertedValue = _getConvertedValue(converter, jsonValue, context);
       if (typeInfo.isIterable && jsonValue == convertedValue) {
         convertedValue = _deserializeIterable(jsonValue, context);
       }
@@ -967,8 +975,7 @@ class JsonMapper {
         _configureConverter(converter,
             value: originalValue ?? fieldValue,
             deserializationContext: newContext);
-        fieldValue =
-            _getConvertedValue(converter, fieldValue, null, newContext);
+        fieldValue = _getConvertedValue(converter, fieldValue, newContext);
       }
       if (isGetterOnly) {
         if (inheritedPublicFieldNames.contains(name) &&

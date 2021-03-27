@@ -15,6 +15,7 @@ enum ConversionDirection { fromJson, toJson }
 
 const defaultDeserializationOptions = DeserializationOptions();
 
+/// Declares configuration parameters for Deserialization process
 class DeserializationOptions {
   /// The most popular ways to combine words into a single string
   /// Based on assumption: That all Dart class fields initially
@@ -32,7 +33,8 @@ class DeserializationOptions {
   /// - for Serialization output it could be an instance of Map<String, dynamic>
   final dynamic template;
 
-  /// Declares the type to deserialize to
+  /// Declares a fallback target type to deserialize to, when it's not possible to detect
+  /// it from type inference OR [template]
   final Type? type;
 
   const DeserializationOptions(
@@ -50,8 +52,10 @@ class DeserializationOptions {
 
 const defaultSerializationOptions = SerializationOptions(indent: ' ');
 
+/// Declares configuration parameters for Serialization process
+/// fully includes [DeserializationOptions]
 class SerializationOptions extends DeserializationOptions {
-  /// Indentation
+  /// JSON Indentation, usually it's just a string of [space] characters
   final String? indent;
 
   /// Null class members
@@ -78,6 +82,8 @@ class SerializationOptions extends DeserializationOptions {
             processAnnotatedMembersOnly: processAnnotatedMembersOnly);
 }
 
+/// Describes a set of data / state to be re-used down the road of recursive
+/// process of Deserialization/Serialization
 class DeserializationContext {
   final DeserializationOptions? options;
   final JsonProperty? jsonPropertyMeta;
@@ -91,6 +97,8 @@ class DeserializationContext {
       this.classMeta,
       this.typeInfo,
       this.parentJsonMaps});
+
+  ConversionDirection get direction => ConversionDirection.fromJson;
 
   @override
   int get hashCode => '$options$jsonPropertyMeta$classMeta'.hashCode;
@@ -106,7 +114,10 @@ class DeserializationContext {
   }
 }
 
+/// Describes a set of data / state to be re-used down the road of recursive
+/// process of Serialization
 class SerializationContext extends DeserializationContext {
+  /// Recursion nesting level, 0 = top object, 1 = object's property, and so on
   final int level;
 
   const SerializationContext(
@@ -123,6 +134,9 @@ class SerializationContext extends DeserializationContext {
 
   SerializationOptions? get serializationOptions =>
       options as SerializationOptions?;
+
+  @override
+  ConversionDirection get direction => ConversionDirection.toJson;
 }
 
 /// Describes resolved property name and value
@@ -132,6 +146,8 @@ class PropertyDescriptor {
   PropertyDescriptor(this.name, this.value);
 }
 
+/// Describes an Object being processed through recursion to track cycling
+/// use case. Used to prevent dead loops during recursive process
 class ProcessedObjectDescriptor {
   dynamic object;
   Map<int, int> usages = {}; // level : usagesCounter

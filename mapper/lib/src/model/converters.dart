@@ -13,9 +13,7 @@ typedef DeserializeObjectFunction = dynamic Function(Object object, Type type);
 typedef GetConverterFunction = ICustomConverter? Function(
     JsonProperty? jsonProperty, Type? declarationType);
 typedef GetConvertedValueFunction = dynamic Function(
-    ICustomConverter? converter, dynamic value,
-    [SerializationContext? serializationContext,
-    DeserializationContext? deserializationContext]);
+    ICustomConverter converter, dynamic value, DeserializationContext context);
 
 /// Abstract class for custom converters implementations
 abstract class ICustomConverter<T> {
@@ -435,11 +433,13 @@ class DefaultIterableConverter
 
   @override
   dynamic fromJSON(dynamic jsonValue, [DeserializationContext? context]) {
-    dynamic convert(item) => _getConvertedValue(
-        _getConverter(context!.jsonPropertyMeta, context.typeInfo!.scalarType),
-        item,
-        null,
-        context);
+    dynamic convert(item) {
+      final converter = _getConverter(
+          context!.jsonPropertyMeta, context.typeInfo!.scalarType);
+      return converter != null
+          ? _getConvertedValue(converter, item, context)
+          : item;
+    }
 
     if (_instance != null && jsonValue is Iterable && jsonValue != _instance) {
       if (_instance is List) {

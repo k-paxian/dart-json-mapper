@@ -15,12 +15,27 @@ import 'value_decorators.dart';
 
 /// Abstract contract class for adapters implementations
 abstract class IAdapter {
+  /// Brief adapter description / purpose
   String get title;
+
+  /// URL to the adapter source code
   String get url;
+
+  /// URL to the code/package which contains types this adapter is built for
   String? get refUrl;
+
+  /// A Map of converter instances to be used for handling certain [Type]
   Map<Type, ICustomConverter> get converters;
+
+  /// A Map of value decorator functions to be used for decorating [Type] instances
+  /// during Deserialization process
   Map<Type, ValueDecoratorFunction> get valueDecorators;
+
+  /// A Map of [Enum] descriptors. [Enum] as a key and value could be [Enum.values] or [EnumDescriptor]
   Map<Type, dynamic> get enumValues;
+
+  /// A Map of [ITypeInfoDecorator] instances used to decorate an instance of [TypeInfo]
+  /// using an array of decorators, in the order of priority given by the [int] key
   Map<int, ITypeInfoDecorator> get typeInfoDecorators;
 }
 
@@ -48,12 +63,14 @@ class JsonMapperAdapter implements IAdapter {
       this.enumValues = const {},
       this.title = 'JsonMapperAdapter',
       this.refUrl,
-      this.url = 'https://github.com/k-paxian/dart-json-mapper'});
+      this.url =
+          'https://github.com/k-paxian/dart-json-mapper/tree/master/adapters'});
 
   @override
   String toString() => '$title : $url';
 }
 
+/// Covers support for Dart core types
 final dartCoreAdapter =
     JsonMapperAdapter(title: 'Dart Core Adapter', typeInfoDecorators: {
   0: defaultTypeInfoDecorator
@@ -104,6 +121,7 @@ final dartCoreAdapter =
   typeOf<Uint8List>(): (value) => Uint8List.fromList(value.cast<int>()),
 });
 
+/// Covers support for Dart collection types
 final dartCollectionAdapter =
     JsonMapperAdapter(title: 'Dart Collection Adapter', converters: {
   UnmodifiableListView: defaultIterableConverter,
