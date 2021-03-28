@@ -989,11 +989,11 @@ class JsonMapper {
       }
     });
 
-    final typeNameProperty =
+    final discriminatorPropertyName =
         _getDiscriminatorProperty(classInfo, context.options);
     final unmappedFields = jsonMap.map.keys
         .where((field) =>
-            !mappedFields.contains(field) && field != typeNameProperty)
+            !mappedFields.contains(field) && field != discriminatorPropertyName)
         .toList();
     if (unmappedFields.isNotEmpty) {
       final jsonAnySetter = classInfo.getJsonAnySetter(context.options!.scheme);

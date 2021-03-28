@@ -329,6 +329,13 @@ class ClassInfo {
     }
     if (result == null) {
       try {
+        result = classMirror!.declarations[name] as MethodMirror?;
+      } catch (error) {
+        result = null;
+      }
+    }
+    if (result == null) {
+      try {
         classMirror!.instanceMembers
             .forEach((memberName, MethodMirror methodMirror) {
           if (memberName == name) {
