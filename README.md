@@ -11,7 +11,7 @@ This package allows programmers to annotate Dart objects in order to
 * No need to extend your classes from **any** mixins/base/abstract classes to keep code leaner
 * Clean and simple setup, transparent and straight-forward usage with **no heavy maintenance**
 * Inspired by [json2typescript][4], feature parity with highly popular [Java Jackson][12] and only **4** [annotations](#annotations) to remember to cover all possible use cases.
-* **No extra boilerplate**, 100% generated code, which you'll *never* see.
+* **No extra boilerplate**, no messy extra `*.g.dart` files per *each* meaningful file (single root-level file which contains all of the generated code)
 * **Complementary adapters** full control over the process when you strive for maximum flexibility.
 * **NO** dependency on `dart:mirrors`, one of the reasons is described [here][1].
 * Because Serialization/Deserialization is **NOT** a responsibility of your Model classes.
