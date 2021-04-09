@@ -20,9 +20,9 @@ class _$SpaceTrackSerializer implements StructuredSerializer<SpaceTrack> {
   final String wireName = 'SpaceTrack';
 
   @override
-  Iterable<Object> serialize(Serializers serializers, SpaceTrack object,
+  Iterable<Object?> serialize(Serializers serializers, SpaceTrack object,
       {FullType specifiedType = FullType.unspecified}) {
-    final result = <Object>[
+    final result = <Object?>[
       'CCSDS_OMM_VERS',
       serializers.serialize(object.cCSDSOMMVERS,
           specifiedType: const FullType(String)),
@@ -138,7 +138,7 @@ class _$SpaceTrackSerializer implements StructuredSerializer<SpaceTrack> {
       serializers.serialize(object.tLELINE2,
           specifiedType: const FullType(String)),
     ];
-    Object value;
+    Object? value;
     value = object.dECAYDATE;
     if (value != null) {
       result
@@ -150,7 +150,7 @@ class _$SpaceTrackSerializer implements StructuredSerializer<SpaceTrack> {
   }
 
   @override
-  SpaceTrack deserialize(Serializers serializers, Iterable<Object> serialized,
+  SpaceTrack deserialize(Serializers serializers, Iterable<Object?> serialized,
       {FullType specifiedType = FullType.unspecified}) {
     final result = new SpaceTrackBuilder();
 
@@ -158,7 +158,7 @@ class _$SpaceTrackSerializer implements StructuredSerializer<SpaceTrack> {
     while (iterator.moveNext()) {
       final key = iterator.current as String;
       iterator.moveNext();
-      final Object value = iterator.current;
+      final Object? value = iterator.current;
       switch (key) {
         case 'CCSDS_OMM_VERS':
           result.cCSDSOMMVERS = serializers.deserialize(value,
@@ -338,9 +338,9 @@ class _$RecordSerializer implements StructuredSerializer<Record> {
   final String wireName = 'Record';
 
   @override
-  Iterable<Object> serialize(Serializers serializers, Record object,
+  Iterable<Object?> serialize(Serializers serializers, Record object,
       {FullType specifiedType = FullType.unspecified}) {
-    final result = <Object>[
+    final result = <Object?>[
       'spaceTrack',
       serializers.serialize(object.spaceTrack,
           specifiedType: const FullType(SpaceTrack)),
@@ -358,7 +358,7 @@ class _$RecordSerializer implements StructuredSerializer<Record> {
   }
 
   @override
-  Record deserialize(Serializers serializers, Iterable<Object> serialized,
+  Record deserialize(Serializers serializers, Iterable<Object?> serialized,
       {FullType specifiedType = FullType.unspecified}) {
     final result = new RecordBuilder();
 
@@ -366,11 +366,11 @@ class _$RecordSerializer implements StructuredSerializer<Record> {
     while (iterator.moveNext()) {
       final key = iterator.current as String;
       iterator.moveNext();
-      final Object value = iterator.current;
+      final Object? value = iterator.current;
       switch (key) {
         case 'spaceTrack':
           result.spaceTrack.replace(serializers.deserialize(value,
-              specifiedType: const FullType(SpaceTrack)) as SpaceTrack);
+              specifiedType: const FullType(SpaceTrack))! as SpaceTrack);
           break;
         case 'version':
           result.version = serializers.deserialize(value,
@@ -461,7 +461,7 @@ class _$SpaceTrack extends SpaceTrack {
   @override
   final String sITE;
   @override
-  final String dECAYDATE;
+  final String? dECAYDATE;
   @override
   final num dECAYED;
   @override
@@ -475,51 +475,51 @@ class _$SpaceTrack extends SpaceTrack {
   @override
   final String tLELINE2;
 
-  factory _$SpaceTrack([void Function(SpaceTrackBuilder) updates]) =>
+  factory _$SpaceTrack([void Function(SpaceTrackBuilder)? updates]) =>
       (new SpaceTrackBuilder()..update(updates)).build();
 
   _$SpaceTrack._(
-      {this.cCSDSOMMVERS,
-      this.cOMMENT,
-      this.cREATIONDATE,
-      this.oRIGINATOR,
-      this.oBJECTNAME,
-      this.oBJECTID,
-      this.cENTERNAME,
-      this.rEFFRAME,
-      this.tIMESYSTEM,
-      this.mEANELEMENTTHEORY,
-      this.ePOCH,
-      this.mEANMOTION,
-      this.eCCENTRICITY,
-      this.iNCLINATION,
-      this.rAOFASCNODE,
-      this.aRGOFPERICENTER,
-      this.mEANANOMALY,
-      this.ePHEMERISTYPE,
-      this.cLASSIFICATIONTYPE,
-      this.nORADCATID,
-      this.eLEMENTSETNO,
-      this.rEVATEPOCH,
-      this.bSTAR,
-      this.mEANMOTIONDOT,
-      this.mEANMOTIONDDOT,
-      this.sEMIMAJORAXIS,
-      this.pERIOD,
-      this.aPOAPSIS,
-      this.pERIAPSIS,
-      this.oBJECTTYPE,
-      this.rCSSIZE,
-      this.cOUNTRYCODE,
-      this.lAUNCHDATE,
-      this.sITE,
+      {required this.cCSDSOMMVERS,
+      required this.cOMMENT,
+      required this.cREATIONDATE,
+      required this.oRIGINATOR,
+      required this.oBJECTNAME,
+      required this.oBJECTID,
+      required this.cENTERNAME,
+      required this.rEFFRAME,
+      required this.tIMESYSTEM,
+      required this.mEANELEMENTTHEORY,
+      required this.ePOCH,
+      required this.mEANMOTION,
+      required this.eCCENTRICITY,
+      required this.iNCLINATION,
+      required this.rAOFASCNODE,
+      required this.aRGOFPERICENTER,
+      required this.mEANANOMALY,
+      required this.ePHEMERISTYPE,
+      required this.cLASSIFICATIONTYPE,
+      required this.nORADCATID,
+      required this.eLEMENTSETNO,
+      required this.rEVATEPOCH,
+      required this.bSTAR,
+      required this.mEANMOTIONDOT,
+      required this.mEANMOTIONDDOT,
+      required this.sEMIMAJORAXIS,
+      required this.pERIOD,
+      required this.aPOAPSIS,
+      required this.pERIAPSIS,
+      required this.oBJECTTYPE,
+      required this.rCSSIZE,
+      required this.cOUNTRYCODE,
+      required this.lAUNCHDATE,
+      required this.sITE,
       this.dECAYDATE,
-      this.dECAYED,
-      this.fILE,
-      this.gPID,
-      this.tLELINE0,
-      this.tLELINE1,
-      this.tLELINE2})
+      required this.dECAYED,
+      required this.fILE,
+      required this.gPID,
+      required this.tLELINE0,
+      required this.tLELINE1,
+      required this.tLELINE2})
       : super._() {
     BuiltValueNullFieldError.checkNotNull(
         cCSDSOMMVERS, 'SpaceTrack', 'cCSDSOMMVERS');
@@ -732,175 +732,178 @@ class _$SpaceTrack extends SpaceTrack {
 }
 
 class SpaceTrackBuilder implements Builder<SpaceTrack, SpaceTrackBuilder> {
-  _$SpaceTrack _$v;
+  _$SpaceTrack? _$v;
 
-  String _cCSDSOMMVERS;
-  String get cCSDSOMMVERS => _$this._cCSDSOMMVERS;
-  set cCSDSOMMVERS(String cCSDSOMMVERS) => _$this._cCSDSOMMVERS = cCSDSOMMVERS;
+  String? _cCSDSOMMVERS;
+  String? get cCSDSOMMVERS => _$this._cCSDSOMMVERS;
+  set cCSDSOMMVERS(String? cCSDSOMMVERS) => _$this._cCSDSOMMVERS = cCSDSOMMVERS;
 
-  String _cOMMENT;
-  String get cOMMENT => _$this._cOMMENT;
-  set cOMMENT(String cOMMENT) => _$this._cOMMENT = cOMMENT;
+  String? _cOMMENT;
+  String? get cOMMENT => _$this._cOMMENT;
+  set cOMMENT(String? cOMMENT) => _$this._cOMMENT = cOMMENT;
 
-  String _cREATIONDATE;
-  String get cREATIONDATE => _$this._cREATIONDATE;
-  set cREATIONDATE(String cREATIONDATE) => _$this._cREATIONDATE = cREATIONDATE;
+  String? _cREATIONDATE;
+  String? get cREATIONDATE => _$this._cREATIONDATE;
+  set cREATIONDATE(String? cREATIONDATE) => _$this._cREATIONDATE = cREATIONDATE;
 
-  String _oRIGINATOR;
-  String get oRIGINATOR => _$this._oRIGINATOR;
-  set oRIGINATOR(String oRIGINATOR) => _$this._oRIGINATOR = oRIGINATOR;
+  String? _oRIGINATOR;
+  String? get oRIGINATOR => _$this._oRIGINATOR;
+  set oRIGINATOR(String? oRIGINATOR) => _$this._oRIGINATOR = oRIGINATOR;
 
-  String _oBJECTNAME;
-  String get oBJECTNAME => _$this._oBJECTNAME;
-  set oBJECTNAME(String oBJECTNAME) => _$this._oBJECTNAME = oBJECTNAME;
+  String? _oBJECTNAME;
+  String? get oBJECTNAME => _$this._oBJECTNAME;
+  set oBJECTNAME(String? oBJECTNAME) => _$this._oBJECTNAME = oBJECTNAME;
 
-  String _oBJECTID;
-  String get oBJECTID => _$this._oBJECTID;
-  set oBJECTID(String oBJECTID) => _$this._oBJECTID = oBJECTID;
+  String? _oBJECTID;
+  String? get oBJECTID => _$this._oBJECTID;
+  set oBJECTID(String? oBJECTID) => _$this._oBJECTID = oBJECTID;
 
-  String _cENTERNAME;
-  String get cENTERNAME => _$this._cENTERNAME;
-  set cENTERNAME(String cENTERNAME) => _$this._cENTERNAME = cENTERNAME;
+  String? _cENTERNAME;
+  String? get cENTERNAME => _$this._cENTERNAME;
+  set cENTERNAME(String? cENTERNAME) => _$this._cENTERNAME = cENTERNAME;
 
-  String _rEFFRAME;
-  String get rEFFRAME => _$this._rEFFRAME;
-  set rEFFRAME(String rEFFRAME) => _$this._rEFFRAME = rEFFRAME;
+  String? _rEFFRAME;
+  String? get rEFFRAME => _$this._rEFFRAME;
+  set rEFFRAME(String? rEFFRAME) => _$this._rEFFRAME = rEFFRAME;
 
-  String _tIMESYSTEM;
-  String get tIMESYSTEM => _$this._tIMESYSTEM;
-  set tIMESYSTEM(String tIMESYSTEM) => _$this._tIMESYSTEM = tIMESYSTEM;
+  String? _tIMESYSTEM;
+  String? get tIMESYSTEM => _$this._tIMESYSTEM;
+  set tIMESYSTEM(String? tIMESYSTEM) => _$this._tIMESYSTEM = tIMESYSTEM;
 
-  String _mEANELEMENTTHEORY;
-  String get mEANELEMENTTHEORY => _$this._mEANELEMENTTHEORY;
-  set mEANELEMENTTHEORY(String mEANELEMENTTHEORY) =>
+  String? _mEANELEMENTTHEORY;
+  String? get mEANELEMENTTHEORY => _$this._mEANELEMENTTHEORY;
+  set mEANELEMENTTHEORY(String? mEANELEMENTTHEORY) =>
       _$this._mEANELEMENTTHEORY = mEANELEMENTTHEORY;
 
-  String _ePOCH;
-  String get ePOCH => _$this._ePOCH;
-  set ePOCH(String ePOCH) => _$this._ePOCH = ePOCH;
+  String? _ePOCH;
+  String? get ePOCH => _$this._ePOCH;
+  set ePOCH(String? ePOCH) => _$this._ePOCH = ePOCH;
 
-  num _mEANMOTION;
-  num get mEANMOTION => _$this._mEANMOTION;
-  set mEANMOTION(num mEANMOTION) => _$this._mEANMOTION = mEANMOTION;
+  num? _mEANMOTION;
+  num? get mEANMOTION => _$this._mEANMOTION;
+  set mEANMOTION(num? mEANMOTION) => _$this._mEANMOTION = mEANMOTION;
 
-  num _eCCENTRICITY;
-  num get eCCENTRICITY => _$this._eCCENTRICITY;
-  set eCCENTRICITY(num eCCENTRICITY) => _$this._eCCENTRICITY = eCCENTRICITY;
+  num? _eCCENTRICITY;
+  num? get eCCENTRICITY => _$this._eCCENTRICITY;
+  set eCCENTRICITY(num? eCCENTRICITY) => _$this._eCCENTRICITY = eCCENTRICITY;
 
-  num _iNCLINATION;
-  num get iNCLINATION => _$this._iNCLINATION;
-  set iNCLINATION(num iNCLINATION) => _$this._iNCLINATION = iNCLINATION;
+  num? _iNCLINATION;
+  num? get iNCLINATION => _$this._iNCLINATION;
+  set iNCLINATION(num? iNCLINATION) => _$this._iNCLINATION = iNCLINATION;
 
-  num _rAOFASCNODE;
-  num get rAOFASCNODE => _$this._rAOFASCNODE;
-  set rAOFASCNODE(num rAOFASCNODE) => _$this._rAOFASCNODE = rAOFASCNODE;
+  num? _rAOFASCNODE;
+  num? get rAOFASCNODE => _$this._rAOFASCNODE;
+  set rAOFASCNODE(num? rAOFASCNODE) => _$this._rAOFASCNODE = rAOFASCNODE;
 
-  num _aRGOFPERICENTER;
-  num get aRGOFPERICENTER => _$this._aRGOFPERICENTER;
-  set aRGOFPERICENTER(num aRGOFPERICENTER) =>
+  num? _aRGOFPERICENTER;
+  num? get aRGOFPERICENTER => _$this._aRGOFPERICENTER;
+  set aRGOFPERICENTER(num? aRGOFPERICENTER) =>
       _$this._aRGOFPERICENTER = aRGOFPERICENTER;
 
-  num _mEANANOMALY;
-  num get mEANANOMALY => _$this._mEANANOMALY;
-  set mEANANOMALY(num mEANANOMALY) => _$this._mEANANOMALY = mEANANOMALY;
+  num? _mEANANOMALY;
+  num? get mEANANOMALY => _$this._mEANANOMALY;
+  set mEANANOMALY(num? mEANANOMALY) => _$this._mEANANOMALY = mEANANOMALY;
 
-  num _ePHEMERISTYPE;
-  num get ePHEMERISTYPE => _$this._ePHEMERISTYPE;
-  set ePHEMERISTYPE(num ePHEMERISTYPE) => _$this._ePHEMERISTYPE = ePHEMERISTYPE;
+  num? _ePHEMERISTYPE;
+  num? get ePHEMERISTYPE => _$this._ePHEMERISTYPE;
+  set ePHEMERISTYPE(num? ePHEMERISTYPE) =>
+      _$this._ePHEMERISTYPE = ePHEMERISTYPE;
 
-  String _cLASSIFICATIONTYPE;
-  String get cLASSIFICATIONTYPE => _$this._cLASSIFICATIONTYPE;
-  set cLASSIFICATIONTYPE(String cLASSIFICATIONTYPE) =>
+  String? _cLASSIFICATIONTYPE;
+  String? get cLASSIFICATIONTYPE => _$this._cLASSIFICATIONTYPE;
+  set cLASSIFICATIONTYPE(String? cLASSIFICATIONTYPE) =>
       _$this._cLASSIFICATIONTYPE = cLASSIFICATIONTYPE;
 
-  num _nORADCATID;
-  num get nORADCATID => _$this._nORADCATID;
-  set nORADCATID(num nORADCATID) => _$this._nORADCATID = nORADCATID;
+  num? _nORADCATID;
+  num? get nORADCATID => _$this._nORADCATID;
+  set nORADCATID(num? nORADCATID) => _$this._nORADCATID = nORADCATID;
 
-  num _eLEMENTSETNO;
-  num get eLEMENTSETNO => _$this._eLEMENTSETNO;
-  set eLEMENTSETNO(num eLEMENTSETNO) => _$this._eLEMENTSETNO = eLEMENTSETNO;
+  num? _eLEMENTSETNO;
+  num? get eLEMENTSETNO => _$this._eLEMENTSETNO;
+  set eLEMENTSETNO(num? eLEMENTSETNO) => _$this._eLEMENTSETNO = eLEMENTSETNO;
 
-  num _rEVATEPOCH;
-  num get rEVATEPOCH => _$this._rEVATEPOCH;
-  set rEVATEPOCH(num rEVATEPOCH) => _$this._rEVATEPOCH = rEVATEPOCH;
+  num? _rEVATEPOCH;
+  num? get rEVATEPOCH => _$this._rEVATEPOCH;
+  set rEVATEPOCH(num? rEVATEPOCH) => _$this._rEVATEPOCH = rEVATEPOCH;
 
-  num _bSTAR;
-  num get bSTAR => _$this._bSTAR;
-  set bSTAR(num bSTAR) => _$this._bSTAR = bSTAR;
+  num? _bSTAR;
+  num? get bSTAR => _$this._bSTAR;
+  set bSTAR(num? bSTAR) => _$this._bSTAR = bSTAR;
 
-  num _mEANMOTIONDOT;
-  num get mEANMOTIONDOT => _$this._mEANMOTIONDOT;
-  set mEANMOTIONDOT(num mEANMOTIONDOT) => _$this._mEANMOTIONDOT = mEANMOTIONDOT;
+  num? _mEANMOTIONDOT;
+  num? get mEANMOTIONDOT => _$this._mEANMOTIONDOT;
+  set mEANMOTIONDOT(num? mEANMOTIONDOT) =>
+      _$this._mEANMOTIONDOT = mEANMOTIONDOT;
 
-  num _mEANMOTIONDDOT;
-  num get mEANMOTIONDDOT => _$this._mEANMOTIONDDOT;
-  set mEANMOTIONDDOT(num mEANMOTIONDDOT) =>
+  num? _mEANMOTIONDDOT;
+  num? get mEANMOTIONDDOT => _$this._mEANMOTIONDDOT;
+  set mEANMOTIONDDOT(num? mEANMOTIONDDOT) =>
       _$this._mEANMOTIONDDOT = mEANMOTIONDDOT;
 
-  num _sEMIMAJORAXIS;
-  num get sEMIMAJORAXIS => _$this._sEMIMAJORAXIS;
-  set sEMIMAJORAXIS(num sEMIMAJORAXIS) => _$this._sEMIMAJORAXIS = sEMIMAJORAXIS;
+  num? _sEMIMAJORAXIS;
+  num? get sEMIMAJORAXIS => _$this._sEMIMAJORAXIS;
+  set sEMIMAJORAXIS(num? sEMIMAJORAXIS) =>
+      _$this._sEMIMAJORAXIS = sEMIMAJORAXIS;
 
-  num _pERIOD;
-  num get pERIOD => _$this._pERIOD;
-  set pERIOD(num pERIOD) => _$this._pERIOD = pERIOD;
+  num? _pERIOD;
+  num? get pERIOD => _$this._pERIOD;
+  set pERIOD(num? pERIOD) => _$this._pERIOD = pERIOD;
 
-  num _aPOAPSIS;
-  num get aPOAPSIS => _$this._aPOAPSIS;
-  set aPOAPSIS(num aPOAPSIS) => _$this._aPOAPSIS = aPOAPSIS;
+  num? _aPOAPSIS;
+  num? get aPOAPSIS => _$this._aPOAPSIS;
+  set aPOAPSIS(num? aPOAPSIS) => _$this._aPOAPSIS = aPOAPSIS;
 
-  num _pERIAPSIS;
-  num get pERIAPSIS => _$this._pERIAPSIS;
-  set pERIAPSIS(num pERIAPSIS) => _$this._pERIAPSIS = pERIAPSIS;
+  num? _pERIAPSIS;
+  num? get pERIAPSIS => _$this._pERIAPSIS;
+  set pERIAPSIS(num? pERIAPSIS) => _$this._pERIAPSIS = pERIAPSIS;
 
-  String _oBJECTTYPE;
-  String get oBJECTTYPE => _$this._oBJECTTYPE;
-  set oBJECTTYPE(String oBJECTTYPE) => _$this._oBJECTTYPE = oBJECTTYPE;
+  String? _oBJECTTYPE;
+  String? get oBJECTTYPE => _$this._oBJECTTYPE;
+  set oBJECTTYPE(String? oBJECTTYPE) => _$this._oBJECTTYPE = oBJECTTYPE;
 
-  String _rCSSIZE;
-  String get rCSSIZE => _$this._rCSSIZE;
-  set rCSSIZE(String rCSSIZE) => _$this._rCSSIZE = rCSSIZE;
+  String? _rCSSIZE;
+  String? get rCSSIZE => _$this._rCSSIZE;
+  set rCSSIZE(String? rCSSIZE) => _$this._rCSSIZE = rCSSIZE;
 
-  String _cOUNTRYCODE;
-  String get cOUNTRYCODE => _$this._cOUNTRYCODE;
-  set cOUNTRYCODE(String cOUNTRYCODE) => _$this._cOUNTRYCODE = cOUNTRYCODE;
+  String? _cOUNTRYCODE;
+  String? get cOUNTRYCODE => _$this._cOUNTRYCODE;
+  set cOUNTRYCODE(String? cOUNTRYCODE) => _$this._cOUNTRYCODE = cOUNTRYCODE;
 
-  String _lAUNCHDATE;
-  String get lAUNCHDATE => _$this._lAUNCHDATE;
-  set lAUNCHDATE(String lAUNCHDATE) => _$this._lAUNCHDATE = lAUNCHDATE;
+  String? _lAUNCHDATE;
+  String? get lAUNCHDATE => _$this._lAUNCHDATE;
+  set lAUNCHDATE(String? lAUNCHDATE) => _$this._lAUNCHDATE = lAUNCHDATE;
 
-  String _sITE;
-  String get sITE => _$this._sITE;
-  set sITE(String sITE) => _$this._sITE = sITE;
+  String? _sITE;
+  String? get sITE => _$this._sITE;
+  set sITE(String? sITE) => _$this._sITE = sITE;
 
-  String _dECAYDATE;
-  String get dECAYDATE => _$this._dECAYDATE;
-  set dECAYDATE(String dECAYDATE) => _$this._dECAYDATE = dECAYDATE;
+  String? _dECAYDATE;
+  String? get dECAYDATE => _$this._dECAYDATE;
+  set dECAYDATE(String? dECAYDATE) => _$this._dECAYDATE = dECAYDATE;
 
-  num _dECAYED;
-  num get dECAYED => _$this._dECAYED;
-  set dECAYED(num dECAYED) => _$this._dECAYED = dECAYED;
+  num? _dECAYED;
+  num? get dECAYED => _$this._dECAYED;
+  set dECAYED(num? dECAYED) => _$this._dECAYED = dECAYED;
 
-  num _fILE;
-  num get fILE => _$this._fILE;
-  set fILE(num fILE) => _$this._fILE = fILE;
+  num? _fILE;
+  num? get fILE => _$this._fILE;
+  set fILE(num? fILE) => _$this._fILE = fILE;
 
-  num _gPID;
-  num get gPID => _$this._gPID;
-  set gPID(num gPID) => _$this._gPID = gPID;
+  num? _gPID;
+  num? get gPID => _$this._gPID;
+  set gPID(num? gPID) => _$this._gPID = gPID;
 
-  String _tLELINE0;
-  String get tLELINE0 => _$this._tLELINE0;
-  set tLELINE0(String tLELINE0) => _$this._tLELINE0 = tLELINE0;
+  String? _tLELINE0;
+  String? get tLELINE0 => _$this._tLELINE0;
+  set tLELINE0(String? tLELINE0) => _$this._tLELINE0 = tLELINE0;
 
-  String _tLELINE1;
-  String get tLELINE1 => _$this._tLELINE1;
-  set tLELINE1(String tLELINE1) => _$this._tLELINE1 = tLELINE1;
+  String? _tLELINE1;
+  String? get tLELINE1 => _$this._tLELINE1;
+  set tLELINE1(String? tLELINE1) => _$this._tLELINE1 = tLELINE1;
 
-  String _tLELINE2;
-  String get tLELINE2 => _$this._tLELINE2;
-  set tLELINE2(String tLELINE2) => _$this._tLELINE2 = tLELINE2;
+  String? _tLELINE2;
+  String? get tLELINE2 => _$this._tLELINE2;
+  set tLELINE2(String? tLELINE2) => _$this._tLELINE2 = tLELINE2;
 
   SpaceTrackBuilder();
 
@@ -960,7 +963,7 @@ class SpaceTrackBuilder implements Builder<SpaceTrack, SpaceTrackBuilder> {
   }
 
   @override
-  void update(void Function(SpaceTrackBuilder) updates) {
+  void update(void Function(SpaceTrackBuilder)? updates) {
     if (updates != null) updates(this);
   }
 
@@ -1033,10 +1036,14 @@ class _$Record extends Record {
   @override
   final String id;
 
-  factory _$Record([void Function(RecordBuilder) updates]) =>
+  factory _$Record([void Function(RecordBuilder)? updates]) =>
       (new RecordBuilder()..update(updates)).build();
 
-  _$Record._({this.spaceTrack, this.version, this.launch, this.id})
+  _$Record._(
+      {required this.spaceTrack,
+      required this.version,
+      required this.launch,
+      required this.id})
       : super._() {
     BuiltValueNullFieldError.checkNotNull(spaceTrack, 'Record', 'spaceTrack');
     BuiltValueNullFieldError.checkNotNull(version, 'Record', 'version');
@@ -1081,25 +1088,25 @@ class _$Record extends Record {
 }
 
 class RecordBuilder implements Builder<Record, RecordBuilder> {
-  _$Record _$v;
+  _$Record? _$v;
 
-  SpaceTrackBuilder _spaceTrack;
+  SpaceTrackBuilder? _spaceTrack;
   SpaceTrackBuilder get spaceTrack =>
       _$this._spaceTrack ??= new SpaceTrackBuilder();
-  set spaceTrack(SpaceTrackBuilder spaceTrack) =>
+  set spaceTrack(SpaceTrackBuilder? spaceTrack) =>
       _$this._spaceTrack = spaceTrack;
 
-  String _version;
-  String get version => _$this._version;
-  set version(String version) => _$this._version = version;
+  String? _version;
+  String? get version => _$this._version;
+  set version(String? version) => _$this._version = version;
 
-  String _launch;
-  String get launch => _$this._launch;
-  set launch(String launch) => _$this._launch = launch;
+  String? _launch;
+  String? get launch => _$this._launch;
+  set launch(String? launch) => _$this._launch = launch;
 
-  String _id;
-  String get id => _$this._id;
-  set id(String id) => _$this._id = id;
+  String? _id;
+  String? get id => _$this._id;
+  set id(String? id) => _$this._id = id;
 
   RecordBuilder();
 
@@ -1122,7 +1129,7 @@ class RecordBuilder implements Builder<Record, RecordBuilder> {
   }
 
   @override
-  void update(void Function(RecordBuilder) updates) {
+  void update(void Function(RecordBuilder)? updates) {
     if (updates != null) updates(this);
   }
 
@@ -1139,7 +1146,7 @@ class RecordBuilder implements Builder<Record, RecordBuilder> {
                   launch, 'Record', 'launch'),
               id: BuiltValueNullFieldError.checkNotNull(id, 'Record', 'id'));
     } catch (_) {
-      String _$failedField;
+      late String _$failedField;
       try {
         _$failedField = 'spaceTrack';
         spaceTrack.build();

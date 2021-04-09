@@ -8,42 +8,42 @@ part of perf_test.test;
 
 SpaceTrack _$SpaceTrackFromJson(Map<String, dynamic> json) {
   return SpaceTrack()
-    ..ccsdsOmmVers = json['CCSDS_OMM_VERS'] as String
-    ..comment = json['COMMENT'] as String
-    ..originator = json['ORIGINATOR'] as String
-    ..objectName = json['OBJECT_NAME'] as String
-    ..objectId = json['OBJECT_ID'] as String
-    ..objectType = json['OBJECT_TYPE'] as String
-    ..centerName = json['CENTER_NAME'] as String
-    ..refFrame = json['REF_FRAME'] as String
-    ..timeSystem = json['TIME_SYSTEM'] as String
-    ..meanElementTheory = json['MEAN_ELEMENT_THEORY'] as String
-    ..classificationType = json['CLASSIFICATION_TYPE'] as String
-    ..rcsSize = json['RCS_SIZE'] as String
-    ..countryCode = json['COUNTRY_CODE'] as String
-    ..site = json['SITE'] as String
-    ..tleLine0 = json['TLE_LINE0'] as String
-    ..tleLine1 = json['TLE_LINE1'] as String
-    ..tleLine2 = json['TLE_LINE2'] as String
-    ..meanMotion = json['MEAN_MOTION'] as num
-    ..eccentricity = json['ECCENTRICITY'] as num
-    ..raOfAscNode = json['RA_OF_ASC_NODE'] as num
-    ..argOfPericenter = json['ARG_OF_PERICENTER'] as num
-    ..meanAnomaly = json['MEAN_ANOMALY'] as num
-    ..ephemerisType = json['EPHEMERIS_TYPE'] as num
-    ..noradCatId = json['NORAD_CAT_ID'] as num
-    ..elementSetNo = json['ELEMENT_SET_NO'] as num
-    ..revAtEpoch = json['REV_AT_EPOCH'] as num
-    ..bstar = json['BSTAR'] as num
-    ..meanMotionDot = json['MEAN_MOTION_DOT'] as num
-    ..meanMotionDdot = json['MEAN_MOTION_DDOT'] as num
-    ..semimajorAxis = json['SEMIMAJOR_AXIS'] as num
-    ..period = json['PERIOD'] as num
-    ..apoapsis = json['APOAPSIS'] as num
-    ..periapsis = json['PERIAPSIS'] as num
-    ..decayed = json['DECAYED'] as num
-    ..file = json['FILE'] as num
-    ..gpId = json['GP_ID'] as num
+    ..ccsdsOmmVers = json['CCSDS_OMM_VERS'] as String?
+    ..comment = json['COMMENT'] as String?
+    ..originator = json['ORIGINATOR'] as String?
+    ..objectName = json['OBJECT_NAME'] as String?
+    ..objectId = json['OBJECT_ID'] as String?
+    ..objectType = json['OBJECT_TYPE'] as String?
+    ..centerName = json['CENTER_NAME'] as String?
+    ..refFrame = json['REF_FRAME'] as String?
+    ..timeSystem = json['TIME_SYSTEM'] as String?
+    ..meanElementTheory = json['MEAN_ELEMENT_THEORY'] as String?
+    ..classificationType = json['CLASSIFICATION_TYPE'] as String?
+    ..rcsSize = json['RCS_SIZE'] as String?
+    ..countryCode = json['COUNTRY_CODE'] as String?
+    ..site = json['SITE'] as String?
+    ..tleLine0 = json['TLE_LINE0'] as String?
+    ..tleLine1 = json['TLE_LINE1'] as String?
+    ..tleLine2 = json['TLE_LINE2'] as String?
+    ..meanMotion = json['MEAN_MOTION'] as num?
+    ..eccentricity = json['ECCENTRICITY'] as num?
+    ..raOfAscNode = json['RA_OF_ASC_NODE'] as num?
+    ..argOfPericenter = json['ARG_OF_PERICENTER'] as num?
+    ..meanAnomaly = json['MEAN_ANOMALY'] as num?
+    ..ephemerisType = json['EPHEMERIS_TYPE'] as num?
+    ..noradCatId = json['NORAD_CAT_ID'] as num?
+    ..elementSetNo = json['ELEMENT_SET_NO'] as num?
+    ..revAtEpoch = json['REV_AT_EPOCH'] as num?
+    ..bstar = json['BSTAR'] as num?
+    ..meanMotionDot = json['MEAN_MOTION_DOT'] as num?
+    ..meanMotionDdot = json['MEAN_MOTION_DDOT'] as num?
+    ..semimajorAxis = json['SEMIMAJOR_AXIS'] as num?
+    ..period = json['PERIOD'] as num?
+    ..apoapsis = json['APOAPSIS'] as num?
+    ..periapsis = json['PERIAPSIS'] as num?
+    ..decayed = json['DECAYED'] as num?
+    ..file = json['FILE'] as num?
+    ..gpId = json['GP_ID'] as num?
     ..decayDate = SpaceTrack._dateTimeFromStringDefault(json['DECAY_DATE'])
     ..creationDate =
         SpaceTrack._dateTimeFromStringDefault(json['CREATION_DATE'])
@@ -102,9 +102,9 @@ Record _$RecordFromJson(Map<String, dynamic> json) {
     ..spaceTrack = json['spaceTrack'] == null
         ? null
         : SpaceTrack.fromJson(json['spaceTrack'] as Map<String, dynamic>)
-    ..version = json['version'] as String
-    ..id = json['id'] as String
-    ..launch = json['launch'] as String;
+    ..version = json['version'] as String?
+    ..id = json['id'] as String?
+    ..launch = json['launch'] as String?;
 }
 
 Map<String, dynamic> _$RecordToJson(Record instance) => <String, dynamic>{

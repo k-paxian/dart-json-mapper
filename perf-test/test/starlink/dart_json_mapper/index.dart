@@ -2,7 +2,7 @@ part of perf_test.test;
 
 void testStarlink(Iterable list) {
   final stopwatch = Stopwatch()..start();
-  final records = list.map((x) => JsonMapper.deserialize<Record>(x)).toList();
+  final records = list.map((x) => JsonMapper.fromMap<Record>(x)).toList();
   final deserializationMs = stopwatch.elapsedMilliseconds;
   final timePerRecordMs =
       (deserializationMs / records.length).toStringAsPrecision(2);

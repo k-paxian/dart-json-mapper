@@ -14,7 +14,7 @@ import 'errors.dart';
 import 'model/index.dart';
 import 'utils.dart';
 
-/// Singleton class providing mostly static methods conversion of previously
+/// Singleton class providing mostly static methods for conversion of previously
 /// annotated by [JsonSerializable] Dart objects from / to JSON string
 class JsonMapper {
   /// Converts an instance of Dart object to JSON String
@@ -676,6 +676,11 @@ class JsonMapper {
 
   Map<Symbol, dynamic> _getNamedArguments(
       ClassMirror cm, JsonMap jsonMap, DeserializationContext context) {
+    if (kIsWeb) {
+      // No named arguments in JS :(
+      return <Symbol, dynamic>{};
+    }
+
     final result = <Symbol, dynamic>{};
 
     _enumerateConstructorParameters(
@@ -685,11 +690,6 @@ class JsonMapper {
         result[Symbol(name)] = value;
       }
     });
-
-    if (kIsWeb) {
-      // No named arguments in JS :(
-      return <Symbol, dynamic>{};
-    }
 
     return result;
   }

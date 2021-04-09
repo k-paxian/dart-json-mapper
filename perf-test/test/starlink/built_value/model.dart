@@ -109,8 +109,7 @@ abstract class SpaceTrack implements Built<SpaceTrack, SpaceTrackBuilder> {
   String get sITE;
 
   @BuiltValueField(wireName: 'DECAY_DATE')
-  @nullable
-  String get dECAYDATE;
+  String? get dECAYDATE;
 
   @BuiltValueField(wireName: 'DECAYED')
   num get dECAYED;
@@ -134,7 +133,7 @@ abstract class SpaceTrack implements Built<SpaceTrack, SpaceTrackBuilder> {
     return json.encode(serializers.serializeWith(SpaceTrack.serializer, this));
   }
 
-  static SpaceTrack fromJson(String jsonString) {
+  static SpaceTrack? fromJson(String jsonString) {
     return serializers.deserializeWith(
         SpaceTrack.serializer, json.decode(jsonString));
   }
@@ -164,7 +163,7 @@ abstract class Record implements Built<Record, RecordBuilder> {
     return json.encode(serializers.serializeWith(Record.serializer, this));
   }
 
-  static Record fromJson(String jsonString) {
+  static Record? fromJson(String jsonString) {
     return serializers.deserializeWith(
         Record.serializer, json.decode(jsonString));
   }

@@ -12,7 +12,7 @@ void testStarlink(Iterable list) {
       'Deserialization of ${records.length} records executed in ${deserializationMs}ms, at $timePerRecordMs ms per record');
 
   final stopwatch2 = Stopwatch()..start();
-  records.map((x) => x.toJson()).toList();
+  records.map((x) => x!.toJson()).toList();
   final serializationMs = stopwatch2.elapsedMilliseconds;
   final timePerRecordMs2 =
       (serializationMs / records.length).toStringAsPrecision(2);
