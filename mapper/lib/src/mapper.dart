@@ -434,6 +434,9 @@ class JsonMapper {
   }
 
   dynamic _applyValueDecorator(dynamic value, TypeInfo typeInfo) {
+    if (value == null) {
+      return null;
+    }
     if (valueDecorators[typeInfo.genericType] != null) {
       value = valueDecorators[typeInfo.genericType]!(value);
     }

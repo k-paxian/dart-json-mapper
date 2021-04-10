@@ -66,6 +66,7 @@ Model code
 abstract class SpaceTrack implements Built<SpaceTrack, SpaceTrackBuilder> {
   SpaceTrack._();
 
+  // ignore: use_function_type_syntax_for_parameters
   factory SpaceTrack([updates(SpaceTrackBuilder b)]) = _$SpaceTrack;
 
   @BuiltValueField(wireName: 'CCSDS_OMM_VERS')
@@ -171,8 +172,7 @@ abstract class SpaceTrack implements Built<SpaceTrack, SpaceTrackBuilder> {
   String get sITE;
 
   @BuiltValueField(wireName: 'DECAY_DATE')
-  @nullable
-  String get dECAYDATE;
+  String? get dECAYDATE;
 
   @BuiltValueField(wireName: 'DECAYED')
   num get dECAYED;
@@ -196,7 +196,7 @@ abstract class SpaceTrack implements Built<SpaceTrack, SpaceTrackBuilder> {
     return json.encode(serializers.serializeWith(SpaceTrack.serializer, this));
   }
 
-  static SpaceTrack fromJson(String jsonString) {
+  static SpaceTrack? fromJson(String jsonString) {
     return serializers.deserializeWith(
         SpaceTrack.serializer, json.decode(jsonString));
   }
@@ -207,6 +207,7 @@ abstract class SpaceTrack implements Built<SpaceTrack, SpaceTrackBuilder> {
 abstract class Record implements Built<Record, RecordBuilder> {
   Record._();
 
+  // ignore: use_function_type_syntax_for_parameters
   factory Record([updates(RecordBuilder b)]) = _$Record;
 
   @BuiltValueField(wireName: 'spaceTrack')
@@ -225,7 +226,7 @@ abstract class Record implements Built<Record, RecordBuilder> {
     return json.encode(serializers.serializeWith(Record.serializer, this));
   }
 
-  static Record fromJson(String jsonString) {
+  static Record? fromJson(String jsonString) {
     return serializers.deserializeWith(
         Record.serializer, json.decode(jsonString));
   }
@@ -242,154 +243,152 @@ Serialization of 537 records executed in **53ms**, at **0.099** ms per record
 
 Model code
 ```dart
-part of perf_test.test;
-
 @JsonSerializable()
 class SpaceTrack {
   @JsonKey(name: 'CCSDS_OMM_VERS')
-  String ccsdsOmmVers;
+  String? ccsdsOmmVers;
 
   @JsonKey(name: 'COMMENT')
-  String comment;
+  String? comment;
 
   @JsonKey(name: 'ORIGINATOR')
-  String originator;
+  String? originator;
 
   @JsonKey(name: 'OBJECT_NAME')
-  String objectName;
+  String? objectName;
 
   @JsonKey(name: 'OBJECT_ID')
-  String objectId;
+  String? objectId;
 
   @JsonKey(name: 'OBJECT_TYPE')
-  String objectType;
+  String? objectType;
 
   @JsonKey(name: 'CENTER_NAME')
-  String centerName;
+  String? centerName;
 
   @JsonKey(name: 'REF_FRAME')
-  String refFrame;
+  String? refFrame;
 
   @JsonKey(name: 'TIME_SYSTEM')
-  String timeSystem;
+  String? timeSystem;
 
   @JsonKey(name: 'MEAN_ELEMENT_THEORY')
-  String meanElementTheory;
+  String? meanElementTheory;
 
   @JsonKey(name: 'CLASSIFICATION_TYPE')
-  String classificationType;
+  String? classificationType;
 
   @JsonKey(name: 'RCS_SIZE')
-  String rcsSize;
+  String? rcsSize;
 
   @JsonKey(name: 'COUNTRY_CODE')
-  String countryCode;
+  String? countryCode;
 
   @JsonKey(name: 'SITE')
-  String site;
+  String? site;
 
   @JsonKey(name: 'TLE_LINE0')
-  String tleLine0;
+  String? tleLine0;
 
   @JsonKey(name: 'TLE_LINE1')
-  String tleLine1;
+  String? tleLine1;
 
   @JsonKey(name: 'TLE_LINE2')
-  String tleLine2;
+  String? tleLine2;
 
   @JsonKey(name: 'MEAN_MOTION')
-  num meanMotion;
+  num? meanMotion;
 
   @JsonKey(name: 'ECCENTRICITY')
-  num eccentricity;
+  num? eccentricity;
 
   @JsonKey(name: 'RA_OF_ASC_NODE')
-  num raOfAscNode;
+  num? raOfAscNode;
 
   @JsonKey(name: 'ARG_OF_PERICENTER')
-  num argOfPericenter;
+  num? argOfPericenter;
 
   @JsonKey(name: 'MEAN_ANOMALY')
-  num meanAnomaly;
+  num? meanAnomaly;
 
   @JsonKey(name: 'EPHEMERIS_TYPE')
-  num ephemerisType;
+  num? ephemerisType;
 
   @JsonKey(name: 'NORAD_CAT_ID')
-  num noradCatId;
+  num? noradCatId;
 
   @JsonKey(name: 'ELEMENT_SET_NO')
-  num elementSetNo;
+  num? elementSetNo;
 
   @JsonKey(name: 'REV_AT_EPOCH')
-  num revAtEpoch;
+  num? revAtEpoch;
 
   @JsonKey(name: 'BSTAR')
-  num bstar;
+  num? bstar;
 
   @JsonKey(name: 'MEAN_MOTION_DOT')
-  num meanMotionDot;
+  num? meanMotionDot;
 
   @JsonKey(name: 'MEAN_MOTION_DDOT')
-  num meanMotionDdot;
+  num? meanMotionDdot;
 
   @JsonKey(name: 'SEMIMAJOR_AXIS')
-  num semimajorAxis;
+  num? semimajorAxis;
 
   @JsonKey(name: 'PERIOD')
-  num period;
+  num? period;
 
   @JsonKey(name: 'APOAPSIS')
-  num apoapsis;
+  num? apoapsis;
 
   @JsonKey(name: 'PERIAPSIS')
-  num periapsis;
+  num? periapsis;
 
   @JsonKey(name: 'DECAYED')
-  num decayed;
+  num? decayed;
 
   @JsonKey(name: 'FILE')
-  num file;
+  num? file;
 
   @JsonKey(name: 'GP_ID')
-  num gpId;
+  num? gpId;
 
   @JsonKey(
       name: 'DECAY_DATE',
       fromJson: _dateTimeFromStringDefault,
       toJson: _dateTimeToStringDefault)
-  DateTime decayDate;
+  DateTime? decayDate;
 
   @JsonKey(
       name: 'CREATION_DATE',
       fromJson: _dateTimeFromStringDefault,
       toJson: _dateTimeToStringDefault)
-  DateTime creationDate;
+  DateTime? creationDate;
 
   @JsonKey(
       name: 'EPOCH',
       fromJson: _dateTimeFromStringDefault,
       toJson: _dateTimeToStringDefault)
-  DateTime epoch;
+  DateTime? epoch;
 
   @JsonKey(
       name: 'LAUNCH_DATE',
       fromJson: _dateTimeFromString,
       toJson: _dateTimeToString)
-  DateTime launchDate;
+  DateTime? launchDate;
 
   SpaceTrack();
 
-  static DateTime _dateTimeFromString(String value) =>
+  static DateTime? _dateTimeFromString(String value) =>
       DateFormat('yyyy-MM-dd').parse(value);
 
-  static String _dateTimeToString(DateTime dateTime) =>
-      DateFormat('yyyy-MM-dd').format(dateTime);
+  static String? _dateTimeToString(DateTime? dateTime) =>
+      DateFormat('yyyy-MM-dd').format(dateTime!);
 
-  static DateTime _dateTimeFromStringDefault(dynamic value) =>
-      value is String ? DateTime.parse(value) : value;
+  static DateTime? _dateTimeFromStringDefault(dynamic value) =>
+      value is String ? DateTime.tryParse(value) : value;
 
-  static String _dateTimeToStringDefault(DateTime dateTime) =>
+  static String _dateTimeToStringDefault(DateTime? dateTime) =>
       dateTime.toString();
 
   factory SpaceTrack.fromJson(Map<String, dynamic> json) =>
@@ -400,10 +399,10 @@ class SpaceTrack {
 
 @JsonSerializable(explicitToJson: true)
 class Record {
-  SpaceTrack spaceTrack;
-  String version;
-  String id;
-  String launch;
+  SpaceTrack? spaceTrack;
+  String? version;
+  String? id;
+  String? launch;
 
   Record();
 
@@ -424,58 +423,58 @@ Model code
 @jsonSerializable
 @Json(caseStyle: CaseStyle.SnakeAllCaps)
 class SpaceTrack {
-  String ccsdsOmmVers;
-  String comment;
-  String originator;
-  String objectName;
-  String objectId;
-  String objectType;
-  String centerName;
-  String refFrame;
-  String timeSystem;
-  String meanElementTheory;
-  String classificationType;
-  String rcsSize;
-  String countryCode;
-  String site;
-  String tleLine0;
-  String tleLine1;
-  String tleLine2;
+  String? ccsdsOmmVers;
+  String? comment;
+  String? originator;
+  String? objectName;
+  String? objectId;
+  String? objectType;
+  String? centerName;
+  String? refFrame;
+  String? timeSystem;
+  String? meanElementTheory;
+  String? classificationType;
+  String? rcsSize;
+  String? countryCode;
+  String? site;
+  String? tleLine0;
+  String? tleLine1;
+  String? tleLine2;
 
-  num meanMotion;
-  num eccentricity;
-  num raOfAscNode;
-  num argOfPericenter;
-  num meanAnomaly;
-  num ephemerisType;
-  num noradCatId;
-  num elementSetNo;
-  num revAtEpoch;
-  num bstar;
-  num meanMotionDot;
-  num meanMotionDdot;
-  num semimajorAxis;
-  num period;
-  num apoapsis;
-  num periapsis;
-  num decayed;
-  num file;
-  num gpId;
+  num? meanMotion;
+  num? eccentricity;
+  num? raOfAscNode;
+  num? argOfPericenter;
+  num? meanAnomaly;
+  num? ephemerisType;
+  num? noradCatId;
+  num? elementSetNo;
+  num? revAtEpoch;
+  num? bstar;
+  num? meanMotionDot;
+  num? meanMotionDdot;
+  num? semimajorAxis;
+  num? period;
+  num? apoapsis;
+  num? periapsis;
+  num? decayed;
+  num? file;
+  num? gpId;
 
-  DateTime decayDate;
-  DateTime creationDate;
-  DateTime epoch;
+  DateTime? decayDate;
+  DateTime? creationDate;
+  DateTime? epoch;
 
   @JsonProperty(converterParams: {'format': 'yyyy-MM-dd'})
-  DateTime launchDate;
+  DateTime? launchDate;
 }
 
 @jsonSerializable
 class Record {
-  SpaceTrack spaceTrack;
-  String version;
-  String id;
-  String launch;
+  SpaceTrack? spaceTrack;
+  String? version;
+  String? id;
+  String? launch;
 }
 ```
 

@@ -13,5 +13,6 @@ part 'json_serializable_test.g.dart';
 Iterable get list => _$listJsonLiteral;
 
 void main() {
+  print('\n>> json_serializable');
   testStarlink(list);
 }

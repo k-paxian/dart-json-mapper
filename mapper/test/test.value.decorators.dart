@@ -39,9 +39,9 @@ class NoticeItem {}
 
 @jsonSerializable
 class NoticeList {
-  final List<NoticeItem> list;
+  List<NoticeItem>? list;
 
-  const NoticeList(this.list);
+  NoticeList(this.list);
 }
 
 @jsonSerializable
@@ -211,8 +211,16 @@ void testValueDecorators() {
       final target = JsonMapper.deserialize<NoticeList>('{"list":[{},{}]}')!;
 
       // then
-      expect(target.list.first, TypeMatcher<NoticeItem>());
-      expect(target.list.length, 2);
+      expect(target.list!.first, TypeMatcher<NoticeItem>());
+      expect(target.list!.length, 2);
+    });
+
+    test('null value collection', () {
+      // when
+      final target = JsonMapper.deserialize<NoticeList>('{"list":null}')!;
+
+      // then
+      expect(target.list, null);
     });
 
     test('Custom Set<Car> value decorator', () {

@@ -13,7 +13,7 @@ part './model.dart';
 
 void main() async {
   initializeJsonMapper();
-
+  print('\n>> dart_json_mapper');
   testStarlink(json.decode(
       await File(path.absolute('test/starlink/starlink.json')).readAsString()));
 }

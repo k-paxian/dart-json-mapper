@@ -32,6 +32,7 @@ final Serializers serializers = (_$serializers.toBuilder()
     .build();
 
 void main() async {
+  print('\n>> built_value');
   testStarlink(json.decode(
       await File(path.absolute('test/starlink/starlink.json')).readAsString()));
 }
