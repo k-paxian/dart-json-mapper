@@ -109,7 +109,7 @@ class DeserializationContext {
 
     return otherContext.options == options &&
         otherContext.jsonPropertyMeta == jsonPropertyMeta &&
-        otherContext.typeInfo!.typeName == typeInfo!.typeName &&
+        otherContext.typeInfo == typeInfo &&
         otherContext.classMeta == classMeta;
   }
 }

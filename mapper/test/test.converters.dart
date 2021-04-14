@@ -106,8 +106,25 @@ class InlineJsonContainer {
 @jsonSerializable
 enum MyEnum { valueA, valueB }
 
+@jsonSerializable
+class DateTimeContainer {
+  DateTime? createdAt;
+}
+
 void testConverters() {
   group('[Verify converters]', () {
+    test('Map<String, DateTime> converter', () {
+      // given
+      final map = {'createdAt': DateTime.now()};
+
+      // when
+      final target = JsonMapper.fromMap<DateTimeContainer>(map);
+
+      // then
+      expect(target, TypeMatcher<DateTimeContainer>());
+      expect(target!.createdAt, TypeMatcher<DateTime>());
+    });
+
     test('Map<String, dynamic> converter', () {
       // given
       final json = '{"a":"abc","b":3}';

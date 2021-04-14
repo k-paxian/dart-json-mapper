@@ -32,6 +32,12 @@ class TypeInfo {
   TypeInfo(this.type);
 
   @override
+  bool operator ==(Object other) {
+    final otherTypeInfo = other as TypeInfo;
+    return otherTypeInfo.typeName == typeName;
+  }
+
+  @override
   String toString() =>
       'typeName: $typeName, parameters: $parameters, genericType: ' +
       genericType.runtimeType.toString();

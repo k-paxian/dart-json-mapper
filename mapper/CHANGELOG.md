@@ -1,3 +1,7 @@
+## 2.0.8
+
+* #126, Inaccurate implementation for contexts comparison improved
+
 ## 2.0.7
 
 * #125, Fix null collection case with value decorator
