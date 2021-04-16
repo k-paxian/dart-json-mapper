@@ -442,7 +442,7 @@ class ListOfLists {
         typeOf<List<Item>>(): (value) => value.cast<Item>()
       };
   
-  List<List<Item>> lists;
+  List<List<Item>>? lists;
 }
 
 // given
@@ -454,14 +454,14 @@ final json = '''{
 }''';
 
 // when
-final target = JsonMapper.deserialize<ListOfLists>(json);
+final target = JsonMapper.deserialize<ListOfLists>(json)!;
 
 // then
-expect(target.lists.length, 2);
-expect(target.lists.first.length, 2);
-expect(target.lists.last.length, 3);
-expect(target.lists.first.first, TypeMatcher<Item>());
-expect(target.lists.last.first, TypeMatcher<Item>());
+expect(target.lists?.length, 2);
+expect(target.lists?.first.length, 2);
+expect(target.lists?.last.length, 3);
+expect(target.lists?.first.first, TypeMatcher<Item>());
+expect(target.lists?.last.first, TypeMatcher<Item>());
 ```
 
 ## Enum types
