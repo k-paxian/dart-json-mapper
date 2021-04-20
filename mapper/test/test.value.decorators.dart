@@ -117,6 +117,19 @@ class ListOfLists {
   List<List<Item>>? lists;
 }
 
+@jsonSerializable
+@Json(valueDecorators: ListOfListsWithConstructor.valueDecorators)
+class ListOfListsWithConstructor {
+  static Map<Type, ValueDecoratorFunction> valueDecorators() => {
+        typeOf<List<List<Item>>>(): (value) => value.cast<List<Item>>(),
+        typeOf<List<Item>>(): (value) => value.cast<Item>()
+      };
+
+  ListOfListsWithConstructor(this.lists);
+
+  List<List<Item>> lists;
+}
+
 void testValueDecorators() {
   final carListJson = '[{"modelName":"Audi","color":"Green"}]';
   final ordersListJson = '''[  
@@ -295,6 +308,26 @@ void testValueDecorators() {
       expect(target.lists?.last.first, TypeMatcher<Item>());
 
       JsonMapper().removeAdapter(adapter);
+    });
+
+    test('List of Lists with constructor', () {
+      // given
+      final json = '''{
+ "lists": [
+   [{}, {}],
+   [{}, {}, {}]
+ ]
+}''';
+
+      // when
+      final target = JsonMapper.deserialize<ListOfListsWithConstructor>(json)!;
+
+      // then
+      expect(target.lists.length, 2);
+      expect(target.lists.first.length, 2);
+      expect(target.lists.last.length, 3);
+      expect(target.lists.first.first, TypeMatcher<Item>());
+      expect(target.lists.last.first, TypeMatcher<Item>());
     });
   });
 }

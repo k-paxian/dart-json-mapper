@@ -697,14 +697,15 @@ class JsonMapper {
     return result;
   }
 
-  List _getPositionalArguments(
-      ClassMirror cm, JsonMap jsonMap, DeserializationContext context) {
+  List _getPositionalArguments(ClassMirror cm, JsonMap jsonMap,
+      DeserializationContext context, List<String> positionalArgumentNames) {
     final result = [];
 
     _enumerateConstructorParameters(
         cm, jsonMap, context, (param) => !param.isOptional && !param.isNamed,
         (param, name, jsonName, classMeta, JsonProperty? meta, value,
             TypeInfo typeInfo) {
+      positionalArgumentNames.add(name);
       result.add(_isFieldIgnored(value, classMeta, meta, context.options)
           ? null
           : value);
@@ -919,6 +920,9 @@ class JsonMapper {
     jsonMap.jsonMeta = classInfo.getMeta(context.options!.scheme);
 
     final namedArguments = _getNamedArguments(cm, jsonMap, context);
+    final positionalArgumentNames = <String>[];
+    final positionalArguments =
+        _getPositionalArguments(cm, jsonMap, context, positionalArgumentNames);
     final objectInstance = context.options!.template ??
         (cm.isEnum
             ? null
@@ -926,14 +930,15 @@ class JsonMapper {
                 classInfo
                     .getJsonConstructor(context.options!.scheme)!
                     .constructorName,
-                _getPositionalArguments(cm, jsonMap, context),
+                positionalArguments,
                 namedArguments));
     final im = _safeGetInstanceMirror(objectInstance)!;
     final inheritedPublicFieldNames = classInfo.inheritedPublicFieldNames;
     final mappedFields = namedArguments.keys
         .map((Symbol symbol) =>
             RegExp('"(.+)"').allMatches(symbol.toString()).first.group(1))
-        .toList();
+        .toList()
+          ..addAll(positionalArgumentNames);
 
     _enumeratePublicProperties(im, jsonMap, context.options!, (name,
         jsonName,

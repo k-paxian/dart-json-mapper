@@ -1,3 +1,7 @@
+## 2.0.9
+
+* #127, Proper support for positional constructor arguments
+
 ## 2.0.8
 
 * #126, Inaccurate implementation for contexts comparison improved
