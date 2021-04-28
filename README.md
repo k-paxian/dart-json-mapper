@@ -46,6 +46,7 @@ guided by the annotated classes **only**, as the result types information is acc
     * [Nesting](#nesting-configuration)
     * [Name aliases](#name-aliases-configuration)
     * [Schemes](#schemes)
+    * [Objects flattening](#objects-flattening)
     * [Objects cloning](#objects-cloning)
 * [Adapters](#complementary-adapter-libraries)
     * [How to use adapter?](#complementary-adapter-libraries)
@@ -915,6 +916,48 @@ final json = JsonMapper.serialize(instance, SerializationOptions(indent: ''));
 expect(json, '''{"default":{"title":"No Scheme"}}''');
 ```
 
+## Objects flattening
+
+Consider a paginated API which returns a page of results along with pagination metadata that
+identifies how many results were requested, how far into the total set of results we are looking at,
+and how many results exist in total. If we are paging through a total of 1053 results 100 at a time,
+the third page may look like this:
+
+```json
+{
+  "limit": 100,
+  "offset": 200,
+  "total": 1053,
+  "users": [
+    {"id": "49824073-979f-4814-be10-5ea416ee1c2f", "username": "john_doe"},
+    ...
+  ]
+}
+```
+
+This same scheme with `limit` and `offset` and `total` fields may be shared across lots of different API queries.
+For example we may want paginated results when querying for users, for issues, for projects, etc.
+
+In this case it can be convenient to factor the common pagination metadata fields into a
+reusable `Pagination` shared class that can be flattened & blended into each API response object.
+
+```dart
+@jsonSerializable
+class Pagination {
+  num? limit;
+  num? offset;
+  num? total;
+}
+
+@jsonSerializable
+class UsersPage {
+  @JsonProperty(flatten: true)
+  Pagination? pagination;
+
+  List<User>? users;
+}
+```
+
 ## Objects cloning
 
 If you are wondering how to deep-clone Dart Objects,
@@ -1023,6 +1066,7 @@ Example: `'foo', 'bar', 'foo/bar/baz', ['foo', 'bar', 'baz'], '../foo/bar'`
     * *scheme* dynamic [Scheme](#schemes) marker to associate this meta information with particular mapping scheme
     * *converter* Declares custom converter instance, to be used for annotated field serialization / deserialization 
     * *converterParams* A `Map` of parameters to be passed to the converter instance
+    * *flatten* Declares annotated field to be flattened and merged with the host object
     * *notNull* A bool declares annotated field as NOT NULL for serialization / deserialization process
     * *required* A bool declares annotated field as required for serialization / deserialization process i.e. needs to be present explicitly
     * *ignore* A bool declares annotated field as ignored so it will be excluded from serialization / deserialization process

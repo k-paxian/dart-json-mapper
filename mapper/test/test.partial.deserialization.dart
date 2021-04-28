@@ -78,8 +78,48 @@ class AllPrivateFields {
   String? getLastName() => _lastName;
 }
 
+@jsonSerializable
+class Pagination {
+  num? limit;
+  num? offset;
+  num? total;
+}
+
+@jsonSerializable
+class Cars {
+  @JsonProperty(flatten: true)
+  Pagination? pagination;
+
+  List<Car>? cars;
+}
+
 void testPartialDeserialization() {
   group('[Verify partial processing]', () {
+    test('Cars deserialization + flattening pagination info', () {
+      // given
+      final json = '''{
+ "limit": 100,
+ "offset": 200,
+ "total": 1053,
+ "cars": [
+  {
+   "modelName": "Tesla X",
+   "color": "Red"
+  }
+ ]
+}''';
+      // when
+      final target = JsonMapper.deserialize<Cars>(json)!;
+      final targetJson = JsonMapper.serialize(target);
+
+      // then
+      expect(targetJson, json);
+      expect(target.pagination!.limit, 100);
+      expect(target.pagination!.offset, 200);
+      expect(target.pagination!.total, 1053);
+      expect(target.cars!.length, 1);
+    });
+
     test('Person deserialization', () {
       // given
       final partialPersonJson = '''{

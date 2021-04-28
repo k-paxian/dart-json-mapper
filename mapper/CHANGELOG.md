@@ -1,3 +1,8 @@
+## 2.1.0
+
+* #128, Introduce `flatten` attribute to `@JsonProperty` meta
+* #97, sound null safety
+
 ## 2.0.9
 
 * #127, Proper support for positional constructor arguments

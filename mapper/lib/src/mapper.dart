@@ -825,6 +825,14 @@ class JsonMapper {
             jsonPropertyMeta: meta,
             classMeta: jsonMeta,
             typeInfo: typeInfo);
+        if (meta?.flatten == true) {
+          final Map flattenedPropertiesMap =
+              _serializeObject(value, newContext);
+          flattenedPropertiesMap.entries.forEach((element) {
+            result.setPropertyValue(element.key, element.value);
+          });
+          return;
+        }
         if (converter != null) {
           _configureConverter(converter,
               value: value, serializationContext: newContext);
@@ -948,15 +956,6 @@ class JsonMapper {
         converter,
         scalarType,
         TypeInfo typeInfo) {
-      final defaultValue = meta?.defaultValue;
-      final hasJsonProperty = jsonMap.hasProperty(jsonName);
-      var fieldValue = jsonMap.getPropertyValue(jsonName);
-      if (!hasJsonProperty || mappedFields.contains(name)) {
-        if (defaultValue != null && !isGetterOnly) {
-          im.invokeSetter(name, defaultValue);
-        }
-        return;
-      }
       final parentMaps = <JsonMap>[...(context.parentJsonMaps ?? []), jsonMap];
       final newContext = DeserializationContext(
           options: context.options,
@@ -964,6 +963,18 @@ class JsonMapper {
           jsonPropertyMeta: meta,
           parentJsonMaps: parentMaps,
           classMeta: context.classMeta);
+      final defaultValue = meta?.defaultValue;
+      final hasJsonProperty = jsonMap.hasProperty(jsonName);
+      var fieldValue = jsonMap.getPropertyValue(jsonName);
+      if (!hasJsonProperty || mappedFields.contains(name)) {
+        if (meta?.flatten == true) {
+          im.invokeSetter(name, _deserializeObject(fieldValue, newContext));
+        }
+        if (defaultValue != null && !isGetterOnly) {
+          im.invokeSetter(name, defaultValue);
+        }
+        return;
+      }
       if (fieldValue is Iterable) {
         fieldValue = fieldValue
             .map((item) => _deserializeObject(

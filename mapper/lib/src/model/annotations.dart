@@ -157,6 +157,9 @@ class JsonProperty {
   /// will be excluded from serialization / deserialization process
   final bool? ignoreIfNull;
 
+  /// Declares annotated field to be flattened and merged with the host object
+  final bool? flatten;
+
   /// Final field default value
   final dynamic defaultValue;
 
@@ -166,6 +169,7 @@ class JsonProperty {
       this.required,
       this.notNull,
       this.ignore,
+      this.flatten,
       this.requiredMessage,
       this.notNullMessage,
       this.ignoreForSerialization,
