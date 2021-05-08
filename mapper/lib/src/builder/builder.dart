@@ -1,6 +1,5 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:build/build.dart';
-// ignore: import_of_legacy_library_into_null_safe
 import 'package:reflectable/src/builder_implementation.dart';
 
 import 'reflectable_source_wrapper.dart';
