@@ -188,6 +188,7 @@ class ClassInfo {
       return !dm.isPrivate &&
           dm is MethodMirror &&
           !dm.isConstructor &&
+          dm.isRegularMethod &&
           dm.parameters.isEmpty &&
           getDeclarationMeta(dm, scheme) != null &&
           getDeclarationMeta(dm, scheme)!.name != null;
@@ -306,13 +307,21 @@ class ClassInfo {
     if (parentClassMirror == null) {
       return result;
     }
-    final parentDeclarationMirror = ClassInfo(parentClassMirror)
-        .getDeclarationMirror(declarationMirror.simpleName);
-    result.addAll(parentClassMirror.isTopLevel
-        ? parentDeclarationMirror != null
-            ? parentDeclarationMirror.metadata
-            : []
-        : lookupDeclarationMetaData(parentDeclarationMirror));
+
+    [
+      parentClassMirror,
+      _safeGetSuperClassMirror(parentClassMirror),
+      ...parentClassMirror.superinterfaces
+    ].forEach((element) {
+      final parentDeclarationMirror =
+          ClassInfo(element).getDeclarationMirror(declarationMirror.simpleName);
+      result.addAll(parentClassMirror.isTopLevel
+          ? parentDeclarationMirror != null
+              ? parentDeclarationMirror.metadata
+              : []
+          : lookupDeclarationMetaData(parentDeclarationMirror));
+    });
+
     return result;
   }
 

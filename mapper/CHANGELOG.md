@@ -1,3 +1,7 @@
+## 2.1.1
+
+* #131, `@JsonProperty` annotation in superclass should be inherited for overriden getters
+
 ## 2.1.0
 
 * #128, Introduce `flatten` attribute to `@JsonProperty` meta

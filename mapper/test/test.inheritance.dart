@@ -1,6 +1,8 @@
 import 'package:dart_json_mapper/dart_json_mapper.dart';
 import 'package:test/test.dart';
 
+import 'model/model.dart';
+
 @jsonSerializable
 enum BusinessType { Private, Public, Private2, Public2 }
 
@@ -110,6 +112,24 @@ class UserImpl extends DataModel implements AbstractUser {
   }
 }
 
+@jsonSerializable
+abstract class MyBaseClass {
+  @JsonProperty(name: 'myCustomGetterName')
+  String get myGetter;
+
+  @JsonProperty(name: 'myCustomFieldName')
+  final String myField = '';
+}
+
+@jsonSerializable
+class MySuperclass implements MyBaseClass {
+  @override
+  String get myGetter => 'myGetterValue';
+
+  @override
+  final String myField = 'myFieldValue';
+}
+
 void testInheritance() {
   group('[Verify inheritance cases]', () {
     test(
@@ -144,6 +164,22 @@ void testInheritance() {
       expect(target.businesses[0].type, BusinessType.Public2);
       expect(target.businesses[1], TypeMatcher<Hotel2>());
       expect(target.businesses[1].type, BusinessType.Private2);
+    });
+
+    test('should inherit annotations from abstract class', () {
+      // given
+      final instance = MySuperclass();
+      final json =
+          '{"myCustomFieldName":"myFieldValue","myCustomGetterName":"myGetterValue"}';
+
+      // when
+      final targetJson = JsonMapper.serialize(instance, compactOptions);
+      final target = JsonMapper.deserialize<MySuperclass>(targetJson)!;
+
+      // then
+      expect(targetJson, json);
+      expect(target.myField, instance.myField);
+      expect(target.myGetter, instance.myGetter);
     });
 
     test('implements AbstractUser', () {
