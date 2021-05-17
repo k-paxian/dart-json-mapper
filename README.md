@@ -110,9 +110,9 @@ targets:
   $default:
     builders:
       dart_json_mapper:
-          generate_for:
-          # here should be listed entry point files having 'void main()' function
-            - lib/main.dart
+        generate_for:
+        # here should be listed entry point files having 'void main()' function
+          - lib/main.dart
 
       # This part is needed to tell original reflectable builder to stay away
       # it overrides default options for reflectable builder to an **empty** set of files
