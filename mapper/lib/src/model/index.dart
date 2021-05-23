@@ -19,7 +19,7 @@ const defaultDeserializationOptions = DeserializationOptions();
 class DeserializationOptions {
   /// The most popular ways to combine words into a single string
   /// Based on assumption: That all Dart class fields initially
-  /// given as CaseStyle.Camel
+  /// given as [CaseStyle.Camel]
   final CaseStyle? caseStyle;
 
   /// Scheme to be used
@@ -85,15 +85,14 @@ class SerializationOptions extends DeserializationOptions {
 /// Describes a set of data / state to be re-used down the road of recursive
 /// process of Deserialization/Serialization
 class DeserializationContext {
-  final DeserializationOptions? options;
+  final DeserializationOptions options;
   final JsonProperty? jsonPropertyMeta;
   final Json? classMeta;
   final TypeInfo? typeInfo;
   final Iterable<JsonMap>? parentJsonMaps;
 
-  const DeserializationContext(
-      {this.options,
-      this.jsonPropertyMeta,
+  const DeserializationContext(this.options,
+      {this.jsonPropertyMeta,
       this.classMeta,
       this.typeInfo,
       this.parentJsonMaps});
@@ -120,20 +119,15 @@ class SerializationContext extends DeserializationContext {
   /// Recursion nesting level, 0 = top object, 1 = object's property, and so on
   final int level;
 
-  const SerializationContext(
-      {this.level = 0,
-      SerializationOptions? options,
-      jsonPropertyMeta,
-      classMeta,
-      typeInfo})
-      : super(
-            options: options,
+  const SerializationContext(SerializationOptions options,
+      {this.level = 0, jsonPropertyMeta, classMeta, typeInfo})
+      : super(options,
             jsonPropertyMeta: jsonPropertyMeta,
             classMeta: classMeta,
             typeInfo: typeInfo);
 
-  SerializationOptions? get serializationOptions =>
-      options as SerializationOptions?;
+  SerializationOptions get serializationOptions =>
+      options as SerializationOptions;
 
   @override
   ConversionDirection get direction => ConversionDirection.toJson;

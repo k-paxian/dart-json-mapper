@@ -11,7 +11,7 @@ import 'index.dart';
 typedef SerializeObjectFunction = dynamic Function(Object object);
 typedef DeserializeObjectFunction = dynamic Function(Object object, Type type);
 typedef GetConverterFunction = ICustomConverter? Function(
-    JsonProperty? jsonProperty, Type? declarationType);
+    JsonProperty? jsonProperty, TypeInfo typeInfo);
 typedef GetConvertedValueFunction = dynamic Function(
     ICustomConverter converter, dynamic value, DeserializationContext context);
 
@@ -233,7 +233,7 @@ class EnumConverterShort implements ICustomConverter, ICustomEnumConverter {
   CaseStyle? _getCaseStyle(DeserializationContext context) =>
       context.classMeta != null && context.classMeta!.caseStyle != null
           ? context.classMeta!.caseStyle
-          : context.options!.caseStyle;
+          : context.options.caseStyle;
 }
 
 const enumConverterNumeric = ConstEnumConverterNumeric();
@@ -434,8 +434,8 @@ class DefaultIterableConverter
   @override
   dynamic fromJSON(dynamic jsonValue, [DeserializationContext? context]) {
     dynamic convert(item) {
-      final converter = _getConverter(
-          context!.jsonPropertyMeta, context.typeInfo!.scalarType);
+      final converter =
+          _getConverter(context!.jsonPropertyMeta, context.typeInfo!);
       return converter != null
           ? _getConvertedValue(converter, item, context)
           : item;
