@@ -10,7 +10,7 @@ This package allows programmers to annotate Dart objects in order to
 * Compatible with **all** Dart platforms, including [Flutter](https://pub.dartlang.org/flutter/packages) and [Web](https://pub.dartlang.org/web/packages) platforms
 * No need to extend your classes from **any** mixins/base/abstract classes to keep code leaner
 * Clean and simple setup, transparent and straight-forward usage with **no heavy maintenance**
-* Inspired by [json2typescript][4], feature parity with highly popular [Java Jackson][12] and only **4** [annotations](#annotations) to remember to cover all possible use cases.
+* Inspired by [json2typescript][4], [serde][5], feature parity with highly popular [Java Jackson][12] and only **4** [annotations](#annotations) to remember to cover all possible use cases.
 * **No extra boilerplate**, no messy extra `*.g.dart` files per *each* meaningful file (single root-level file which contains all of the generated code)
 * **Complementary adapters** full control over the process when you strive for maximum flexibility.
 * **NO** dependency on `dart:mirrors`, one of the reasons is described [here][1].
@@ -1191,6 +1191,7 @@ JsonMapper()
 [2]: https://pub.dartlang.org/packages/intl
 [3]: https://pub.dartlang.org/packages/reflectable
 [4]: https://github.com/appvision-gmbh/json2typescript
+[5]: https://github.com/serde-rs/serde
 [7]: https://github.com/mobxjs/mobx.dart
 [8]: https://github.com/dart-lang/fixnum
 [9]: https://en.wikipedia.org/wiki/Camel_case
