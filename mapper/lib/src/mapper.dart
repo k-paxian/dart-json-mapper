@@ -27,8 +27,10 @@ class JsonMapper {
         .convert(instance._serializeObject(object, context));
   }
 
-  /// Converts JSON String to Dart object instance of type T
-  static T? deserialize<T>(String? jsonValue,
+  /// Converts JSON [String] Or [Object] to Dart object instance of type T
+  /// [jsonValue] could be as of [String] type, then it will be parsed internally
+  /// [jsonValue] could be as of [Object] type, then it will be processed as is
+  static T? deserialize<T>(dynamic jsonValue,
       [DeserializationOptions options = defaultDeserializationOptions]) {
     final targetType = T != dynamic
         ? T
@@ -39,7 +41,11 @@ class JsonMapper {
         ? true
         : throw MissingTypeForDeserializationError());
     return instance._deserializeObject(
-        jsonValue != null ? _jsonDecoder.convert(jsonValue) : null,
+        jsonValue != null
+            ? jsonValue is String
+                ? _jsonDecoder.convert(jsonValue)
+                : jsonValue
+            : null,
         DeserializationContext(options,
             typeInfo: instance._getTypeInfo(targetType))) as T?;
   }
