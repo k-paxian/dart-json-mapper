@@ -2,6 +2,7 @@
 
 * #131, `@JsonProperty` annotation in superclass should be inherited for overriden getters
 * `deserialize` method extended to accept json `String` or parsed json `Object`
+* #133, #135, second pass for converter during deserialization has been removed, more speed for deserialization
 
 ## 2.1.0
 
