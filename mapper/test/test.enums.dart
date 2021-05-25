@@ -247,8 +247,14 @@ void testEnums() {
       };
 
       // when
-      final adapter =
-          JsonMapperAdapter(enumValues: {ThirdParty: ThirdParty.values});
+      final adapter = JsonMapperAdapter(valueDecorators: {
+        typeOf<List<ThirdParty>>(): (value) => value.cast<ThirdParty>(),
+        typeOf<Map<Color, int>>(): (value) => value.cast<Color, int>(),
+        typeOf<Map<ThirdParty, int>>(): (value) =>
+            value.cast<ThirdParty, int>(),
+      }, enumValues: {
+        ThirdParty: ThirdParty.values
+      });
       JsonMapper().useAdapter(adapter);
 
       final targetJson = JsonMapper.serialize(instance, compactOptions);

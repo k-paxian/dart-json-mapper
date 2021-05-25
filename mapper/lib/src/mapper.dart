@@ -953,12 +953,6 @@ class JsonMapper {
       } else {
         fieldValue = _deserializeObject(fieldValue, newContext);
       }
-      if (converter != null) {
-        final originalValue = im.invokeGetter(name);
-        _configureConverter(converter, newContext,
-            value: originalValue ?? fieldValue);
-        fieldValue = _getConvertedValue(converter, fieldValue, newContext);
-      }
       if (isGetterOnly) {
         if (inheritedPublicFieldNames.contains(name) &&
             !mappedFields.contains(jsonName)) {
