@@ -1,3 +1,7 @@
+## 2.0.1
+
+* Support for new code converters contract
+
 ## 2.0.0
 
 * mobx 2.0.0-nullsafety.5 support

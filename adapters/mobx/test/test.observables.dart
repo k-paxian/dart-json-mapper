@@ -4,7 +4,14 @@ part of json_mapper_mobx.test;
 class Item {}
 
 @jsonSerializable
+@Json(valueDecorators: ItemsList.valueDecorators)
 class ItemsList {
+  static Map<Type, ValueDecoratorFunction> valueDecorators() => {
+        typeOf<ObservableList<Item>>(): (value) =>
+            ObservableList<Item>.of(value.cast<Item>()),
+        typeOf<ObservableSet<Item>>(): (value) =>
+            ObservableSet<Item>.of(value.cast<Item>())
+      };
   ObservableList<Item> items = ObservableList<Item>.of([Item(), Item()]);
   ObservableSet<Item> itemsSet = ObservableSet<Item>.of([Item(), Item()]);
 }
@@ -56,17 +63,23 @@ class MobX {
 }
 
 @jsonSerializable
-@Json(ignoreNullMembers: true)
+@Json(ignoreNullMembers: true, valueDecorators: MobXMaps.valueDecorators)
 class MobXMaps {
-  ObservableMap<String, dynamic>? map = ObservableMap<String, dynamic>();
-  ObservableMap<String, Item>? mapItem = ObservableMap<String, Item>();
+  static Map<Type, ValueDecoratorFunction> valueDecorators() => {
+        typeOf<ObservableMap<String, dynamic>>(): (value) =>
+            ObservableMap<String, dynamic>.of(value.cast<String, dynamic>()),
+        typeOf<ObservableMap<String, Item>>(): (value) =>
+            ObservableMap<String, Item>.of(value.cast<String, Item>())
+      };
+  ObservableMap<String, dynamic>? map;
+  ObservableMap<String, Item>? mapItem;
 }
 
 final compactOptions = SerializationOptions(indent: '');
 
 void testObservables() {
   group('[Verify ObservableList]', () {
-    test('ObservableList<Item> w/o decorator', () {
+    test('ObservableList<Item>', () {
       // given
       final json = '''{"items":[{},{}],"itemsSet":[{},{}]}''';
       // when
