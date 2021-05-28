@@ -89,7 +89,7 @@ class MyData {
   MyData(this.a, this.b, this.c);
 }
 
-main() {
+void main() {
   initializeJsonMapper();
   
   print(JsonMapper.serialize(MyData(456, true, "yes")));

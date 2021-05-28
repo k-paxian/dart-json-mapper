@@ -14,6 +14,7 @@ import 'test.mixins.dart';
 import 'test.name.casing.dart';
 import 'test.name.path.dart';
 import 'test.partial.deserialization.dart';
+import 'test.required.dart';
 import 'test.scheme.dart';
 import 'test.special.cases.dart';
 import 'test.tuple.dart';
@@ -23,6 +24,7 @@ void main() {
   initializeJsonMapper().info();
 
   testScheme();
+  testRequired();
   testConvertersCaching();
   testMixinCases();
   testNameCasing();
