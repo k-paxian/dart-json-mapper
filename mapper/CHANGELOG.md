@@ -1,3 +1,8 @@
+## 2.1.2
+
+* #137, Support custom `Iterable` converter
+* bump dart to 2.13
+
 ## 2.1.1
 
 * #131, `@JsonProperty` annotation in superclass should be inherited for overriden getters

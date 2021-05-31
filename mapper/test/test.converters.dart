@@ -111,8 +111,49 @@ class DateTimeContainer {
   DateTime? createdAt;
 }
 
+typedef Response = List<String>;
+
+class MethodResponseConverter
+    implements ICustomConverter<List<Response>>, ICustomIterableConverter {
+  const MethodResponseConverter() : super();
+
+  @override
+  List<Response> fromJSON(jsonValue, [DeserializationContext? context]) {
+    return <Response>[
+      [jsonValue.toString()]
+    ];
+  }
+
+  @override
+  dynamic toJSON(List<Response> object, [SerializationContext? context]) {
+    throw UnimplementedError();
+  }
+
+  @override
+  void setIterableInstance(Iterable? instance) {}
+}
+
+@jsonSerializable
+class MethodResponse {
+  @JsonProperty(converter: MethodResponseConverter())
+  List<Response>? responses;
+}
+
 void testConverters() {
   group('[Verify converters]', () {
+    test('ICustomIterableConverter MethodResponseConverter', () {
+      // given
+      final json = '''{"responses":[["a","b","c"],["d","e","f"]]}''';
+
+      // when
+      final target = JsonMapper.deserialize<MethodResponse>(json)!;
+
+      // then
+      expect(target, TypeMatcher<MethodResponse>());
+      expect(target.responses!.length, 1);
+      expect(target.responses!.first, ['[[a, b, c], [d, e, f]]']);
+    });
+
     test('Map<String, DateTime> converter', () {
       // given
       final map = {'createdAt': DateTime.now()};

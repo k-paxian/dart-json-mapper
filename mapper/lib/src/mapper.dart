@@ -863,13 +863,18 @@ class JsonMapper {
     final converter = _getConverter(context.jsonPropertyMeta, typeInfo);
     if (converter != null) {
       _configureConverter(converter, context);
+      if (typeInfo.isIterable &&
+          (converter is ICustomIterableConverter &&
+              converter is! DefaultIterableConverter)) {
+        return _applyValueDecorator(
+            _getConvertedValue(converter, jsonValue, context), typeInfo);
+      }
       return _applyValueDecorator(
-          typeInfo.isIterable
+          (typeInfo.isIterable)
               ? _deserializeIterable(jsonValue, context)
               : _getConvertedValue(converter, jsonValue, context),
           typeInfo);
-    }
-    if (typeInfo.isIterable) {
+    } else if (typeInfo.isIterable) {
       return _deserializeIterable(jsonValue, context);
     }
 
@@ -940,7 +945,7 @@ class JsonMapper {
         }
         return;
       }
-      if (fieldValue is Iterable) {
+      if (fieldValue is Iterable && converter is! ICustomIterableConverter) {
         fieldValue = fieldValue
             .map((item) => _deserializeObject(
                 item,
