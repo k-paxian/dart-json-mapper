@@ -84,13 +84,11 @@ class DateConverter extends BaseCustomConverter implements ICustomConverter {
   @override
   dynamic toJSON(Object? object, [SerializationContext? context]) {
     final format = getDateFormat(context!.jsonPropertyMeta);
-    return format != null && object != null && !(object is String)
+    return format != null && object != null && object is! String
         ? format.format(object as DateTime)
         : (object is List)
             ? object.map((item) => item.toString()).toList()
-            : object != null
-                ? object.toString()
-                : null;
+            : object?.toString();
   }
 
   DateFormat? getDateFormat([JsonProperty? jsonProperty]) {
@@ -324,7 +322,7 @@ class DurationConverter implements ICustomConverter<Duration?> {
 
   @override
   dynamic toJSON(Duration? object, [SerializationContext? context]) {
-    return object != null ? object.inMicroseconds : null;
+    return object?.inMicroseconds;
   }
 }
 
@@ -444,11 +442,15 @@ class DefaultIterableConverter
     if (_instance != null && jsonValue is Iterable && jsonValue != _instance) {
       if (_instance is List) {
         (_instance as List).clear();
-        jsonValue.forEach((item) => (_instance as List).add(convert(item)));
+        for (var item in jsonValue) {
+          (_instance as List).add(convert(item));
+        }
       }
       if (_instance is Set) {
         (_instance as Set).clear();
-        jsonValue.forEach((item) => (_instance as Set).add(convert(item)));
+        for (var item in jsonValue) {
+          (_instance as Set).add(convert(item));
+        }
       }
       return _instance;
     }

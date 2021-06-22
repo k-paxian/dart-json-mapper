@@ -45,7 +45,7 @@ class LibraryVisitor extends RecursiveElementVisitor {
   }
 
   void _visitLibrary(LibraryElement? element) {
-    final identifier = element != null ? element.identifier : null;
+    final identifier = element?.identifier;
     if (identifier != null &&
         !visitedLibraries.containsKey(identifier) &&
         (identifier.startsWith('asset:') ||

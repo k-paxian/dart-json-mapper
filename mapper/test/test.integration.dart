@@ -7,7 +7,7 @@ void testIntegration() {
   group('[Verify end to end serialization <=> deserialization]', () {
     test('toMap/fromMap', () {
       // given
-      final car = Car('Tesla S3', Color.Black);
+      final car = Car('Tesla S3', Color.black);
       // when
       final targetMap = JsonMapper.toMap(car)!;
       final targetCar = JsonMapper.fromMap<Car>(targetMap)!;
@@ -15,16 +15,16 @@ void testIntegration() {
       // then
       expect(targetMap, TypeMatcher<Map<String, dynamic>>());
       expect(targetMap['modelName'], 'Tesla S3');
-      expect(targetMap['color'], 'Black');
+      expect(targetMap['color'], 'black');
 
       expect(targetCar, TypeMatcher<Car>());
       expect(targetCar.model, 'Tesla S3');
-      expect(targetCar.color, Color.Black);
+      expect(targetCar.color, Color.black);
     });
 
     test('Object clone', () {
       // given
-      final car = Car('Tesla S3', Color.Black);
+      final car = Car('Tesla S3', Color.black);
       // when
       final clone = JsonMapper.clone(car)!;
 
@@ -36,14 +36,14 @@ void testIntegration() {
 
     test('Object copyWith', () {
       // given
-      final car = Car('Tesla S3', Color.Black);
+      final car = Car('Tesla S3', Color.black);
 
       // when
-      final instance = JsonMapper.copyWith(car, {'color': 'Blue'})!;
+      final instance = JsonMapper.copyWith(car, {'color': 'blue'})!;
 
       // then
       expect(instance == car, false);
-      expect(instance.color, Color.Blue);
+      expect(instance.color, Color.blue);
       expect(instance.model, car.model);
     });
 
@@ -51,12 +51,12 @@ void testIntegration() {
       // given
       final template = {'a': 'a', 'b': true};
       // when
-      final json = JsonMapper.serialize(Car('Tesla S3', Color.Black),
+      final json = JsonMapper.serialize(Car('Tesla S3', Color.black),
           SerializationOptions(indent: '', template: template));
 
       // then
       expect(json,
-          '''{"a":"a","b":true,"modelName":"Tesla S3","color":"Black"}''');
+          '''{"a":"a","b":true,"modelName":"Tesla S3","color":"black"}''');
     });
 
     test('Serialization', () {
@@ -83,7 +83,7 @@ void testIntegration() {
 
     test('Deserialize with type property', () {
       // given
-      final carJson = '{"modelName": "Tesla S3", "color": "Black"}';
+      final carJson = '{"modelName": "Tesla S3", "color": "black"}';
       final type = Car;
 
       // when
@@ -92,7 +92,7 @@ void testIntegration() {
 
       // then
       expect(instance.runtimeType, Car);
-      expect(instance.color, Color.Black);
+      expect(instance.color, Color.black);
       expect(instance.model, 'Tesla S3');
     });
   });

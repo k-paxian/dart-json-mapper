@@ -4,7 +4,7 @@ import 'package:test/test.dart';
 import 'model/model.dart';
 
 @jsonSerializable
-enum BusinessType { Private, Public, Private2, Public2 }
+enum BusinessType { private, public, private2, public2 }
 
 /// Case 1: Using getter only as [discriminatorProperty] ///////////////////////
 @jsonSerializable
@@ -14,23 +14,23 @@ abstract class Business {
 }
 
 @jsonSerializable
-@Json(discriminatorValue: BusinessType.Private)
+@Json(discriminatorValue: BusinessType.private)
 class Hotel extends Business {
   int stars;
 
   @override
-  BusinessType get type => BusinessType.Private;
+  BusinessType get type => BusinessType.private;
 
   Hotel(this.stars);
 }
 
 @jsonSerializable
-@Json(discriminatorValue: BusinessType.Public)
+@Json(discriminatorValue: BusinessType.public)
 class Startup extends Business {
   int userCount;
 
   @override
-  BusinessType get type => BusinessType.Public;
+  BusinessType get type => BusinessType.public;
 
   Startup(this.userCount);
 }
@@ -51,7 +51,7 @@ abstract class Business2 {
 }
 
 @jsonSerializable
-@Json(discriminatorValue: BusinessType.Private2)
+@Json(discriminatorValue: BusinessType.private2)
 class Hotel2 extends Business2 {
   int stars;
 
@@ -59,7 +59,7 @@ class Hotel2 extends Business2 {
 }
 
 @jsonSerializable
-@Json(discriminatorValue: BusinessType.Public2)
+@Json(discriminatorValue: BusinessType.public2)
 class Startup2 extends Business2 {
   int userCount;
 
@@ -144,9 +144,9 @@ void testInheritance() {
 
       // then
       expect(target.businesses[0], TypeMatcher<Startup>());
-      expect(target.businesses[0].type, BusinessType.Public);
+      expect(target.businesses[0].type, BusinessType.public);
       expect(target.businesses[1], TypeMatcher<Hotel>());
-      expect(target.businesses[1].type, BusinessType.Private);
+      expect(target.businesses[1].type, BusinessType.private);
     });
 
     test(
@@ -161,9 +161,9 @@ void testInheritance() {
 
       // then
       expect(target.businesses[0], TypeMatcher<Startup2>());
-      expect(target.businesses[0].type, BusinessType.Public2);
+      expect(target.businesses[0].type, BusinessType.public2);
       expect(target.businesses[1], TypeMatcher<Hotel2>());
-      expect(target.businesses[1].type, BusinessType.Private2);
+      expect(target.businesses[1].type, BusinessType.private2);
     });
 
     test('should inherit annotations from abstract class', () {

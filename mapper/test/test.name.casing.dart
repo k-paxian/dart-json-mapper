@@ -4,7 +4,7 @@ import 'package:test/test.dart';
 import './model/index.dart';
 
 @jsonSerializable
-@Json(caseStyle: CaseStyle.Kebab)
+@Json(caseStyle: CaseStyle.kebab)
 class NameCaseObjectOverride {
   String? mainTitle;
   String? description;
@@ -29,7 +29,7 @@ class NameCaseObject {
       {this.mainTitle,
       this.description,
       this.hasMainProperty,
-      this.primaryColor = Color.GrayMetallic});
+      this.primaryColor = Color.grayMetallic});
 }
 
 void testNameCasing() {
@@ -54,7 +54,7 @@ void testNameCasing() {
         final json = JsonMapper.serialize(instance, compactOptions);
         // then
         expect(json,
-            '''{"mainTitle":"title","description":"desc","hasMainProperty":true,"primaryColor":"GrayMetallic"}''');
+            '''{"mainTitle":"title","description":"desc","hasMainProperty":true,"primaryColor":"grayMetallic"}''');
       });
 
       test('Verify CaseStyle.kebab', () {
@@ -63,7 +63,7 @@ void testNameCasing() {
             mainTitle: 'title', description: 'desc', hasMainProperty: true);
         // when
         final json = JsonMapper.serialize(instance,
-            SerializationOptions(indent: '', caseStyle: CaseStyle.Kebab));
+            SerializationOptions(indent: '', caseStyle: CaseStyle.kebab));
         // then
         expect(json,
             '''{"main-title":"title","description":"desc","has-main-property":true,"primary-color":"gray-metallic"}''');
@@ -75,7 +75,7 @@ void testNameCasing() {
             mainTitle: 'title', description: 'desc', hasMainProperty: true);
         // when
         final json = JsonMapper.serialize(instance,
-            SerializationOptions(indent: '', caseStyle: CaseStyle.Pascal));
+            SerializationOptions(indent: '', caseStyle: CaseStyle.pascal));
         // then
         expect(json,
             '''{"MainTitle":"title","Description":"desc","HasMainProperty":true,"PrimaryColor":"GrayMetallic"}''');
@@ -87,7 +87,7 @@ void testNameCasing() {
             mainTitle: 'title', description: 'desc', hasMainProperty: true);
         // when
         final json = JsonMapper.serialize(instance,
-            SerializationOptions(indent: '', caseStyle: CaseStyle.Snake));
+            SerializationOptions(indent: '', caseStyle: CaseStyle.snake));
         // then
         expect(json,
             '''{"main_title":"title","description":"desc","has_main_property":true,"primary_color":"gray_metallic"}''');
@@ -101,7 +101,7 @@ void testNameCasing() {
         final json = JsonMapper.serialize(
             instance,
             SerializationOptions(
-                indent: '', caseStyle: CaseStyle.SnakeAllCaps));
+                indent: '', caseStyle: CaseStyle.snakeAllCaps));
         // then
         expect(json,
             '''{"MAIN_TITLE":"title","DESCRIPTION":"desc","HAS_MAIN_PROPERTY":true,"PRIMARY_COLOR":"GRAY_METALLIC"}''');
@@ -115,12 +115,12 @@ void testNameCasing() {
             '''{"MAIN_TITLE":"title","DESCRIPTION":"desc","HAS_MAIN_PROPERTY":true,"PRIMARY_COLOR":"GRAY_METALLIC"}''';
         // when
         final instance = JsonMapper.deserialize<NameCaseObject>(
-            json, DeserializationOptions(caseStyle: CaseStyle.SnakeAllCaps))!;
+            json, DeserializationOptions(caseStyle: CaseStyle.snakeAllCaps))!;
         // then
         expect(instance.mainTitle, 'title');
         expect(instance.description, 'desc');
         expect(instance.hasMainProperty, true);
-        expect(instance.primaryColor, Color.GrayMetallic);
+        expect(instance.primaryColor, Color.grayMetallic);
       });
 
       test('Verify CaseStyle.Snake', () {
@@ -129,12 +129,12 @@ void testNameCasing() {
             '''{"main_title":"title","description":"desc","has_main_property":true,"primary_color":"gray_metallic"}''';
         // when
         final instance = JsonMapper.deserialize<NameCaseObject>(
-            json, DeserializationOptions(caseStyle: CaseStyle.Snake))!;
+            json, DeserializationOptions(caseStyle: CaseStyle.snake))!;
         // then
         expect(instance.mainTitle, 'title');
         expect(instance.description, 'desc');
         expect(instance.hasMainProperty, true);
-        expect(instance.primaryColor, Color.GrayMetallic);
+        expect(instance.primaryColor, Color.grayMetallic);
       });
 
       test('Verify CaseStyle.Pascal', () {
@@ -143,12 +143,12 @@ void testNameCasing() {
             '''{"MainTitle":"title","Description":"desc","HasMainProperty":true,"PrimaryColor":"GrayMetallic"}''';
         // when
         final instance = JsonMapper.deserialize<NameCaseObject>(
-            json, DeserializationOptions(caseStyle: CaseStyle.Pascal))!;
+            json, DeserializationOptions(caseStyle: CaseStyle.pascal))!;
         // then
         expect(instance.mainTitle, 'title');
         expect(instance.description, 'desc');
         expect(instance.hasMainProperty, true);
-        expect(instance.primaryColor, Color.GrayMetallic);
+        expect(instance.primaryColor, Color.grayMetallic);
       });
 
       test('Verify CaseStyle.Kebab', () {
@@ -157,12 +157,12 @@ void testNameCasing() {
             '''{"main-title":"title","description":"desc","has-main-property":true,"primary-color":"gray-metallic"}''';
         // when
         final instance = JsonMapper.deserialize<NameCaseObject>(
-            json, DeserializationOptions(caseStyle: CaseStyle.Kebab))!;
+            json, DeserializationOptions(caseStyle: CaseStyle.kebab))!;
         // then
         expect(instance.mainTitle, 'title');
         expect(instance.description, 'desc');
         expect(instance.hasMainProperty, true);
-        expect(instance.primaryColor, Color.GrayMetallic);
+        expect(instance.primaryColor, Color.grayMetallic);
       });
     });
   });

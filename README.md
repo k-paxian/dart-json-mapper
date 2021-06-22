@@ -1,6 +1,5 @@
 [![Build Status][ci-badge]][ci-badge-url]
 [![pub package](https://img.shields.io/pub/v/dart_json_mapper.svg)](https://pub.dartlang.org/packages/dart_json_mapper)
-[![Build Status][pedantic-badge]][pedantic-url]
 
 This package allows programmers to annotate Dart objects in order to
   Serialize / Deserialize them to / from JSON.
@@ -247,7 +246,7 @@ class Immutable {
 
 print(
   JsonMapper.serialize(
-    Immutable(1, 'Bob', Car('Audi', Color.Green))
+    Immutable(1, 'Bob', Car('Audi', Color.green))
   )
 );
 ``` 
@@ -258,7 +257,7 @@ output:
  "name": "Bob",
  "car": {
   "modelName": "Audi",
-  "color": "Green"
+  "color": "green"
  }
 }
 ```
@@ -356,7 +355,7 @@ To solve this we have a few options:
       })
     );
     
-    final json = '[{"modelName": "Audi", "color": "Green"}]';
+    final json = '[{"modelName": "Audi", "color": "green"}]';
     final myCarsList = JsonMapper.deserialize<List<Car>>(json);
     final myCarsSet = JsonMapper.deserialize<Set<Car>>(json);
     ```
@@ -386,7 +385,7 @@ For custom iterable types like `List<Car> / Set<Car>` we **don't** have to provi
 as showed in a code snippet below, thanks to the [Builder](#builder)
 
 ```dart
-final json = '[{"modelName": "Audi", "color": "Green"}]';
+final json = '[{"modelName": "Audi", "color": "green"}]';
 final myCarsList = JsonMapper.deserialize<List<Car>>(json);
 final myCarsSet = JsonMapper.deserialize<Set<Car>>(json);
 ```
@@ -476,7 +475,7 @@ Generally, we always have to bear in mind following cases around Enums:
     So whenever possible, you should annotate your Enum declarations as follows
     ```dart
     @jsonSerializable
-    enum Color { Red, Blue, Green, Brown, Yellow, Black, White }
+    enum Color { red, blue, green, brown, yellow, black, white }
     ```
 
 * Standalone Enums from third party packages, they **can not** be annotated.
@@ -498,8 +497,8 @@ Generally, we always have to bear in mind following cases around Enums:
 
 There are few enum converters provided out of the box:
 
-* `enumConverterShort` produces values like: ["Red", "Blue", "Green"], unless custom value mappings provided
-* `enumConverter` produces values like: ["Color.Red", "Color.Blue", "Color.Green"]
+* `enumConverterShort` produces values like: ["red", "blue", "green"], unless custom value mappings provided
+* `enumConverter` produces values like: ["Color.red", "Color.blue", "Color.green"]
 * `enumConverterNumeric` produces values like: [0, 1, 2]
 
 Default converter for **all** enums is `enumConverterShort`
@@ -664,12 +663,12 @@ your `Map<String, dynamic>` instance as a `template` parameter for
 final template = {'a': 'a', 'b': true};
 
 // when
-final json = JsonMapper.serialize(Car('Tesla S3', Color.Black),
+final json = JsonMapper.serialize(Car('Tesla S3', Color.black),
   SerializationOptions(indent: '', template: template));
 
 // then
 expect(json,
-  '''{"a":"a","b":true,"modelName":"Tesla S3","color":"Black"}''');
+  '''{"a":"a","b":true,"modelName":"Tesla S3","color":"black"}''');
 ```
 
 ## Deserialization template
@@ -682,7 +681,7 @@ language nature, so you are providing ready made instance to use for deserializa
 
 ```dart
 // given
-final json = '{"Black":1,"Blue":2}';
+final json = '{"black":1,"blue":2}';
 
 // when
 final target = JsonMapper.deserialize(
@@ -690,10 +689,10 @@ final target = JsonMapper.deserialize(
 
 // then
 expect(target, TypeMatcher<Map<Color, int>>());
-expect(target.containsKey(Color.Black), true);
-expect(target.containsKey(Color.Blue), true);
-expect(target[Color.Black], 1);
-expect(target[Color.Blue], 2);
+expect(target.containsKey(Color.black), true);
+expect(target.containsKey(Color.blue), true);
+expect(target[Color.black], 1);
+expect(target[Color.blue], 2);
 ```
 
 ## Name casing styles [Pascal, Kebab, Snake, SnakeAllCaps]
@@ -709,7 +708,7 @@ preference on a class level using `@Json(caseStyle: CaseStyle.Kebab)`.
 
 ```dart
 @jsonSerializable
-enum Color { Red, Blue, Gray, GrayMetallic, Green, Brown, Yellow, Black, White }
+enum Color { red, blue, gray, grayMetallic, green, brown, yellow, black, white }
 
 @jsonSerializable
 @Json(caseStyle: CaseStyle.Kebab)
@@ -721,7 +720,7 @@ class NameCaseObject {
   NameCaseObject({
       this.mainTitle,
       this.hasMainProperty,
-      this.primaryColor = Color.GrayMetallic});
+      this.primaryColor = Color.grayMetallic});
 }
 
 /// Serialization
@@ -742,7 +741,7 @@ final instance = JsonMapper.deserialize<NameCaseObject>(json);
 // then
 expect(instance.mainTitle, 'title');
 expect(instance.hasMainProperty, true);
-expect(instance.primaryColor, Color.GrayMetallic);
+expect(instance.primaryColor, Color.grayMetallic);
 ```
 
 ## Nesting configuration
@@ -966,7 +965,7 @@ then this section probably will be useful for you
 
 ```dart
 // given
-final car = Car('Tesla S3', Color.Black);
+final car = Car('Tesla S3', Color.black);
 
 // when
 final cloneCar = JsonMapper.copy(car);
@@ -981,14 +980,14 @@ Or if you would like to override some properties for the clonned object instance
 
 ```dart
 // given
-final car = Car('Tesla S3', Color.Black);
+final car = Car('Tesla S3', Color.black);
 
 // when
-final cloneCar = JsonMapper.copyWith(car, {'color': 'Blue'}); // overriding Black by Blue
+final cloneCar = JsonMapper.copyWith(car, {'color': 'blue'}); // overriding Black by Blue
 
 // then
 expect(cloneCar == car, false);
-expect(cloneCar.color, Color.Blue);
+expect(cloneCar.color, Color.blue);
 expect(cloneCar.model, car.model);
 ```
 
@@ -1212,6 +1211,3 @@ JsonMapper()
 
 [ci-badge]: https://github.com/k-paxian/dart-json-mapper/workflows/Pipeline/badge.svg
 [ci-badge-url]: https://github.com/k-paxian/dart-json-mapper/actions?query=workflow%3A%22Pipeline%22
-
-[pedantic-badge]: https://dart-lang.github.io/linter/lints/style-pedantic.svg
-[pedantic-url]: https://github.com/dart-lang/pedantic

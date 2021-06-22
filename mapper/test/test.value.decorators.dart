@@ -131,7 +131,7 @@ class ListOfListsWithConstructor {
 }
 
 void testValueDecorators() {
-  final carListJson = '[{"modelName":"Audi","color":"Green"}]';
+  final carListJson = '[{"modelName":"Audi","color":"green"}]';
   final ordersListJson = '''[  
   {
     "Id": 96,
@@ -239,7 +239,7 @@ void testValueDecorators() {
     test('Custom Set<Car> value decorator', () {
       // given
       final set = <Car>{};
-      set.add(Car('Audi', Color.Green));
+      set.add(Car('Audi', Color.green));
 
       // when
       final json = JsonMapper.serialize(set, compactOptions);
@@ -255,7 +255,7 @@ void testValueDecorators() {
       expect(target.length, 1);
       expect(target.first, TypeMatcher<Car>());
       expect(target.first.model, 'Audi');
-      expect(target.first.color, Color.Green);
+      expect(target.first.color, Color.green);
     });
 
     test('Custom List<Car> value decorator', () {
@@ -267,7 +267,7 @@ void testValueDecorators() {
       expect(target.length, 1);
       expect(target[0], TypeMatcher<Car>());
       expect(target[0].model, 'Audi');
-      expect(target[0].color, Color.Green);
+      expect(target[0].color, Color.green);
     });
 
     test('Custom List<ServiceOrderModel> value decorator', () {

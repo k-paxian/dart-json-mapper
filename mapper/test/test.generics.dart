@@ -26,7 +26,7 @@ void testGenerics() {
           uuid: 'uid',
           parentUuid: 'parentUid',
           model: 'Tesla S3',
-          color: Color.Black);
+          color: Color.black);
 
       // when
       final json = carModel.toJson();
@@ -37,7 +37,7 @@ void testGenerics() {
         'parentUuid': 'parentUid',
         'uuid': 'uid',
         'model': 'Tesla S3',
-        'color': 'Black'
+        'color': 'black'
       });
     });
 
@@ -48,7 +48,7 @@ void testGenerics() {
 
       // given
       final carModel = EntityModel<Car>(
-          uuid: 'uid', parentUuid: 'parentUid', entity: Car('x', Color.Blue));
+          uuid: 'uid', parentUuid: 'parentUid', entity: Car('x', Color.blue));
       final adapter = JsonMapperAdapter(valueDecorators: {
         // Value decorator is needed to convert generic instance
         // `EntityModel<dynamic>` to concrete type instance `EntityModel<Car>`
@@ -67,14 +67,14 @@ void testGenerics() {
         'parentUuid': 'parentUid',
         'uuid': 'uid',
         'modelName': 'x',
-        'color': 'Blue'
+        'color': 'blue'
       });
 
-      expect(entityJson, <String, dynamic>{'modelName': 'x', 'color': 'Blue'});
+      expect(entityJson, <String, dynamic>{'modelName': 'x', 'color': 'blue'});
 
       expect(entityInstance, TypeMatcher<Car>());
       expect(entityInstance.model, 'x');
-      expect(entityInstance.color, Color.Blue);
+      expect(entityInstance.color, Color.blue);
 
       JsonMapper().removeAdapter(adapter);
     });

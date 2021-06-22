@@ -23,7 +23,7 @@ class ChangeAnalyzer {
 
     final annotatedClassesCountChanged =
         classElementsA.length != classElementsB.length;
-    late var anyAnnotatedClassChanged;
+    late bool anyAnnotatedClassChanged;
 
     if (!annotatedClassesCountChanged) {
       final classesMapA = getClassesMap(classElementsA.values);

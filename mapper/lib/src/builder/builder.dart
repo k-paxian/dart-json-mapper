@@ -1,5 +1,6 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:build/build.dart';
+// ignore: implementation_imports
 import 'package:reflectable/src/builder_implementation.dart';
 
 import 'reflectable_source_wrapper.dart';

@@ -19,7 +19,7 @@ class EnumDescriptor implements IEnumDescriptor {
   Iterable? values;
 
   @override
-  var defaultValue;
+  dynamic defaultValue;
 
   EnumDescriptor({this.values, this.mapping, this.defaultValue});
 }

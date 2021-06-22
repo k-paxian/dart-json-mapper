@@ -104,7 +104,7 @@ void testPartialDeserialization() {
  "cars": [
   {
    "modelName": "Tesla X",
-   "color": "Red"
+   "color": "red"
   }
  ]
 }''';

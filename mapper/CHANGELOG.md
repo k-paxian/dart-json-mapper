@@ -1,3 +1,7 @@
+## 2.1.3
+
+* replace `pedantic` linter by `lints` package
+
 ## 2.1.2
 
 * #137, Support custom `Iterable` converter

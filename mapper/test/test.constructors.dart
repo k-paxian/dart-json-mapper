@@ -429,10 +429,10 @@ void testConstructors() {
  "name": "Bob",
  "car": {
   "modelName": "Audi",
-  "color": "Green"
+  "color": "green"
  }
 }''';
-      final i = Immutable(1, 'Bob', Car('Audi', Color.Green));
+      final i = Immutable(1, 'Bob', Car('Audi', Color.green));
       // when
       final target = JsonMapper.serialize(i);
       // then
@@ -457,7 +457,7 @@ void testConstructors() {
  "name": "Bob",
  "car": {
   "modelName": "Audi",
-  "color": "Green"
+  "color": "green"
  }
 }''';
 
@@ -468,7 +468,7 @@ void testConstructors() {
   "color": "Green"
  }
 }''';
-      final i = ImmutableDefault(name: 'Bob', car: Car('Audi', Color.Green));
+      final i = ImmutableDefault(name: 'Bob', car: Car('Audi', Color.green));
 
       // when
       final targetJson = JsonMapper.serialize(i);

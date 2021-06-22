@@ -1,4 +1,4 @@
-enum CaseStyle { Camel, Pascal, Kebab, Snake, SnakeAllCaps }
+enum CaseStyle { camel, pascal, kebab, snake, snakeAllCaps }
 
 String toWords(String input) => input
     .replaceAllMapped(RegExp('([a-z0-9])([A-Z])'),
@@ -8,17 +8,17 @@ String toWords(String input) => input
     .toLowerCase();
 
 String capitalize(String input) => input.replaceFirstMapped(
-    RegExp('(^|\s)[a-z]'), (match) => match.group(0)!.toUpperCase());
+    RegExp(r'(^|\s)[a-z]'), (match) => match.group(0)!.toUpperCase());
 
 String? transformFieldName(String? input, CaseStyle? caseStyle) {
   switch (caseStyle) {
-    case CaseStyle.Kebab:
+    case CaseStyle.kebab:
       return toWords(input!).replaceAll(' ', '-');
-    case CaseStyle.Snake:
+    case CaseStyle.snake:
       return toWords(input!).replaceAll(' ', '_');
-    case CaseStyle.SnakeAllCaps:
+    case CaseStyle.snakeAllCaps:
       return toWords(input!).replaceAll(' ', '_').toUpperCase();
-    case CaseStyle.Pascal:
+    case CaseStyle.pascal:
       return toWords(input!).split(' ').map((word) => capitalize(word)).join();
     default:
       return input;

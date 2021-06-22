@@ -19,7 +19,7 @@ const defaultDeserializationOptions = DeserializationOptions();
 class DeserializationOptions {
   /// The most popular ways to combine words into a single string
   /// Based on assumption: That all Dart class fields initially
-  /// given as [CaseStyle.Camel]
+  /// given as [CaseStyle.camel]
   final CaseStyle? caseStyle;
 
   /// Scheme to be used

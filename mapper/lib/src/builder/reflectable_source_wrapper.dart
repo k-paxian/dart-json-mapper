@@ -4,13 +4,13 @@ import 'change_analyzer.dart';
 import 'library_visitor.dart';
 
 class ReflectableSourceWrapper {
-  final COLLECTION_IMPORT =
+  final collectionImport =
       '''import 'dart:collection' show HashSet, UnmodifiableListView;''';
-  final MAPPER_IMPORT =
+  final mapperImport =
       '''import 'package:dart_json_mapper/dart_json_mapper.dart' show JsonMapper, JsonMapperAdapter, typeOf;''';
-  final REFLECTABLE_INIT_METHOD = 'initializeReflectable';
-  final REFLECTABLE_INIT_METHOD_PATCH = '_initializeReflectable';
-  final INIT_METHOD =
+  final reflectableInitMethod = 'initializeReflectable';
+  final reflectableInitMethodPatch = '_initializeReflectable';
+  final initMethod =
       '''Future<JsonMapper> initializeJsonMapperAsync({Iterable<JsonMapperAdapter> adapters = const []}) => Future(() => initializeJsonMapper(adapters: adapters));
 
 JsonMapper initializeJsonMapper({Iterable<JsonMapperAdapter> adapters = const []}) {''';
@@ -48,7 +48,7 @@ JsonMapper initializeJsonMapper({Iterable<JsonMapperAdapter> adapters = const []
   }
 
   String get _libraryAdapterId {
-    return '$_libraryName';
+    return _libraryName;
   }
 
   String get _libraryName {
@@ -114,17 +114,20 @@ ${_renderEnumValues()}
   }
 
   String _renderLibraryAdapterRegistration(String input) {
-    final hasReflectableOutput = input.indexOf(REFLECTABLE_INIT_METHOD) > 0;
+    final hasReflectableOutput = input.indexOf(reflectableInitMethod) > 0;
     return '''
-  ${hasReflectableOutput ? '$REFLECTABLE_INIT_METHOD_PATCH();' : ''}
-  [...adapters, $_libraryAdapterId].forEach((x) => JsonMapper().useAdapter(x));
+  ${hasReflectableOutput ? '$reflectableInitMethodPatch();' : ''}
+  final allAdapters = [...adapters, $_libraryAdapterId];
+  for (var adapter in allAdapters) {
+    JsonMapper().useAdapter(adapter);
+  }
   return JsonMapper();
 }''';
   }
 
   void _renderElementImport(
       ClassElement element, Map<String?, List<String>> importsMap) {
-    var importString;
+    String? importString;
     if (element.library.identifier.startsWith(_inputLibraryPath)) {
       // local import
       importString = element.library.identifier.split(_inputLibraryPath).last;
@@ -154,16 +157,18 @@ ${_renderEnumValues()}
 
   Map<String?, List<String>> _buildImportsMap() {
     final _importsMap = <String?, List<String>>{};
-    _libraryVisitor!.visitedPublicAnnotatedClassElements.values
-        .forEach((e) => _renderElementImport(e, _importsMap));
+    for (var element
+        in _libraryVisitor!.visitedPublicAnnotatedClassElements.values) {
+      _renderElementImport(element, _importsMap);
+    }
     return _importsMap;
   }
 
   String _renderImports() {
     final importsMap = _buildImportsMap();
     final importsList = {
-      isCollectionImportNeeded ? COLLECTION_IMPORT : null,
-      MAPPER_IMPORT,
+      isCollectionImportNeeded ? collectionImport : null,
+      mapperImport,
       ...importsMap.keys.map((key) =>
           '''import '$key' as ${_importPrefix[key]} show ${importsMap[key]!.join(', ')};''')
     }.where((x) => x != null).toList();
@@ -177,15 +182,15 @@ ${_renderEnumValues()}
   }
 
   String _patchInitMethod(String input) {
-    final PATCH = '\n' +
+    final patch = '\n' +
         _renderLibraryAdapterDefinition() +
         '\n' +
-        INIT_METHOD +
+        initMethod +
         '\n' +
         _renderLibraryAdapterRegistration(input);
     return input.replaceFirst(
-            REFLECTABLE_INIT_METHOD, REFLECTABLE_INIT_METHOD_PATCH) +
-        PATCH;
+            reflectableInitMethod, reflectableInitMethodPatch) +
+        patch;
   }
 
   bool hasNoIncrementalChanges(LibraryElement library) {

@@ -3,7 +3,7 @@ import 'package:dart_json_mapper/dart_json_mapper.dart';
 final compactOptions = SerializationOptions(indent: '');
 
 @jsonSerializable
-enum Color { Red, Blue, Gray, GrayMetallic, Green, Brown, Yellow, Black, White }
+enum Color { red, blue, gray, grayMetallic, green, brown, yellow, black, white }
 
 @jsonSerializable
 class Car {
@@ -68,15 +68,15 @@ class Person {
 
   Symbol sym = Symbol('foo');
 
-  List<Color> favouriteColours = [Color.Black, Color.White];
+  List<Color> favouriteColours = [Color.black, Color.white];
 
   @JsonProperty(name: 'eye_color')
-  Color eyeColor = Color.Blue;
+  Color eyeColor = Color.blue;
 
   @JsonProperty(converter: enumConverterNumeric)
-  Color hairColor = Color.Brown;
+  Color hairColor = Color.brown;
 
-  List<Car> vehicles = [Car('Tesla', Color.Black), Car('BMW', Color.Red)];
+  List<Car> vehicles = [Car('Tesla', Color.black), Car('BMW', Color.red)];
 
   String get fullName => '$name $lastName';
 

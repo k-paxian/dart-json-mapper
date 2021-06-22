@@ -32,15 +32,15 @@ class TypeInfo {
   TypeInfo(this.type);
 
   @override
-  bool operator ==(Object other) {
-    final otherTypeInfo = other as TypeInfo;
-    return otherTypeInfo.typeName == typeName;
-  }
+  bool operator ==(Object other) => hashCode == other.hashCode;
 
   @override
   String toString() =>
       'typeName: $typeName, parameters: $parameters, genericType: ' +
       genericType.runtimeType.toString();
+
+  @override
+  int get hashCode => typeName.hashCode;
 }
 
 /// Abstract class for custom typeInfo decorator implementations
@@ -163,7 +163,7 @@ class DefaultTypeInfoDecorator implements ITypeInfoDecorator {
       : null;
 
   Iterable<String> detectMixinTypeName(TypeInfo typeInfo) {
-    final mixinPattern = RegExp('Type\(\.\.(.+) with \.(.+)\)');
+    final mixinPattern = RegExp(r'Type(..(.+) with .(.+))');
     return mixinPattern.hasMatch(typeInfo.typeName!)
         ? mixinPattern.allMatches(typeInfo.typeName!).first.groups([2, 3]).map(
             (e) => e!.replaceAll('.', '').replaceAll(')', ''))

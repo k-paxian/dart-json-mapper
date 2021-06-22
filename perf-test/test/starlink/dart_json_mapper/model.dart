@@ -1,7 +1,7 @@
 part of perf_test.test;
 
 @jsonSerializable
-@Json(caseStyle: CaseStyle.SnakeAllCaps)
+@Json(caseStyle: CaseStyle.snakeAllCaps)
 class SpaceTrack {
   String? ccsdsOmmVers;
   String? comment;

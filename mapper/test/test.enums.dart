@@ -47,11 +47,11 @@ class StylingModel {
 }
 
 @jsonSerializable
-enum Category { First, Second, Third }
+enum Category { first, second, third }
 
 @jsonSerializable
 class DefaultCategory {
-  @JsonProperty(defaultValue: Category.First)
+  @JsonProperty(defaultValue: Category.first)
   Category? category;
 }
 
@@ -102,15 +102,15 @@ void testEnums() {
 
     test('Single Enum Value', () {
       // given
-      final instance = Color.Green;
+      final instance = Color.green;
 
       // when
       final targetJson = JsonMapper.serialize(instance, compactOptions);
       final target = JsonMapper.deserialize<Color>(targetJson);
 
       // then
-      expect(targetJson, r'"Green"');
-      expect(target, Color.Green);
+      expect(targetJson, r'"green"');
+      expect(target, Color.green);
     });
 
     test('Null Enum Value', () {
@@ -143,12 +143,12 @@ void testEnums() {
       final target = JsonMapper.deserialize<DefaultCategory>(json)!;
 
       // then
-      expect(target.category, Category.First);
+      expect(target.category, Category.first);
     });
 
     test('Map<Enum, int> instance', () {
       // given
-      final instance = <Color, int>{Color.Black: 1, Color.Blue: 2};
+      final instance = <Color, int>{Color.black: 1, Color.blue: 2};
 
       // when
       final targetJson = JsonMapper.serialize(instance, compactOptions);
@@ -156,22 +156,22 @@ void testEnums() {
           targetJson, DeserializationOptions(template: <Color, int>{}));
 
       // then
-      expect(targetJson, '{"Black":1,"Blue":2}');
+      expect(targetJson, '{"black":1,"blue":2}');
 
       expect(target, TypeMatcher<Map<Color, int>>());
-      expect(target.containsKey(Color.Black), true);
-      expect(target.containsKey(Color.Blue), true);
-      expect(target[Color.Black], 1);
-      expect(target[Color.Blue], 2);
+      expect(target.containsKey(Color.black), true);
+      expect(target.containsKey(Color.blue), true);
+      expect(target[Color.black], 1);
+      expect(target[Color.blue], 2);
     });
 
     test('Map<Category, int> as constructor parameter', () {
       // given
-      final json = '{"values":{"First":1,"Second":2,"Third":3}}';
+      final json = '{"values":{"first":1,"second":2,"third":3}}';
       final map = {
-        Category.First: 1,
-        Category.Second: 2,
-        Category.Third: 3,
+        Category.first: 1,
+        Category.second: 2,
+        Category.third: 3,
       };
       final split = Split(map);
 
@@ -182,19 +182,19 @@ void testEnums() {
       // then
       expect(json, targetJson);
       expect(instance, TypeMatcher<Split>());
-      expect(instance.values[Category.First], 1);
-      expect(instance.values[Category.Second], 2);
-      expect(instance.values[Category.Third], 3);
+      expect(instance.values[Category.first], 1);
+      expect(instance.values[Category.second], 2);
+      expect(instance.values[Category.third], 3);
     });
 
     test('Map<Category, StylingModel> as constructor parameter', () {
       // given
       final json =
-          '{"values":{"First":{"primary":"1"},"Second":{"primary":"2"},"Third":{"primary":"3"}}}';
+          '{"values":{"first":{"primary":"1"},"second":{"primary":"2"},"third":{"primary":"3"}}}';
       final map = {
-        Category.First: StylingModel(primary: '1'),
-        Category.Second: StylingModel(primary: '2'),
-        Category.Third: StylingModel(primary: '3'),
+        Category.first: StylingModel(primary: '1'),
+        Category.second: StylingModel(primary: '2'),
+        Category.third: StylingModel(primary: '3'),
       };
       final split = SplitModel(map);
 
@@ -205,13 +205,13 @@ void testEnums() {
       // then
       expect(json, targetJson);
       expect(instance, TypeMatcher<SplitModel>());
-      expect(instance.values[Category.First], TypeMatcher<StylingModel>());
-      expect(instance.values[Category.Second]!.primary, '2');
+      expect(instance.values[Category.first], TypeMatcher<StylingModel>());
+      expect(instance.values[Category.second]!.primary, '2');
     });
 
     test('Enum Iterable instance', () {
       // given
-      final instance = <Color>[Color.Black, Color.Blue];
+      final instance = <Color>[Color.black, Color.blue];
 
       // when
       final targetJson = JsonMapper.serialize(instance, compactOptions);
@@ -219,17 +219,17 @@ void testEnums() {
       final targetSet = JsonMapper.deserialize<Set<Color>>(targetJson)!;
 
       // then
-      expect(targetJson, '["Black","Blue"]');
+      expect(targetJson, '["black","blue"]');
 
       expect(targetList, TypeMatcher<List<Color>>());
       expect(targetList.length, 2);
-      expect(targetList.first, Color.Black);
-      expect(targetList.last, Color.Blue);
+      expect(targetList.first, Color.black);
+      expect(targetList.last, Color.blue);
 
       expect(targetSet, TypeMatcher<Set<Color>>());
       expect(targetSet.length, 2);
-      expect(targetSet.first, Color.Black);
-      expect(targetSet.last, Color.Blue);
+      expect(targetSet.first, Color.black);
+      expect(targetSet.last, Color.blue);
     });
 
     test('EnumIterables', () {
@@ -237,10 +237,10 @@ void testEnums() {
       final instance = EnumIterables();
       instance.party = ThirdParty.A;
       instance.parties = [ThirdParty.A, ThirdParty.B];
-      instance.color = Color.GrayMetallic;
-      instance.colors = <Color>[Color.Black, Color.Blue];
-      instance.colorsSet = <Color>{Color.Black, Color.Blue};
-      instance.colorPriorities = <Color, int>{Color.Black: 1, Color.Blue: 2};
+      instance.color = Color.grayMetallic;
+      instance.colors = <Color>[Color.black, Color.blue];
+      instance.colorsSet = <Color>{Color.black, Color.blue};
+      instance.colorPriorities = <Color, int>{Color.black: 1, Color.blue: 2};
       instance.partyPriorities = <ThirdParty, int>{
         ThirdParty.A: 1,
         ThirdParty.B: 2
@@ -264,29 +264,29 @@ void testEnums() {
 
       // then
       expect(targetJson,
-          '''{"party":"A","color":"GrayMetallic","parties":["A","B"],"colors":["Black","Blue"],"colorsSet":["Black","Blue"],"colorPriorities":{"Black":1,"Blue":2},"partyPriorities":{"A":1,"B":2}}''');
+          '''{"party":"A","color":"grayMetallic","parties":["A","B"],"colors":["black","blue"],"colorsSet":["black","blue"],"colorPriorities":{"black":1,"blue":2},"partyPriorities":{"A":1,"B":2}}''');
 
       expect(target, TypeMatcher<EnumIterables>());
       expect(target.party, ThirdParty.A);
       expect(target.parties, [ThirdParty.A, ThirdParty.B]);
       expect(
-          target.colorPriorities, <Color, int>{Color.Black: 1, Color.Blue: 2});
+          target.colorPriorities, <Color, int>{Color.black: 1, Color.blue: 2});
       expect(target.partyPriorities,
           <ThirdParty, int>{ThirdParty.A: 1, ThirdParty.B: 2});
-      expect(target.color, Color.GrayMetallic);
+      expect(target.color, Color.grayMetallic);
       expect(target.colors?.length, 2);
-      expect(target.colors?.first, Color.Black);
-      expect(target.colors?.last, Color.Blue);
+      expect(target.colors?.first, Color.black);
+      expect(target.colors?.last, Color.blue);
       expect(target.colorsSet?.length, 2);
-      expect(target.colorsSet?.first, Color.Black);
-      expect(target.colorsSet?.last, Color.Blue);
+      expect(target.colorsSet?.first, Color.black);
+      expect(target.colorsSet?.last, Color.blue);
     });
 
     test('EnumIterablesWithConstructor', () {
       // given
       final instance = EnumIterablesWithConstructor(
-          colors: <Color>[Color.Black, Color.Blue],
-          colorsSet: <Color>{Color.Black, Color.Blue});
+          colors: <Color>[Color.black, Color.blue],
+          colorsSet: <Color>{Color.black, Color.blue});
 
       // when
       final targetJson = JsonMapper.serialize(instance, compactOptions);
@@ -295,16 +295,16 @@ void testEnums() {
 
       // then
       expect(targetJson,
-          '{"colors":["Black","Blue"],"colorsSet":["Black","Blue"]}');
+          '{"colors":["black","blue"],"colorsSet":["black","blue"]}');
 
       expect(target, TypeMatcher<EnumIterablesWithConstructor>());
       expect(target.colors!.length, 2);
-      expect(target.colors!.first, Color.Black);
-      expect(target.colors!.last, Color.Blue);
+      expect(target.colors!.first, Color.black);
+      expect(target.colors!.last, Color.blue);
 
       expect(target.colorsSet!.length, 2);
-      expect(target.colorsSet!.first, Color.Black);
-      expect(target.colorsSet!.last, Color.Blue);
+      expect(target.colorsSet!.first, Color.black);
+      expect(target.colorsSet!.last, Color.blue);
     });
 
     test('Enum with custom String values mapping', () {

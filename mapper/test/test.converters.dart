@@ -27,15 +27,15 @@ class MyClassWoConstructor {
 
 @jsonSerializable
 enum NumericEnumTestColor {
-  Red,
-  Blue,
-  Gray,
-  GrayMetallic,
-  Green,
-  Brown,
-  Yellow,
-  Black,
-  White
+  red,
+  blue,
+  gray,
+  grayMetallic,
+  green,
+  brown,
+  yellow,
+  black,
+  white
 }
 
 class Timestamp {
@@ -225,7 +225,7 @@ void testConverters() {
 
     test('RegExpConverter', () {
       // given
-      final source = '\[[*>.]\]';
+      final source = r'[[*>.]]';
       final instance = RegExp(source);
 
       // when
@@ -290,9 +290,9 @@ void testConverters() {
 
     test('Default Map<K, V> converter', () {
       // given
-      final targetJson = '''{"bar":{"modelName":"Tesla S3","color":"Black"}}''';
+      final targetJson = '''{"bar":{"modelName":"Tesla S3","color":"black"}}''';
       final foo = <String, Car>{};
-      foo['bar'] = Car('Tesla S3', Color.Black);
+      foo['bar'] = Car('Tesla S3', Color.black);
 
       // when
       final json = JsonMapper.serialize(foo, compactOptions);
@@ -332,14 +332,14 @@ void testConverters() {
  "name": "_Bob_",
  "car": {
   "modelName": "_Audi_",
-  "color": "Green"
+  "color": "green"
  }
 }''';
       final adapter =
           JsonMapperAdapter(converters: {String: CustomStringConverter()});
       JsonMapper().useAdapter(adapter);
 
-      final i = Immutable(1, 'Bob', Car('Audi', Color.Green));
+      final i = Immutable(1, 'Bob', Car('Audi', Color.green));
       // when
       final target = JsonMapper.serialize(i);
       // then
@@ -387,7 +387,7 @@ void testConverters() {
           JsonMapperAdapter(converters: {Enum: enumConverterNumeric});
       JsonMapper().useAdapter(adapter);
 
-      final instance = NumericEnum(NumericEnumTestColor.GrayMetallic);
+      final instance = NumericEnum(NumericEnumTestColor.grayMetallic);
       // when
       final target = JsonMapper.serialize(instance, compactOptions);
       // then

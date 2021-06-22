@@ -5,7 +5,7 @@ import './model/index.dart';
 
 class UnAnnotated {}
 
-enum Sex { Male, Female }
+enum Sex { male, female }
 
 @jsonSerializable
 @Json(allowCircularReferences: 1)
@@ -24,7 +24,7 @@ class UserSettings {
 
 @jsonSerializable
 class UnAnnotatedEnumField {
-  Sex sex = Sex.Female;
+  Sex sex = Sex.female;
 }
 
 @jsonSerializable
@@ -63,7 +63,7 @@ class ObjectWithRequiredNullableField {
 
 typedef ErrorGeneratorFunction = dynamic Function();
 dynamic catchError(ErrorGeneratorFunction errorGenerator) {
-  var targetError;
+  dynamic targetError;
   try {
     errorGenerator();
   } catch (error) {
@@ -132,14 +132,14 @@ void testErrorHandling() {
     });
 
     test('Circular reference detection during serialization', () {
-      final car = Car('VW', Color.Blue);
+      final car = Car('VW', Color.blue);
       car.replacement = car;
       expect(catchError(() => JsonMapper.serialize(car)),
           TypeMatcher<CircularReferenceError>());
     });
 
     test('[Suppress] Circular reference detection during serialization', () {
-      final car = MyCar('VW', Color.Blue);
+      final car = MyCar('VW', Color.blue);
       car.replacement = car;
       expect(catchError(() => JsonMapper.serialize(car, compactOptions)), null);
     });

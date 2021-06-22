@@ -9,7 +9,7 @@ const kIsWeb = identical(0, 0.0);
 
 /// Provides logic for traversing Json object tree
 class JsonMap {
-  final PATH_DELIMITER = '/';
+  final pathDelimiter = '/';
 
   Map<String, dynamic> map;
   List<JsonMap>? parentMaps = [];
@@ -43,23 +43,23 @@ class JsonMap {
 
   String _getPath(String propertyName) {
     final rootObjectSegments = jsonMeta != null && jsonMeta!.name != null
-        ? _decodePath(jsonMeta!.name!).split(PATH_DELIMITER)
+        ? _decodePath(jsonMeta!.name!).split(pathDelimiter)
         : [];
-    final propertySegments = _decodePath(propertyName).split(PATH_DELIMITER);
+    final propertySegments = _decodePath(propertyName).split(pathDelimiter);
     rootObjectSegments.addAll(propertySegments);
     rootObjectSegments.removeWhere((value) => value == '');
-    return rootObjectSegments.join(PATH_DELIMITER);
+    return rootObjectSegments.join(pathDelimiter);
   }
 
   bool _isPathExists(String path,
       [Function? propertyVisitor, bool? autoCreate, dynamic autoValue]) {
     final segments = path
-        .split(PATH_DELIMITER)
-        .map((p) => p.replaceAll('~1', PATH_DELIMITER).replaceAll('~0', '~'))
+        .split(pathDelimiter)
+        .map((p) => p.replaceAll('~1', pathDelimiter).replaceAll('~0', '~'))
         .toList();
     dynamic current = map;
     var existingSegmentsCount = 0;
-    segments.forEach((segment) {
+    for (var segment in segments) {
       final idx = int.tryParse(segment);
       if (segment == '..') {
         final nearestParent =
@@ -68,7 +68,7 @@ class JsonMap {
           current = nearestParent.map;
           existingSegmentsCount++;
         }
-        return;
+        continue;
       }
       if (current is List &&
           idx != null &&
@@ -89,7 +89,7 @@ class JsonMap {
           current = current[segment];
         }
       }
-    });
+    }
     if (propertyVisitor != null && current != null) {
       propertyVisitor(current, segments.last);
     }
@@ -144,7 +144,7 @@ class ClassInfo {
     try {
       result =
           classMirror!.declarations.values.firstWhere((DeclarationMirror dm) {
-        var returnType;
+        String? returnType;
         try {
           returnType = dm is MethodMirror ? dm.returnType.simpleName : null;
         } catch (error) {
@@ -257,12 +257,12 @@ class ClassInfo {
 
   List<String> get inheritedPublicFieldNames {
     final result = <String>[];
-    publicFieldNames.forEach((e) {
-      final dm = getDeclarationMirror(e)!;
+    for (var fieldName in publicFieldNames) {
+      final dm = getDeclarationMirror(fieldName)!;
       if (_safeGetParentClassMirror(dm) != classMirror) {
-        result.add(e);
+        result.add(fieldName);
       }
-    });
+    }
     return result;
   }
 
@@ -292,9 +292,9 @@ class ClassInfo {
     }
     final result = [...classMirror.metadata];
     result.addAll(lookupClassMetaData(_safeGetSuperClassMirror(classMirror)));
-    classMirror.superinterfaces.forEach((element) {
-      result.addAll(lookupClassMetaData(element));
-    });
+    for (var superinterface in classMirror.superinterfaces) {
+      result.addAll(lookupClassMetaData(superinterface));
+    }
     return result;
   }
 
@@ -308,11 +308,11 @@ class ClassInfo {
       return result;
     }
 
-    [
+    for (var element in [
       parentClassMirror,
       _safeGetSuperClassMirror(parentClassMirror),
       ...parentClassMirror.superinterfaces
-    ].forEach((element) {
+    ]) {
       final parentDeclarationMirror =
           ClassInfo(element).getDeclarationMirror(declarationMirror.simpleName);
       result.addAll(parentClassMirror.isTopLevel
@@ -320,7 +320,7 @@ class ClassInfo {
               ? parentDeclarationMirror.metadata
               : []
           : lookupDeclarationMetaData(parentDeclarationMirror));
-    });
+    }
 
     return result;
   }
