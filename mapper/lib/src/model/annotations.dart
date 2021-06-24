@@ -37,7 +37,7 @@ class Json {
 
   /// The most popular ways to combine words into a single string
   /// Based on assumption: That all Dart class fields initially
-  /// given as CaseStyle.Camel
+  /// given as CaseStyle.camel
   final CaseStyle? caseStyle;
 
   /// Null class members

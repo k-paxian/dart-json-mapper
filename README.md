@@ -220,7 +220,7 @@ expect(targetJson, json);
 
 ```dart
 @jsonSerializable
-enum Color { Red, Blue, Green, Brown, Yellow, Black, White }
+enum Color { red, blue, green, brown, yellow, black, white }
 
 @jsonSerializable
 class Car {
@@ -704,14 +704,14 @@ always `true` for JSON models, they could follow
 That's why we need a smart way to manage that, instead of
 hand coding each property using `@JsonProperty(name: ...)` it is possible to pass
 `CaseStyle` parameter to serialization / deserialization methods OR specify this
-preference on a class level using `@Json(caseStyle: CaseStyle.Kebab)`.
+preference on a class level using `@Json(caseStyle: CaseStyle.kebab)`.
 
 ```dart
 @jsonSerializable
 enum Color { red, blue, gray, grayMetallic, green, brown, yellow, black, white }
 
 @jsonSerializable
-@Json(caseStyle: CaseStyle.Kebab)
+@Json(caseStyle: CaseStyle.kebab)
 class NameCaseObject {
   String mainTitle;
   bool hasMainProperty;
