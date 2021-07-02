@@ -1,6 +1,7 @@
 ## 2.1.3
 
 * replace `pedantic` linter by `lints` package
+* Annotate annotations with the supported target types, to minimize incorrect usage.
 
 ## 2.1.2
 

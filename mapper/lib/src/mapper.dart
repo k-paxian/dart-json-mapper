@@ -186,36 +186,36 @@ class JsonMapper {
   }
 
   Map<Type, dynamic> get _enumValues {
-    final result = {};
+    final result = <Type, dynamic>{};
     for (var adapter in _adapters.values) {
       result.addAll(adapter.enumValues);
     }
-    return result.cast<Type, dynamic>();
+    return result;
   }
 
   Map<Type, ICustomConverter> get _converters {
-    final result = {};
+    final result = <Type, ICustomConverter>{};
     for (var adapter in _adapters.values) {
       result.addAll(adapter.converters);
     }
-    return result.cast<Type, ICustomConverter>();
+    return result;
   }
 
   Map<Type, ValueDecoratorFunction> get _valueDecorators {
-    final result = {};
+    final result = <Type, ValueDecoratorFunction>{};
     result.addAll(_inlineValueDecorators);
     for (var adapter in _adapters.values) {
       result.addAll(adapter.valueDecorators);
     }
-    return result.cast<Type, ValueDecoratorFunction>();
+    return result;
   }
 
   Map<int, ITypeInfoDecorator> get _typeInfoDecorators {
-    final result = [];
+    final result = <int, ITypeInfoDecorator>{};
     for (var adapter in _adapters.values) {
-      result.addAll(adapter.typeInfoDecorators.values);
+      result.addAll(adapter.typeInfoDecorators);
     }
-    return Map.fromIterable(result).cast<int, ITypeInfoDecorator>();
+    return result;
   }
 
   InstanceMirror? _safeGetInstanceMirror(Object object) {

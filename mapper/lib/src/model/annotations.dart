@@ -1,3 +1,4 @@
+import 'package:meta/meta_meta.dart';
 import 'package:reflectable/reflectable.dart';
 
 import 'converters.dart';
@@ -9,6 +10,7 @@ const jsonConstructor = JsonConstructor();
 
 /// [JsonConstructor] is used as metadata, to annotate specific Dart class constructor
 /// being used for deserialization
+@Target({}) // should be [TargetKind.constructor] but it doesn't exists :(
 class JsonConstructor {
   /// Scheme marker to associate this meta information with particular mapping scheme
   final dynamic scheme;
@@ -17,6 +19,7 @@ class JsonConstructor {
 }
 
 /// [Json] is used as metadata, to annotate Dart class as top level Json object
+@Target({TargetKind.classType})
 class Json {
   /// Defines RFC 6901 JSON [pointer]
   /// Denotes the json Object root name/path to be used for mapping
@@ -96,7 +99,14 @@ class Json {
 const jsonProperty = JsonProperty();
 
 /// [JsonProperty] is used as metadata, for annotation of individual class fields
-/// to fine tune Json property level.
+/// to fine tune & configure Json property level.
+@Target({
+  TargetKind.field,
+  TargetKind.method,
+  TargetKind.parameter,
+  TargetKind.getter,
+  TargetKind.setter
+})
 class JsonProperty {
   /// Scheme marker to associate this meta information with particular mapping scheme
   final dynamic scheme;
@@ -214,8 +224,9 @@ class JsonProperty {
 /// for serialization / deserialization, w/o "()"
 const jsonSerializable = JsonSerializable();
 
-/// [JsonSerializable] is used as metadata, marking classes as
+/// [JsonSerializable] is used as metadata, marking classes, mixins, enums as
 /// serialization / deserialization capable targets
+@Target({TargetKind.classType, TargetKind.mixinType, TargetKind.enumType})
 class JsonSerializable extends Reflectable {
   const JsonSerializable()
       : super(
