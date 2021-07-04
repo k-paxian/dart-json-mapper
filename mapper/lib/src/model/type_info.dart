@@ -70,10 +70,15 @@ class DefaultTypeInfoDecorator implements ITypeInfoDecorator {
       typeInfo.typeName == 'Uri' || typeInfo.typeName == '_SimpleUri';
 
   bool isHashSet(TypeInfo typeInfo) =>
-      typeInfo.typeName!.indexOf('HashSet<') == 0;
+      typeInfo.typeName!.indexOf('HashSet<') == 0 ||
+      typeInfo.typeName!.indexOf('_HashSet<') == 0 ||
+      typeInfo.typeName!.indexOf('_CompactLinkedHashSet<') == 0;
 
   bool isUnmodifiableListView(TypeInfo typeInfo) =>
       typeInfo.typeName!.indexOf('UnmodifiableListView<') == 0;
+
+  bool isCastList(TypeInfo typeInfo) =>
+      typeInfo.typeName!.indexOf('CastList<') == 0;
 
   bool isUnmodifiableMapView(TypeInfo typeInfo) =>
       typeInfo.typeName!.indexOf('UnmodifiableMapView<') == 0;
@@ -101,8 +106,9 @@ class DefaultTypeInfoDecorator implements ITypeInfoDecorator {
     }
 
     typeInfo.isDynamic = typeName == 'dynamic';
-    typeInfo.isList =
-        typeName.indexOf('List<') == 0 || isUnmodifiableListView(typeInfo);
+    typeInfo.isList = typeName.indexOf('List<') == 0 ||
+        isUnmodifiableListView(typeInfo) ||
+        isCastList(typeInfo);
     typeInfo.isSet = typeName.indexOf('Set<') == 0 || isHashSet(typeInfo);
     typeInfo.isMap = typeName.indexOf('Map<') == 0 ||
         isHashMap(typeInfo) ||

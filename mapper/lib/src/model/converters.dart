@@ -422,34 +422,28 @@ final defaultIterableConverter = DefaultIterableConverter();
 
 /// Default Iterable converter
 class DefaultIterableConverter
-    implements ICustomConverter, ICustomIterableConverter, ICompositeConverter {
+    implements ICustomConverter, ICustomIterableConverter, IRecursiveConverter {
   DefaultIterableConverter() : super();
 
   Iterable? _instance;
-  late GetConverterFunction _getConverter;
-  late GetConvertedValueFunction _getConvertedValue;
+  late SerializeObjectFunction _serializeObject;
+  late DeserializeObjectFunction _deserializeObject;
 
   @override
   dynamic fromJSON(dynamic jsonValue, [DeserializationContext? context]) {
-    dynamic convert(item) {
-      final converter =
-          _getConverter(context!.jsonPropertyMeta, context.typeInfo!);
-      return converter != null
-          ? _getConvertedValue(converter, item, context)
-          : item;
-    }
-
     if (_instance != null && jsonValue is Iterable && jsonValue != _instance) {
       if (_instance is List) {
         (_instance as List).clear();
         for (var item in jsonValue) {
-          (_instance as List).add(convert(item));
+          (_instance as List)
+              .add(_deserializeObject(item, context!.typeInfo!.type!));
         }
       }
       if (_instance is Set) {
         (_instance as Set).clear();
         for (var item in jsonValue) {
-          (_instance as Set).add(convert(item));
+          (_instance as Set)
+              .add(_deserializeObject(item, context!.typeInfo!.type!));
         }
       }
       return _instance;
@@ -459,23 +453,23 @@ class DefaultIterableConverter
 
   @override
   dynamic toJSON(dynamic object, [SerializationContext? context]) {
-    return object;
+    return object.map((item) => _serializeObject(item)).toList();
+  }
+
+  @override
+  void setSerializeObjectFunction(SerializeObjectFunction serializeObject) {
+    _serializeObject = serializeObject;
+  }
+
+  @override
+  void setDeserializeObjectFunction(
+      DeserializeObjectFunction deserializeObject) {
+    _deserializeObject = deserializeObject;
   }
 
   @override
   void setIterableInstance(Iterable? instance) {
     _instance = instance;
-  }
-
-  @override
-  void setGetConverterFunction(GetConverterFunction getConverter) {
-    _getConverter = getConverter;
-  }
-
-  @override
-  void setGetConvertedValueFunction(
-      GetConvertedValueFunction getConvertedValue) {
-    _getConvertedValue = getConvertedValue;
   }
 }
 

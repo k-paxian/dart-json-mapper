@@ -725,9 +725,6 @@ class JsonMapper {
     }
   }
 
-  dynamic _serializeIterable(Iterable object, SerializationContext? context) =>
-      object.map((item) => _serializeObject(item, context)).toList();
-
   dynamic _serializeObject(Object? object, SerializationContext? context) {
     if (object == null) {
       return object;
@@ -738,13 +735,7 @@ class JsonMapper {
         context!.jsonPropertyMeta, _getTypeInfo(object.runtimeType));
     if (converter != null) {
       _configureConverter(converter, context, value: object);
-      return object is Iterable
-          ? _serializeIterable(object, context)
-          : _getConvertedValue(converter, object, context);
-    }
-
-    if (object is Iterable) {
-      return _serializeIterable(object, context);
+      return _getConvertedValue(converter, object, context);
     }
 
     if (im == null) {
@@ -813,9 +804,6 @@ class JsonMapper {
               _getConvertedValue(converter, item, newContext);
           if (valueTypeInfo.isIterable) {
             convertedValue = convert(value);
-            if (convertedValue == value) {
-              convertedValue = _serializeIterable(value, newContext);
-            }
           } else {
             convertedValue = convert(value);
           }
@@ -871,8 +859,6 @@ class JsonMapper {
               ? _deserializeIterable(jsonValue, context)
               : _getConvertedValue(converter, jsonValue, context),
           typeInfo);
-    } else if (typeInfo.isIterable) {
-      return _deserializeIterable(jsonValue, context);
     }
 
     dynamic convertedJsonValue;
