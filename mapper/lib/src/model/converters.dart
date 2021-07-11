@@ -447,6 +447,11 @@ class DefaultIterableConverter
         }
       }
       return _instance;
+    } else if (jsonValue is Iterable) {
+      return jsonValue
+          .map((item) =>
+              _deserializeObject(item, context!.typeInfo!.scalarType!))
+          .toList();
     }
     return jsonValue;
   }

@@ -799,14 +799,7 @@ class JsonMapper {
         }
         if (converter != null) {
           _configureConverter(converter, newContext, value: value);
-          final valueTypeInfo = _getTypeInfo(value.runtimeType);
-          dynamic convert(item) =>
-              _getConvertedValue(converter, item, newContext);
-          if (valueTypeInfo.isIterable) {
-            convertedValue = convert(value);
-          } else {
-            convertedValue = convert(value);
-          }
+          convertedValue = _getConvertedValue(converter, value, newContext);
         } else {
           convertedValue = _serializeObject(value, newContext);
         }
@@ -821,22 +814,6 @@ class JsonMapper {
     }
 
     return result.map;
-  }
-
-  Object? _deserializeIterable(
-      dynamic jsonValue, DeserializationContext context) {
-    Iterable jsonList =
-        (jsonValue is String) ? _jsonDecoder.convert(jsonValue) : jsonValue;
-    final value = jsonList
-        .map((item) => _deserializeObject(
-            item,
-            DeserializationContext(context.options,
-                typeInfo: _getTypeInfo(context.typeInfo!.scalarType!),
-                parentJsonMaps: context.parentJsonMaps,
-                jsonPropertyMeta: context.jsonPropertyMeta,
-                classMeta: context.classMeta)))
-        .toList();
-    return _applyValueDecorator(value, context.typeInfo!);
   }
 
   Object? _deserializeObject(
@@ -855,10 +832,7 @@ class JsonMapper {
             _getConvertedValue(converter, jsonValue, context), typeInfo);
       }
       return _applyValueDecorator(
-          (typeInfo.isIterable)
-              ? _deserializeIterable(jsonValue, context)
-              : _getConvertedValue(converter, jsonValue, context),
-          typeInfo);
+          _getConvertedValue(converter, jsonValue, context), typeInfo);
     }
 
     dynamic convertedJsonValue;
@@ -928,19 +902,7 @@ class JsonMapper {
         }
         return;
       }
-      if (fieldValue is Iterable && converter is! ICustomIterableConverter) {
-        fieldValue = fieldValue
-            .map((item) => _deserializeObject(
-                item,
-                DeserializationContext(context.options,
-                    typeInfo: _getTypeInfo(scalarType),
-                    jsonPropertyMeta: meta,
-                    parentJsonMaps: parentMaps,
-                    classMeta: context.classMeta)))
-            .toList();
-      } else {
-        fieldValue = _deserializeObject(fieldValue, newContext);
-      }
+      fieldValue = _deserializeObject(fieldValue, newContext);
       if (isGetterOnly) {
         if (inheritedPublicFieldNames.contains(name) &&
             !mappedFields.contains(jsonName)) {
