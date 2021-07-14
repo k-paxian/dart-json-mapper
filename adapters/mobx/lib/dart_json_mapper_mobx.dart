@@ -17,6 +17,7 @@ class MobXTypeInfoDecorator extends DefaultTypeInfoDecorator {
 
   @override
   TypeInfo decorate(TypeInfo typeInfo) {
+    typeInfo = super.decorate(typeInfo);
     typeInfo.isList = typeInfo.isList || isObservableList(typeInfo);
     typeInfo.isSet = typeInfo.isSet || isObservableSet(typeInfo);
     typeInfo.isMap = typeInfo.isMap || isObservableMap(typeInfo);

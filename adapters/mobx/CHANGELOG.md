@@ -1,3 +1,7 @@
+## 2.0.2
+
+* Align with the latest mapper version
+
 ## 2.0.1
 
 * Support for new code converters contract
