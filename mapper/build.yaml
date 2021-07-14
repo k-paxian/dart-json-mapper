@@ -28,7 +28,7 @@ targets:
     builders:
       dart_json_mapper:
         options:
-          iterables: List, Set, HashSet, UnmodifiableListView
+          iterables: List, Set
         generate_for:
           - example/**.dart
           - test/_test.dart
