@@ -227,6 +227,30 @@ class Record {
   }
 }
 
+@jsonSerializable
+class Parent {
+  String? lastName;
+  List<Child> children = [];
+}
+
+@jsonSerializable
+class Child {
+  String? firstName;
+
+  Child(this.parent);
+
+  @JsonProperty(name: '..', ignoreForSerialization: true)
+  Parent parent;
+
+  // Would work as well:
+  // @jsonConstructor
+  // Child.json(this.parent);
+
+  @override
+  String get name =>
+    '$firstName ${parent.lastName}'.trim();
+}
+
 void testConstructors() {
   group('[Verify class constructors support]', () {
     final json = '{"firstName":"Bob","lastName":"Marley"}';
@@ -482,6 +506,25 @@ void testConstructors() {
       expect(target.cropArea!.left, 1);
       expect(target.cropArea!.right, 1);
       expect(target.cropArea!.bottom, 0);
+    });
+
+    test('Annotate json constructor with backreferencing parent', () {
+      // given
+      final json = '''{
+  "lastName": "Doe",
+  "children": [
+    {"firstName": "Eve"},
+    {"firstName": "Bob"},
+    {"firstName": "Alice"}]
+}''';
+      // when
+      final instance = JsonMapper.deserialize<Parent>(json)!;
+      // then
+      expect(instance.lastName, "Doe");
+      expect(instance.children.length, 3);
+      expect(instance.children[0].name, "Eve Doe");
+      expect(instance.children[1].name, "Bob Doe");
+      expect(instance.children[2].name, "Alice Doe");
     });
   });
 }
