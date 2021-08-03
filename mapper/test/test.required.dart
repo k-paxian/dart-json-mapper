@@ -4,6 +4,15 @@ import 'package:test/test.dart';
 import 'model/index.dart';
 
 @jsonSerializable
+class TransactionsRequestModel {
+  final String? accountType;
+
+  TransactionsRequestModel({
+    this.accountType,
+  });
+}
+
+@jsonSerializable
 class Preferences {
   final String defaultCountryIsoCode;
 
@@ -64,6 +73,22 @@ void testRequired() {
       expect(target.metadata.id, 'e5PPxnqulIgBslobDZPXVweoTCC2');
       expect(targetJson,
           '{"defaultCountryIsoCode":"US","autoImportContacts":null,"metadata":{"createdBy":"e5PPxnqulIgBslobDZPXVweoTCC2","deleted":false}}');
+    });
+
+    test('toMap vs toJson parity', () {
+      // given
+      final json = r'''{"accountType":null}''';
+
+      // when
+      final targetJson = JsonMapper.toJson(
+          TransactionsRequestModel(accountType: null), compactOptions);
+      final target =
+          JsonMapper.toMap(TransactionsRequestModel(accountType: null));
+
+      // then
+      expect(targetJson, json);
+      expect(target!.containsKey('accountType'), true);
+      expect(target.containsValue(null), true);
     });
   });
 }

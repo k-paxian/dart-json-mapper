@@ -9,7 +9,7 @@ import 'annotations.dart';
 import 'index.dart';
 
 typedef SerializeObjectFunction = dynamic Function(Object object);
-typedef DeserializeObjectFunction = dynamic Function(Object object, Type type);
+typedef DeserializeObjectFunction = dynamic Function(dynamic object, Type type);
 typedef GetConverterFunction = ICustomConverter? Function(
     JsonProperty? jsonProperty, TypeInfo typeInfo);
 typedef GetConvertedValueFunction = dynamic Function(

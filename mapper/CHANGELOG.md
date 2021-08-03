@@ -1,3 +1,7 @@
+## 2.1.4
+
+* #143, (fix) Unhandled Exception: type 'Null' is not a subtype of type 'Object'
+
 ## 2.1.3
 
 * replace `pedantic` linter by `lints` package
