@@ -611,16 +611,18 @@ class JsonMapper {
       final jsonName = property.name;
       var value = property.value;
 
-      value = _deserializeObject(
-          value,
-          DeserializationContext(context.options,
-              typeInfo: paramTypeInfo,
-              jsonPropertyMeta: meta,
-              parentJsonMaps: <JsonMap>[
-                ...(context.parentJsonMaps ?? []),
-                jsonMap
-              ],
-              classMeta: context.classMeta));
+      if (property.name != '..') {
+        value = _deserializeObject(
+            value,
+            DeserializationContext(context.options,
+                typeInfo: paramTypeInfo,
+                jsonPropertyMeta: meta,
+                parentJsonMaps: <JsonMap>[
+                  ...(context.parentJsonMaps ?? []),
+                  jsonMap
+                ],
+                classMeta: context.classMeta));
+      }
       visitor(param, name, jsonName, classMeta, meta, value, paramTypeInfo);
     }
   }
@@ -868,6 +870,10 @@ class JsonMapper {
                     .constructorName,
                 positionalArguments,
                 namedArguments));
+
+    // Make [objectInstance] accessible for child objects
+    jsonMap.objectInstance = objectInstance;
+
     final im = _safeGetInstanceMirror(objectInstance)!;
     final inheritedPublicFieldNames = classInfo.inheritedPublicFieldNames;
     final mappedFields = namedArguments.keys

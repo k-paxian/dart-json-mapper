@@ -852,6 +852,49 @@ class ProductCategory {
 }
 ```
 
+### Relative path reference to parent itself from nested object ".."
+
+In some cases objects need to interact with their (owning) parent object. The easiest pattern is to
+add a referencing field for the parent which is initialized during construction of the child object. 
+The path notation ".." to supports this pattern:
+
+```dart
+@jsonSerializable
+class Parent {
+  String? lastName;
+  List<Child> children = [];
+}
+
+@jsonSerializable
+class Child {
+  String? firstName;
+
+  Child(this.parent);
+
+  @JsonProperty(name: '..', ignoreForSerialization: true)
+  Parent parent;
+
+  @jsonConstructor
+  Child.json(this.parent);
+
+  @override
+  String get name =>
+    '$firstName ${parent.lastName}'.trim();
+}
+```
+
+You are now able to deserialize the following structure:
+
+```json
+{
+  "lastName": "Doe",
+  "children": [
+    {"firstName": "Eve"},
+    {"firstName": "Bob"},
+    {"firstName": "Alice"}
+]}
+```
+
 ## Name aliases configuration
 
 For cases when aliasing technique is desired, it's possible to optionally merge / route *many* json properties
