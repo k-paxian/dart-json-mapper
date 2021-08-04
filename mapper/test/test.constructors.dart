@@ -543,7 +543,7 @@ void testConstructors() {
       // when
       final instance = JsonMapper.deserialize<Parent>(json)!;
       final instance2 = JsonMapper.deserialize<Parent2>(json)!;
-      final instance4 = JsonMapper.deserialize<Parent3>(json)!;
+      final instance3 = JsonMapper.deserialize<Parent3>(json)!;
 
       // then
       expect(instance.lastName, "Doe");
@@ -559,9 +559,9 @@ void testConstructors() {
       expect(instance2.children[1].parent, instance2);
       expect(instance2.children[2].parent, instance2);
 
-      expect(instance4.children[0].parent, instance4);
-      expect(instance4.children[1].parent, instance4);
-      expect(instance4.children[2].parent, instance4);
+      expect(instance3.children[0].parent, instance3);
+      expect(instance3.children[1].parent, instance3);
+      expect(instance3.children[2].parent, instance3);
     });
   });
 }
