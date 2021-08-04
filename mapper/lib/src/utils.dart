@@ -14,8 +14,6 @@ class JsonMap {
   Map<String, dynamic> map;
   List<JsonMap>? parentMaps = [];
   Json? jsonMeta;
-  // Used to make [objectInstance] accessible for child objects
-  Object? objectInstance;
 
   JsonMap(this.map, [this.jsonMeta, this.parentMaps]);
 
@@ -26,19 +24,14 @@ class JsonMap {
   dynamic getPropertyValue(String name) {
     dynamic result;
     final path = _getPath(name);
-    _isPathExists(path, (m, k, [Object? obj]) {
-      // Check if path is referencing a parent object itself and set it as result if not null
-      if (k == '..' && obj != null) {
-        result = obj;
-      } else {
-        result = (m is Map && m.containsKey(k) && k != path) ? m[k] : m;
-      }
+    _isPathExists(path, (m, k) {
+      result = (m is Map && m.containsKey(k) && k != path) ? m[k] : m;
     });
     return result;
   }
 
   void setPropertyValue(String name, dynamic value) {
-    _isPathExists(_getPath(name), (m, k, obj) {}, true, value);
+    _isPathExists(_getPath(name), (m, k) {}, true, value);
   }
 
   String _decodePath(String path) {
@@ -65,10 +58,6 @@ class JsonMap {
         .map((p) => p.replaceAll('~1', pathDelimiter).replaceAll('~0', '~'))
         .toList();
     dynamic current = map;
-    // Used to reference the current objectInstance in case of
-    // the path for the [JSONProperty] being relative and pointing to a parent
-    // object itself.
-    dynamic currentObjectInstance = objectInstance;
     var existingSegmentsCount = 0;
     for (var segment in segments) {
       final idx = int.tryParse(segment);
@@ -77,7 +66,6 @@ class JsonMap {
             parentMaps!.lastWhereOrNull((element) => element.map != current);
         if (nearestParent != null) {
           current = nearestParent.map;
-          currentObjectInstance = nearestParent.objectInstance;
           existingSegmentsCount++;
         }
         continue;
@@ -103,7 +91,7 @@ class JsonMap {
       }
     }
     if (propertyVisitor != null && current != null) {
-      propertyVisitor(current, segments.last, currentObjectInstance);
+      propertyVisitor(current, segments.last);
     }
     return segments.length == existingSegmentsCount &&
         existingSegmentsCount > 0;

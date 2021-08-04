@@ -237,18 +237,41 @@ class Parent {
 class Child {
   String? firstName;
 
-  Child(this.parent);
-
   @JsonProperty(name: '..', ignoreForSerialization: true)
   Parent parent;
 
-  // Would work as well:
-  // @jsonConstructor
-  // Child.json(this.parent);
+  Child(this.parent);
+}
 
-  @override
-  String get name =>
-    '$firstName ${parent.lastName}'.trim();
+@jsonSerializable
+class Parent2 {
+  String? lastName;
+  List<Child2> children = [];
+}
+
+@jsonSerializable
+class Child2 {
+  String? firstName;
+
+  @JsonProperty(name: '..', ignoreForSerialization: true)
+  Parent2 parent;
+
+  @jsonConstructor
+  Child2.json(this.parent);
+}
+
+@jsonSerializable
+class Parent3 {
+  String? lastName;
+  List<Child3> children = [];
+}
+
+@jsonSerializable
+class Child3 {
+  String? firstName;
+
+  @JsonProperty(name: '..', ignoreForSerialization: true)
+  Parent3? parent;
 }
 
 void testConstructors() {
@@ -508,7 +531,7 @@ void testConstructors() {
       expect(target.cropArea!.bottom, 0);
     });
 
-    test('Annotate json constructor with backreferencing parent', () {
+    test('Back referencing to parent/owner object', () {
       // given
       final json = '''{
   "lastName": "Doe",
@@ -519,12 +542,26 @@ void testConstructors() {
 }''';
       // when
       final instance = JsonMapper.deserialize<Parent>(json)!;
+      final instance2 = JsonMapper.deserialize<Parent2>(json)!;
+      final instance4 = JsonMapper.deserialize<Parent3>(json)!;
+
       // then
       expect(instance.lastName, "Doe");
       expect(instance.children.length, 3);
-      expect(instance.children[0].name, "Eve Doe");
-      expect(instance.children[1].name, "Bob Doe");
-      expect(instance.children[2].name, "Alice Doe");
+      expect(instance.children[0].parent, instance);
+      expect(instance.children[1].parent, instance);
+      expect(instance.children[2].parent, instance);
+      expect(instance.children[0].firstName, 'Eve');
+      expect(instance.children[1].firstName, 'Bob');
+      expect(instance.children[2].firstName, 'Alice');
+
+      expect(instance2.children[0].parent, instance2);
+      expect(instance2.children[1].parent, instance2);
+      expect(instance2.children[2].parent, instance2);
+
+      expect(instance4.children[0].parent, instance4);
+      expect(instance4.children[1].parent, instance4);
+      expect(instance4.children[2].parent, instance4);
     });
   });
 }

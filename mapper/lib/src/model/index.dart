@@ -90,9 +90,11 @@ class DeserializationContext {
   final Json? classMeta;
   final TypeInfo? typeInfo;
   final Iterable<JsonMap>? parentJsonMaps;
+  final Object? parentObjectInstance;
 
   const DeserializationContext(this.options,
       {this.jsonPropertyMeta,
+      this.parentObjectInstance,
       this.classMeta,
       this.typeInfo,
       this.parentJsonMaps});
@@ -135,9 +137,10 @@ class SerializationContext extends DeserializationContext {
 
 /// Describes resolved property name and value
 class PropertyDescriptor {
-  String? name;
+  String name;
   dynamic value;
-  PropertyDescriptor(this.name, this.value);
+  bool raw; // value needs to be deserialized
+  PropertyDescriptor(this.name, this.value, this.raw);
 }
 
 /// Describes an Object being processed through recursion to track cycling

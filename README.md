@@ -44,6 +44,8 @@ guided by the annotated classes **only**, as the result types information is acc
     * [Custom types](#custom-types)
     * [Nesting](#nesting-configuration)
     * [Name aliases](#name-aliases-configuration)
+    * [Relative path reference to parent field from nested object "../id"](#relative-path-reference-to-parent-field-from-nested-object-id)
+    * [Relative path reference to parent itself from nested object ".."](#relative-path-reference-to-parent-itself-from-nested-object-)
     * [Schemes](#schemes)
     * [Objects flattening](#objects-flattening)
     * [Objects cloning](#objects-cloning)
@@ -856,7 +858,7 @@ class ProductCategory {
 
 In some cases objects need to interact with their (owning) parent object. The easiest pattern is to
 add a referencing field for the parent which is initialized during construction of the child object. 
-The path notation ".." to supports this pattern:
+The path notation ".." supports this pattern:
 
 ```dart
 @jsonSerializable
@@ -869,17 +871,10 @@ class Parent {
 class Child {
   String? firstName;
 
-  Child(this.parent);
-
   @JsonProperty(name: '..', ignoreForSerialization: true)
   Parent parent;
 
-  @jsonConstructor
-  Child.json(this.parent);
-
-  @override
-  String get name =>
-    '$firstName ${parent.lastName}'.trim();
+  Child(this.parent);
 }
 ```
 
@@ -894,6 +889,9 @@ You are now able to deserialize the following structure:
     {"firstName": "Alice"}
 ]}
 ```
+
+and each `Child` object will have a reference on it's parent. And this parent field will not leak out
+to the serialized JSON object
 
 ## Name aliases configuration
 

@@ -1,6 +1,7 @@
 ## 2.1.4
 
 * #143, (fix) Unhandled Exception: type 'Null' is not a subtype of type 'Object'
+* #144, (feat) Relative path reference to parent itself from nested object ".."
 
 ## 2.1.3
 

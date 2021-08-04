@@ -298,6 +298,7 @@ class JsonMapper {
         final value = _deserializeObject(
             discriminatorValue,
             DeserializationContext(context.options,
+                parentObjectInstance: context.parentObjectInstance,
                 typeInfo: _getTypeInfo(discriminatorType)));
         return _getTypeInfo(_discriminatorToType[value]!);
       }
@@ -470,9 +471,9 @@ class JsonMapper {
   }
 
   void _enumeratePublicProperties(InstanceMirror instanceMirror,
-      JsonMap? jsonMap, DeserializationOptions options, Function visitor) {
+      JsonMap? jsonMap, DeserializationContext context, Function visitor) {
     final classInfo = ClassInfo(instanceMirror.type);
-    final classMeta = classInfo.getMeta(options.scheme);
+    final classMeta = classInfo.getMeta(context.options.scheme);
 
     for (var name in classInfo.publicFieldNames) {
       final declarationMirror = classInfo.getDeclarationMirror(name);
@@ -481,14 +482,14 @@ class JsonMapper {
       }
       final declarationType = _getDeclarationType(declarationMirror);
       final isGetterOnly = classInfo.isGetterOnly(name);
-      final meta =
-          classInfo.getDeclarationMeta(declarationMirror, options.scheme);
+      final meta = classInfo.getDeclarationMeta(
+          declarationMirror, context.options.scheme);
       if (meta == null &&
-          _getProcessAnnotatedMembersOnly(classMeta, options) == true) {
+          _getProcessAnnotatedMembersOnly(classMeta, context.options) == true) {
         continue;
       }
 
-      final property = _resolveProperty(name, jsonMap, options, classMeta, meta,
+      final property = _resolveProperty(name, jsonMap, context, classMeta, meta,
           (name, jsonName, _) {
         var result = instanceMirror.invokeGetter(name);
         if (result == null && jsonMap != null) {
@@ -496,52 +497,53 @@ class JsonMapper {
         }
         return result;
       });
-      final jsonName = property.name!;
-      final value = property.value;
 
-      _checkFieldConstraints(value, name, jsonMap?.hasProperty(jsonName), meta);
+      _checkFieldConstraints(
+          property.value, name, jsonMap?.hasProperty(property.name), meta);
 
-      if (_isFieldIgnored(value, classMeta, meta, options)) {
+      if (_isFieldIgnored(property.value, classMeta, meta, context.options)) {
         continue;
       }
       final typeInfo =
-          _getDeclarationTypeInfo(declarationType, value?.runtimeType);
-      visitor(
-          name,
-          jsonName,
-          value,
-          isGetterOnly,
-          meta,
-          _getConverter(meta, typeInfo),
-          _getScalarType(declarationType),
-          typeInfo);
+          _getDeclarationTypeInfo(declarationType, property.value?.runtimeType);
+      visitor(name, property, isGetterOnly, meta, _getConverter(meta, typeInfo),
+          _getScalarType(declarationType), typeInfo);
     }
 
     classInfo.enumerateJsonGetters((MethodMirror mm, JsonProperty meta) {
-      final name = mm.simpleName;
-      final jsonName = transformFieldName(JsonProperty.getPrimaryName(meta),
-          _getCaseStyle(classMeta, options))!;
       final declarationType = _getDeclarationType(mm);
+      final property =
+          _resolveProperty(mm.simpleName, jsonMap, context, classMeta, meta,
+              (name, jsonName, _) {
+        var result = instanceMirror.invoke(name, []);
+        if (result == null && jsonMap != null) {
+          result = jsonMap.getPropertyValue(jsonName);
+        }
+        return result;
+      });
 
-      var value = instanceMirror.invoke(mm.simpleName, []);
-      if (value == null && jsonMap != null) {
-        value = jsonMap.getPropertyValue(jsonName);
-      }
-      _checkFieldConstraints(value, name, jsonMap?.hasProperty(jsonName), meta);
-      if (_isFieldIgnored(value, classMeta, meta, options)) {
+      _checkFieldConstraints(property.value, mm.simpleName,
+          jsonMap?.hasProperty(property.name), meta);
+      if (_isFieldIgnored(property.value, classMeta, meta, context.options)) {
         return;
       }
       final typeInfo =
-          _getDeclarationTypeInfo(declarationType, value?.runtimeType);
-      visitor(name, jsonName, value, true, meta, _getConverter(meta, typeInfo),
-          _getScalarType(declarationType), _getTypeInfo(declarationType));
-    }, options.scheme);
+          _getDeclarationTypeInfo(declarationType, property.value?.runtimeType);
+      visitor(
+          mm.simpleName,
+          property,
+          true,
+          meta,
+          _getConverter(meta, typeInfo),
+          _getScalarType(declarationType),
+          _getTypeInfo(declarationType));
+    }, context.options.scheme);
   }
 
   PropertyDescriptor _resolveProperty(
       String name,
       JsonMap? jsonMap,
-      DeserializationOptions? options,
+      DeserializationContext context,
       Json? classMeta,
       JsonProperty? meta,
       Function getValueByName) {
@@ -550,21 +552,25 @@ class JsonMapper {
     if (meta != null && meta.name != null) {
       jsonName = JsonProperty.getPrimaryName(meta);
     }
-    jsonName = transformFieldName(jsonName, _getCaseStyle(classMeta, options));
+    jsonName =
+        transformFieldName(jsonName, _getCaseStyle(classMeta, context.options));
     var value = getValueByName(name, jsonName, meta?.defaultValue);
     if (jsonMap != null &&
         meta != null &&
         (value == null || !jsonMap.hasProperty(jsonName!))) {
       for (var alias in JsonProperty.getAliases(meta)!) {
-        jsonName = transformFieldName(alias, _getCaseStyle(classMeta, options));
+        jsonName = transformFieldName(
+            alias, _getCaseStyle(classMeta, context.options));
         if (value != null || !jsonMap.hasProperty(jsonName!)) {
           continue;
         }
         value = jsonMap.getPropertyValue(jsonName);
       }
     }
-
-    return PropertyDescriptor(jsonName, value);
+    if (jsonName == '..') {
+      return PropertyDescriptor(jsonName!, context.parentObjectInstance, false);
+    }
+    return PropertyDescriptor(jsonName!, value, true);
   }
 
   void _enumerateConstructorParameters(ClassMirror classMirror, JsonMap jsonMap,
@@ -602,27 +608,27 @@ class JsonMapper {
       final property = _resolveProperty(
           name,
           jsonMap,
-          context.options,
+          context,
           classMeta,
           meta,
           (_, jsonName, defaultValue) => jsonMap.hasProperty(jsonName)
               ? jsonMap.getPropertyValue(jsonName) ?? defaultValue
               : defaultValue);
       final jsonName = property.name;
-      var value = property.value;
+      final value = property.raw
+          ? _deserializeObject(
+              property.value,
+              DeserializationContext(context.options,
+                  parentObjectInstance: context.parentObjectInstance,
+                  typeInfo: paramTypeInfo,
+                  jsonPropertyMeta: meta,
+                  parentJsonMaps: <JsonMap>[
+                    ...(context.parentJsonMaps ?? []),
+                    jsonMap
+                  ],
+                  classMeta: context.classMeta))
+          : property.value;
 
-      if (property.name != '..') {
-        value = _deserializeObject(
-            value,
-            DeserializationContext(context.options,
-                typeInfo: paramTypeInfo,
-                jsonPropertyMeta: meta,
-                parentJsonMaps: <JsonMap>[
-                  ...(context.parentJsonMaps ?? []),
-                  jsonMap
-                ],
-                classMeta: context.classMeta));
-      }
       visitor(param, name, jsonName, classMeta, meta, value, paramTypeInfo);
     }
   }
@@ -721,6 +727,7 @@ class JsonMapper {
               o,
               DeserializationContext(context.options,
                   typeInfo: _getTypeInfo(type),
+                  parentObjectInstance: context.parentObjectInstance,
                   parentJsonMaps: context.parentJsonMaps,
                   jsonPropertyMeta: context.jsonPropertyMeta,
                   classMeta: context.classMeta)));
@@ -773,16 +780,10 @@ class JsonMapper {
       }
     }
     _dumpDiscriminatorToObjectProperty(result, im.type, context.options);
-    _enumeratePublicProperties(im, null, context.options, (name,
-        jsonName,
-        value,
-        isGetterOnly,
-        JsonProperty? meta,
-        converter,
-        scalarType,
-        TypeInfo typeInfo) {
-      if (value == null && meta?.defaultValue != null) {
-        result.setPropertyValue(jsonName, meta?.defaultValue);
+    _enumeratePublicProperties(im, null, context, (name, property, isGetterOnly,
+        JsonProperty? meta, converter, scalarType, TypeInfo typeInfo) {
+      if (property.value == null && meta?.defaultValue != null) {
+        result.setPropertyValue(property.name, meta?.defaultValue);
       } else {
         dynamic convertedValue;
         final newContext = SerializationContext(
@@ -793,19 +794,20 @@ class JsonMapper {
             typeInfo: typeInfo);
         if (meta?.flatten == true) {
           final Map flattenedPropertiesMap =
-              _serializeObject(value, newContext);
+              _serializeObject(property.value, newContext);
           for (var element in flattenedPropertiesMap.entries) {
             result.setPropertyValue(element.key, element.value);
           }
           return;
         }
         if (converter != null) {
-          _configureConverter(converter, newContext, value: value);
-          convertedValue = _getConvertedValue(converter, value, newContext);
+          _configureConverter(converter, newContext, value: property.value);
+          convertedValue =
+              _getConvertedValue(converter, property.value, newContext);
         } else {
-          convertedValue = _serializeObject(value, newContext);
+          convertedValue = _serializeObject(property.value, newContext);
         }
-        result.setPropertyValue(jsonName, convertedValue);
+        result.setPropertyValue(property.name, convertedValue);
       }
     });
 
@@ -871,9 +873,6 @@ class JsonMapper {
                 positionalArguments,
                 namedArguments));
 
-    // Make [objectInstance] accessible for child objects
-    jsonMap.objectInstance = objectInstance;
-
     final im = _safeGetInstanceMirror(objectInstance)!;
     final inheritedPublicFieldNames = classInfo.inheritedPublicFieldNames;
     final mappedFields = namedArguments.keys
@@ -882,9 +881,8 @@ class JsonMapper {
         .toList()
           ..addAll(positionalArgumentNames);
 
-    _enumeratePublicProperties(im, jsonMap, context.options, (name,
-        jsonName,
-        value,
+    _enumeratePublicProperties(im, jsonMap, context, (name,
+        property,
         isGetterOnly,
         JsonProperty? meta,
         converter,
@@ -892,13 +890,14 @@ class JsonMapper {
         TypeInfo typeInfo) {
       final parentMaps = <JsonMap>[...(context.parentJsonMaps ?? []), jsonMap];
       final newContext = DeserializationContext(context.options,
+          parentObjectInstance: context.parentObjectInstance ?? objectInstance,
           typeInfo: typeInfo,
           jsonPropertyMeta: meta,
           parentJsonMaps: parentMaps,
           classMeta: context.classMeta);
       final defaultValue = meta?.defaultValue;
-      final hasJsonProperty = jsonMap.hasProperty(jsonName);
-      var fieldValue = jsonMap.getPropertyValue(jsonName);
+      final hasJsonProperty = jsonMap.hasProperty(property.name);
+      var fieldValue = jsonMap.getPropertyValue(property.name);
       if (!hasJsonProperty || mappedFields.contains(name)) {
         if (meta?.flatten == true) {
           im.invokeSetter(name, _deserializeObject(fieldValue, newContext));
@@ -908,16 +907,18 @@ class JsonMapper {
         }
         return;
       }
-      fieldValue = _deserializeObject(fieldValue, newContext);
+      fieldValue = property.raw
+          ? _deserializeObject(fieldValue, newContext)
+          : property.value;
       if (isGetterOnly) {
         if (inheritedPublicFieldNames.contains(name) &&
-            !mappedFields.contains(jsonName)) {
-          mappedFields.add(jsonName);
+            !mappedFields.contains(property.name)) {
+          mappedFields.add(property.name);
         }
       } else {
         fieldValue = _applyValueDecorator(fieldValue, typeInfo) ?? defaultValue;
         im.invokeSetter(name, fieldValue);
-        mappedFields.add(jsonName);
+        mappedFields.add(property.name);
       }
     });
 
