@@ -12,21 +12,35 @@ class JsonMap {
   final pathDelimiter = '/';
 
   Map<String, dynamic> map;
+  InjectableValues? injectableValues;
   List<JsonMap>? parentMaps = [];
   Json? jsonMeta;
 
-  JsonMap(this.map, [this.jsonMeta, this.parentMaps]);
+  JsonMap(this.map, [this.jsonMeta, this.parentMaps, this.injectableValues]);
 
-  bool hasProperty(String name) {
-    return _isPathExists(_getPath(name));
+  bool hasProperty(String name, {bool? inject}) {
+    return _isPathExists(_getPath(name)) || (inject == true && hasInjectableProperty(name));
   }
 
-  dynamic getPropertyValue(String name) {
+  bool hasInjectableProperty(String name) {
+    return _isInjectablePathExists(_getPath(name));
+  }
+
+  bool isPropertyInjected(String name) {
+    return !_isPathExists(_getPath(name)) && _isInjectablePathExists(_getPath(name));
+  }
+
+  dynamic getPropertyValue(String name, {bool? inject}) {
     dynamic result;
     final path = _getPath(name);
     _isPathExists(path, (m, k) {
-      result = (m is Map && m.containsKey(k) && k != path) ? m[k] : m;
+      result = (m is Map && m.containsKey(k) && k != path) ? m[k] : ((inject != true || !_isInjectablePathExists(path)) ? m : null);
     });
+    if (result == null && inject == true) {
+      _isInjectablePathExists(path, (m, k) {
+        result = (m is Map && m.containsKey(k) && k != path) ? m[k] : m;
+      });
+    }
     return result;
   }
 
@@ -90,6 +104,46 @@ class JsonMap {
         }
       }
     }
+    if (propertyVisitor != null && current != null) {
+      propertyVisitor(current, segments.last);
+    }
+    return segments.length == existingSegmentsCount &&
+        existingSegmentsCount > 0;
+  }
+
+  bool _isInjectablePathExists(String path,
+      [Function? propertyVisitor]) {
+    final segments = path
+        .split(pathDelimiter)
+        .map((p) => p.replaceAll('~1', pathDelimiter).replaceAll('~0', '~'))
+        .toList();
+    dynamic current = injectableValues;
+    var existingSegmentsCount = 0;
+    for (var segment in segments) {
+      final idx = int.tryParse(segment);
+      if (segment == '..') {
+        final nearestParent =
+        parentMaps!.lastWhereOrNull((element) => element.injectableValues != current);
+        if (nearestParent != null) {
+          current = nearestParent.injectableValues;
+          existingSegmentsCount++;
+        }
+        continue;
+      }
+      if (current is List &&
+          idx != null &&
+          (current.length > idx) &&
+          (idx >= 0) &&
+          current.elementAt(idx) != null) {
+        current = current.elementAt(idx);
+        existingSegmentsCount++;
+      }
+      if (current is Map && current.containsKey(segment)) {
+        current = current[segment];
+        existingSegmentsCount++;
+      }
+    }
+
     if (propertyVisitor != null && current != null) {
       propertyVisitor(current, segments.last);
     }

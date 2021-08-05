@@ -173,6 +173,9 @@ class JsonProperty {
   /// Final field default value
   final dynamic defaultValue;
 
+  /// Declares annotated field as injectable by mapped value from [InjectableValues]
+  final bool? injectable;
+
   const JsonProperty(
       {this.scheme,
       this.name,
@@ -187,7 +190,8 @@ class JsonProperty {
       this.ignoreIfNull,
       this.converter,
       this.defaultValue,
-      this.converterParams});
+      this.converterParams,
+      this.injectable});
 
   static bool isRequired(JsonProperty? jsonProperty) =>
       jsonProperty != null &&

@@ -29,8 +29,10 @@ class JsonMapper {
   /// Converts JSON [String] Or [Object] to Dart object instance of type T
   /// [jsonValue] could be as of [String] type, then it will be parsed internally
   /// [jsonValue] could be as of [Object] type, then it will be processed as is
-  static T? deserialize<T>(dynamic jsonValue,
-      [DeserializationOptions options = defaultDeserializationOptions]) {
+  static T? deserialize<T>(dynamic jsonValue, [
+    DeserializationOptions options = defaultDeserializationOptions,
+    InjectableValues? injectableValues
+  ]) {
     final targetType = T != dynamic
         ? T
         : options.template != null
@@ -46,7 +48,9 @@ class JsonMapper {
                 : jsonValue
             : null,
         DeserializationContext(options,
-            typeInfo: instance._getTypeInfo(targetType))) as T?;
+            typeInfo: instance._getTypeInfo(targetType)),
+        injectableValues
+    ) as T?;
   }
 
   /// Converts Dart object to JSON String
@@ -493,7 +497,7 @@ class JsonMapper {
           (name, jsonName, _) {
         var result = instanceMirror.invokeGetter(name);
         if (result == null && jsonMap != null) {
-          result = jsonMap.getPropertyValue(jsonName);
+          result = jsonMap.getPropertyValue(jsonName, inject: meta?.injectable);
         }
         return result;
       });
@@ -557,19 +561,24 @@ class JsonMapper {
     var value = getValueByName(name, jsonName, meta?.defaultValue);
     if (jsonMap != null &&
         meta != null &&
-        (value == null || !jsonMap.hasProperty(jsonName!))) {
+        (value == null || !jsonMap.hasProperty(jsonName!, inject: meta.injectable))) {
       for (var alias in JsonProperty.getAliases(meta)!) {
         jsonName = transformFieldName(
             alias, _getCaseStyle(classMeta, context.options));
-        if (value != null || !jsonMap.hasProperty(jsonName!)) {
+        if (value != null || !jsonMap.hasProperty(jsonName!, inject: meta.injectable)) {
           continue;
         }
-        value = jsonMap.getPropertyValue(jsonName);
+        value = jsonMap.getPropertyValue(jsonName, inject: meta.injectable);
       }
     }
     if (jsonName == '..') {
       return PropertyDescriptor(jsonName!, context.parentObjectInstance, false);
     }
+
+    if (jsonMap != null && jsonName != null && meta?.injectable == true && jsonMap.isPropertyInjected(jsonName)) {
+      return PropertyDescriptor(jsonName, value, false);
+    }
+
     return PropertyDescriptor(jsonName!, value, true);
   }
 
@@ -611,8 +620,8 @@ class JsonMapper {
           context,
           classMeta,
           meta,
-          (_, jsonName, defaultValue) => jsonMap.hasProperty(jsonName)
-              ? jsonMap.getPropertyValue(jsonName) ?? defaultValue
+          (_, jsonName, defaultValue) => jsonMap.hasProperty(jsonName, inject: meta?.injectable)
+              ? jsonMap.getPropertyValue(jsonName, inject: meta?.injectable) ?? defaultValue
               : defaultValue);
       final jsonName = property.name;
       final value = property.raw
@@ -821,7 +830,7 @@ class JsonMapper {
   }
 
   Object? _deserializeObject(
-      dynamic jsonValue, DeserializationContext context) {
+      dynamic jsonValue, DeserializationContext context, [InjectableValues? injectableValues]) {
     if (jsonValue == null) {
       return null;
     }
@@ -848,7 +857,7 @@ class JsonMapper {
     }
 
     final jsonMap = JsonMap(
-        convertedJsonValue, null, context.parentJsonMaps as List<JsonMap>?);
+        convertedJsonValue, null, context.parentJsonMaps as List<JsonMap>?, injectableValues);
     typeInfo =
         _detectObjectType(null, context.typeInfo!.type, jsonMap, context)!;
     final cm =
@@ -896,8 +905,8 @@ class JsonMapper {
           parentJsonMaps: parentMaps,
           classMeta: context.classMeta);
       final defaultValue = meta?.defaultValue;
-      final hasJsonProperty = jsonMap.hasProperty(property.name);
-      var fieldValue = jsonMap.getPropertyValue(property.name);
+      final hasJsonProperty = jsonMap.hasProperty(property.name, inject:  meta?.injectable);
+      var fieldValue = jsonMap.getPropertyValue(property.name, inject:  meta?.injectable);
       if (!hasJsonProperty || mappedFields.contains(name)) {
         if (meta?.flatten == true) {
           im.invokeSetter(name, _deserializeObject(fieldValue, newContext));

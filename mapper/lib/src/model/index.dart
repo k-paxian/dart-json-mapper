@@ -82,6 +82,8 @@ class SerializationOptions extends DeserializationOptions {
             processAnnotatedMembersOnly: processAnnotatedMembersOnly);
 }
 
+typedef InjectableValues = Map<String, dynamic>;
+
 /// Describes a set of data / state to be re-used down the road of recursive
 /// process of Deserialization/Serialization
 class DeserializationContext {

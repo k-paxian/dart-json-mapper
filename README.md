@@ -891,7 +891,39 @@ You are now able to deserialize the following structure:
 ```
 
 and each `Child` object will have a reference on it's parent. And this parent field will not leak out
-to the serialized JSON object
+to the serialized JSON object.
+
+## Value injection
+
+Sometimes you have to *inject* certain values outside of a JSON object into the deserialization process.
+Using the [injectable] field, one may do so.
+
+```dart
+class Outside {}
+
+@jsonSerializable
+class Inside {
+  String? foo;
+
+  @JsonProperty(ignoreForSerialization: true, injectable: true)
+  Outside? outside;
+}
+```
+
+You may then inject the values in the [.deserialization] method:
+
+```json
+{
+  "foo": "Bar"
+}
+```
+
+```dart
+Outside outsideInstance = Outside();
+final insideInstance = JsonMapper.deserialize<Inside>(json, defaultDeserializationOptions, {'outside': outsideInstance})!;
+```
+
+Injection is currently limited to the root JSON object, without support for nested injection.
 
 ## Name aliases configuration
 
