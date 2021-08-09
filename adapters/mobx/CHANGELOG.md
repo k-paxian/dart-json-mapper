@@ -1,3 +1,8 @@
+## 2.0.3
+
+* Align with the latest mobx version
+* replace pedantic by lints
+
 ## 2.0.2
 
 * Align with the latest mapper version

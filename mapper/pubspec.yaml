@@ -14,7 +14,7 @@ dependencies:
   reflectable: ^3.0.3
   collection: ^1.15.0
 dev_dependencies:
-  lints: ^1.0.1
+  lints:
   build_runner:
   build_test:
   test:

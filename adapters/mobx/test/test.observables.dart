@@ -1,6 +1,19 @@
 part of json_mapper_mobx.test;
 
 @jsonSerializable
+class Test extends TestBase with _$Test {
+  Test(String value) : super(value: value);
+}
+
+@jsonSerializable
+abstract class TestBase with Store {
+  @observable
+  String value;
+
+  TestBase({required this.value});
+}
+
+@jsonSerializable
 class Item {}
 
 @jsonSerializable
@@ -78,6 +91,20 @@ class MobXMaps {
 final compactOptions = SerializationOptions(indent: '');
 
 void testObservables() {
+  group('[Verify Store]', () {
+    test('Test store', () {
+      // given
+      final json = '''{"value":"123"}''';
+      // when
+      final targetJson = JsonMapper.toJson(Test('123'), compactOptions);
+      final instance = JsonMapper.fromJson<Test>(json)!;
+      // then
+      expect(targetJson, json);
+      expect(instance, TypeMatcher<Test>());
+      expect(instance.value, '123');
+    });
+  });
+
   group('[Verify ObservableList]', () {
     test('ObservableList<Item>', () {
       // given
