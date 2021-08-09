@@ -818,10 +818,10 @@ When it's handy to refer to the parent fields values, it's possible to use path 
 ```dart
 @jsonSerializable
 class Feature {
-  @JsonProperty(name: '../../id', ignoreForSerialization: true)
+  @JsonProperty(name: '../../id')
   num categoryId;
 
-  @JsonProperty(name: '../id', ignoreForSerialization: true)
+  @JsonProperty(name: '../id')
   num productId;
 
   num id;
@@ -832,7 +832,7 @@ class Feature {
 
 @jsonSerializable
 class Product {
-  @JsonProperty(name: '../id', ignoreForSerialization: true)
+  @JsonProperty(name: '../id')
   num categoryId;
 
   num id;
@@ -871,7 +871,7 @@ class Parent {
 class Child {
   String? firstName;
 
-  @JsonProperty(name: '..', ignoreForSerialization: true)
+  @JsonProperty(name: '..')
   Parent parent;
 
   Child(this.parent);

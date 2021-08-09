@@ -10,7 +10,7 @@ dependencies:
   analyzer: ^2.0.0
   build: ^2.1.0
   intl: ^0.17.0
-  meta: ^1.4.0
+  meta: ^1.7.0
   reflectable: ^3.0.3
   collection: ^1.15.0
 dev_dependencies:

@@ -61,7 +61,7 @@ class JsonMap {
     var existingSegmentsCount = 0;
     for (var segment in segments) {
       final idx = int.tryParse(segment);
-      if (segment == '..') {
+      if (segment == JsonProperty.parentReference) {
         final nearestParent =
             parentMaps!.lastWhereOrNull((element) => element.map != current);
         if (nearestParent != null) {

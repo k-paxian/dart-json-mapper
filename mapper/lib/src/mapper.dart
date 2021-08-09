@@ -442,7 +442,8 @@ class JsonMapper {
           DeserializationOptions? options]) =>
       ((meta != null &&
               ((meta.ignore == true ||
-                      (meta.ignoreForSerialization == true &&
+                      ((meta.ignoreForSerialization == true ||
+                              JsonProperty.hasParentReference(meta)) &&
                           options is SerializationOptions) ||
                       (meta.ignoreForDeserialization == true &&
                           options is! SerializationOptions)) ||
@@ -567,7 +568,7 @@ class JsonMapper {
         value = jsonMap.getPropertyValue(jsonName);
       }
     }
-    if (jsonName == '..') {
+    if (jsonName == JsonProperty.parentReference) {
       return PropertyDescriptor(jsonName!, context.parentObjectInstance, false);
     }
     return PropertyDescriptor(jsonName!, value, true);

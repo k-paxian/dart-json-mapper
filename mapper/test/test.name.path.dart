@@ -5,10 +5,10 @@ import './model/index.dart';
 
 @jsonSerializable
 class Feature {
-  @JsonProperty(name: '../../id', ignoreForSerialization: true)
+  @JsonProperty(name: '../../id')
   num? categoryId;
 
-  @JsonProperty(name: '../id', ignoreForSerialization: true)
+  @JsonProperty(name: '../id')
   num? productId;
 
   num? id;
@@ -19,7 +19,7 @@ class Feature {
 
 @jsonSerializable
 class Product {
-  @JsonProperty(name: '../id', ignoreForSerialization: true)
+  @JsonProperty(name: '../id')
   num? categoryId;
 
   num? id;

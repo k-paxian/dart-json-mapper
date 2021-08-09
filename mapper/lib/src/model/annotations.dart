@@ -189,6 +189,15 @@ class JsonProperty {
       this.defaultValue,
       this.converterParams});
 
+  static const parentReference = '..';
+
+  /// [name] is referencing Parent object itself OR it's fields,
+  /// by default this means that [ignoreForSerialization] is treated as true
+  static bool hasParentReference(JsonProperty? jsonProperty) =>
+      jsonProperty != null &&
+      (jsonProperty.name != null &&
+          jsonProperty.name.toString().contains(parentReference));
+
   static bool isRequired(JsonProperty? jsonProperty) =>
       jsonProperty != null &&
       (jsonProperty.required == true || jsonProperty.requiredMessage != null);
@@ -220,11 +229,11 @@ class JsonProperty {
       '$converter$defaultValue$converterParams';
 }
 
-/// [jsonSerializable] is used as shorthand metadata, marking classes targeted
-/// for serialization / deserialization, w/o "()"
+/// [jsonSerializable] is used for marking classes, mixins, enums as
+/// serialization / deserialization capable targets
 const jsonSerializable = JsonSerializable();
 
-/// [JsonSerializable] is used as metadata, marking classes, mixins, enums as
+/// [JsonSerializable] is used for marking classes, mixins, enums as
 /// serialization / deserialization capable targets
 @Target({TargetKind.classType, TargetKind.mixinType, TargetKind.enumType})
 class JsonSerializable extends Reflectable {

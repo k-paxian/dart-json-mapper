@@ -1,3 +1,7 @@
+## 2.1.5
+
+* (feat) Treat `ignoreForSerialization: true` by default when parent '..' is referenced
+
 ## 2.1.4
 
 * #143, (fix) Unhandled Exception: type 'Null' is not a subtype of type 'Object'

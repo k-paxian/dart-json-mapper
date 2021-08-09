@@ -237,7 +237,7 @@ class Parent {
 class Child {
   String? firstName;
 
-  @JsonProperty(name: '..', ignoreForSerialization: true)
+  @JsonProperty(name: '..')
   Parent parent;
 
   Child(this.parent);
@@ -253,7 +253,7 @@ class Parent2 {
 class Child2 {
   String? firstName;
 
-  @JsonProperty(name: '..', ignoreForSerialization: true)
+  @JsonProperty(name: '..')
   Parent2 parent;
 
   @jsonConstructor
@@ -270,7 +270,7 @@ class Parent3 {
 class Child3 {
   String? firstName;
 
-  @JsonProperty(name: '..', ignoreForSerialization: true)
+  @JsonProperty(name: '..')
   Parent3? parent;
 }
 
