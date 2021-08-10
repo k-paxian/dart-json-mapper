@@ -443,7 +443,8 @@ class JsonMapper {
       ((meta != null &&
               ((meta.ignore == true ||
                       ((meta.ignoreForSerialization == true ||
-                              JsonProperty.hasParentReference(meta)) &&
+                              JsonProperty.hasParentReference(meta) ||
+                              meta.inject == true) &&
                           options is SerializationOptions) ||
                       (meta.ignoreForDeserialization == true &&
                           options is! SerializationOptions)) ||
@@ -566,6 +567,18 @@ class JsonMapper {
           continue;
         }
         value = jsonMap.getPropertyValue(jsonName);
+      }
+    }
+    if (meta != null &&
+        meta.inject == true &&
+        context.options.injectableValues != null) {
+      final injectionJsonMap = JsonMap(context.options.injectableValues!);
+      if (injectionJsonMap.hasProperty(jsonName!)) {
+        value = injectionJsonMap.getPropertyValue(jsonName);
+        return PropertyDescriptor(jsonName, value, false);
+      } else {
+        // TODO: Possibly would be better to throw an error when no injectable value provided?
+        return PropertyDescriptor(jsonName, null, false);
       }
     }
     if (jsonName == JsonProperty.parentReference) {
@@ -906,7 +919,9 @@ class JsonMapper {
         if (defaultValue != null && !isGetterOnly) {
           im.invokeSetter(name, defaultValue);
         }
-        return;
+        if (meta?.inject != true) {
+          return;
+        }
       }
       fieldValue = property.raw
           ? _deserializeObject(fieldValue, newContext)

@@ -13,6 +13,8 @@ export 'value_decorators.dart';
 
 enum ConversionDirection { fromJson, toJson }
 
+typedef InjectableValues = Map<String, dynamic>;
+
 const defaultDeserializationOptions = DeserializationOptions();
 
 /// Declares configuration parameters for Deserialization process
@@ -33,21 +35,20 @@ class DeserializationOptions {
   /// - for Serialization output it could be an instance of Map<String, dynamic>
   final dynamic template;
 
+  /// A Map<String, dynamic> of injectable values to be used for direct injection
+  final InjectableValues? injectableValues;
+
   /// Declares a fallback target type to deserialize to, when it's not possible to detect
-  /// it from type inference OR [template]
+  /// it from target type inference OR [template]
   final Type? type;
 
   const DeserializationOptions(
       {this.scheme,
       this.caseStyle,
       this.template,
+      this.injectableValues,
       this.type,
       this.processAnnotatedMembersOnly});
-
-  @override
-  String toString() => '$scheme$caseStyle'
-      '$template'
-      '$processAnnotatedMembersOnly';
 }
 
 const defaultSerializationOptions = SerializationOptions(indent: ' ');
@@ -139,7 +140,7 @@ class SerializationContext extends DeserializationContext {
 class PropertyDescriptor {
   String name;
   dynamic value;
-  bool raw; // value needs to be deserialized
+  bool raw; // value should be deserialized before use
   PropertyDescriptor(this.name, this.value, this.raw);
 }
 

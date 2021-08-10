@@ -36,6 +36,7 @@ guided by the annotated classes **only**, as the result types information is acc
     * [Unmapped properties](#unmapped-properties)
     * [DateTime / num types](#format-datetime--num-types)
     * [Iterable types](#iterable-types)
+    * [Value injection](#value-injection)
     * [Enum types](#enum-types)
     * [Enums having String / num values](#enums-having-string--num-values)
     * [Name casing styles](#name-casing-styles-pascal-kebab-snake-snakeallcaps)
@@ -64,7 +65,6 @@ Please add the following dependencies to your `pubspec.yaml`:
 dependencies:
   dart_json_mapper:
 dev_dependencies:
-  reflectable:
   build_runner:
 ```
 
@@ -894,6 +894,37 @@ You are now able to deserialize the following structure:
 and each `Child` object will have a reference on it's parent. And this parent field will not leak out
 to the serialized JSON object
 
+## Value injection
+
+Sometimes you have to *inject* certain values residing outside of a JSON string into the target
+deserialized object. Using the `JsonProperty.inject` flag, one may do so.
+
+```dart
+class Outside {}
+
+@jsonSerializable
+class Inside {
+  String? foo;
+
+  @JsonProperty(name: 'data/instance', inject: true)
+  Outside? outside;
+}
+```
+
+You may then inject the values in the `deserialize` method:
+
+```json
+{
+  "foo": "Bar"
+}
+```
+
+```dart
+Outside outsideInstance = Outside();
+final target = JsonMapper.deserialize<Inside>(json,
+  DeserializationOptions(injectableValues: {'data': {'instance': outsideInstance}})!;
+```
+
 ## Name aliases configuration
 
 For cases when aliasing technique is desired, it's possible to optionally merge / route *many* json properties
@@ -1110,6 +1141,7 @@ Example: `'foo', 'bar', 'foo/bar/baz', ['foo', 'bar', 'baz'], '../foo/bar'`
     * *flatten* Declares annotated field to be flattened and merged with the host object
     * *notNull* A bool declares annotated field as NOT NULL for serialization / deserialization process
     * *required* A bool declares annotated field as required for serialization / deserialization process i.e. needs to be present explicitly
+    * *inject* A bool Declares annotated field value to be directly injected from [DeserializationOptions.injectableValues] during deserialization process
     * *ignore* A bool declares annotated field as ignored so it will be excluded from serialization / deserialization process
     * *ignoreForSerialization* A bool declares annotated field as excluded from serialization process
     * *ignoreForDeserialization* A bool declares annotated field as excluded from deserialization process

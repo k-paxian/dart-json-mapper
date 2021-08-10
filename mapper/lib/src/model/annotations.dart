@@ -153,6 +153,10 @@ class JsonProperty {
   /// [ignoreForSerialization], [ignoreIfNull], [Json.ignoreNullMembers] has no meaning.
   final bool? notNull;
 
+  /// Declares annotated field to be directly injected from [DeserializationOptions.injectableValues]
+  /// during deserialization process
+  final bool? inject;
+
   /// Declares annotated field as ignored so it will be excluded from
   /// serialization / deserialization process
   final bool? ignore;
@@ -179,6 +183,7 @@ class JsonProperty {
       this.required,
       this.notNull,
       this.ignore,
+      this.inject,
       this.flatten,
       this.requiredMessage,
       this.notNullMessage,

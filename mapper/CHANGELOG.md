@@ -1,6 +1,7 @@
 ## 2.1.5
 
-* (feat) Treat `ignoreForSerialization: true` by default when parent '..' is referenced
+* (feat) Treat `ignoreForSerialization: true` by default when parent ".." is referenced OR field value is injected
+* #147, (feat) Custom values injection during deserialization call
 
 ## 2.1.4
 

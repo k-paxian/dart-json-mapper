@@ -9,6 +9,7 @@ import 'test.enums.dart';
 import 'test.errors.dart';
 import 'test.generics.dart';
 import 'test.inheritance.dart';
+import 'test.injection.dart';
 import 'test.integration.dart';
 import 'test.mixins.dart';
 import 'test.name.casing.dart';
@@ -38,6 +39,7 @@ void main() {
   testGenerics();
   testNamePath();
   testInheritance();
+  testInjection();
   testCollections();
   testTupleCases();
   testEnums();
