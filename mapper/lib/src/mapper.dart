@@ -448,11 +448,16 @@ class JsonMapper {
                           options is SerializationOptions) ||
                       (meta.ignoreForDeserialization == true &&
                           options is! SerializationOptions)) ||
-                  meta.ignoreIfNull == true && value == null)) ||
-          ((classMeta != null && classMeta.ignoreNullMembers == true ||
-                  options is SerializationOptions &&
-                      options.ignoreNullMembers == true) &&
-              value == null)) &&
+                  meta.ignoreIfNull == true && value == null ||
+                  meta.ignoreIfDefault == true &&
+                      JsonProperty.isDefaultValue(meta, value) == true)) ||
+          (options is SerializationOptions &&
+              (((options.ignoreNullMembers == true ||
+                          classMeta?.ignoreNullMembers == true) &&
+                      value == null) ||
+                  ((options.ignoreDefaultMembers == true ||
+                          classMeta?.ignoreDefaultMembers == true) &&
+                      JsonProperty.isDefaultValue(meta, value) == true)))) &&
       !(JsonProperty.isRequired(meta) || JsonProperty.isNotNull(meta));
 
   void _enumerateAnnotatedClasses(Function visitor) {
@@ -583,6 +588,15 @@ class JsonMapper {
     }
     if (jsonName == JsonProperty.parentReference) {
       return PropertyDescriptor(jsonName!, context.parentObjectInstance, false);
+    }
+    if (value == null &&
+        meta?.defaultValue != null &&
+        (meta?.ignoreIfDefault == true ||
+            classMeta?.ignoreDefaultMembers == true ||
+            ((context as SerializationContext).options as SerializationOptions)
+                    .ignoreDefaultMembers ==
+                true)) {
+      return PropertyDescriptor(jsonName!, meta?.defaultValue, true);
     }
     return PropertyDescriptor(jsonName!, value, true);
   }

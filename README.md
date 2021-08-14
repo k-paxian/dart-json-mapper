@@ -1129,6 +1129,7 @@ Example: `'foo', 'bar', 'foo/bar/baz'`
     * *discriminatorValue* Defines a custom override value for a discriminator. Usually used on annotations of subclasses, to distinguish it from each other. Default value: annotated _class name_
     * *valueDecorators* Provides an inline way to specify a static function which will return a Map of value decorators, to support type casting activities for Map<K, V>, and other generic Iterables<T> instead of global adapter approach
     * *ignoreNullMembers* If set to `true` Null class members will be excluded from serialization process
+    * *ignoreDefaultMembers* If set to `true` Class members having default value will be excluded from serialization process
     * *processAnnotatedMembersOnly* If set to `true` Only annotated class members will be processed
     * *allowCircularReferences* As of `int` type. Allows certain number of circular object references during serialization.
     * *scheme* dynamic [Scheme](#schemes) marker to associate this meta information with particular mapping scheme
@@ -1145,7 +1146,8 @@ Example: `'foo', 'bar', 'foo/bar/baz', ['foo', 'bar', 'baz'], '../foo/bar'`
     * *ignore* A bool declares annotated field as ignored so it will be excluded from serialization / deserialization process
     * *ignoreForSerialization* A bool declares annotated field as excluded from serialization process
     * *ignoreForDeserialization* A bool declares annotated field as excluded from deserialization process
-    * *ignoreIfNull* A bool declares annotated field as ignored if it's value is null so it will be excluded from serialization / deserialization process
+    * *ignoreIfNull* A bool declares annotated field as ignored if it's value is null so it will be excluded from serialization process
+    * *ignoreIfDefault* A bool declares annotated field as ignored if it's value is equals to default so it will be excluded from serialization process
     * *defaultValue* Defines field default value
 
 ## Builder

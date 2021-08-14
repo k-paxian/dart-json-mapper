@@ -1,3 +1,7 @@
+## 2.1.6
+
+* #150, (feat) Introduce `@JsonProperty.ignoreIfDefault` & `@Json.ignoreDefaultMembers`
+
 ## 2.1.5
 
 * (feat) Treat `ignoreForSerialization: true` by default when parent ".." is referenced OR field value is injected

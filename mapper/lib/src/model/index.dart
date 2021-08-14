@@ -63,6 +63,10 @@ class SerializationOptions extends DeserializationOptions {
   /// will be excluded from serialization process
   final bool? ignoreNullMembers;
 
+  /// Class members having [JsonProperty.defaultValue]
+  /// will be excluded from serialization process
+  final bool? ignoreDefaultMembers;
+
   /// Class members having Unknown types
   /// will be excluded from serialization process
   /// Java Jackson's "@JsonIgnoreProperties(ignoreUnknown = true)"
@@ -75,6 +79,7 @@ class SerializationOptions extends DeserializationOptions {
       processAnnotatedMembersOnly,
       this.indent,
       this.ignoreNullMembers,
+      this.ignoreDefaultMembers,
       this.ignoreUnknownTypes})
       : super(
             scheme: scheme,

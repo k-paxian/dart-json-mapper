@@ -48,6 +48,10 @@ class Json {
   /// unless [JsonProperty.required] or [JsonProperty.notNull] is given to `true`
   final bool? ignoreNullMembers;
 
+  /// Class members having [JsonProperty.defaultValue]
+  /// will be excluded from serialization process
+  final bool? ignoreDefaultMembers;
+
   /// Process only annotated class members
   final bool? processAnnotatedMembersOnly;
 
@@ -86,13 +90,9 @@ class Json {
       this.discriminatorValue,
       this.caseStyle,
       this.ignoreNullMembers,
+      this.ignoreDefaultMembers,
       this.processAnnotatedMembersOnly,
       this.name});
-
-  @override
-  String toString() => '$name$allowCircularReferences$scheme$valueDecorators'
-      '$discriminatorProperty$discriminatorValue$caseStyle'
-      '$ignoreNullMembers$processAnnotatedMembersOnly';
 }
 
 /// [jsonProperty] is used as a shorthand metadata w/o "()"
@@ -168,8 +168,12 @@ class JsonProperty {
   final bool? ignoreForDeserialization;
 
   /// Declares annotated field as ignored if it's value is null so it
-  /// will be excluded from serialization / deserialization process
+  /// will be excluded from serialization process
   final bool? ignoreIfNull;
+
+  /// Declares annotated field as ignored if it's value is [JsonProperty.defaultValue] so it
+  /// will be excluded from serialization process
+  final bool? ignoreIfDefault;
 
   /// Declares annotated field to be flattened and merged with the host object
   final bool? flatten;
@@ -190,6 +194,7 @@ class JsonProperty {
       this.ignoreForSerialization,
       this.ignoreForDeserialization,
       this.ignoreIfNull,
+      this.ignoreIfDefault,
       this.converter,
       this.defaultValue,
       this.converterParams});
@@ -202,6 +207,9 @@ class JsonProperty {
       jsonProperty != null &&
       (jsonProperty.name != null &&
           jsonProperty.name.toString().contains(parentReference));
+
+  static bool isDefaultValue(JsonProperty? jsonProperty, dynamic value) =>
+      jsonProperty != null && (jsonProperty.defaultValue == value);
 
   static bool isRequired(JsonProperty? jsonProperty) =>
       jsonProperty != null &&
@@ -227,11 +235,6 @@ class JsonProperty {
               .toList()
               .cast<String>()
           : [];
-
-  @override
-  String toString() => '$name$ignore$scheme$ignoreForSerialization'
-      '$ignoreForDeserialization$ignoreIfNull$notNull$required'
-      '$converter$defaultValue$converterParams';
 }
 
 /// [jsonSerializable] is used for marking classes, mixins, enums as

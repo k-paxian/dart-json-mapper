@@ -5,6 +5,7 @@ import 'test.collections.dart';
 import 'test.constructors.dart';
 import 'test.converters.caching.dart';
 import 'test.converters.dart';
+import 'test.default.value.dart';
 import 'test.enums.dart';
 import 'test.errors.dart';
 import 'test.generics.dart';
@@ -25,6 +26,7 @@ void main() {
   initializeJsonMapper().info();
 
   testScheme();
+  testDefaultValue();
   testRequired();
   testConvertersCaching();
   testMixinCases();
