@@ -6,13 +6,15 @@ This package allows programmers to annotate Dart objects in order to
   
 ## Why?
 
-* Compatible with **all** Dart platforms, including [Flutter](https://pub.dartlang.org/flutter/packages) and [Web](https://pub.dartlang.org/web/packages) platforms
+* Compatible with **all** target platforms for Dart language, **NO** dependency on `dart:mirrors`, one of the reasons is described [here][1].
 * No need to extend your classes from **any** mixins/base/abstract classes to keep code leaner
+* No enforced private constructors, do not require any constructors at all for your data-only classes
+* No magic `_$` prefixes, No enforced `static` fields in your classes
 * Clean and simple setup, transparent and straight-forward usage with **no heavy maintenance**
 * Inspired by [json2typescript][4], [serde][5], [gson][6], feature parity with highly popular [Java Jackson][12] and only **4** [annotations](#annotations) to remember to cover all possible use cases.
 * **No extra boilerplate**, no messy extra `*.g.dart` files per *each* meaningful file (single root-level file which contains all of the generated code)
 * **Complementary adapters** full control over the process when you strive for maximum flexibility.
-* **NO** dependency on `dart:mirrors`, one of the reasons is described [here][1].
+* `Configuration over code` brings **predictability** to your codebase, while reducing overall amount of code to read / maintain
 * Because Serialization/Deserialization is **NOT** a responsibility of your Model classes.
 
 Dart classes reflection mechanism is based on [reflectable][3] library. 
@@ -1114,17 +1116,17 @@ String title;
 
 ## Annotations
 
-* `@JsonSerializable()` or `@jsonSerializable` for short, It's a **required** marker annotation for class or Enum declarations.
+* `@JsonSerializable()` or `@jsonSerializable` for short, It's a **required** marker annotation for Class, Mixin, or Enum declarations.
 Use it to mark all the Dart objects you'd like to be traveling to / from JSON
     * Has **NO** params
 * `@JsonConstructor()` or `@jsonConstructor` for short, It's an **optional** constructor only marker annotation. 
 Use it to mark specific Dart class constructor you'd like to be used during deserialization.    
     * *scheme* dynamic [Scheme](#schemes) marker to associate this meta information with particular mapping scheme
-* `@Json(...)` It's an **optional** annotation for class or Enum declaration, describes a Dart object to JSON Object mapping.
+* `@Json(...)` It's an **optional** annotation for class declaration, describes a Dart object to JSON Object mapping.
 Why it's not a `@JsonObject()`? just for you to type less characters :smile:
     * *name* Defines [RFC 6901][rfc6901] JSON pointer, denotes the json Object root name/path to be used for mapping.
 Example: `'foo', 'bar', 'foo/bar/baz'`
-    * *caseStyle* The most popular ways to combine words into a single string. Based on assumption: That all Dart class fields initially given as CaseStyle.Camel
+    * *caseStyle* The most popular ways to combine words into a single string. Based on assumption: That all Dart class fields initially given as CaseStyle.camel
     * *discriminatorProperty* Defines a class property to be used as a source of truth for discrimination logic in a hierarchy of inherited classes. Usually used on annotation of [abstract] class
     * *discriminatorValue* Defines a custom override value for a discriminator. Usually used on annotations of subclasses, to distinguish it from each other. Default value: annotated _class name_
     * *valueDecorators* Provides an inline way to specify a static function which will return a Map of value decorators, to support type casting activities for Map<K, V>, and other generic Iterables<T> instead of global adapter approach

@@ -117,6 +117,7 @@ class JsonProperty {
   ///           name: 'bar'
   ///           name: 'foo/bar/baz'
   ///           name: '../foo'
+  ///           name: '..'
   ///           name: ['foo', 'bar', 'baz']  'foo' - primary, 'bar', 'baz' - aliases
   final dynamic name;
 

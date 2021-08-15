@@ -295,11 +295,8 @@ class JsonMapper {
           objectClassInfo.getDeclarationMirror(discriminatorProperty);
       if (declarationMirror != null) {
         final discriminatorType = _getDeclarationType(declarationMirror);
-        final value = _deserializeObject(
-            discriminatorValue,
-            DeserializationContext(context.options,
-                parentObjectInstance: context.parentObjectInstance,
-                typeInfo: _getTypeInfo(discriminatorType)));
+        final value = _deserializeObject(discriminatorValue,
+            context.reBuild(typeInfo: _getTypeInfo(discriminatorType)));
         return _getTypeInfo(_discriminatorToType[value]!);
       }
     }
@@ -448,15 +445,12 @@ class JsonMapper {
                           options is SerializationOptions) ||
                       (meta.ignoreForDeserialization == true &&
                           options is! SerializationOptions)) ||
-                  meta.ignoreIfNull == true && value == null ||
-                  meta.ignoreIfDefault == true &&
-                      JsonProperty.isDefaultValue(meta, value) == true)) ||
+                  meta.ignoreIfNull == true && value == null)) ||
           (options is SerializationOptions &&
               (((options.ignoreNullMembers == true ||
                           classMeta?.ignoreNullMembers == true) &&
                       value == null) ||
-                  ((options.ignoreDefaultMembers == true ||
-                          classMeta?.ignoreDefaultMembers == true) &&
+                  ((_isIgnoreDefault(meta, classMeta, options)) &&
                       JsonProperty.isDefaultValue(meta, value) == true)))) &&
       !(JsonProperty.isRequired(meta) || JsonProperty.isNotNull(meta));
 
@@ -591,11 +585,8 @@ class JsonMapper {
     }
     if (value == null &&
         meta?.defaultValue != null &&
-        (meta?.ignoreIfDefault == true ||
-            classMeta?.ignoreDefaultMembers == true ||
-            ((context as SerializationContext).options as SerializationOptions)
-                    .ignoreDefaultMembers ==
-                true)) {
+        _isIgnoreDefault(
+            meta, classMeta, context.options as SerializationOptions)) {
       return PropertyDescriptor(jsonName!, meta?.defaultValue, true);
     }
     return PropertyDescriptor(jsonName!, value, true);
@@ -646,15 +637,13 @@ class JsonMapper {
       final value = property.raw
           ? _deserializeObject(
               property.value,
-              DeserializationContext(context.options,
-                  parentObjectInstance: context.parentObjectInstance,
+              context.reBuild(
                   typeInfo: paramTypeInfo,
                   jsonPropertyMeta: meta,
                   parentJsonMaps: <JsonMap>[
                     ...(context.parentJsonMaps ?? []),
                     jsonMap
-                  ],
-                  classMeta: context.classMeta))
+                  ]))
           : property.value;
 
       visitor(param, name, jsonName, classMeta, meta, value, paramTypeInfo);
@@ -678,6 +667,12 @@ class JsonMapper {
       meta != null && meta.processAnnotatedMembersOnly != null
           ? meta.processAnnotatedMembersOnly
           : options.processAnnotatedMembersOnly;
+
+  bool _isIgnoreDefault(
+          JsonProperty? meta, Json? classMeta, SerializationOptions options) =>
+      meta?.ignoreIfDefault == true ||
+      classMeta?.ignoreDefaultMembers == true ||
+      options.ignoreDefaultMembers == true;
 
   void _dumpDiscriminatorToObjectProperty(JsonMap object,
       ClassMirror classMirror, DeserializationOptions? options) {
@@ -750,15 +745,9 @@ class JsonMapper {
     if (converter is IRecursiveConverter) {
       (converter as IRecursiveConverter).setSerializeObjectFunction(
           (o) => _serializeObject(o, context as SerializationContext));
-      (converter as IRecursiveConverter).setDeserializeObjectFunction(
-          (o, type) => _deserializeObject(
-              o,
-              DeserializationContext(context.options,
-                  typeInfo: _getTypeInfo(type),
-                  parentObjectInstance: context.parentObjectInstance,
-                  parentJsonMaps: context.parentJsonMaps,
-                  jsonPropertyMeta: context.jsonPropertyMeta,
-                  classMeta: context.classMeta)));
+      (converter as IRecursiveConverter).setDeserializeObjectFunction((o,
+              type) =>
+          _deserializeObject(o, context.reBuild(typeInfo: _getTypeInfo(type))));
     }
   }
 
@@ -814,12 +803,11 @@ class JsonMapper {
         result.setPropertyValue(property.name, meta?.defaultValue);
       } else {
         dynamic convertedValue;
-        final newContext = SerializationContext(
-            context.options as SerializationOptions,
+        final newContext = context.reBuild(
             level: context.level + 1,
             jsonPropertyMeta: meta,
             classMeta: jsonMeta,
-            typeInfo: typeInfo);
+            typeInfo: typeInfo) as SerializationContext;
         if (meta?.flatten == true) {
           final Map flattenedPropertiesMap =
               _serializeObject(property.value, newContext);
@@ -916,13 +904,14 @@ class JsonMapper {
         converter,
         scalarType,
         TypeInfo typeInfo) {
-      final parentMaps = <JsonMap>[...(context.parentJsonMaps ?? []), jsonMap];
-      final newContext = DeserializationContext(context.options,
+      final newContext = context.reBuild(
           parentObjectInstance: context.parentObjectInstance ?? objectInstance,
           typeInfo: typeInfo,
           jsonPropertyMeta: meta,
-          parentJsonMaps: parentMaps,
-          classMeta: context.classMeta);
+          parentJsonMaps: <JsonMap>[
+            ...(context.parentJsonMaps ?? []),
+            jsonMap
+          ]);
       final defaultValue = meta?.defaultValue;
       final hasJsonProperty = jsonMap.hasProperty(property.name);
       var fieldValue = jsonMap.getPropertyValue(property.name);
