@@ -1,6 +1,7 @@
 ## 2.1.6
 
 * #150, (feat) Introduce `@JsonProperty.ignoreIfDefault` & `@Json.ignoreDefaultMembers`
+* #152, (fix) Nullable list throws exception on being serialized when null
 
 ## 2.1.5
 

@@ -4,6 +4,13 @@ import 'package:test/test.dart';
 import 'model/index.dart';
 
 @jsonSerializable
+class MyNullableFieldsExample {
+  List<int>? myList;
+  Map<int, int>? myMap;
+  Set<int>? mySet;
+}
+
+@jsonSerializable
 class TransactionsRequestModel {
   final String? accountType;
 
@@ -73,6 +80,18 @@ void testRequired() {
       expect(target.metadata.id, 'e5PPxnqulIgBslobDZPXVweoTCC2');
       expect(targetJson,
           '{"defaultCountryIsoCode":"US","autoImportContacts":null,"metadata":{"createdBy":"e5PPxnqulIgBslobDZPXVweoTCC2","deleted":false}}');
+    });
+
+    test('Should handle null fields', () {
+      // given
+      final json = r'''{"myList":null,"myMap":null,"mySet":null}''';
+
+      // when
+      final targetJson =
+          JsonMapper.toJson(MyNullableFieldsExample(), compactOptions);
+
+      // then
+      expect(targetJson, json);
     });
 
     test('toMap vs toJson parity', () {

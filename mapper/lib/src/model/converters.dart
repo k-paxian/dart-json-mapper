@@ -398,7 +398,7 @@ class MapConverter
 
   @override
   dynamic toJSON(Map? object, [SerializationContext? context]) =>
-      object!.map((key, value) =>
+      object?.map((key, value) =>
           MapEntry(_serializeObject(key).toString(), _serializeObject(value)));
 
   @override
@@ -458,7 +458,7 @@ class DefaultIterableConverter
 
   @override
   dynamic toJSON(dynamic object, [SerializationContext? context]) {
-    return object.map((item) => _serializeObject(item)).toList();
+    return object?.map((item) => _serializeObject(item)).toList();
   }
 
   @override
@@ -489,8 +489,8 @@ class UriConverter implements ICustomConverter<Uri?> {
       jsonValue is String ? Uri.tryParse(jsonValue) : jsonValue;
 
   @override
-  String toJSON(Uri? object, [SerializationContext? context]) =>
-      object.toString();
+  String? toJSON(Uri? object, [SerializationContext? context]) =>
+      object?.toString();
 }
 
 const regExpConverter = RegExpConverter();
@@ -505,7 +505,7 @@ class RegExpConverter implements ICustomConverter<RegExp?> {
 
   @override
   dynamic toJSON(RegExp? object, [SerializationContext? context]) =>
-      object!.pattern;
+      object?.pattern;
 }
 
 const defaultConverter = DefaultConverter();
