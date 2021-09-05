@@ -2,8 +2,8 @@ import 'dart:typed_data';
 
 import 'package:dart_json_mapper/dart_json_mapper.dart';
 import 'package:test/test.dart';
-
-import './model/index.dart';
+import 'package:unit_testing/unit_testing.dart'
+    show compactOptions, Car, Color, MyCarModel, Immutable;
 
 @jsonSerializable
 enum MyEnumA { first, second }

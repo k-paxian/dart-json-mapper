@@ -5,11 +5,9 @@ import 'dart:io' show File;
 
 import 'package:dart_json_mapper/dart_json_mapper.dart';
 import 'package:path/path.dart' as path;
-
-import 'dart_json_mapper_test.mapper.g.dart' show initializeJsonMapper;
+import 'package:starlink/starlink.dart' show Record, initializeJsonMapper;
 
 part './index.dart';
-part './model.dart';
 
 void main() async {
   initializeJsonMapper();

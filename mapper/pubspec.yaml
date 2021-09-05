@@ -7,14 +7,21 @@ homepage: https://github.com/k-paxian/dart-json-mapper
 environment:
   sdk: '>=2.13.0 <3.0.0'
 dependencies:
-  analyzer: ^2.0.0
+  analyzer: ^2.2.0
   build: ^2.1.0
   intl: ^0.17.0
   meta: ^1.7.0
-  reflectable: ^3.0.3
+  reflectable: ^3.0.4
   collection: ^1.15.0
 dev_dependencies:
   lints:
   build_runner:
   build_test:
   test:
+  unit_testing:
+  starlink:
+dependency_overrides:
+  starlink:
+    path: ../models/starlink
+  unit_testing:
+    path: ../models/unit_testing

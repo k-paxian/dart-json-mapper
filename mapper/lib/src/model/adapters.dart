@@ -7,14 +7,19 @@ import 'dart:collection'
         UnmodifiableMapView;
 import 'dart:typed_data' show Uint8List;
 
+// ignore_for_file: implementation_imports
+import 'package:reflectable/reflectable.dart' show Reflectable;
+import 'package:reflectable/src/reflectable_builder_based.dart'
+    show ReflectorData;
+
 import '../model/index.dart' show Enum;
 import '../utils.dart';
 import 'converters.dart';
 import 'type_info.dart';
 import 'value_decorators.dart';
 
-/// Abstract contract class for adapters implementations
-abstract class IAdapter {
+/// Abstract contract class for JsonMapper adapters implementations
+abstract class IJsonMapperAdapter {
   /// Brief adapter description / purpose
   String get title;
 
@@ -37,10 +42,18 @@ abstract class IAdapter {
   /// A Map of [ITypeInfoDecorator] instances used to decorate an instance of [TypeInfo]
   /// using an array of decorators, in the order of priority given by the [int] key
   Map<int, ITypeInfoDecorator> get typeInfoDecorators;
+
+  /// This mapping contains the mirror-data for each reflector.
+  /// It will be initialized in the generated code.
+  Map<Reflectable, ReflectorData> get reflectableData;
+
+  /// This mapping translates symbols to strings for the covered members.
+  /// It will be initialized in the generated code.
+  Map<Symbol, String>? get memberSymbolMap;
 }
 
 /// Base class for JsonMapper adapters
-class JsonMapperAdapter implements IAdapter {
+class JsonMapperAdapter implements IJsonMapperAdapter {
   @override
   final String title;
   @override
@@ -55,12 +68,18 @@ class JsonMapperAdapter implements IAdapter {
   final Map<int, ITypeInfoDecorator> typeInfoDecorators;
   @override
   final Map<Type, dynamic> enumValues;
+  @override
+  final Map<Symbol, String>? memberSymbolMap;
+  @override
+  final Map<Reflectable, ReflectorData> reflectableData;
 
   const JsonMapperAdapter(
       {this.converters = const {},
       this.valueDecorators = const {},
       this.typeInfoDecorators = const {},
       this.enumValues = const {},
+      this.memberSymbolMap,
+      this.reflectableData = const {},
       this.title = 'JsonMapperAdapter',
       this.refUrl,
       this.url =

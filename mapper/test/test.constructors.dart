@@ -1,7 +1,7 @@
 import 'package:dart_json_mapper/dart_json_mapper.dart';
 import 'package:test/test.dart';
-
-import './model/index.dart';
+import 'package:unit_testing/unit_testing.dart'
+    show compactOptions, Car, Color, Immutable;
 
 @jsonSerializable
 class BusinessObject {
@@ -190,14 +190,15 @@ class CustomConverter implements ICustomConverter {
 }
 
 @jsonSerializable
-class Record {
+class RecordItem {
   @JsonProperty(name: 'id')
   int id;
 
   int number;
 
   @jsonConstructor
-  Record.json(this.id, @JsonProperty(converter: customConverter) this.number);
+  RecordItem.json(
+      this.id, @JsonProperty(converter: customConverter) this.number);
 
   @override
   String toString() {
@@ -300,7 +301,7 @@ void testConstructors() {
       // given
       var json = '''{"id": 42,  "number": 2}''';
       // when
-      final target = JsonMapper.deserialize<Record>(
+      final target = JsonMapper.deserialize<RecordItem>(
           json, DeserializationOptions(processAnnotatedMembersOnly: true))!;
       // then
       expect(target.number, 3);

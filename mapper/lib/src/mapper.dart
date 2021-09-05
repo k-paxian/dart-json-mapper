@@ -80,10 +80,10 @@ class JsonMapper {
   static T? copyWith<T>(T object, Map<String, dynamic> map) =>
       fromMap<T>(toMap(object)?..addAll(map));
 
-  /// Registers an instance of [IAdapter] with the mapper engine
+  /// Registers an instance of [IJsonMapperAdapter] with the mapper engine
   /// Adapters are meant to be used as a pluggable extensions, widening
   /// the number of supported types to be seamlessly converted to/from JSON
-  JsonMapper useAdapter(IAdapter adapter, [int? priority]) {
+  JsonMapper useAdapter(IJsonMapperAdapter adapter, [int? priority]) {
     if (_adapters.containsValue(adapter)) {
       return this;
     }
@@ -97,7 +97,7 @@ class JsonMapper {
   }
 
   /// De-registers previously registered adapter using [useAdapter] method
-  JsonMapper removeAdapter(IAdapter adapter) {
+  JsonMapper removeAdapter(IJsonMapperAdapter adapter) {
     _adapters.removeWhere((priority, x) => x == adapter);
     _updateInternalMaps();
     return this;
@@ -114,7 +114,7 @@ class JsonMapper {
   static final JsonDecoder _jsonDecoder = JsonDecoder();
   final _serializable = const JsonSerializable();
   final Map<String, ClassMirror?> _classes = {};
-  final Map<int, IAdapter> _adapters = {};
+  final Map<int, IJsonMapperAdapter> _adapters = {};
   final Map<String, ProcessedObjectDescriptor> _processedObjects = {};
   final Map<Type, ValueDecoratorFunction> _inlineValueDecorators = {};
   final Map<Type, TypeInfo> _typeInfoCache = {};

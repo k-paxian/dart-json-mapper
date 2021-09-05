@@ -1,3 +1,7 @@
+## 2.1.7
+
+* #155, (feat) Introduce modularization, i.e. multi project setup is possible now. Model packages could be reused by different projects, flutter/web/etc.
+
 ## 2.1.6
 
 * #150, (feat) Introduce `@JsonProperty.ignoreIfDefault` & `@Json.ignoreDefaultMembers`

@@ -4,12 +4,30 @@ import 'change_analyzer.dart';
 import 'library_visitor.dart';
 
 class ReflectableSourceWrapper {
+  static const reflectableInitMethodName = '_initializeReflectable';
   final collectionImport =
       '''import 'dart:collection' show HashSet, UnmodifiableListView;''';
   final mapperImport =
       '''import 'package:dart_json_mapper/dart_json_mapper.dart' show JsonMapper, JsonMapperAdapter, typeOf;''';
-  final reflectableInitMethod = 'initializeReflectable';
-  final reflectableInitMethodPatch = '_initializeReflectable';
+  final reflectableInitMethod = '''initializeReflectable() {
+  r.data = _data;
+  r.memberSymbolMap = _memberSymbolMap;
+}''';
+  final reflectableInitMethodPatch =
+      '''$reflectableInitMethodName(Map<r.Reflectable, r.ReflectorData> data, Map<Symbol, String>? memberSymbolMap) {
+  try {
+    r.data.addAll(data);
+  } catch (error) {
+    r.data = data;
+  }
+  try {
+    if (memberSymbolMap != null) {
+      r.memberSymbolMap?.addAll(memberSymbolMap);
+    }
+  } catch (error) {
+    r.memberSymbolMap = memberSymbolMap;
+  }
+}''';
   final initMethod =
       '''Future<JsonMapper> initializeJsonMapperAsync({Iterable<JsonMapperAdapter> adapters = const []}) => Future(() => initializeJsonMapper(adapters: adapters));
 
@@ -48,7 +66,7 @@ JsonMapper initializeJsonMapper({Iterable<JsonMapperAdapter> adapters = const []
   }
 
   String get _libraryAdapterId {
-    return _libraryName;
+    return _libraryName.replaceFirst('_', '');
   }
 
   String get _libraryName {
@@ -105,6 +123,8 @@ JsonMapper initializeJsonMapper({Iterable<JsonMapperAdapter> adapters = const []
 final $_libraryAdapterId = JsonMapperAdapter(
   title: '$_libraryName',
   url: '${inputLibrary.identifier}',
+  reflectableData: _data,
+  memberSymbolMap: _memberSymbolMap,
   valueDecorators: {
 ${_renderValueDecorators()}
 },
@@ -116,9 +136,9 @@ ${_renderEnumValues()}
   String _renderLibraryAdapterRegistration(String input) {
     final hasReflectableOutput = input.indexOf(reflectableInitMethod) > 0;
     return '''
-  ${hasReflectableOutput ? '$reflectableInitMethodPatch();' : ''}
   final allAdapters = [...adapters, $_libraryAdapterId];
   for (var adapter in allAdapters) {
+    ${hasReflectableOutput ? '$reflectableInitMethodName(adapter.reflectableData, adapter.memberSymbolMap);' : ''}
     JsonMapper().useAdapter(adapter);
   }
   return JsonMapper();

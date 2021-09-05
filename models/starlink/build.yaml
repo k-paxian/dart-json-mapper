@@ -6,4 +6,4 @@ targets:
           - no/files
       dart_json_mapper:
         generate_for:
-          - test/starlink/dart_json_mapper/dart_json_mapper_test.dart
+          - lib/starlink.dart

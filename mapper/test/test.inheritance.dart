@@ -1,7 +1,6 @@
 import 'package:dart_json_mapper/dart_json_mapper.dart';
 import 'package:test/test.dart';
-
-import 'model/model.dart';
+import 'package:unit_testing/unit_testing.dart' show compactOptions;
 
 @jsonSerializable
 enum BusinessType { private, public, private2, public2 }
