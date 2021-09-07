@@ -129,7 +129,12 @@ ${_renderEnumValues()}
   String _renderLibraryAdapterRegistration(String input) {
     final hasReflectableOutput = input.indexOf(reflectableInitMethod) > 0;
     return '''
-  for (var adapter in [$_libraryAdapterId, ...adapters]) {
+  final allAdapters = [...adapters, $_libraryAdapterId];
+  final reflectableAdapters =
+      allAdapters.where((adapter) => adapter.reflectableData != null);
+  final otherAdapters =
+      allAdapters.where((adapter) => adapter.reflectableData == null);  
+  for (var adapter in [...reflectableAdapters, ...otherAdapters]) {
     ${hasReflectableOutput ? '$reflectableInitMethodName(adapter);' : ''}
     JsonMapper().useAdapter(adapter);
   }

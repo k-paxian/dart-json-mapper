@@ -79,7 +79,12 @@ final unittestingAdapter = JsonMapperAdapter(
 Future<JsonMapper> initializeJsonMapperAsync({Iterable<JsonMapperAdapter> adapters = const []}) => Future(() => initializeJsonMapper(adapters: adapters));
 
 JsonMapper initializeJsonMapper({Iterable<JsonMapperAdapter> adapters = const []}) {
-  for (var adapter in [unittestingAdapter, ...adapters]) {
+  final allAdapters = [...adapters, unittestingAdapter];
+  final reflectableAdapters =
+      allAdapters.where((adapter) => adapter.reflectableData != null);
+  final otherAdapters =
+      allAdapters.where((adapter) => adapter.reflectableData == null);  
+  for (var adapter in [...reflectableAdapters, ...otherAdapters]) {
     _initializeReflectable(adapter);
     JsonMapper().useAdapter(adapter);
   }
