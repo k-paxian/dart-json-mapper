@@ -14,19 +14,12 @@ class ReflectableSourceWrapper {
   r.memberSymbolMap = _memberSymbolMap;
 }''';
   final reflectableInitMethodPatch =
-      '''$reflectableInitMethodName(Map<r.Reflectable, r.ReflectorData> data, Map<Symbol, String>? memberSymbolMap) {
-  try {
-    r.data.addAll(data);
-  } catch (error) {
-    r.data = data;
+      '''$reflectableInitMethodName(JsonMapperAdapter adapter) {
+  if (adapter.reflectableData == null) {
+    return;
   }
-  try {
-    if (memberSymbolMap != null) {
-      r.memberSymbolMap?.addAll(memberSymbolMap);
-    }
-  } catch (error) {
-    r.memberSymbolMap = memberSymbolMap;
-  }
+  r.data = adapter.reflectableData!;
+  r.memberSymbolMap = adapter.memberSymbolMap;
 }''';
   final initMethod =
       '''Future<JsonMapper> initializeJsonMapperAsync({Iterable<JsonMapperAdapter> adapters = const []}) => Future(() => initializeJsonMapper(adapters: adapters));
@@ -136,9 +129,8 @@ ${_renderEnumValues()}
   String _renderLibraryAdapterRegistration(String input) {
     final hasReflectableOutput = input.indexOf(reflectableInitMethod) > 0;
     return '''
-  final allAdapters = [...adapters, $_libraryAdapterId];
-  for (var adapter in allAdapters) {
-    ${hasReflectableOutput ? '$reflectableInitMethodName(adapter.reflectableData, adapter.memberSymbolMap);' : ''}
+  for (var adapter in [$_libraryAdapterId, ...adapters]) {
+    ${hasReflectableOutput ? '$reflectableInitMethodName(adapter);' : ''}
     JsonMapper().useAdapter(adapter);
   }
   return JsonMapper();

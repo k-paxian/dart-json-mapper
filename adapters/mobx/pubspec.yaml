@@ -1,5 +1,5 @@
 name: dart_json_mapper_mobx
-version: 2.0.3
+version: 2.0.4
 description: >
   This is a dart-json-mapper complementary package
   provides support for MobX Stores to persist as JSON.
@@ -7,7 +7,7 @@ homepage: https://github.com/k-paxian/dart-json-mapper/tree/master/adapters/mobx
 environment:
   sdk: '>=2.12.0 <3.0.0'
 dependencies:
-  dart_json_mapper: '>=2.1.3 <3.0.0'
+  dart_json_mapper: '>=2.1.7 <3.0.0'
   mobx: ^2.0.4
 dev_dependencies:
   mobx_codegen:

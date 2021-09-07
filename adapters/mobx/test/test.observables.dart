@@ -5,6 +5,7 @@ class Test extends TestBase with _$Test {
   Test(String value) : super(value: value);
 }
 
+/// Test class enhanced with Mobx store
 @jsonSerializable
 abstract class TestBase with Store {
   @observable
@@ -29,6 +30,7 @@ class ItemsList {
   ObservableSet<Item> itemsSet = ObservableSet<Item>.of([Item(), Item()]);
 }
 
+/// General placeholder class for various kinds of fields
 @jsonSerializable
 @Json(ignoreNullMembers: true)
 class MobX {
@@ -75,6 +77,7 @@ class MobX {
       this.boolObservable});
 }
 
+/// Class as a container for Map fields
 @jsonSerializable
 @Json(ignoreNullMembers: true, valueDecorators: MobXMaps.valueDecorators)
 class MobXMaps {

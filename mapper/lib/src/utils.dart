@@ -100,7 +100,7 @@ class JsonMap {
 
 /// Provides unified access to class information based on [ClassMirror]
 class ClassInfo {
-  ClassMirror? classMirror;
+  ClassMirror classMirror;
 
   ClassInfo(this.classMirror);
 
@@ -143,7 +143,7 @@ class ClassInfo {
     MethodMirror? result;
     try {
       result =
-          classMirror!.declarations.values.firstWhere((DeclarationMirror dm) {
+          classMirror.declarations.values.firstWhere((DeclarationMirror dm) {
         String? returnType;
         try {
           returnType = dm is MethodMirror ? dm.returnType.simpleName : null;
@@ -165,17 +165,17 @@ class ClassInfo {
 
   ClassMirror? get superClass {
     try {
-      return classMirror!.superclass;
+      return classMirror.superclass;
     } catch (error) {
       return null;
     }
   }
 
   Type? get reflectedType {
-    if (classMirror!.hasReflectedType) {
-      return classMirror!.reflectedType;
-    } else if (classMirror!.hasDynamicReflectedType) {
-      return classMirror!.dynamicReflectedType;
+    if (classMirror.hasReflectedType) {
+      return classMirror.reflectedType;
+    } else if (classMirror.hasDynamicReflectedType) {
+      return classMirror.dynamicReflectedType;
     }
     return null;
   }
@@ -184,7 +184,7 @@ class ClassInfo {
       getJsonSetter(null, scheme);
 
   void enumerateJsonGetters(Function visitor, [dynamic scheme]) {
-    classMirror!.declarations.values.where((DeclarationMirror dm) {
+    classMirror.declarations.values.where((DeclarationMirror dm) {
       return !dm.isPrivate &&
           dm is MethodMirror &&
           !dm.isConstructor &&
@@ -201,7 +201,7 @@ class ClassInfo {
     MethodMirror? result;
     try {
       result =
-          classMirror!.declarations.values.firstWhere((DeclarationMirror dm) {
+          classMirror.declarations.values.firstWhere((DeclarationMirror dm) {
         return !dm.isPrivate &&
             dm is MethodMirror &&
             !dm.isConstructor &&
@@ -219,7 +219,7 @@ class ClassInfo {
   MethodMirror? getJsonConstructor([dynamic scheme]) {
     MethodMirror? result;
     try {
-      result = classMirror!.declarations.values
+      result = classMirror.declarations.values
           .firstWhereOrNull((DeclarationMirror dm) {
         return !dm.isPrivate &&
             dm is MethodMirror &&
@@ -231,18 +231,18 @@ class ClassInfo {
     }
 
     return result ??
-        classMirror!.declarations.values
+        classMirror.declarations.values
             .firstWhereOrNull((DeclarationMirror dm) {
           return !dm.isPrivate && dm is MethodMirror && dm.isConstructor;
         }) as MethodMirror?;
   }
 
   List<String> get publicFieldNames {
-    final instanceMembers = classMirror!.instanceMembers;
+    final instanceMembers = classMirror.instanceMembers;
     return instanceMembers.values
         .where((MethodMirror method) {
           final isGetterAndSetter = method.isGetter &&
-              classMirror!.instanceMembers[method.simpleName + '='] != null;
+              classMirror.instanceMembers[method.simpleName + '='] != null;
           final isPublicGetter = method.isGetter &&
               !method.isRegularMethod &&
               !['hashCode', 'runtimeType'].contains(method.simpleName);
@@ -313,6 +313,9 @@ class ClassInfo {
       _safeGetSuperClassMirror(parentClassMirror),
       ...parentClassMirror.superinterfaces
     ]) {
+      if (element == null) {
+        continue;
+      }
       final parentDeclarationMirror =
           ClassInfo(element).getDeclarationMirror(declarationMirror.simpleName);
       result.addAll(parentClassMirror.isTopLevel
@@ -326,26 +329,26 @@ class ClassInfo {
   }
 
   bool isGetterOnly(String name) {
-    return classMirror!.instanceMembers[name + '='] == null;
+    return classMirror.instanceMembers[name + '='] == null;
   }
 
   DeclarationMirror? getDeclarationMirror(String name) {
     DeclarationMirror? result;
     try {
-      result = classMirror!.declarations[name] as VariableMirror?;
+      result = classMirror.declarations[name] as VariableMirror?;
     } catch (error) {
       result = null;
     }
     if (result == null) {
       try {
-        result = classMirror!.declarations[name] as MethodMirror?;
+        result = classMirror.declarations[name] as MethodMirror?;
       } catch (error) {
         result = null;
       }
     }
     if (result == null) {
       try {
-        classMirror!.instanceMembers
+        classMirror.instanceMembers
             .forEach((memberName, MethodMirror methodMirror) {
           if (memberName == name) {
             result = methodMirror;

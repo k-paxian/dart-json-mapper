@@ -45,7 +45,7 @@ abstract class IJsonMapperAdapter {
 
   /// This mapping contains the mirror-data for each reflector.
   /// It will be initialized in the generated code.
-  Map<Reflectable, ReflectorData> get reflectableData;
+  Map<Reflectable, ReflectorData>? get reflectableData;
 
   /// This mapping translates symbols to strings for the covered members.
   /// It will be initialized in the generated code.
@@ -71,7 +71,7 @@ class JsonMapperAdapter implements IJsonMapperAdapter {
   @override
   final Map<Symbol, String>? memberSymbolMap;
   @override
-  final Map<Reflectable, ReflectorData> reflectableData;
+  final Map<Reflectable, ReflectorData>? reflectableData;
 
   const JsonMapperAdapter(
       {this.converters = const {},
@@ -79,7 +79,7 @@ class JsonMapperAdapter implements IJsonMapperAdapter {
       this.typeInfoDecorators = const {},
       this.enumValues = const {},
       this.memberSymbolMap,
-      this.reflectableData = const {},
+      this.reflectableData,
       this.title = 'JsonMapperAdapter',
       this.refUrl,
       this.url =

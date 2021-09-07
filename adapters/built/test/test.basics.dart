@@ -2,9 +2,11 @@ import 'package:built_collection/built_collection.dart';
 import 'package:dart_json_mapper/dart_json_mapper.dart';
 import 'package:test/test.dart';
 
+/// Sample item class
 @jsonSerializable
 class Item {}
 
+/// Container class for built types fields tests
 @jsonSerializable
 class ItemsList {
   BuiltList<Item> items = BuiltList.of([Item(), Item()]);
@@ -12,6 +14,7 @@ class ItemsList {
   BuiltMap<String, Item> itemsMap = BuiltMap.of({'1': Item(), '2': Item()});
 }
 
+/// Ready made instance for options
 final compactOptions = SerializationOptions(indent: '');
 
 void testBasics() {
@@ -22,6 +25,10 @@ void testBasics() {
           '''{"items":[{},{}],"itemsSet":[{},{}],"itemsMap":{"1":{},"2":{}}}''';
 
       final adapter = JsonMapperAdapter(valueDecorators: {
+        typeOf<BuiltList<Item>>(): (value) =>
+            BuiltList<Item>.of(value.cast<Item>()),
+        typeOf<BuiltSet<Item>>(): (value) =>
+            BuiltSet<Item>.of(value.cast<Item>()),
         typeOf<BuiltMap<String, Item>>(): (value) => (value is BuiltMap)
             ? value
             : BuiltMap<String, Item>.of(value.cast<String, Item>()),
@@ -38,7 +45,7 @@ void testBasics() {
       // then
       expect(targetJson, json);
       expect(instance, TypeMatcher<ItemsList>());
-      expect(instance.items.length, 2);
+      expect(instance!.items.length, 2);
       expect(instance.items.first, TypeMatcher<Item>());
       expect(instance.itemsSet.length, 2);
       expect(instance.itemsSet.first, TypeMatcher<Item>());

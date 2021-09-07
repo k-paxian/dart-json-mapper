@@ -190,15 +190,14 @@ class CustomConverter implements ICustomConverter {
 }
 
 @jsonSerializable
-class RecordItem {
+class Record {
   @JsonProperty(name: 'id')
   int id;
 
   int number;
 
   @jsonConstructor
-  RecordItem.json(
-      this.id, @JsonProperty(converter: customConverter) this.number);
+  Record.json(this.id, @JsonProperty(converter: customConverter) this.number);
 
   @override
   String toString() {
@@ -301,7 +300,7 @@ void testConstructors() {
       // given
       var json = '''{"id": 42,  "number": 2}''';
       // when
-      final target = JsonMapper.deserialize<RecordItem>(
+      final target = JsonMapper.deserialize<Record>(
           json, DeserializationOptions(processAnnotatedMembersOnly: true))!;
       // then
       expect(target.number, 3);

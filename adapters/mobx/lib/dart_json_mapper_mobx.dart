@@ -3,8 +3,11 @@ library json_mapper_mobx;
 import 'package:dart_json_mapper/dart_json_mapper.dart';
 import 'package:mobx/mobx.dart';
 
+/// Shorthand for ready made decorator instance
 final mobXTypeInfoDecorator = MobXTypeInfoDecorator();
 
+/// Type info decorator provides support for MobX types like
+/// ObservableList, ObservableMap, ObservableSet
 class MobXTypeInfoDecorator extends DefaultTypeInfoDecorator {
   bool isObservableList(TypeInfo typeInfo) =>
       typeInfo.typeName!.indexOf('ObservableList<') == 0;
@@ -23,7 +26,6 @@ class MobXTypeInfoDecorator extends DefaultTypeInfoDecorator {
     typeInfo.isMap = typeInfo.isMap || isObservableMap(typeInfo);
     typeInfo.isIterable =
         typeInfo.isIterable || typeInfo.isList || typeInfo.isSet;
-    typeInfo.scalarType = detectScalarType(typeInfo);
     typeInfo.genericType = detectGenericType(typeInfo);
     return typeInfo;
   }
@@ -43,6 +45,7 @@ class MobXTypeInfoDecorator extends DefaultTypeInfoDecorator {
   }
 }
 
+/// Shorthand for ready made converter instance
 final observableStringConverter = ObservableStringConverter();
 
 /// [ObservableStringConverter] converter
@@ -61,6 +64,7 @@ class ObservableStringConverter
   }
 }
 
+/// Shorthand for ready made converter instance
 final observableDateTimeConverter = ObservableDateTimeConverter();
 
 /// [ObservableDateTimeConverter] converter
@@ -82,6 +86,7 @@ class ObservableDateTimeConverter
       dateConverter.toJSON(object!.value, context);
 }
 
+/// Shorthand for ready made converter instance
 final observableNumConverter = ObservableNumConverter();
 
 /// [ObservableNumConverter] converter
@@ -100,6 +105,7 @@ class ObservableNumConverter implements ICustomConverter<Observable<num>?> {
       numberConverter.toJSON(object!.value, context);
 }
 
+/// Shorthand for ready made converter instance
 final observableIntConverter = ObservableIntConverter();
 
 /// [ObservableIntConverter] converter
@@ -118,6 +124,7 @@ class ObservableIntConverter implements ICustomConverter<Observable<int>?> {
       numberConverter.toJSON(object!.value, context);
 }
 
+/// Shorthand for ready made converter instance
 final observableDoubleConverter = ObservableDoubleConverter();
 
 /// [ObservableDoubleConverter] converter
@@ -138,6 +145,7 @@ class ObservableDoubleConverter
       numberConverter.toJSON(object!.value, context);
 }
 
+/// Shorthand for ready made converter instance
 final observableBoolConverter = ObservableBoolConverter();
 
 /// [ObservableBoolConverter] converter
@@ -157,6 +165,8 @@ class ObservableBoolConverter implements ICustomConverter<Observable<bool>?> {
       defaultConverter.toJSON(object!.value, context);
 }
 
+/// Adapter definition, should be passed to the Json Mapper initialization method:
+///  initializeJsonMapper(adapters: [mobXAdapter]);
 final mobXAdapter = JsonMapperAdapter(
     title: 'MobX Adapter',
     refUrl: 'https://github.com/mobxjs/mobx.dart',

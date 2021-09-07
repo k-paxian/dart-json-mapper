@@ -1,6 +1,7 @@
 import 'dart:convert' show JsonEncoder, JsonDecoder;
 import 'dart:math';
 
+import 'package:collection/collection.dart' show IterableExtension;
 import 'package:reflectable/reflectable.dart'
     show
         ClassMirror,
@@ -113,7 +114,8 @@ class JsonMapper {
   static final JsonMapper instance = JsonMapper._internal();
   static final JsonDecoder _jsonDecoder = JsonDecoder();
   final _serializable = const JsonSerializable();
-  final Map<String, ClassMirror?> _classes = {};
+  final Map<Type, ClassInfo> _classes = {};
+  final Map<String, ClassInfo> _mixins = {};
   final Map<int, IJsonMapperAdapter> _adapters = {};
   final Map<String, ProcessedObjectDescriptor> _processedObjects = {};
   final Map<Type, ValueDecoratorFunction> _inlineValueDecorators = {};
@@ -156,7 +158,7 @@ class JsonMapper {
         _inlineValueDecorators.addAll(jsonMeta.valueDecorators!());
       }
       if (classInfo.reflectedType != null) {
-        _classes[classInfo.reflectedType.toString()] = classInfo.classMirror;
+        _classes[classInfo.reflectedType!] = classInfo;
       }
       if (jsonMeta != null &&
           jsonMeta.discriminatorValue != null &&
@@ -173,13 +175,12 @@ class JsonMapper {
 
     _enumerateAnnotatedClasses((ClassInfo classInfo) {
       if (classInfo.superClass != null) {
-        final superClassInfo = ClassInfo(classInfo.superClass);
+        final superClassInfo = ClassInfo(classInfo.superClass!);
         final superClassTypeInfo = superClassInfo.reflectedType != null
             ? _getTypeInfo(superClassInfo.reflectedType!)
             : null;
         if (superClassTypeInfo != null && superClassTypeInfo.isWithMixin) {
-          _classes[superClassTypeInfo.mixinTypeName!] =
-              _classes[superClassTypeInfo.typeName];
+          _mixins[superClassTypeInfo.mixinTypeName!] = classInfo;
         }
       }
     });
@@ -263,6 +264,9 @@ class JsonMapper {
       decorator.init(_classes, valueDecorators, enumValues);
       result = decorator.decorate(result);
     }
+    if (_mixins[result.typeName] != null) {
+      result.mixinType = _mixins[result.typeName]!.reflectedType;
+    }
     _typeInfoCache[type] = result;
     return result;
   }
@@ -276,7 +280,10 @@ class JsonMapper {
 
   TypeInfo? _detectObjectType(dynamic objectInstance, Type? objectType,
       JsonMap objectJsonMap, DeserializationContext context) {
-    final objectClassInfo = ClassInfo(_classes[objectType.toString()]);
+    final objectClassInfo = _classes[objectType];
+    if (objectClassInfo == null) {
+      return null;
+    }
     final meta = objectClassInfo.getMeta(context.options.scheme);
 
     if (objectInstance is Map<String, dynamic>) {
@@ -300,38 +307,17 @@ class JsonMapper {
         return _getTypeInfo(_discriminatorToType[value]!);
       }
     }
-    final String? typeName = discriminatorValue ?? typeInfo.typeName;
-
-    final type = _classes[typeName] != null
-        ? _classes[typeName]!.reflectedType
-        : typeInfo.type;
-    return type != null ? _getTypeInfo(type) : null;
+    if (discriminatorValue != null) {
+      final targetType = _getTypeByStringName(discriminatorValue);
+      return _classes[targetType] != null
+          ? _getTypeInfo(_classes[targetType]!.reflectedType!)
+          : typeInfo;
+    }
+    return typeInfo;
   }
 
-  Type? _getScalarType(Type type) {
-    var result = dynamic;
-    final typeInfo = _getTypeInfo(type);
-    final scalarTypeName = typeInfo.scalarTypeName;
-
-    /// Known Types
-    if (typeInfo.scalarType != null) {
-      return typeInfo.scalarType;
-    }
-
-    /// Custom Types annotated with [@jsonSerializable]
-    if (_classes[scalarTypeName] != null) {
-      return _classes[scalarTypeName]!.reflectedType;
-    }
-
-    /// Search through value decorators for scalarType match
-    for (var type in valueDecorators.keys) {
-      if (type.toString() == scalarTypeName) {
-        result = type;
-      }
-    }
-
-    return result;
-  }
+  Type? _getTypeByStringName(String? typeName) =>
+      _classes.keys.firstWhereOrNull((t) => t.toString() == typeName);
 
   Type _getDeclarationType(DeclarationMirror mirror) {
     Type? result = dynamic;
@@ -508,7 +494,7 @@ class JsonMapper {
       final typeInfo =
           _getDeclarationTypeInfo(declarationType, property.value?.runtimeType);
       visitor(name, property, isGetterOnly, meta, _getConverter(meta, typeInfo),
-          _getScalarType(declarationType), typeInfo);
+          typeInfo);
     }
 
     classInfo.enumerateJsonGetters((MethodMirror mm, JsonProperty meta) {
@@ -530,14 +516,8 @@ class JsonMapper {
       }
       final typeInfo =
           _getDeclarationTypeInfo(declarationType, property.value?.runtimeType);
-      visitor(
-          mm.simpleName,
-          property,
-          true,
-          meta,
-          _getConverter(meta, typeInfo),
-          _getScalarType(declarationType),
-          _getTypeInfo(declarationType));
+      visitor(mm.simpleName, property, true, meta,
+          _getConverter(meta, typeInfo), _getTypeInfo(declarationType));
     }, context.options.scheme);
   }
 
@@ -798,7 +778,7 @@ class JsonMapper {
     }
     _dumpDiscriminatorToObjectProperty(result, im.type, context.options);
     _enumeratePublicProperties(im, null, context, (name, property, isGetterOnly,
-        JsonProperty? meta, converter, scalarType, TypeInfo typeInfo) {
+        JsonProperty? meta, converter, TypeInfo typeInfo) {
       if (property.value == null && meta?.defaultValue != null) {
         result.setPropertyValue(property.name, meta?.defaultValue);
       } else {
@@ -866,23 +846,25 @@ class JsonMapper {
     final jsonMap = JsonMap(
         convertedJsonValue, null, context.parentJsonMaps as List<JsonMap>?);
     typeInfo =
-        _detectObjectType(null, context.typeInfo!.type, jsonMap, context)!;
-    final cm =
-        _classes[typeInfo.typeName] ?? _classes[typeInfo.genericTypeName];
-    if (cm == null) {
+        _detectObjectType(null, context.typeInfo!.type, jsonMap, context) ??
+            typeInfo;
+    final classInfo = _classes[typeInfo.type] ??
+        _classes[typeInfo.genericType] ??
+        _classes[typeInfo.mixinType];
+    if (classInfo == null) {
       throw MissingAnnotationOnTypeError(typeInfo.type);
     }
-    final classInfo = ClassInfo(cm);
     jsonMap.jsonMeta = classInfo.getMeta(context.options.scheme);
 
-    final namedArguments = _getNamedArguments(cm, jsonMap, context);
+    final namedArguments =
+        _getNamedArguments(classInfo.classMirror, jsonMap, context);
     final positionalArgumentNames = <String>[];
-    final positionalArguments =
-        _getPositionalArguments(cm, jsonMap, context, positionalArgumentNames);
+    final positionalArguments = _getPositionalArguments(
+        classInfo.classMirror, jsonMap, context, positionalArgumentNames);
     final objectInstance = context.options.template ??
-        (cm.isEnum
+        (classInfo.classMirror.isEnum
             ? null
-            : cm.newInstance(
+            : classInfo.classMirror.newInstance(
                 classInfo
                     .getJsonConstructor(context.options.scheme)!
                     .constructorName,
@@ -897,13 +879,8 @@ class JsonMapper {
         .toList()
           ..addAll(positionalArgumentNames);
 
-    _enumeratePublicProperties(im, jsonMap, context, (name,
-        property,
-        isGetterOnly,
-        JsonProperty? meta,
-        converter,
-        scalarType,
-        TypeInfo typeInfo) {
+    _enumeratePublicProperties(im, jsonMap, context, (name, property,
+        isGetterOnly, JsonProperty? meta, converter, TypeInfo typeInfo) {
       final newContext = context.reBuild(
           parentObjectInstance: context.parentObjectInstance ?? objectInstance,
           typeInfo: typeInfo,

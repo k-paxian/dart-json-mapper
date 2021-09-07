@@ -31,19 +31,12 @@ final _data = <r.Reflectable, r.ReflectorData>{const prefix0.JsonSerializable():
 
 final _memberSymbolMap = null;
 
-void _initializeReflectable(Map<r.Reflectable, r.ReflectorData> data, Map<Symbol, String>? memberSymbolMap) {
-  try {
-    r.data.addAll(data);
-  } catch (error) {
-    r.data = data;
+void _initializeReflectable(JsonMapperAdapter adapter) {
+  if (adapter.reflectableData == null) {
+    return;
   }
-  try {
-    if (memberSymbolMap != null) {
-      r.memberSymbolMap?.addAll(memberSymbolMap);
-    }
-  } catch (error) {
-    r.memberSymbolMap = memberSymbolMap;
-  }
+  r.data = adapter.reflectableData!;
+  r.memberSymbolMap = adapter.memberSymbolMap;
 }
 
 final starlinkAdapter = JsonMapperAdapter(
@@ -64,9 +57,8 @@ final starlinkAdapter = JsonMapperAdapter(
 Future<JsonMapper> initializeJsonMapperAsync({Iterable<JsonMapperAdapter> adapters = const []}) => Future(() => initializeJsonMapper(adapters: adapters));
 
 JsonMapper initializeJsonMapper({Iterable<JsonMapperAdapter> adapters = const []}) {
-  final allAdapters = [...adapters, starlinkAdapter];
-  for (var adapter in allAdapters) {
-    _initializeReflectable(adapter.reflectableData, adapter.memberSymbolMap);
+  for (var adapter in [starlinkAdapter, ...adapters]) {
+    _initializeReflectable(adapter);
     JsonMapper().useAdapter(adapter);
   }
   return JsonMapper();

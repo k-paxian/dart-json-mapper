@@ -450,7 +450,7 @@ class DefaultIterableConverter
     } else if (jsonValue is Iterable) {
       return jsonValue
           .map((item) =>
-              _deserializeObject(item, context!.typeInfo!.scalarType!))
+              _deserializeObject(item, context!.typeInfo!.parameters.first))
           .toList();
     }
     return jsonValue;

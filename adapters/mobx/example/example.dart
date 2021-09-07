@@ -8,6 +8,7 @@ import 'package:mobx/mobx.dart' show ObservableList;
 
 import 'example.mapper.g.dart' show initializeJsonMapper;
 
+/// Example class containing MobX type fields
 @jsonSerializable
 class MobX {
   ObservableList<String> mailingList = ObservableList<String>();
