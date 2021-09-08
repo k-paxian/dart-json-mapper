@@ -1,3 +1,7 @@
+## 2.1.8
+
+* Remove local model packages from `dev_dependencies` to avoid penalties from pub.dev scoring algorithm
+
 ## 2.1.7
 
 * #155, (feat) Introduce modularization, i.e. multi project setup is possible now. Model packages could be reused by different projects, flutter/web/etc.
