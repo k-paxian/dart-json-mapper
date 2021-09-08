@@ -9,6 +9,7 @@ import 'package:dart_json_mapper/dart_json_mapper.dart'
         SerializationContext,
         JsonMapperAdapter;
 
+/// Shorthand for ready made converter instance
 final colorConverter = ColorConverter();
 
 /// [Color] converter
@@ -46,6 +47,8 @@ class ColorConverter implements ICustomConverter<Color> {
   }
 }
 
+/// Adapter definition, should be passed to the Json Mapper initialization method:
+///  initializeJsonMapper(adapters: [flutterAdapter]);
 final flutterAdapter = JsonMapperAdapter(
     title: 'Flutter Adapter',
     refUrl: 'https://github.com/flutter/flutter',

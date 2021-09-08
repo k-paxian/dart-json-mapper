@@ -877,7 +877,7 @@ class JsonMapper {
         .map((Symbol symbol) =>
             RegExp('"(.+)"').allMatches(symbol.toString()).first.group(1))
         .toList()
-          ..addAll(positionalArgumentNames);
+      ..addAll(positionalArgumentNames);
 
     _enumeratePublicProperties(im, jsonMap, context, (name, property,
         isGetterOnly, JsonProperty? meta, converter, TypeInfo typeInfo) {

@@ -1,3 +1,7 @@
+## 2.1.9
+
+* bump dart to `2.14.0`
+
 ## 2.1.8
 
 * Remove local model packages from `dev_dependencies` to avoid penalties from pub.dev scoring algorithm

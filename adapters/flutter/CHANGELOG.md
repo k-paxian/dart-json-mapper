@@ -1,3 +1,7 @@
+## 2.0.1
+
+* dartdocs added
+
 ## 2.0.0
 
 * null safety support

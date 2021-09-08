@@ -1,5 +1,6 @@
 part of json_mapper_flutter.test;
 
+/// Sample flutter data class container
 @jsonSerializable
 class FlutterData {
   Color color;
@@ -7,6 +8,7 @@ class FlutterData {
   FlutterData(this.color);
 }
 
+/// Shorthand for serialization options instance
 final compactOptions = SerializationOptions(indent: '');
 
 void testBasics() {
