@@ -31,7 +31,6 @@ targets:
           iterables: List, Set
         generate_for:
           - example/**.dart
-          - test/_test.dart
       reflectable:
         generate_for:
           - no/files

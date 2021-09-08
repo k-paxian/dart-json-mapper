@@ -1,0 +1,11 @@
+targets:
+  $default:
+    builders:
+      dart_json_mapper:
+        options:
+          iterables: List, Set
+        generate_for:
+          - test/unit/_test.dart
+      reflectable:
+        generate_for:
+          - no/files

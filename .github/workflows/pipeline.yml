@@ -3,8 +3,20 @@ name: Pipeline
 on: push
 
 jobs:
+  test_mapper:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: '>> unit & performance tests for mapper <<'
+        id: publish
+        uses: k-paxian/dart-package-publisher@master
+        with:
+          dryRunOnly: true
+          credentialJson: ${{ secrets.CREDENTIAL_JSON }}
+          relativePath: perf-test
 
   publish_mapper:
+    needs: [test_mapper]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -12,7 +24,7 @@ jobs:
           cp README.md ./mapper/README.md
           cp banner.svg ./mapper/banner.svg
           cp -f LICENSE ./mapper/LICENSE
-      - name: '>> test & publish mapper <<'
+      - name: '>> publish mapper package to pub.dev <<'
         id: publish
         uses: k-paxian/dart-package-publisher@master
         with:

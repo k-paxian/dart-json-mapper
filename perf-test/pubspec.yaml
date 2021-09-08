@@ -6,8 +6,9 @@ description: >
   - JsonSerializable https://pub.dev/packages/json_serializable
   - BuiltValue https://pub.dev/packages/built_value
   - DartJsonMapper https://pub.dev/packages/dart_json_mapper
+  And unit tests for DartJsonMapper
 environment:
-  sdk: '>=2.12.0 <3.0.0'
+  sdk: '>=2.13.0 <3.0.0'
 dependencies:
   dart_json_mapper:
   json_annotation: 4.1.0
@@ -17,11 +18,13 @@ dependencies:
 dev_dependencies:
   json_serializable: 5.0.0
   built_value_generator: 8.1.2
-  pedantic:
+  lints:
   build_runner:
   build_test:
   test:
 dependency_overrides:
+  unit_testing:
+    path: ../models/unit_testing
   starlink:
     path: ../models/starlink
   dart_json_mapper:

@@ -16,10 +16,3 @@ dependencies:
 dev_dependencies:
   lints:
   build_runner:
-  build_test:
-  test:
-dependency_overrides:
-  starlink:
-    path: ../models/starlink
-  unit_testing:
-    path: ../models/unit_testing
