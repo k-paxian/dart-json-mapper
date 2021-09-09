@@ -1,4 +1,5 @@
 import 'package:analyzer/dart/element/element.dart';
+import 'package:path/path.dart' show posix;
 
 import 'change_analyzer.dart';
 import 'library_visitor.dart';
@@ -144,14 +145,17 @@ ${_renderEnumValues()}
 
   void _renderElementImport(
       ClassElement element, Map<String?, List<String>> importsMap) {
+    final elementPath = element.library.identifier;
     String? importString;
-    if (element.library.identifier.startsWith(_inputLibraryPath)) {
+    if (elementPath.startsWith(_inputLibraryPath)) {
       // local import
-      importString = element.library.identifier.split(_inputLibraryPath).last;
-    }
-    if (element.library.identifier.startsWith(_inputLibraryPackageName!)) {
+      importString = elementPath.split(_inputLibraryPath).last;
+    } else if (elementPath.startsWith(_inputLibraryPackageName!)) {
       // local package import
-      importString = element.library.identifier;
+      importString = elementPath;
+    } else {
+      // local relative path
+      importString = posix.relative(elementPath, from: _inputLibraryPath);
     }
     final prefix = '''x${importsMap.length}''';
     final key = importString;

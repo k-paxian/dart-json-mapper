@@ -1,3 +1,7 @@
+## 2.1.10
+
+* #158, (fix) Local relative paths are not handled properly
+
 ## 2.1.9
 
 * bump dart to `2.14.0`
