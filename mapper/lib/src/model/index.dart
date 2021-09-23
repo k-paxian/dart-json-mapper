@@ -96,11 +96,11 @@ class DeserializationContext {
   final Json? classMeta;
   final TypeInfo? typeInfo;
   final Iterable<JsonMap>? parentJsonMaps;
-  final Object? parentObjectInstance;
+  final Iterable<Object>? parentObjectInstances;
 
   const DeserializationContext(this.options,
       {this.jsonPropertyMeta,
-      this.parentObjectInstance,
+      this.parentObjectInstances,
       this.classMeta,
       this.typeInfo,
       this.parentJsonMaps});
@@ -112,14 +112,14 @@ class DeserializationContext {
           Json? classMeta,
           TypeInfo? typeInfo,
           Iterable<JsonMap>? parentJsonMaps,
-          Object? parentObjectInstance}) =>
+          Iterable<Object>? parentObjectInstances}) =>
       DeserializationContext(options,
           jsonPropertyMeta: jsonPropertyMeta ?? this.jsonPropertyMeta,
           classMeta: classMeta ?? this.classMeta,
           typeInfo: typeInfo ?? this.typeInfo,
           parentJsonMaps: parentJsonMaps ?? this.parentJsonMaps,
-          parentObjectInstance:
-              parentObjectInstance ?? this.parentObjectInstance);
+          parentObjectInstances:
+              parentObjectInstances ?? this.parentObjectInstances);
 
   @override
   int get hashCode => '$options$jsonPropertyMeta$classMeta'.hashCode;
@@ -153,7 +153,7 @@ class SerializationContext extends DeserializationContext {
             classMeta: classMeta,
             typeInfo: typeInfo,
             parentJsonMaps: parentJsonMaps,
-            parentObjectInstance: parentObjectInstance);
+            parentObjectInstances: parentObjectInstance);
 
   SerializationOptions get serializationOptions =>
       options as SerializationOptions;
@@ -165,7 +165,7 @@ class SerializationContext extends DeserializationContext {
           Json? classMeta,
           TypeInfo? typeInfo,
           Iterable<JsonMap>? parentJsonMaps,
-          Object? parentObjectInstance}) =>
+          Iterable<Object>? parentObjectInstances}) =>
       SerializationContext(serializationOptions,
           level: level ?? this.level,
           jsonPropertyMeta: jsonPropertyMeta ?? this.jsonPropertyMeta,
@@ -173,7 +173,7 @@ class SerializationContext extends DeserializationContext {
           typeInfo: typeInfo ?? this.typeInfo,
           parentJsonMaps: parentJsonMaps ?? this.parentJsonMaps,
           parentObjectInstance:
-              parentObjectInstance ?? this.parentObjectInstance);
+              parentObjectInstances ?? this.parentObjectInstances);
 
   @override
   ConversionDirection get direction => ConversionDirection.toJson;

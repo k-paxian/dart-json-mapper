@@ -206,9 +206,17 @@ class Record {
 }
 
 @jsonSerializable
+class GrandParent {
+  Parent? child;
+}
+
+@jsonSerializable
 class Parent {
   String? lastName;
   List<Child> children = [];
+
+  @JsonProperty(name: '..')
+  GrandParent? parent;
 }
 
 @jsonSerializable
@@ -460,6 +468,13 @@ void testConstructors() {
 
     test('Back referencing to parent/owner object', () {
       // given
+      final gjson = '''{"child":{
+  "lastName": "Doe",
+  "children": [
+    {"firstName": "Eve"},
+    {"firstName": "Bob"},
+    {"firstName": "Alice"}]
+}}''';
       final json = '''{
   "lastName": "Doe",
   "children": [
@@ -468,19 +483,19 @@ void testConstructors() {
     {"firstName": "Alice"}]
 }''';
       // when
-      final instance = JsonMapper.deserialize<Parent>(json)!;
+      final instance = JsonMapper.deserialize<GrandParent>(gjson)!;
       final instance2 = JsonMapper.deserialize<Parent2>(json)!;
       final instance3 = JsonMapper.deserialize<Parent3>(json)!;
 
       // then
-      expect(instance.lastName, "Doe");
-      expect(instance.children.length, 3);
-      expect(instance.children[0].parent, instance);
-      expect(instance.children[1].parent, instance);
-      expect(instance.children[2].parent, instance);
-      expect(instance.children[0].firstName, 'Eve');
-      expect(instance.children[1].firstName, 'Bob');
-      expect(instance.children[2].firstName, 'Alice');
+      expect(instance.child!.lastName, "Doe");
+      expect(instance.child!.children.length, 3);
+      expect(instance.child!.parent, instance);
+      expect(instance.child!.children[1].parent, instance.child);
+      expect(instance.child!.children[2].parent, instance.child);
+      expect(instance.child!.children[0].firstName, 'Eve');
+      expect(instance.child!.children[1].firstName, 'Bob');
+      expect(instance.child!.children[2].firstName, 'Alice');
 
       expect(instance2.children[0].parent, instance2);
       expect(instance2.children[1].parent, instance2);

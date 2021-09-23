@@ -8,7 +8,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: '>> unit & performance tests for mapper <<'
-        id: publish
         uses: k-paxian/dart-package-publisher@master
         with:
           dryRunOnly: true

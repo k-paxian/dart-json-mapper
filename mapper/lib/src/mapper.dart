@@ -561,7 +561,8 @@ class JsonMapper {
       }
     }
     if (jsonName == JsonProperty.parentReference) {
-      return PropertyDescriptor(jsonName!, context.parentObjectInstance, false);
+      return PropertyDescriptor(
+          jsonName!, context.parentObjectInstances!.last, false);
     }
     if (value == null &&
         meta?.defaultValue != null &&
@@ -882,7 +883,10 @@ class JsonMapper {
     _enumeratePublicProperties(im, jsonMap, context, (name, property,
         isGetterOnly, JsonProperty? meta, converter, TypeInfo typeInfo) {
       final newContext = context.reBuild(
-          parentObjectInstance: context.parentObjectInstance ?? objectInstance,
+          parentObjectInstances: [
+            ...(context.parentObjectInstances ?? []),
+            objectInstance
+          ],
           typeInfo: typeInfo,
           jsonPropertyMeta: meta,
           parentJsonMaps: <JsonMap>[
