@@ -23,6 +23,7 @@ class JsonMapper {
     final context = SerializationContext(options,
         typeInfo: instance._getTypeInfo(object.runtimeType));
     instance._processedObjects.clear();
+    instance._convertedValuesCache.clear();
     return _getJsonEncoder(context)
         .convert(instance._serializeObject(object, context));
   }
@@ -418,6 +419,21 @@ class JsonMapper {
     return value;
   }
 
+  bool _isFieldIgnoredBeforehand(
+      [Json? classMeta,
+        JsonProperty? meta,
+        DeserializationOptions? options]) =>
+      (meta != null &&
+          (meta.ignore == true ||
+              ((meta.ignoreForSerialization == true ||
+                  JsonProperty.hasParentReference(meta) ||
+                  meta.inject == true) &&
+                  options is SerializationOptions) ||
+              (meta.ignoreForDeserialization == true &&
+                  options is! SerializationOptions))
+          &&
+          !(JsonProperty.isRequired(meta) || JsonProperty.isNotNull(meta)));
+
   bool _isFieldIgnored(
           [dynamic value,
           Json? classMeta,
@@ -473,6 +489,10 @@ class JsonMapper {
           declarationMirror, context.options.scheme);
       if (meta == null &&
           _getProcessAnnotatedMembersOnly(classMeta, context.options) == true) {
+        continue;
+      }
+
+      if (_isFieldIgnoredBeforehand(classMeta, meta, context.options)) {
         continue;
       }
 
