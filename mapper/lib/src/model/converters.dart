@@ -8,8 +8,8 @@ import 'package:intl/intl.dart';
 import 'annotations.dart';
 import 'index.dart';
 
-typedef SerializeObjectFunction = dynamic Function(Object object);
-typedef DeserializeObjectFunction = dynamic Function(dynamic object, Type type);
+typedef SerializeObjectFunction = dynamic Function(Object object, SerializationContext context);
+typedef DeserializeObjectFunction = dynamic Function(dynamic object, DeserializationContext context, Type type);
 typedef GetConverterFunction = ICustomConverter? Function(
     JsonProperty? jsonProperty, TypeInfo typeInfo);
 typedef GetConvertedValueFunction = dynamic Function(
@@ -17,8 +17,8 @@ typedef GetConvertedValueFunction = dynamic Function(
 
 /// Abstract class for custom converters implementations
 abstract class ICustomConverter<T> {
-  dynamic toJSON(T object, [SerializationContext? context]);
-  T fromJSON(dynamic jsonValue, [DeserializationContext? context]);
+  dynamic toJSON(T object, SerializationContext context);
+  T fromJSON(dynamic jsonValue, DeserializationContext context);
 }
 
 /// Abstract class for custom iterable converters implementations
@@ -376,17 +376,17 @@ class MapConverter
   final _jsonDecoder = JsonDecoder();
 
   @override
-  Map? fromJSON(dynamic jsonValue, [DeserializationContext? context]) {
+  Map? fromJSON(dynamic jsonValue, DeserializationContext context) {
     var result = jsonValue;
-    final _typeInfo = context!.typeInfo;
+    final _typeInfo = context.typeInfo;
     if (jsonValue is String) {
       result = _jsonDecoder.convert(jsonValue);
     }
     if (_typeInfo != null && result is Map) {
       if (_instance != null && _instance is Map || _instance == null) {
         result = result.map((key, value) => MapEntry(
-            _deserializeObject(key, _typeInfo.parameters.first),
-            _deserializeObject(value, _typeInfo.parameters.last)));
+            _deserializeObject(key, context, _typeInfo.parameters.first),
+            _deserializeObject(value, context, _typeInfo.parameters.last)));
       }
       if (_instance != null && _instance is Map) {
         result.forEach((key, value) => _instance![key] = value);
@@ -397,9 +397,9 @@ class MapConverter
   }
 
   @override
-  dynamic toJSON(Map? object, [SerializationContext? context]) =>
+  dynamic toJSON(Map? object, SerializationContext context) =>
       object?.map((key, value) =>
-          MapEntry(_serializeObject(key).toString(), _serializeObject(value)));
+          MapEntry(_serializeObject(key, context).toString(), _serializeObject(value, context)));
 
   @override
   void setSerializeObjectFunction(SerializeObjectFunction serializeObject) {
@@ -430,35 +430,35 @@ class DefaultIterableConverter
   late DeserializeObjectFunction _deserializeObject;
 
   @override
-  dynamic fromJSON(dynamic jsonValue, [DeserializationContext? context]) {
+  dynamic fromJSON(dynamic jsonValue, DeserializationContext context) {
     if (_instance != null && jsonValue is Iterable && jsonValue != _instance) {
       if (_instance is List) {
         (_instance as List).clear();
         for (var item in jsonValue) {
           (_instance as List)
-              .add(_deserializeObject(item, context!.typeInfo!.type!));
+              .add(_deserializeObject(item, context, context.typeInfo!.type!));
         }
       }
       if (_instance is Set) {
         (_instance as Set).clear();
         for (var item in jsonValue) {
           (_instance as Set)
-              .add(_deserializeObject(item, context!.typeInfo!.type!));
+              .add(_deserializeObject(item, context, context.typeInfo!.type!));
         }
       }
       return _instance;
     } else if (jsonValue is Iterable) {
       return jsonValue
           .map((item) =>
-              _deserializeObject(item, context!.typeInfo!.parameters.first))
+              _deserializeObject(item, context, context.typeInfo!.parameters.first))
           .toList();
     }
     return jsonValue;
   }
 
   @override
-  dynamic toJSON(dynamic object, [SerializationContext? context]) {
-    return object?.map((item) => _serializeObject(item)).toList();
+  dynamic toJSON(dynamic object, SerializationContext context) {
+    return object?.map((item) => _serializeObject(item, context)).toList();
   }
 
   @override

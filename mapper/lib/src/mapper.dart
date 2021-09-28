@@ -745,9 +745,8 @@ class JsonMapper {
     }
     if (converter is IRecursiveConverter) {
       (converter as IRecursiveConverter).setSerializeObjectFunction(
-          (o) => _serializeObject(o, context as SerializationContext));
-      (converter as IRecursiveConverter).setDeserializeObjectFunction((o,
-              type) =>
+          (o, context) => _serializeObject(o, context as SerializationContext));
+      (converter as IRecursiveConverter).setDeserializeObjectFunction((o, context, type) =>
           _deserializeObject(o, context.reBuild(typeInfo: _getTypeInfo(type))));
     }
   }
