@@ -1,6 +1,6 @@
 ## 2.1.12
 
-* #159, (fix) Proper support for nested parents in relative path reference to parent itself from nested object ".."
+* #159, (fix) Few minor fixes related to recursive objects processing
 
 ## 2.1.11
 

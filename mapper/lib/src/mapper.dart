@@ -420,20 +420,20 @@ class JsonMapper {
   }
 
   bool _isFieldIgnoredBeforehand(
-      [Json? classMeta,
-        JsonProperty? meta,
-        DeserializationOptions? options]) =>
+          [Json? classMeta,
+          JsonProperty? meta,
+          DeserializationOptions? options]) =>
       (meta != null &&
           (meta.ignore == true ||
               ((meta.ignoreForSerialization == true ||
-                  JsonProperty.hasParentReference(meta) ||
-                  meta.inject == true) &&
+                      JsonProperty.hasParentReference(meta) ||
+                      meta.inject == true) &&
                   options is SerializationOptions) ||
               (meta.ignoreForDeserialization == true &&
-                  options is! SerializationOptions))
-          &&
+                  options is! SerializationOptions)) &&
           !(JsonProperty.isRequired(meta) || JsonProperty.isNotNull(meta)));
 
+  // TODO: reuse logic from [_isFieldIgnoredBeforehand]
   bool _isFieldIgnored(
           [dynamic value,
           Json? classMeta,
@@ -745,8 +745,9 @@ class JsonMapper {
     }
     if (converter is IRecursiveConverter) {
       (converter as IRecursiveConverter).setSerializeObjectFunction(
-          (o, context) => _serializeObject(o, context as SerializationContext));
-      (converter as IRecursiveConverter).setDeserializeObjectFunction((o, context, type) =>
+          (o, context) => _serializeObject(o, context));
+      (converter as IRecursiveConverter).setDeserializeObjectFunction((o,
+              context, type) =>
           _deserializeObject(o, context.reBuild(typeInfo: _getTypeInfo(type))));
     }
   }
