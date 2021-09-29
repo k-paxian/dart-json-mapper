@@ -14,14 +14,14 @@ final fixnumTypeInfoDecorator = FixnumTypeInfoDecorator();
 
 class FixnumTypeInfoDecorator extends DefaultTypeInfoDecorator {
   @override
-  Type detectTypeByName(String name) {
+  Type detectTypeByName(String? name) {
     switch (name) {
       case 'Int32':
         return Int32;
       case 'Int64':
         return Int64;
       default:
-        return null;
+        return super.detectTypeByName(name);
     }
   }
 }
@@ -33,7 +33,7 @@ class Int32Converter implements ICustomConverter<Int32> {
   const Int32Converter() : super();
 
   @override
-  Int32 fromJSON(dynamic jsonValue, [DeserializationContext context]) {
+  Int32 fromJSON(dynamic jsonValue, DeserializationContext context) {
     return jsonValue is Int32
         ? jsonValue
         : jsonValue is String
@@ -42,7 +42,7 @@ class Int32Converter implements ICustomConverter<Int32> {
   }
 
   @override
-  dynamic toJSON(Int32 object, [SerializationContext context]) {
+  dynamic toJSON(Int32 object, SerializationContext context) {
     return object is Int32 ? object.toInt() : object;
   }
 }
@@ -54,7 +54,7 @@ class Int64Converter implements ICustomConverter<Int64> {
   const Int64Converter() : super();
 
   @override
-  Int64 fromJSON(dynamic jsonValue, [DeserializationContext context]) {
+  Int64 fromJSON(dynamic jsonValue, DeserializationContext context) {
     return jsonValue is Int64
         ? jsonValue
         : jsonValue is String
@@ -63,7 +63,7 @@ class Int64Converter implements ICustomConverter<Int64> {
   }
 
   @override
-  dynamic toJSON(Int64 object, [SerializationContext context]) {
+  dynamic toJSON(Int64 object, SerializationContext context) {
     return object is Int64 ? object.toInt() : object;
   }
 }

@@ -17,7 +17,7 @@ class ColorConverter implements ICustomConverter<Color> {
   const ColorConverter() : super();
 
   @override
-  Color fromJSON(dynamic jsonValue, [DeserializationContext? context]) {
+  Color fromJSON(dynamic jsonValue, DeserializationContext context) {
     return jsonValue is Color
         ? jsonValue
         : jsonValue is String
@@ -26,7 +26,7 @@ class ColorConverter implements ICustomConverter<Color> {
   }
 
   @override
-  dynamic toJSON(Color object, [SerializationContext? context]) {
+  dynamic toJSON(Color object, SerializationContext context) {
     return object is Color ? colorToString(object) : object;
   }
 

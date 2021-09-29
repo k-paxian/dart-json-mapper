@@ -1,3 +1,7 @@
+## 2.0.2
+
+* Support for new code converters contract
+
 ## 2.0.1
 
 * dartdocs added

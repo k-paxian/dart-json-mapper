@@ -1,3 +1,7 @@
+## 2.0.5
+
+* Update mapper adapter contract to latest
+
 ## 2.0.4
 
 * Update mapper adapter contract to latest

@@ -1,3 +1,7 @@
+## 2.1.12
+
+* #159, (fix) Proper support for nested parents in relative path reference to parent itself from nested object ".."
+
 ## 2.1.11
 
 * #159, (fix) Proper support for nested parents in relative path reference to parent itself from nested object ".."
