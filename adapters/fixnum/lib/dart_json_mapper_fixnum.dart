@@ -83,6 +83,6 @@ final fixnumAdapter = JsonMapperAdapter(
     valueDecorators: {
       typeOf<List<Int32>>(): (value) => value.cast<Int32>(),
       typeOf<List<Int64>>(): (value) => value.cast<Int64>(),
-      typeOf<Set<Int32>>(): (value) => value.cast<Int32>(),
-      typeOf<Set<Int64>>(): (value) => value.cast<Int64>(),
+      typeOf<Set<Int32>>(): (value) => Set<Int32>.of(value.cast<Int32>()),
+      typeOf<Set<Int64>>(): (value) => Set<Int64>.of(value.cast<Int64>()),
     });
