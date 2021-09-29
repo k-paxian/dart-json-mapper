@@ -70,19 +70,19 @@ class BuiltMapConverter implements ICustomConverter, IRecursiveConverter {
   late DeserializeObjectFunction _deserializeObject;
 
   @override
-  dynamic fromJSON(dynamic jsonValue, [DeserializationContext? context]) {
+  dynamic fromJSON(dynamic jsonValue, DeserializationContext context) {
     if (context!.typeInfo != null && jsonValue is Map) {
       return jsonValue.map((key, value) => MapEntry(
-          _deserializeObject(key, context.typeInfo!.parameters.first),
-          _deserializeObject(value, context.typeInfo!.parameters.last)));
+          _deserializeObject(key, context, context.typeInfo!.parameters.first),
+          _deserializeObject(value, context, context.typeInfo!.parameters.last)));
     }
     return jsonValue;
   }
 
   @override
-  dynamic toJSON(dynamic object, [SerializationContext? context]) =>
+  dynamic toJSON(dynamic object, SerializationContext context) =>
       (object as BuiltMap).toMap().map((key, value) =>
-          MapEntry(_serializeObject(key).toString(), _serializeObject(value)));
+          MapEntry(_serializeObject(key, context).toString(), _serializeObject(value, context)));
 
   @override
   void setSerializeObjectFunction(SerializeObjectFunction serializeObject) {
