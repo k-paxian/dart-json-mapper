@@ -1074,8 +1074,8 @@ provide your own custom Converter class per each custom runtimeType.
 ```dart
 /// Abstract class for custom converters implementations
 abstract class ICustomConverter<T> {
-  dynamic toJSON(T object, [SerializationContext context]);
-  T fromJSON(dynamic jsonValue, [DeserializationContext context]);
+  dynamic toJSON(T object, SerializationContext context);
+  T fromJSON(dynamic jsonValue, DeserializationContext context);
 }
 ```
 
@@ -1086,12 +1086,12 @@ class CustomStringConverter implements ICustomConverter<String> {
   const CustomStringConverter() : super();
 
   @override
-  String fromJSON(dynamic jsonValue, [DeserializationContext context]) {
+  String fromJSON(dynamic jsonValue, DeserializationContext context) {
     return jsonValue;
   }
 
   @override
-  dynamic toJSON(String object, [SerializationContext context]) {
+  dynamic toJSON(String object, SerializationContext context) {
     return '_${object}_';
   }
 }
