@@ -82,6 +82,17 @@ class JsonMapper {
   static T? copyWith<T>(T object, Map<String, dynamic> map) =>
       fromMap<T>(toMap(object)?..addAll(map));
 
+  /// Enumerates adapter [IJsonMapperAdapter] instances using visitor pattern
+  /// Abstracts adapters ordering logic from consumers
+  static void enumerateAdapters(
+      Iterable<JsonMapperAdapter> adapters, Function visitor) {
+    final generatedAdapters = adapters.where((adapter) => adapter.isGenerated);
+    final otherAdapters = adapters.where((adapter) => !adapter.isGenerated);
+    for (var adapter in [...generatedAdapters, ...otherAdapters]) {
+      visitor(adapter);
+    }
+  }
+
   /// Registers an instance of [IJsonMapperAdapter] with the mapper engine
   /// Adapters are meant to be used as a pluggable extensions, widening
   /// the number of supported types to be seamlessly converted to/from JSON
@@ -553,16 +564,16 @@ class JsonMapper {
     if (meta != null && meta.name != null) {
       jsonName = JsonProperty.getPrimaryName(meta);
     }
-    jsonName =
-        transformFieldName(jsonName, _getCaseStyle(classMeta, context.options));
+    jsonName = transformFieldName(
+        jsonName!, _getCaseStyle(classMeta, context.options));
     var value = getValueByName(name, jsonName, meta?.defaultValue);
     if (jsonMap != null &&
         meta != null &&
-        (value == null || !jsonMap.hasProperty(jsonName!))) {
+        (value == null || !jsonMap.hasProperty(jsonName))) {
       for (var alias in JsonProperty.getAliases(meta)!) {
         jsonName = transformFieldName(
             alias, _getCaseStyle(classMeta, context.options));
-        if (value != null || !jsonMap.hasProperty(jsonName!)) {
+        if (value != null || !jsonMap.hasProperty(jsonName)) {
           continue;
         }
         value = jsonMap.getPropertyValue(jsonName);

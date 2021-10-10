@@ -1,5 +1,8 @@
 export 'model.dart';
 export 'starlink.mapper.g.dart'
-    show starlinkAdapter, initializeJsonMapper, initializeJsonMapperAsync;
+    show
+        starlinkGeneratedAdapter,
+        initializeJsonMapper,
+        initializeJsonMapperAsync;
 
 void main() {}

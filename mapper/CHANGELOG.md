@@ -1,3 +1,7 @@
+## 2.1.13
+
+* generated adapter naming improved, lint warnings removed in generated code
+
 ## 2.1.12
 
 * #159, (fix) Few minor fixes related to recursive objects processing

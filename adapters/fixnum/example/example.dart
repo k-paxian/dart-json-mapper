@@ -20,7 +20,7 @@ void main() {
 
   // given
   final rawString = '1234567890';
-  final json = '{"int32":"${rawString}"}';
+  final json = '{"int32":"$rawString"}';
 
   // when
   final targetJson = JsonMapper.serialize(
@@ -34,5 +34,5 @@ void main() {
   final target = JsonMapper.deserialize<Int32IntData>(json);
 
   // Deserialize object
-  print(target.int32.toString());
+  print(target!.int32.toString());
 }

@@ -1,13 +1,13 @@
+import '../name_casing.dart';
 import '../utils.dart';
 import 'annotations.dart';
-import 'name_casing.dart';
 import 'type_info.dart';
 
+export '../name_casing.dart';
 export 'adapters.dart';
 export 'annotations.dart';
 export 'converters.dart';
 export 'enum.dart';
-export 'name_casing.dart';
 export 'type_info.dart';
 export 'value_decorators.dart';
 

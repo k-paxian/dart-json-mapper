@@ -50,6 +50,10 @@ abstract class IJsonMapperAdapter {
   /// This mapping translates symbols to strings for the covered members.
   /// It will be initialized in the generated code.
   Map<Symbol, String>? get memberSymbolMap;
+
+  /// [true] value declares the fact that this adapter has been built from
+  /// code generation w/o manual interventions and it will be initialized with he first priority.
+  bool get isGenerated;
 }
 
 /// Base class for JsonMapper adapters
@@ -87,6 +91,9 @@ class JsonMapperAdapter implements IJsonMapperAdapter {
 
   @override
   String toString() => '$title : $url';
+
+  @override
+  bool get isGenerated => reflectableData != null;
 }
 
 /// Covers support for Dart core types
