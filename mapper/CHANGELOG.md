@@ -1,3 +1,7 @@
+## 2.1.14
+
+* #157, (feat) Serialize GET parameters object class to Uri. Brilliant basics
+
 ## 2.1.13
 
 * generated adapter naming improved, lint warnings removed in generated code

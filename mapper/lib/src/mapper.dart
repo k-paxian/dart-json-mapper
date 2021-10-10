@@ -56,6 +56,16 @@ class JsonMapper {
           [SerializationOptions options = defaultSerializationOptions]) =>
       serialize(object, options);
 
+  /// Converts [getParams] object to Uri GET request with [baseUrl]
+  static Uri? toUri({Object? getParams, String? baseUrl = ''}) {
+    final params = _jsonDecoder
+        .convert(serialize(getParams))
+        ?.entries
+        .map((e) => e.key + '=' + Uri.encodeQueryComponent(e.value.toString()))
+        .join('&');
+    return Uri.tryParse('$baseUrl${params != null ? '?$params' : ''}');
+  }
+
   /// Converts JSON String to Dart object of type T
   static T? fromJson<T>(String jsonValue,
           [DeserializationOptions options = defaultDeserializationOptions]) =>

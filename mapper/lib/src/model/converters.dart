@@ -424,7 +424,7 @@ class MapConverter
 final defaultIterableConverter = DefaultIterableConverter();
 
 /// Default Iterable converter
-class DefaultIterableConverter
+class DefaultIterableConverter extends BaseCustomConverter
     implements ICustomConverter, ICustomIterableConverter, IRecursiveConverter {
   DefaultIterableConverter() : super();
 
@@ -461,7 +461,14 @@ class DefaultIterableConverter
 
   @override
   dynamic toJSON(dynamic object, SerializationContext context) {
-    return object?.map((item) => _serializeObject(item, context)).toList();
+    final delimiter =
+        getConverterParameter('delimiter', context.jsonPropertyMeta);
+    final result =
+        object?.map((item) => _serializeObject(item, context)).toList();
+    if (delimiter != null) {
+      return result.join(delimiter);
+    }
+    return result;
   }
 
   @override
