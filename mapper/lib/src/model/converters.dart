@@ -434,6 +434,11 @@ class DefaultIterableConverter extends BaseCustomConverter
 
   @override
   dynamic fromJSON(dynamic jsonValue, DeserializationContext context) {
+    final delimiter =
+        getConverterParameter('delimiter', context.jsonPropertyMeta);
+    if (delimiter != null && jsonValue is String) {
+      jsonValue = jsonValue.split(delimiter);
+    }
     if (_instance != null && jsonValue is Iterable && jsonValue != _instance) {
       if (_instance is List) {
         (_instance as List).clear();
@@ -465,7 +470,7 @@ class DefaultIterableConverter extends BaseCustomConverter
         getConverterParameter('delimiter', context.jsonPropertyMeta);
     final result =
         object?.map((item) => _serializeObject(item, context)).toList();
-    if (delimiter != null) {
+    if (delimiter != null && result != null) {
       return result.join(delimiter);
     }
     return result;

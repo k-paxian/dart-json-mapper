@@ -57,13 +57,13 @@ class JsonMapper {
       serialize(object, options);
 
   /// Converts [getParams] object to Uri GET request with [baseUrl]
-  static Uri? toUri({Object? getParams, String? baseUrl = ''}) {
+  static Uri toUri({Object? getParams, String? baseUrl = ''}) {
     final params = _jsonDecoder
         .convert(serialize(getParams))
         ?.entries
         .map((e) => e.key + '=' + Uri.encodeQueryComponent(e.value.toString()))
         .join('&');
-    return Uri.tryParse('$baseUrl${params != null ? '?$params' : ''}');
+    return Uri.parse('$baseUrl${params != null ? '?$params' : ''}');
   }
 
   /// Converts JSON String to Dart object of type T
@@ -821,32 +821,29 @@ class JsonMapper {
     _dumpDiscriminatorToObjectProperty(result, im.type, context.options);
     _enumeratePublicProperties(im, null, context, (name, property, isGetterOnly,
         JsonProperty? meta, converter, TypeInfo typeInfo) {
-      if (property.value == null && meta?.defaultValue != null) {
-        result.setPropertyValue(property.name, meta?.defaultValue);
-      } else {
-        dynamic convertedValue;
-        final newContext = context.reBuild(
-            level: context.level + 1,
-            jsonPropertyMeta: meta,
-            classMeta: jsonMeta,
-            typeInfo: typeInfo) as SerializationContext;
-        if (meta?.flatten == true) {
-          final Map flattenedPropertiesMap =
-              _serializeObject(property.value, newContext);
-          for (var element in flattenedPropertiesMap.entries) {
-            result.setPropertyValue(element.key, element.value);
-          }
-          return;
+      dynamic convertedValue;
+      final newContext = context.reBuild(
+          level: context.level + 1,
+          jsonPropertyMeta: meta,
+          classMeta: jsonMeta,
+          typeInfo: typeInfo) as SerializationContext;
+      if (meta?.flatten == true) {
+        final Map flattenedPropertiesMap =
+            _serializeObject(property.value, newContext);
+        for (var element in flattenedPropertiesMap.entries) {
+          result.setPropertyValue(element.key, element.value);
         }
-        if (converter != null) {
-          _configureConverter(converter, newContext, value: property.value);
-          convertedValue =
-              _getConvertedValue(converter, property.value, newContext);
-        } else {
-          convertedValue = _serializeObject(property.value, newContext);
-        }
-        result.setPropertyValue(property.name, convertedValue);
+        return;
       }
+      if (converter != null) {
+        final value = property.value ?? meta?.defaultValue;
+        _configureConverter(converter, newContext, value: value);
+        convertedValue = _getConvertedValue(converter, value, newContext);
+      } else {
+        convertedValue = _serializeObject(property.value, newContext);
+      }
+      result.setPropertyValue(
+          property.name, convertedValue ?? meta?.defaultValue);
     });
 
     final jsonAnyGetter = classInfo.getJsonAnyGetter();

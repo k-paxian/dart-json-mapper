@@ -1,3 +1,7 @@
+## 2.1.15
+
+* #165 (feat) Support `delimiter` parameter for default Iterable converter
+
 ## 2.1.14
 
 * #157, (feat) Serialize GET parameters object class to Uri. Brilliant basics

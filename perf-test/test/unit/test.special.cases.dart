@@ -49,7 +49,7 @@ void testSpecialCases() {
 
     test('get parameters as object', () {
       // when
-      final target = JsonMapper.toUri(getParams: params)!;
+      final target = JsonMapper.toUri(getParams: params);
 
       // then
       expect(target, TypeMatcher<Uri>());
@@ -60,7 +60,7 @@ void testSpecialCases() {
     test('get parameters as object + baseUrl', () {
       // when
       final target =
-          JsonMapper.toUri(getParams: params, baseUrl: 'http://go.com')!;
+          JsonMapper.toUri(getParams: params, baseUrl: 'http://go.com');
 
       // then
       expect(target.toString(),
@@ -69,7 +69,7 @@ void testSpecialCases() {
 
     test('baseUrl', () {
       // when
-      final target = JsonMapper.toUri(baseUrl: 'http://go.com')!;
+      final target = JsonMapper.toUri(baseUrl: 'http://go.com');
 
       // then
       expect(target.toString(), r'http://go.com');

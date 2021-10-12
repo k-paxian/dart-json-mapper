@@ -12,6 +12,15 @@ enum MyEnumA { first, second }
 enum MyEnumB { foo, bar }
 
 @jsonSerializable
+class ListDelimiter {
+  @JsonProperty(
+      converterParams: {'delimiter': ','}, defaultValue: MyEnumA.values)
+  List<MyEnumA>? list;
+
+  ListDelimiter({this.list});
+}
+
+@jsonSerializable
 class MyClass {
   MyEnumA enumA;
   MyEnumB enumB;
@@ -141,6 +150,22 @@ class MethodResponse {
 
 void testConverters() {
   group('[Verify converters]', () {
+    group('[Verify iterable converter parameters]', () {
+      test('delimiter parameter', () {
+        // given
+        final instance = ListDelimiter();
+        final json = '''{"list":"first,second"}''';
+
+        // when
+        final target = JsonMapper.deserialize<ListDelimiter>(json)!;
+        final targetJson = JsonMapper.serialize(instance, compactOptions);
+
+        // then
+        expect(targetJson, json);
+        expect(target.list, MyEnumA.values);
+      });
+    });
+
     test('ICustomIterableConverter MethodResponseConverter', () {
       // given
       final json = '''{"responses":[["a","b","c"],["d","e","f"]]}''';
