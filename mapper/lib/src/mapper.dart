@@ -22,15 +22,15 @@ class JsonMapper {
       [SerializationOptions options = defaultSerializationOptions]) {
     final context = SerializationContext(options,
         typeInfo: instance._getTypeInfo(object.runtimeType));
-    instance._processedObjects.clear();
-    instance._convertedValuesCache.clear();
+    instance.clearCache();
     return _getJsonEncoder(context)
         .convert(instance._serializeObject(object, context));
   }
 
-  /// Converts JSON [String] Or [Object] to Dart object instance of type T
+  /// Converts JSON [String] Or [Object] Or [Map<String, dynamic>] to Dart object instance of type T
   /// [jsonValue] could be as of [String] type, then it will be parsed internally
   /// [jsonValue] could be as of [Object] type, then it will be processed as is
+  /// [jsonValue] could be as of [Map<String, dynamic>] type, then it will be processed as is
   static T? deserialize<T>(dynamic jsonValue,
       [DeserializationOptions options = defaultDeserializationOptions]) {
     final targetType = T != dynamic
@@ -73,14 +73,18 @@ class JsonMapper {
 
   /// Converts Dart object to Map<String, dynamic>
   static Map<String, dynamic>? toMap(Object? object,
-          [SerializationOptions options = defaultSerializationOptions]) =>
-      deserialize<Map<String, dynamic>>(serialize(object, options), options);
+      [SerializationOptions options = defaultSerializationOptions]) {
+    final context = SerializationContext(options,
+        typeInfo: instance._getTypeInfo(object.runtimeType));
+    instance.clearCache();
+    final result = instance._serializeObject(object, context);
+    return result is Map<String, dynamic> ? result : null;
+  }
 
   /// Converts Map<String, dynamic> to Dart object instance of type T
   static T? fromMap<T>(Map<String, dynamic>? map,
           [SerializationOptions options = defaultSerializationOptions]) =>
-      deserialize<T>(
-          _getJsonEncoder(SerializationContext(options)).convert(map), options);
+      deserialize<T>(map, options);
 
   /// Clone Dart object of type T
   static T? clone<T>(T object) => fromJson<T>(toJson(object));
@@ -130,6 +134,12 @@ class JsonMapper {
   /// List of currently registered adapters and their priorities
   void info() =>
       _adapters.forEach((priority, adapter) => print('$priority : $adapter'));
+
+  /// Wipes the internal caches
+  void clearCache() {
+    _processedObjects.clear();
+    _convertedValuesCache.clear();
+  }
 
   /// Private implementation area onwards /////////////////////////////////////
 

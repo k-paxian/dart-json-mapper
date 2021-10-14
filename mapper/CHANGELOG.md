@@ -1,3 +1,7 @@
+## 2.1.16
+
+* #168 (feat) Improve `fromMap` and `toMap` efficiency
+
 ## 2.1.15
 
 * #165 (feat) Support `delimiter` parameter for default Iterable converter
