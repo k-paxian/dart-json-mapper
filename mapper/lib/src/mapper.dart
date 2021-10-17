@@ -382,26 +382,20 @@ class JsonMapper {
         (enumValues[typeInfo.type!] != null ? converters[Enum] : null);
 
     if (result is ICustomEnumConverter) {
-      (result as ICustomEnumConverter).setEnumValues(
-          _getEnumValues(enumValues[typeInfo.type!]),
-          defaultValue: _getEnumDefaultValue(enumValues[typeInfo.type!]),
-          mapping: _getEnumMapping(enumValues[typeInfo.type!]));
+      (result as ICustomEnumConverter)
+          .setEnumDescriptor(_getEnumDescriptor(enumValues[typeInfo.type!]));
     }
     return result;
   }
 
-  Map<dynamic, dynamic>? _getEnumMapping(dynamic descriptor) =>
-      descriptor is IEnumDescriptor ? descriptor.mapping : null;
-
-  dynamic _getEnumDefaultValue(dynamic descriptor) =>
-      descriptor is IEnumDescriptor ? descriptor.defaultValue : null;
-
-  Iterable? _getEnumValues(dynamic descriptor) {
+  IEnumDescriptor? _getEnumDescriptor(dynamic descriptor) {
     if (descriptor is Iterable) {
+      return EnumDescriptor(values: descriptor);
+    }
+    if (descriptor is IEnumDescriptor) {
       return descriptor;
     }
-    final enumDescriptor = descriptor as IEnumDescriptor?;
-    return enumDescriptor?.values;
+    return null;
   }
 
   dynamic _getConvertedValue(ICustomConverter converter, dynamic value,

@@ -306,6 +306,30 @@ void testEnums() {
       expect(target.colorsSet!.last, Color.blue);
     });
 
+    test('Enum with caseInsensitive String values mapping', () {
+      // given
+      final instance = [ThirdParty.A, ThirdParty.B, ThirdParty.C];
+      final json = '''["a","B","c"]''';
+      final adapter = JsonMapperAdapter(valueDecorators: {
+        typeOf<List<ThirdParty>>(): (value) => value?.cast<ThirdParty>(),
+      }, enumValues: {
+        ThirdParty:
+            EnumDescriptor(caseInsensitive: true, values: ThirdParty.values)
+      });
+
+      // when
+      JsonMapper().useAdapter(adapter);
+
+      final targetJson = JsonMapper.serialize(instance, compactOptions);
+      final target = JsonMapper.deserialize<List<ThirdParty>>(json);
+
+      JsonMapper().removeAdapter(adapter);
+
+      // then
+      expect(targetJson, '''["A","B","C"]''');
+      expect(target, instance);
+    });
+
     test('Enum with custom String values mapping', () {
       // given
       final instance = [ThirdParty.A, ThirdParty.B, ThirdParty.C];

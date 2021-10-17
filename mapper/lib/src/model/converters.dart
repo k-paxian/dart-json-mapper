@@ -35,8 +35,7 @@ abstract class ICustomMapConverter {
 
 /// Abstract class for custom Enum converters implementations
 abstract class ICustomEnumConverter {
-  void setEnumValues(Iterable? enumValues,
-      {Map? mapping, dynamic defaultValue});
+  void setEnumDescriptor(IEnumDescriptor? enumDescriptor);
 }
 
 /// Abstract class for composite converters relying on other converters
@@ -139,11 +138,11 @@ final enumConverter = EnumConverter();
 class EnumConverter implements ICustomConverter, ICustomEnumConverter {
   EnumConverter() : super();
 
-  Iterable? _enumValues = [];
+  IEnumDescriptor? _enumDescriptor;
 
   @override
   Object? fromJSON(dynamic jsonValue, DeserializationContext context) {
-    dynamic convert(value) => _enumValues!.firstWhere(
+    dynamic convert(value) => _enumDescriptor!.values.firstWhere(
         (eValue) => eValue.toString() == value.toString(),
         orElse: () => null);
     return jsonValue is Iterable
@@ -160,9 +159,8 @@ class EnumConverter implements ICustomConverter, ICustomEnumConverter {
   }
 
   @override
-  void setEnumValues(Iterable? enumValues,
-      {Map? mapping, dynamic defaultValue}) {
-    _enumValues = enumValues;
+  void setEnumDescriptor(IEnumDescriptor? enumDescriptor) {
+    _enumDescriptor = enumDescriptor;
   }
 }
 
@@ -172,17 +170,19 @@ final enumConverterShort = EnumConverterShort();
 class EnumConverterShort implements ICustomConverter, ICustomEnumConverter {
   EnumConverterShort() : super();
 
-  Iterable? _enumValues = [];
-  Map _mapping = {};
-  dynamic _defaultValue;
+  IEnumDescriptor? _enumDescriptor;
 
   @override
   Object? fromJSON(dynamic jsonValue, DeserializationContext context) {
     dynamic convert(value) =>
-        _enumValues!.firstWhereOrNull((eValue) =>
-            _transformValue(value, context) ==
-            _transformValue(eValue, context, doubleMapping: true)) ??
-        _defaultValue;
+        _enumDescriptor!.values.firstWhereOrNull((eValue) =>
+            _enumDescriptor!.caseInsensitive == true
+                ? _transformValue(value, context).toLowerCase() ==
+                    _transformValue(eValue, context, doubleMapping: true)
+                        .toLowerCase()
+                : _transformValue(value, context) ==
+                    _transformValue(eValue, context, doubleMapping: true)) ??
+        _enumDescriptor!.defaultValue;
     return jsonValue is Iterable
         ? jsonValue.map(convert).toList()
         : convert(jsonValue);
@@ -198,20 +198,14 @@ class EnumConverterShort implements ICustomConverter, ICustomEnumConverter {
   }
 
   @override
-  void setEnumValues(Iterable<dynamic>? enumValues,
-      {Map? mapping, dynamic defaultValue}) {
-    _enumValues = enumValues;
-    _defaultValue = defaultValue;
-    _mapping = {};
-    if (mapping != null) {
-      _mapping.addAll(mapping);
-    }
+  void setEnumDescriptor(IEnumDescriptor? enumDescriptor) {
+    _enumDescriptor = enumDescriptor;
   }
 
   dynamic _transformValue(dynamic value, DeserializationContext context,
       {bool doubleMapping = false}) {
     final mapping = {};
-    mapping.addAll(_mapping);
+    mapping.addAll(_enumDescriptor!.mapping);
     if (context.jsonPropertyMeta != null &&
         context.jsonPropertyMeta!.converterParams != null) {
       mapping.addAll(context.jsonPropertyMeta!.converterParams!);
@@ -252,9 +246,8 @@ class ConstEnumConverterNumeric
       _enumConverterNumeric.toJSON(object, context);
 
   @override
-  void setEnumValues(Iterable<dynamic>? enumValues,
-      {Map? mapping, dynamic defaultValue}) {
-    _enumConverterNumeric.setEnumValues(enumValues, mapping: mapping);
+  void setEnumDescriptor(IEnumDescriptor? enumDescriptor) {
+    _enumConverterNumeric.setEnumDescriptor(enumDescriptor);
   }
 }
 
@@ -264,29 +257,26 @@ final _enumConverterNumeric = EnumConverterNumeric();
 class EnumConverterNumeric implements ICustomConverter, ICustomEnumConverter {
   EnumConverterNumeric() : super();
 
-  List<dynamic>? _enumValues = [];
-  dynamic _defaultValue;
+  IEnumDescriptor? _enumDescriptor;
 
   @override
   Object? fromJSON(dynamic jsonValue, DeserializationContext context) {
     return jsonValue is int
-        ? jsonValue < _enumValues!.length && jsonValue >= 0
-            ? _enumValues![jsonValue]
-            : _defaultValue
+        ? jsonValue < _enumDescriptor!.values.length && jsonValue >= 0
+            ? (_enumDescriptor!.values as List)[jsonValue]
+            : _enumDescriptor!.defaultValue
         : jsonValue;
   }
 
   @override
   dynamic toJSON(Object? object, SerializationContext context) {
-    final valueIndex = _enumValues!.indexOf(object);
-    return valueIndex >= 0 ? valueIndex : _defaultValue;
+    final valueIndex = (_enumDescriptor!.values as List).indexOf(object);
+    return valueIndex >= 0 ? valueIndex : _enumDescriptor!.defaultValue;
   }
 
   @override
-  void setEnumValues(Iterable<dynamic>? enumValues,
-      {Map? mapping, dynamic defaultValue}) {
-    _enumValues = enumValues as List<dynamic>?;
-    _defaultValue = defaultValue;
+  void setEnumDescriptor(IEnumDescriptor? enumDescriptor) {
+    _enumDescriptor = enumDescriptor;
   }
 }
 

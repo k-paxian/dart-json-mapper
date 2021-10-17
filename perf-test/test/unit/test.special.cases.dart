@@ -1,5 +1,6 @@
 import 'package:dart_json_mapper/dart_json_mapper.dart';
 import 'package:test/test.dart';
+import 'package:unit_testing/unit_testing.dart' show compactOptions;
 
 @jsonSerializable
 class AA {
@@ -23,6 +24,21 @@ class GetQueryParameters {
   List<String>? types;
 }
 
+@jsonSerializable
+class UnbalancedGetSet {
+  String? _id;
+
+  String get id {
+    // <--- returns a non null value
+    return _id ?? "";
+  }
+
+  set id(
+      String? /*expects a nullable value that my come like that from the server*/ id) {
+    _id = (id ?? "");
+  }
+}
+
 void testSpecialCases() {
   group('[Verify special cases]', () {
     test('A/B inception deserialization', () {
@@ -36,6 +52,23 @@ void testSpecialCases() {
       expect(target, TypeMatcher<AA>());
       expect(target.content, TypeMatcher<BB>());
       expect(target.content!.content, TypeMatcher<List<AA>>());
+    });
+  });
+
+  group('[Verify unbalanced setter/getter types]', () {
+    test('should be ok to have different types for getter & setter', () {
+      // given
+      final inputJson = '{"id":null}';
+      final targetJson = '{"id":""}';
+
+      // when
+      final target = JsonMapper.deserialize<UnbalancedGetSet>(inputJson)!;
+      final outputJson = JsonMapper.serialize(target, compactOptions);
+
+      // then
+      expect(target, TypeMatcher<UnbalancedGetSet>());
+      expect(target.id, "");
+      expect(outputJson, targetJson);
     });
   });
 

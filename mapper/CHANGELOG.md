@@ -1,6 +1,8 @@
 ## 2.1.16
 
 * #168 (feat) Improve `fromMap` and `toMap` efficiency
+* #166 (feat) Support `caseInsensitive` flag for string enum values defined using `EnumDescriptor`
+* #167 Cover unbalanced types with getter/setter case with unit test
 
 ## 2.1.15
 
