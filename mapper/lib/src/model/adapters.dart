@@ -52,7 +52,7 @@ abstract class IJsonMapperAdapter {
   Map<Symbol, String>? get memberSymbolMap;
 
   /// [true] value declares the fact that this adapter has been built from
-  /// code generation w/o manual interventions and it will be initialized with he first priority.
+  /// code generation w/o manual interventions and it will be initialized with the first priority.
   bool get isGenerated;
 }
 

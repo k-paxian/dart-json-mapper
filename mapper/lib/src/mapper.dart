@@ -83,14 +83,14 @@ class JsonMapper {
 
   /// Converts Map<String, dynamic> to Dart object instance of type T
   static T? fromMap<T>(Map<String, dynamic>? map,
-          [SerializationOptions options = defaultSerializationOptions]) =>
+          [DeserializationOptions options = defaultDeserializationOptions]) =>
       deserialize<T>(map, options);
 
   /// Clone Dart object of type T
   static T? clone<T>(T object) => fromJson<T>(toJson(object));
 
   /// Alias for clone method to copy Dart object of type T
-  static T? copy<T>(T object) => clone(object);
+  static T? copy<T>(T object) => clone<T>(object);
 
   /// Copy Dart object of type T & merge it with Map<String, dynamic>
   static T? copyWith<T>(T object, Map<String, dynamic> map) =>
