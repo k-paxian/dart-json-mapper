@@ -4,47 +4,45 @@ import 'package:dart_json_mapper/dart_json_mapper.dart'
 @jsonSerializable
 @Json(caseStyle: CaseStyle.snakeAllCaps)
 class SpaceTrack {
-  String? ccsdsOmmVers;
-  String? comment;
-  String? originator;
-  String? objectName;
-  String? objectId;
-  String? objectType;
-  String? centerName;
-  String? refFrame;
-  String? timeSystem;
-  String? meanElementTheory;
-  String? classificationType;
-  String? rcsSize;
-  String? countryCode;
-  String? site;
-  String? tleLine0;
-  String? tleLine1;
-  String? tleLine2;
+  String? ccsdsOmmVers,
+      comment,
+      originator,
+      objectName,
+      objectId,
+      objectType,
+      centerName,
+      refFrame,
+      timeSystem,
+      meanElementTheory,
+      classificationType,
+      rcsSize,
+      countryCode,
+      site,
+      tleLine0,
+      tleLine1,
+      tleLine2;
 
-  num? meanMotion;
-  num? eccentricity;
-  num? raOfAscNode;
-  num? argOfPericenter;
-  num? meanAnomaly;
-  num? ephemerisType;
-  num? noradCatId;
-  num? elementSetNo;
-  num? revAtEpoch;
-  num? bstar;
-  num? meanMotionDot;
-  num? meanMotionDdot;
-  num? semimajorAxis;
-  num? period;
-  num? apoapsis;
-  num? periapsis;
-  num? decayed;
-  num? file;
-  num? gpId;
+  num? meanMotion,
+      eccentricity,
+      raOfAscNode,
+      argOfPericenter,
+      meanAnomaly,
+      ephemerisType,
+      noradCatId,
+      elementSetNo,
+      revAtEpoch,
+      bstar,
+      meanMotionDot,
+      meanMotionDdot,
+      semimajorAxis,
+      period,
+      apoapsis,
+      periapsis,
+      decayed,
+      file,
+      gpId;
 
-  DateTime? decayDate;
-  DateTime? creationDate;
-  DateTime? epoch;
+  DateTime? decayDate, creationDate, epoch;
 
   @JsonProperty(converterParams: {'format': 'yyyy-MM-dd'})
   DateTime? launchDate;
@@ -53,7 +51,5 @@ class SpaceTrack {
 @jsonSerializable
 class Record {
   SpaceTrack? spaceTrack;
-  String? version;
-  String? id;
-  String? launch;
+  String? version, id, launch;
 }
