@@ -1,3 +1,7 @@
+## 2.1.17
+
+* #171 (fix) It seems your class `_GrowableList<String>` has not been annotated with `@jsonSerializable`
+
 ## 2.1.16
 
 * #168 (feat) Improve `fromMap` and `toMap` efficiency

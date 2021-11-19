@@ -104,7 +104,8 @@ class DefaultTypeInfoDecorator implements ITypeInfoDecorator {
     }
 
     typeInfo.isDynamic = typeName == 'dynamic';
-    typeInfo.isList = typeName.indexOf('List<') == 0 ||
+    typeInfo.isList = typeName.indexOf('_GrowableList<') == 0 ||
+        typeName.indexOf('List<') == 0 ||
         isUnmodifiableListView(typeInfo) ||
         isCastList(typeInfo);
     typeInfo.isSet = typeName.indexOf('Set<') == 0 || isHashSet(typeInfo);
