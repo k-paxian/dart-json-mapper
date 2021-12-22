@@ -215,7 +215,7 @@ class EnumConverterShort implements ICustomConverter, ICustomEnumConverter {
       value = _mapValue(value, mapping);
     }
     if (value is String) {
-      value = transformFieldName(value, _getCaseStyle(context));
+      value = transformFieldName(value, context.caseStyle);
     }
     return value;
   }
@@ -223,11 +223,6 @@ class EnumConverterShort implements ICustomConverter, ICustomEnumConverter {
   dynamic _mapValue(dynamic value, Map mapping) => mapping.containsKey(value)
       ? mapping[value]
       : value.toString().split('.').last;
-
-  CaseStyle? _getCaseStyle(DeserializationContext context) =>
-      context.classMeta != null && context.classMeta!.caseStyle != null
-          ? context.classMeta!.caseStyle
-          : context.options.caseStyle;
 }
 
 const enumConverterNumeric = ConstEnumConverterNumeric();

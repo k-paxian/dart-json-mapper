@@ -185,6 +185,7 @@ class JsonMapper {
   void _updateInternalMaps() {
     _convertedValuesCache.clear();
     _discriminatorToType.clear();
+    _typeInfoCache.clear();
     _enumerateAnnotatedClasses((ClassInfo classInfo) {
       final jsonMeta = classInfo.getMeta();
       if (jsonMeta != null && jsonMeta.valueDecorators != null) {
@@ -841,8 +842,8 @@ class JsonMapper {
         for (var element in flattenedPropertiesMap.entries) {
           result.setPropertyValue(
               fieldPrefixWords != null
-                  ? transformFieldName(
-                      '$fieldPrefixWords ${element.key}', newContext.caseStyle)
+                  ? transformFieldName('$fieldPrefixWords ${element.key}',
+                      newContext.caseStyle ?? defaultCaseStyle)
                   : element.key,
               element.value);
         }
