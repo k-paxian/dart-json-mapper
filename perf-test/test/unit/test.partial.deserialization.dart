@@ -93,8 +93,110 @@ class Cars {
   List<Car>? cars;
 }
 
+@jsonSerializable
+class CarsPrefix {
+  @JsonProperty(name: 'pagination', flatten: true)
+  Pagination? pagination;
+
+  List<Car>? cars;
+}
+
+@jsonSerializable
+@Json(caseStyle: CaseStyle.snake)
+class CarsPrefixSnake {
+  @JsonProperty(name: 'pagination', flatten: true)
+  Pagination? pagination;
+
+  List<Car>? cars;
+}
+
 void testPartialDeserialization() {
   group('[Verify partial processing]', () {
+    test('Flattening pagination info with properties prefix - camel by default',
+        () {
+      // given
+      final json = '''{
+ "paginationLimit": 100,
+ "paginationOffset": 200,
+ "paginationTotal": 1053,
+ "cars": [
+  {
+   "modelName": "Tesla X",
+   "color": "red"
+  }
+ ]
+}''';
+      // when
+      final target = JsonMapper.deserialize<CarsPrefix>(json)!;
+      final targetJson = JsonMapper.serialize(target);
+
+      // then
+      expect(targetJson, json);
+      expect(target.pagination!.limit, 100);
+      expect(target.pagination!.offset, 200);
+      expect(target.pagination!.total, 1053);
+      expect(target.cars!.length, 1);
+      expect(target.cars!.first.model, 'Tesla X');
+    });
+
+    test(
+        'Flattening pagination info with properties prefix - kebab as global option',
+        () {
+      // given
+      final json = '''{
+ "pagination-limit": 100,
+ "pagination-offset": 200,
+ "pagination-total": 1053,
+ "cars": [
+  {
+   "model-name": "Tesla X",
+   "color": "red"
+  }
+ ]
+}''';
+      // when
+      final target = JsonMapper.deserialize<CarsPrefix>(
+          json, DeserializationOptions(caseStyle: CaseStyle.kebab))!;
+      final targetJson = JsonMapper.serialize(target,
+          SerializationOptions(caseStyle: CaseStyle.kebab, indent: ' '));
+
+      // then
+      expect(targetJson, json);
+      expect(target.pagination!.limit, 100);
+      expect(target.pagination!.offset, 200);
+      expect(target.pagination!.total, 1053);
+      expect(target.cars!.length, 1);
+      expect(target.cars!.first.model, 'Tesla X');
+    });
+
+    test(
+        'Flattening pagination info with properties prefix - snake as class option',
+        () {
+      // given
+      final json = '''{
+ "pagination_limit": 100,
+ "pagination_offset": 200,
+ "pagination_total": 1053,
+ "cars": [
+  {
+   "modelName": "Tesla X",
+   "color": "red"
+  }
+ ]
+}''';
+      // when
+      final target = JsonMapper.deserialize<CarsPrefixSnake>(json)!;
+      final targetJson = JsonMapper.serialize(target);
+
+      // then
+      expect(targetJson, json);
+      expect(target.pagination!.limit, 100);
+      expect(target.pagination!.offset, 200);
+      expect(target.pagination!.total, 1053);
+      expect(target.cars!.length, 1);
+      expect(target.cars!.first.model, 'Tesla X');
+    });
+
     test('Cars deserialization + flattening pagination info', () {
       // given
       final json = '''{

@@ -1,3 +1,7 @@
+## 2.1.18
+
+* #174 (feat) Pass field `name` prefix to work together with `flatten: true` attribute in `@JsonProperty` meta
+
 ## 2.1.17
 
 * #171 (fix) It seems your class `_GrowableList<String>` has not been annotated with `@jsonSerializable`

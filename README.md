@@ -1032,6 +1032,45 @@ class UsersPage {
 }
 ```
 
+If it's desired to define common prefix for flattened fields
+`@JsonProperty.name` attribute could be utilized for that alongside with `flatten: true` attribute.
+
+Case style could be defined as usual, on a class level `@Json(caseStyle: CaseStyle.snake)` and/or global scope
+with `DeserializationOptions(caseStyle: CaseStyle.kebab)` and `SerializationOptions(caseStyle: CaseStyle.kebab)`
+If omitted, `CaseStyle.camel` is used by default.
+
+```dart
+@jsonSerializable
+class Pagination {
+  num? limit;
+  num? offset;
+  num? total;
+}
+
+@jsonSerializable
+@Json(caseStyle: CaseStyle.snake)
+class UsersPage {
+  @JsonProperty(name: 'pagination', flatten: true)
+  Pagination? pagination;
+
+  List<User>? users;
+}
+```
+
+This will output
+
+```json
+{
+  "pagination_limit": 100,
+  "pagination_offset": 200,
+  "pagination_total": 1053,
+  "users": [
+    {"id": "49824073-979f-4814-be10-5ea416ee1c2f", "username": "john_doe"},
+    ...
+  ]
+}
+```
+
 ## Objects cloning
 
 If you are wondering how to deep-clone Dart Objects,

@@ -105,6 +105,12 @@ class DeserializationContext {
       this.typeInfo,
       this.parentJsonMaps});
 
+  CaseStyle get caseStyle =>
+      (classMeta != null && classMeta!.caseStyle != null
+          ? classMeta!.caseStyle
+          : options.caseStyle) ??
+      defaultCaseStyle;
+
   ConversionDirection get direction => ConversionDirection.fromJson;
 
   DeserializationContext reBuild(

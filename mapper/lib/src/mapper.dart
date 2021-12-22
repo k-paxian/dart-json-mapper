@@ -48,6 +48,7 @@ class JsonMapper {
                 : jsonValue
             : null,
         DeserializationContext(options,
+            classMeta: instance._classes[targetType]?.getMeta(options.scheme),
             typeInfo: instance._getTypeInfo(targetType))) as T?;
   }
 
@@ -834,8 +835,16 @@ class JsonMapper {
       if (meta?.flatten == true) {
         final Map flattenedPropertiesMap =
             _serializeObject(property.value, newContext);
+        final fieldPrefixWords = meta?.name != null
+            ? toWords(meta?.name, newContext.caseStyle)
+            : null;
         for (var element in flattenedPropertiesMap.entries) {
-          result.setPropertyValue(element.key, element.value);
+          result.setPropertyValue(
+              fieldPrefixWords != null
+                  ? transformFieldName(
+                      '$fieldPrefixWords ${element.key}', newContext.caseStyle)
+                  : element.key,
+              element.value);
         }
         return;
       }
@@ -940,7 +949,11 @@ class JsonMapper {
       var fieldValue = jsonMap.getPropertyValue(property.name);
       if (!hasJsonProperty || mappedFields.contains(name)) {
         if (meta?.flatten == true) {
-          im.invokeSetter(name, _deserializeObject(fieldValue, newContext));
+          final object = meta?.name != null && fieldValue is Map
+              ? fieldValue.map((key, value) => MapEntry(
+                  skipPrefix(meta?.name, key, newContext.caseStyle), value))
+              : fieldValue;
+          im.invokeSetter(name, _deserializeObject(object, newContext));
         }
         if (defaultValue != null && !isGetterOnly) {
           im.invokeSetter(name, defaultValue);
