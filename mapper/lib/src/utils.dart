@@ -104,6 +104,30 @@ class ClassInfo {
 
   ClassInfo(this.classMirror);
 
+  Map<Type, ClassInfo>? cachedClasses;
+
+  factory ClassInfo.fromCache(ClassMirror classMirror, Map<Type, ClassInfo>? cache)
+  {
+    var type = _getReflectedType(classMirror);
+
+    if (cache != null && type != null)
+    {
+      if (cache.containsKey(type))
+      {
+        return cache[type]!;
+      }
+      
+      final result = ClassInfo(classMirror)
+        ..cachedClasses = cache;
+
+      cache[type] = result;
+      return result;
+    }
+    return ClassInfo(classMirror);
+  }
+
+  final Map<DeclarationMirror, List<Object>> _cacheLookupDeclarationMetaData = {};
+
   Json? getMeta([dynamic scheme]) => _metaData.firstWhereOrNull((m) =>
       (m is Json &&
           ((scheme != null && m.scheme == scheme) ||
@@ -116,8 +140,7 @@ class ClassInfo {
               (scheme == null && m.scheme == null)))) as Json?;
 
   JsonProperty? getDeclarationMeta(DeclarationMirror dm, [dynamic scheme]) {
-    final all = getAllDeclarationMeta(dm, scheme);
-    return all.isNotEmpty ? all.last : null;
+    return getLastDeclarationMeta(dm, scheme);
   }
 
   List<JsonProperty> getAllDeclarationMeta(DeclarationMirror dm,
@@ -128,6 +151,16 @@ class ClassInfo {
                   (scheme == null && m.scheme == null))))
           .toList()
           .cast<JsonProperty>();
+
+  JsonProperty? getLastDeclarationMeta(DeclarationMirror dm,
+          [dynamic scheme]) =>
+      lookupDeclarationMetaData(dm)
+        .reversed
+        .where((m) => (m is JsonProperty &&
+            ((scheme != null && m.scheme == scheme) ||
+                (scheme == null && m.scheme == null))))
+        .cast<JsonProperty>()
+        .firstOrNull;
 
   JsonConstructor? hasConstructorMeta(DeclarationMirror dm, [dynamic scheme]) =>
       lookupDeclarationMetaData(dm).firstWhereOrNull((m) =>
@@ -172,6 +205,11 @@ class ClassInfo {
   }
 
   Type? get reflectedType {
+    return _getReflectedType(classMirror);
+  }
+
+  static Type? _getReflectedType(ClassMirror classMirror)
+  {
     if (classMirror.hasReflectedType) {
       return classMirror.reflectedType;
     } else if (classMirror.hasDynamicReflectedType) {
@@ -241,18 +279,23 @@ class ClassInfo {
     final instanceMembers = classMirror.instanceMembers;
     return instanceMembers.values
         .where((MethodMirror method) {
-          final isGetterAndSetter = method.isGetter &&
-              classMirror.instanceMembers[method.simpleName + '='] != null;
-          final isPublicGetter = method.isGetter &&
-              !method.isRegularMethod &&
-              !['hashCode', 'runtimeType'].contains(method.simpleName);
-          return (method.isGetter &&
-                  (method.isSynthetic ||
-                      (isGetterAndSetter || isPublicGetter))) &&
-              !method.isPrivate;
+          return !method.isPrivate &&
+            (method.isGetter &&
+                  (method.isSynthetic || _isPublicGetter(method) || _isGetterAndSetter(method, classMirror)));
         })
         .map((MethodMirror method) => method.simpleName)
         .toList();
+  }
+
+  static const Set<String> _builtinPublicGetters = {'hashCode', 'runtimeType'};
+  static bool _isGetterAndSetter(MethodMirror method, ClassMirror classMirror) {
+    return method.isGetter &&
+              classMirror.instanceMembers[method.simpleName + '='] != null;
+  }
+  static bool _isPublicGetter(MethodMirror method) {
+    return method.isGetter &&
+              !method.isRegularMethod &&
+              !_builtinPublicGetters.contains(method.simpleName);
   }
 
   List<String> get inheritedPublicFieldNames {
@@ -298,14 +341,22 @@ class ClassInfo {
     return result;
   }
 
+  static const List<Object> _emptyDeclarationMetaData = [];
+
   List<Object> lookupDeclarationMetaData(DeclarationMirror? declarationMirror) {
     if (declarationMirror == null) {
-      return [];
+      return _emptyDeclarationMetaData;
     }
-    final result = [...declarationMirror.metadata];
+
+    if (_cacheLookupDeclarationMetaData.containsKey(declarationMirror))
+    {
+      return _cacheLookupDeclarationMetaData[declarationMirror]!;
+    }
+
+    var result = declarationMirror.metadata;
     final parentClassMirror = _safeGetParentClassMirror(declarationMirror);
     if (parentClassMirror == null) {
-      return result;
+      return declarationMirror.metadata;
     }
 
     for (var element in [
@@ -317,14 +368,15 @@ class ClassInfo {
         continue;
       }
       final parentDeclarationMirror =
-          ClassInfo(element).getDeclarationMirror(declarationMirror.simpleName);
-      result.addAll(parentClassMirror.isTopLevel
+          ClassInfo.fromCache(element, cachedClasses).getDeclarationMirror(declarationMirror.simpleName);
+      result = result + (parentClassMirror.isTopLevel
           ? parentDeclarationMirror != null
               ? parentDeclarationMirror.metadata
               : []
           : lookupDeclarationMetaData(parentDeclarationMirror));
     }
 
+    _cacheLookupDeclarationMetaData[declarationMirror] = result; 
     return result;
   }
 
