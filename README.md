@@ -128,14 +128,14 @@ targets:
 Now run the code generation step with the root of your package as the current directory:
 
 ```shell
-> pub run build_runner build --delete-conflicting-outputs
+> dart run build_runner build --delete-conflicting-outputs
 ```
 
 **You'll need to re-run code generation each time you are making changes to `lib/main.dart`**
 So for development time, use `watch` like this
 
 ```shell
-> pub run build_runner watch --delete-conflicting-outputs
+> dart run build_runner watch --delete-conflicting-outputs
 ```
 
 Each time you modify your project code, all `*.mapper.g.dart` files will be updated as well.
@@ -186,14 +186,14 @@ But when you have custom `getter / setter` methods, you should provide annotatio
 ```dart
 @jsonSerializable
 class AllPrivateFields {
-  String _name;
-  String _lastName;
+  String? _name;
+  String? _lastName;
 
   set name(dynamic value) {
     _name = value;
   }
 
-  String get name => _name;
+  String? get name => _name;
 
   @JsonProperty(name: 'lastName')
   void setLastName(dynamic value) {
@@ -201,7 +201,7 @@ class AllPrivateFields {
   }
 
   @JsonProperty(name: 'lastName')
-  String getLastName() => _lastName;
+  String? getLastName() => _lastName;
 }
 
 // given
