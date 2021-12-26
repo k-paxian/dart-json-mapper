@@ -238,7 +238,7 @@ class DefaultTypeInfoDecorator implements ITypeInfoDecorator {
         _cacheKnownClassesByName![name] ??
         _cacheValueDecoratorTypesByName![name] ??
         _cacheEnumValuesByName![name] ??
-            dynamic;
+        dynamic;
   }
 
   @override
@@ -249,5 +249,14 @@ class DefaultTypeInfoDecorator implements ITypeInfoDecorator {
     _knownClasses = knownClasses;
     _valueDecoratorTypes = valueDecorators.keys;
     _enumValues = enumValues;
+
+    _invalidateCache();
+  }
+
+  void _invalidateCache() {
+    _cacheSimpleTypesByName = null;
+    _cacheKnownClassesByName = null;
+    _cacheValueDecoratorTypesByName = null;
+    _cacheEnumValuesByName = null;
   }
 }

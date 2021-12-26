@@ -114,7 +114,10 @@ class ClassInfo {
     {
       if (cache.containsKey(type))
       {
-        return cache[type]!;
+        var cachedValue = cache[type]!;
+        if (cachedValue.classMirror == classMirror) {
+          return cachedValue;
+        }
       }
       
       final result = ClassInfo(classMirror)
