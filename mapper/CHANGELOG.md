@@ -1,3 +1,7 @@
+## 2.2.0+1
+
+* format code
+
 ## 2.2.0
 
 * #176, #169 (feat) Performance optimizations, credits goes to [@kennelken](https://github.com/kennelken)

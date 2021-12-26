@@ -126,7 +126,8 @@ class DeserializationContext {
               parentObjectInstances ?? this.parentObjectInstances);
 
   @override
-  int get hashCode => options.hashCode ^ jsonPropertyMeta.hashCode ^ classMeta.hashCode;
+  int get hashCode =>
+      options.hashCode ^ jsonPropertyMeta.hashCode ^ classMeta.hashCode;
 
   @override
   bool operator ==(Object other) {
