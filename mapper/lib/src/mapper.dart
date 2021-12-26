@@ -209,7 +209,7 @@ class JsonMapper {
 
     _enumerateAnnotatedClasses((ClassInfo classInfo) {
       if (classInfo.superClass != null) {
-        final superClassInfo = ClassInfo(classInfo.superClass!);
+        final superClassInfo = ClassInfo.fromCache(classInfo.superClass!, _classes);
         final superClassTypeInfo = superClassInfo.reflectedType != null
             ? _getTypeInfo(superClassInfo.reflectedType!)
             : null;
@@ -485,7 +485,7 @@ class JsonMapper {
 
   void _enumerateAnnotatedClasses(Function visitor) {
     for (var classMirror in _serializable.annotatedClasses) {
-      visitor(ClassInfo(classMirror));
+      visitor(ClassInfo.fromCache(classMirror, _classes));
     }
   }
 
@@ -502,7 +502,7 @@ class JsonMapper {
 
   void _enumeratePublicProperties(InstanceMirror instanceMirror,
       JsonMap? jsonMap, DeserializationContext context, Function visitor) {
-    final classInfo = ClassInfo(instanceMirror.type);
+    final classInfo = ClassInfo.fromCache(instanceMirror.type, _classes);
     final classMeta = classInfo.getMeta(context.options.scheme);
 
     for (var name in classInfo.publicFieldNames) {
@@ -622,7 +622,7 @@ class JsonMapper {
 
   void _enumerateConstructorParameters(ClassMirror classMirror, JsonMap jsonMap,
       DeserializationContext context, Function filter, Function visitor) {
-    final classInfo = ClassInfo(classMirror);
+    final classInfo = ClassInfo.fromCache(classMirror, _classes);
     final classMeta = classInfo.getMeta(context.options.scheme);
     final scheme =
         classMeta != null ? classMeta.scheme : context.options.scheme;
@@ -704,7 +704,7 @@ class JsonMapper {
 
   void _dumpDiscriminatorToObjectProperty(JsonMap object,
       ClassMirror classMirror, DeserializationOptions? options) {
-    final classInfo = ClassInfo(classMirror);
+    final classInfo = ClassInfo.fromCache(classMirror, _classes);
     final discriminatorProperty = _getDiscriminatorProperty(classInfo, options);
     if (discriminatorProperty != null) {
       final typeInfo = _getTypeInfo(classMirror.reflectedType);
@@ -800,7 +800,7 @@ class JsonMapper {
       }
     }
 
-    final classInfo = ClassInfo(im.type);
+    final classInfo = ClassInfo.fromCache(im.type, _classes);
     final jsonMeta = classInfo.getMeta(context.options.scheme);
     final initialMap = context.level == 0
         ? context.options.template ?? <String, dynamic>{}

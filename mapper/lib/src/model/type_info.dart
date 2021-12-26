@@ -58,6 +58,11 @@ class DefaultTypeInfoDecorator implements ITypeInfoDecorator {
   late Iterable<Type> _valueDecoratorTypes;
   late Map<Type, dynamic> _enumValues;
 
+  Map<String, Type>? _cacheSimpleTypesByName;
+  Map<String, Type>? _cacheKnownClassesByName;
+  Map<String, Type>? _cacheValueDecoratorTypesByName;
+  Map<String, Type>? _cacheEnumValuesByName;
+
   bool isBigInt(TypeInfo typeInfo) =>
       typeInfo.typeName == 'BigInt' || typeInfo.typeName == '_BigIntImpl';
 
@@ -68,26 +73,26 @@ class DefaultTypeInfoDecorator implements ITypeInfoDecorator {
       typeInfo.typeName == 'Uri' || typeInfo.typeName == '_SimpleUri';
 
   bool isHashSet(TypeInfo typeInfo) =>
-      typeInfo.typeName!.indexOf('HashSet<') == 0 ||
-      typeInfo.typeName!.indexOf('_HashSet<') == 0 ||
-      typeInfo.typeName!.indexOf('_CompactLinkedHashSet<') == 0;
+      typeInfo.typeName!.startsWith('HashSet<') ||
+      typeInfo.typeName!.startsWith('_HashSet<') ||
+      typeInfo.typeName!.startsWith('_CompactLinkedHashSet<');
 
   bool isUnmodifiableListView(TypeInfo typeInfo) =>
-      typeInfo.typeName!.indexOf('UnmodifiableListView<') == 0;
+      typeInfo.typeName!.startsWith('UnmodifiableListView<');
 
   bool isCastList(TypeInfo typeInfo) =>
-      typeInfo.typeName!.indexOf('CastList<') == 0;
+      typeInfo.typeName!.startsWith('CastList<');
 
   bool isUnmodifiableMapView(TypeInfo typeInfo) =>
-      typeInfo.typeName!.indexOf('UnmodifiableMapView<') == 0;
+      typeInfo.typeName!.startsWith('UnmodifiableMapView<');
 
   bool isHashMap(TypeInfo typeInfo) =>
-      typeInfo.typeName!.indexOf('HashMap<') == 0 ||
-      typeInfo.typeName!.indexOf('_HashMap<') == 0;
+      typeInfo.typeName!.startsWith('HashMap<') ||
+      typeInfo.typeName!.startsWith('_HashMap<');
 
   bool isLinkedHashMap(TypeInfo typeInfo) =>
-      typeInfo.typeName!.indexOf('_LinkedHashMap<') == 0 ||
-      typeInfo.typeName!.indexOf('_InternalLinkedHashMap<') == 0;
+      typeInfo.typeName!.startsWith('_LinkedHashMap<') ||
+      typeInfo.typeName!.startsWith('_InternalLinkedHashMap<');
 
   @override
   TypeInfo decorate(TypeInfo typeInfo) {
@@ -104,12 +109,12 @@ class DefaultTypeInfoDecorator implements ITypeInfoDecorator {
     }
 
     typeInfo.isDynamic = typeName == 'dynamic';
-    typeInfo.isList = typeName.indexOf('_GrowableList<') == 0 ||
-        typeName.indexOf('List<') == 0 ||
+    typeInfo.isList = typeName.startsWith('_GrowableList<') ||
+        typeName.startsWith('List<') ||
         isUnmodifiableListView(typeInfo) ||
         isCastList(typeInfo);
-    typeInfo.isSet = typeName.indexOf('Set<') == 0 || isHashSet(typeInfo);
-    typeInfo.isMap = typeName.indexOf('Map<') == 0 ||
+    typeInfo.isSet = typeName.startsWith('Set<') || isHashSet(typeInfo);
+    typeInfo.isMap = typeName.startsWith('Map<') ||
         isHashMap(typeInfo) ||
         isLinkedHashMap(typeInfo) ||
         isUnmodifiableMapView(typeInfo);
@@ -208,37 +213,32 @@ class DefaultTypeInfoDecorator implements ITypeInfoDecorator {
   }
 
   Type detectTypeByName(String? name) {
-    switch (name) {
-      case 'DateTime':
-        return DateTime;
-      case 'num':
-        return num;
-      case 'int':
-        return int;
-      case 'double':
-        return double;
-      case 'Duration':
-        return Duration;
-      case 'BigInt':
-        return BigInt;
-      case 'bool':
-        return bool;
-      case 'String':
-        return String;
-      case 'Symbol':
-        return Symbol;
-      default:
-        final resultFromKnownTypes =
-            _knownClasses.keys.firstWhereOrNull((t) => t.toString() == name);
-        final resultFromDecorators =
-            _valueDecoratorTypes.firstWhereOrNull((t) => t.toString() == name);
-        final resultFromEnums =
-            _enumValues.keys.firstWhereOrNull((t) => t.toString() == name);
-        return resultFromKnownTypes ??
-            resultFromDecorators ??
-            resultFromEnums ??
-            dynamic;
+    if (name == null) {
+      return dynamic;
     }
+
+    if (_cacheKnownClassesByName == null) {
+      _cacheSimpleTypesByName = {
+        'DateTime': DateTime,
+        'num': num,
+        'int': int,
+        'double': double,
+        'Duration': Duration,
+        'BigInt': BigInt,
+        'bool': bool,
+        'String': String,
+        'Symbol': Symbol,
+      };
+
+      _cacheKnownClassesByName = {for (var kvp in _knownClasses.entries) kvp.key.toString(): kvp.key};
+      _cacheValueDecoratorTypesByName = {for (var type in _valueDecoratorTypes) type.toString(): type};
+      _cacheEnumValuesByName = {for (var kvp in _enumValues.entries) kvp.key.toString(): kvp.key};
+    }
+    return _cacheSimpleTypesByName![name] ??
+        _cacheKnownClassesByName![name] ??
+        _cacheValueDecoratorTypesByName![name] ??
+        _cacheEnumValuesByName![name] ??
+        dynamic;
   }
 
   @override
@@ -249,5 +249,14 @@ class DefaultTypeInfoDecorator implements ITypeInfoDecorator {
     _knownClasses = knownClasses;
     _valueDecoratorTypes = valueDecorators.keys;
     _enumValues = enumValues;
+
+    _invalidateCache();
+  }
+
+  void _invalidateCache() {
+    _cacheSimpleTypesByName = null;
+    _cacheKnownClassesByName = null;
+    _cacheValueDecoratorTypesByName = null;
+    _cacheEnumValuesByName = null;
   }
 }
