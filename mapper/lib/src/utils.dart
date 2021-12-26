@@ -106,22 +106,19 @@ class ClassInfo {
 
   Map<Type, ClassInfo>? cachedClasses;
 
-  factory ClassInfo.fromCache(ClassMirror classMirror, Map<Type, ClassInfo>? cache)
-  {
-    var type = _getReflectedType(classMirror);
+  factory ClassInfo.fromCache(
+      ClassMirror classMirror, Map<Type, ClassInfo>? cache) {
+    final type = _getReflectedType(classMirror);
 
-    if (cache != null && type != null)
-    {
-      if (cache.containsKey(type))
-      {
-        var cachedValue = cache[type]!;
+    if (cache != null && type != null) {
+      if (cache.containsKey(type)) {
+        final cachedValue = cache[type]!;
         if (cachedValue.classMirror == classMirror) {
           return cachedValue;
         }
       }
-      
-      final result = ClassInfo(classMirror)
-        ..cachedClasses = cache;
+
+      final result = ClassInfo(classMirror)..cachedClasses = cache;
 
       cache[type] = result;
       return result;
@@ -129,7 +126,8 @@ class ClassInfo {
     return ClassInfo(classMirror);
   }
 
-  final Map<DeclarationMirror, List<Object>> _cacheLookupDeclarationMetaData = {};
+  final Map<DeclarationMirror, List<Object>> _cacheLookupDeclarationMetaData =
+      {};
 
   Json? getMeta([dynamic scheme]) => _metaData.firstWhereOrNull((m) =>
       (m is Json &&
@@ -142,9 +140,8 @@ class ClassInfo {
           ((scheme != null && m.scheme == scheme) ||
               (scheme == null && m.scheme == null)))) as Json?;
 
-  JsonProperty? getDeclarationMeta(DeclarationMirror dm, [dynamic scheme]) {
-    return getLastDeclarationMeta(dm, scheme);
-  }
+  JsonProperty? getDeclarationMeta(DeclarationMirror dm, [dynamic scheme]) =>
+      getLastDeclarationMeta(dm, scheme);
 
   List<JsonProperty> getAllDeclarationMeta(DeclarationMirror dm,
           [dynamic scheme]) =>
@@ -158,12 +155,12 @@ class ClassInfo {
   JsonProperty? getLastDeclarationMeta(DeclarationMirror dm,
           [dynamic scheme]) =>
       lookupDeclarationMetaData(dm)
-        .reversed
-        .where((m) => (m is JsonProperty &&
-            ((scheme != null && m.scheme == scheme) ||
-                (scheme == null && m.scheme == null))))
-        .cast<JsonProperty>()
-        .firstOrNull;
+          .reversed
+          .where((m) => (m is JsonProperty &&
+              ((scheme != null && m.scheme == scheme) ||
+                  (scheme == null && m.scheme == null))))
+          .cast<JsonProperty>()
+          .firstOrNull;
 
   JsonConstructor? hasConstructorMeta(DeclarationMirror dm, [dynamic scheme]) =>
       lookupDeclarationMetaData(dm).firstWhereOrNull((m) =>
@@ -211,8 +208,7 @@ class ClassInfo {
     return _getReflectedType(classMirror);
   }
 
-  static Type? _getReflectedType(ClassMirror classMirror)
-  {
+  static Type? _getReflectedType(ClassMirror classMirror) {
     if (classMirror.hasReflectedType) {
       return classMirror.reflectedType;
     } else if (classMirror.hasDynamicReflectedType) {
@@ -283,8 +279,10 @@ class ClassInfo {
     return instanceMembers.values
         .where((MethodMirror method) {
           return !method.isPrivate &&
-            (method.isGetter &&
-                  (method.isSynthetic || _isPublicGetter(method) || _isGetterAndSetter(method, classMirror)));
+              (method.isGetter &&
+                  (method.isSynthetic ||
+                      _isPublicGetter(method) ||
+                      _isGetterAndSetter(method, classMirror)));
         })
         .map((MethodMirror method) => method.simpleName)
         .toList();
@@ -293,17 +291,18 @@ class ClassInfo {
   static const Set<String> _builtinPublicGetters = {'hashCode', 'runtimeType'};
   static bool _isGetterAndSetter(MethodMirror method, ClassMirror classMirror) {
     return method.isGetter &&
-              classMirror.instanceMembers[method.simpleName + '='] != null;
+        classMirror.instanceMembers[method.simpleName + '='] != null;
   }
+
   static bool _isPublicGetter(MethodMirror method) {
     return method.isGetter &&
-              !method.isRegularMethod &&
-              !_builtinPublicGetters.contains(method.simpleName);
+        !method.isRegularMethod &&
+        !_builtinPublicGetters.contains(method.simpleName);
   }
 
   List<String> get inheritedPublicFieldNames {
     final result = <String>[];
-    for (var fieldName in publicFieldNames) {
+    for (final fieldName in publicFieldNames) {
       final dm = getDeclarationMirror(fieldName)!;
       if (_safeGetParentClassMirror(dm) != classMirror) {
         result.add(fieldName);
@@ -338,7 +337,7 @@ class ClassInfo {
     }
     final result = [...classMirror.metadata];
     result.addAll(lookupClassMetaData(_safeGetSuperClassMirror(classMirror)));
-    for (var superinterface in classMirror.superinterfaces) {
+    for (final superinterface in classMirror.superinterfaces) {
       result.addAll(lookupClassMetaData(superinterface));
     }
     return result;
@@ -351,8 +350,7 @@ class ClassInfo {
       return _emptyDeclarationMetaData;
     }
 
-    if (_cacheLookupDeclarationMetaData.containsKey(declarationMirror))
-    {
+    if (_cacheLookupDeclarationMetaData.containsKey(declarationMirror)) {
       return _cacheLookupDeclarationMetaData[declarationMirror]!;
     }
 
@@ -362,7 +360,7 @@ class ClassInfo {
       return declarationMirror.metadata;
     }
 
-    for (var element in [
+    for (final element in [
       parentClassMirror,
       _safeGetSuperClassMirror(parentClassMirror),
       ...parentClassMirror.superinterfaces
@@ -371,15 +369,17 @@ class ClassInfo {
         continue;
       }
       final parentDeclarationMirror =
-          ClassInfo.fromCache(element, cachedClasses).getDeclarationMirror(declarationMirror.simpleName);
-      result = result + (parentClassMirror.isTopLevel
-          ? parentDeclarationMirror != null
-              ? parentDeclarationMirror.metadata
-              : []
-          : lookupDeclarationMetaData(parentDeclarationMirror));
+          ClassInfo.fromCache(element, cachedClasses)
+              .getDeclarationMirror(declarationMirror.simpleName);
+      result = result +
+          (parentClassMirror.isTopLevel
+              ? parentDeclarationMirror != null
+                  ? parentDeclarationMirror.metadata
+                  : []
+              : lookupDeclarationMetaData(parentDeclarationMirror));
     }
 
-    _cacheLookupDeclarationMetaData[declarationMirror] = result; 
+    _cacheLookupDeclarationMetaData[declarationMirror] = result;
     return result;
   }
 

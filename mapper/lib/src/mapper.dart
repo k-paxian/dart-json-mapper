@@ -209,7 +209,8 @@ class JsonMapper {
 
     _enumerateAnnotatedClasses((ClassInfo classInfo) {
       if (classInfo.superClass != null) {
-        final superClassInfo = ClassInfo.fromCache(classInfo.superClass!, _classes);
+        final superClassInfo =
+            ClassInfo.fromCache(classInfo.superClass!, _classes);
         final superClassTypeInfo = superClassInfo.reflectedType != null
             ? _getTypeInfo(superClassInfo.reflectedType!)
             : null;

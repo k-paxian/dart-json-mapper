@@ -1,7 +1,5 @@
 import 'dart:collection';
 
-import 'package:collection/collection.dart' show IterableExtension;
-
 import './value_decorators.dart';
 import '../utils.dart';
 
@@ -55,13 +53,11 @@ final defaultTypeInfoDecorator = DefaultTypeInfoDecorator();
 // TODO: Split types detection over several decorators
 class DefaultTypeInfoDecorator implements ITypeInfoDecorator {
   late Map<Type, ClassInfo> _knownClasses;
-  late Iterable<Type> _valueDecoratorTypes;
   late Map<Type, dynamic> _enumValues;
-
-  Map<String, Type>? _cacheSimpleTypesByName;
-  Map<String, Type>? _cacheKnownClassesByName;
-  Map<String, Type>? _cacheValueDecoratorTypesByName;
-  Map<String, Type>? _cacheEnumValuesByName;
+  late Map<String, Type> _simpleTypesByName;
+  late Map<String, Type> _knownClassesByName;
+  late Map<String, Type> _valueDecoratorTypesByName;
+  late Map<String, Type> _enumValuesByName;
 
   bool isBigInt(TypeInfo typeInfo) =>
       typeInfo.typeName == 'BigInt' || typeInfo.typeName == '_BigIntImpl';
@@ -123,8 +119,8 @@ class DefaultTypeInfoDecorator implements ITypeInfoDecorator {
     if (_knownClasses[type] != null) {
       typeInfo.isEnum = _knownClasses[type]!.classMirror.isEnum;
     } else {
-      if (_enumValues[type!] != null) {
-        typeInfo.isEnum = _enumValues[type] != null;
+      if (_enumValues[type] != null) {
+        typeInfo.isEnum = true;
       }
     }
 
@@ -208,8 +204,7 @@ class DefaultTypeInfoDecorator implements ITypeInfoDecorator {
     if (typeInfo.isMap) {
       return Map;
     }
-    return _knownClasses.keys.firstWhereOrNull(
-        (Type key) => key.toString() == typeInfo.genericTypeName);
+    return _knownClassesByName[typeInfo.genericTypeName];
   }
 
   Type detectTypeByName(String? name) {
@@ -217,27 +212,10 @@ class DefaultTypeInfoDecorator implements ITypeInfoDecorator {
       return dynamic;
     }
 
-    if (_cacheKnownClassesByName == null) {
-      _cacheSimpleTypesByName = {
-        'DateTime': DateTime,
-        'num': num,
-        'int': int,
-        'double': double,
-        'Duration': Duration,
-        'BigInt': BigInt,
-        'bool': bool,
-        'String': String,
-        'Symbol': Symbol,
-      };
-
-      _cacheKnownClassesByName = {for (var kvp in _knownClasses.entries) kvp.key.toString(): kvp.key};
-      _cacheValueDecoratorTypesByName = {for (var type in _valueDecoratorTypes) type.toString(): type};
-      _cacheEnumValuesByName = {for (var kvp in _enumValues.entries) kvp.key.toString(): kvp.key};
-    }
-    return _cacheSimpleTypesByName![name] ??
-        _cacheKnownClassesByName![name] ??
-        _cacheValueDecoratorTypesByName![name] ??
-        _cacheEnumValuesByName![name] ??
+    return _simpleTypesByName[name] ??
+        _knownClassesByName[name] ??
+        _valueDecoratorTypesByName[name] ??
+        _enumValuesByName[name] ??
         dynamic;
   }
 
@@ -247,16 +225,27 @@ class DefaultTypeInfoDecorator implements ITypeInfoDecorator {
       Map<Type, ValueDecoratorFunction> valueDecorators,
       Map<Type, dynamic> enumValues) {
     _knownClasses = knownClasses;
-    _valueDecoratorTypes = valueDecorators.keys;
     _enumValues = enumValues;
+    _simpleTypesByName = {
+      'DateTime': DateTime,
+      'num': num,
+      'int': int,
+      'double': double,
+      'Duration': Duration,
+      'BigInt': BigInt,
+      'bool': bool,
+      'String': String,
+      'Symbol': Symbol,
+    };
 
-    _invalidateCache();
-  }
-
-  void _invalidateCache() {
-    _cacheSimpleTypesByName = null;
-    _cacheKnownClassesByName = null;
-    _cacheValueDecoratorTypesByName = null;
-    _cacheEnumValuesByName = null;
+    _knownClassesByName = {
+      for (var kvp in knownClasses.entries) kvp.key.toString(): kvp.key
+    };
+    _valueDecoratorTypesByName = {
+      for (var type in valueDecorators.keys) type.toString(): type
+    };
+    _enumValuesByName = {
+      for (var kvp in enumValues.entries) kvp.key.toString(): kvp.key
+    };
   }
 }

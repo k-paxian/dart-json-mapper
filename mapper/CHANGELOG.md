@@ -1,3 +1,7 @@
+## 2.2.0
+
+* #176, #169 (feat) Performance optimizations, credits goes to [@kennelken](https://github.com/kennelken)
+
 ## 2.1.18
 
 * #174 (feat) Pass field `name` prefix to work together with `flatten: true` attribute in `@JsonProperty` meta
