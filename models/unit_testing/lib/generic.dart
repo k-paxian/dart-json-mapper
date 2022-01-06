@@ -106,3 +106,50 @@ class MyCarModel extends AbstractEntityModel<Car> {
     return Car(model ?? other.model, color ?? other.color);
   }
 }
+
+@jsonSerializable
+class ApiResult<T> {
+  bool? Success;
+  T? Result;
+
+  ApiResult({
+    this.Success,
+    this.Result,
+  });
+
+  ApiResult<T>? fromJson(dynamic json) =>
+      JsonMapper.deserialize<ApiResult<T>>(json);
+
+  dynamic toJson() => JsonMapper.serialize(this, compactOptions);
+}
+
+@jsonSerializable
+class UserModel {
+  int? Id;
+  String? Name;
+
+  UserModel({
+    this.Id,
+    this.Name,
+  });
+}
+
+@jsonSerializable
+@Json(valueDecorators: ApiResultUserModel.valueDecorators)
+class ApiResultUserModel extends ApiResult<UserModel> {
+  static Map<Type, ValueDecoratorFunction> valueDecorators() =>
+      {typeOf<ApiResult<UserModel>>(): (value) => ApiResultUserModel.of(value)};
+
+  ApiResultUserModel({
+    bool? Success,
+    UserModel? Result,
+  }) : super(
+          Success: Success,
+          Result: Result,
+        );
+
+  factory ApiResultUserModel.of(ApiResult other) => ApiResultUserModel(
+        Success: other.Success,
+        Result: JsonMapper.deserialize<UserModel>(other.Result),
+      );
+}

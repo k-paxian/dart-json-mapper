@@ -1,10 +1,41 @@
 import 'package:dart_json_mapper/dart_json_mapper.dart';
 import 'package:test/test.dart';
 import 'package:unit_testing/unit_testing.dart'
-    show MyCarModel, Color, EntityModel, Car, Foo, Bar;
+    show
+        MyCarModel,
+        Color,
+        EntityModel,
+        Car,
+        Foo,
+        Bar,
+        ApiResultUserModel,
+        ApiResult,
+        UserModel;
 
 void testGenerics() {
   group('[Verify generics<T> cases]', () {
+    test('ApiResult<UserModel>', () {
+      // given
+      final json = '''{"Success":true,"Result":{"Id":1,"Name":"aa"}}''';
+
+      // when
+      final target = ApiResult<UserModel>().fromJson(json);
+      // or
+      final target2 = JsonMapper.deserialize<ApiResultUserModel>(json);
+
+      // then
+      expect(target!.Result!.Id, 1);
+      expect(target.Result!.Name, 'aa');
+      expect(target.Success, true);
+
+      expect(target2!.Result!.Id, 1);
+      expect(target2.Result!.Name, 'aa');
+      expect(target2.Success, true);
+
+      expect(target.toJson(), json);
+      expect(target.toJson(), target2.toJson());
+    });
+
     test('BarBase<T>', () {
       // given
       final json = '''{"foo":{}}''';
