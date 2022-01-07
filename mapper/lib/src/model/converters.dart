@@ -5,7 +5,6 @@ import 'dart:typed_data' show Uint8List;
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:intl/intl.dart';
 
-import 'annotations.dart';
 import 'index.dart';
 
 typedef SerializeObjectFunction = dynamic Function(
@@ -372,8 +371,18 @@ class MapConverter
     if (_typeInfo != null && result is Map) {
       if (_instance != null && _instance is Map || _instance == null) {
         result = result.map((key, value) => MapEntry(
-            _deserializeObject(key, context, _typeInfo.parameters.first),
-            _deserializeObject(value, context, _typeInfo.parameters.last)));
+            _deserializeObject(
+                key,
+                context,
+                _typeInfo.parameters.isEmpty
+                    ? String
+                    : _typeInfo.parameters.first),
+            _deserializeObject(
+                value,
+                context,
+                _typeInfo.parameters.isEmpty
+                    ? dynamic
+                    : _typeInfo.parameters.last)));
       }
       if (_instance != null && _instance is Map) {
         result.forEach((key, value) => _instance![key] = value);

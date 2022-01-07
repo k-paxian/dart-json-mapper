@@ -11,7 +11,7 @@ const kIsWeb = identical(0, 0.0);
 class JsonMap {
   final pathDelimiter = '/';
 
-  Map<String, dynamic> map;
+  Map map;
   List<JsonMap>? parentMaps = [];
   Json? jsonMeta;
 

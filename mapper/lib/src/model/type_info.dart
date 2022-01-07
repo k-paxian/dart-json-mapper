@@ -110,7 +110,7 @@ class DefaultTypeInfoDecorator implements ITypeInfoDecorator {
         isUnmodifiableListView(typeInfo) ||
         isCastList(typeInfo);
     typeInfo.isSet = typeName.startsWith('Set<') || isHashSet(typeInfo);
-    typeInfo.isMap = typeName.startsWith('Map<') ||
+    typeInfo.isMap = typeName == '_JsonMap' || typeName.startsWith('Map<') ||
         isHashMap(typeInfo) ||
         isLinkedHashMap(typeInfo) ||
         isUnmodifiableMapView(typeInfo);
