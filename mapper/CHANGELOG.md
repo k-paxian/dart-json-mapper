@@ -1,3 +1,7 @@
+## 2.2.1+1
+
+* format code
+
 ## 2.2.1
 
 * #101 (fix) Deserialization fails on flutter web target when using generic types
