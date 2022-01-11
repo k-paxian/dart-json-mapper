@@ -19,10 +19,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - run: |
-          cp README.md ./mapper/README.md
-          cp banner.svg ./mapper/banner.svg
-          cp -f LICENSE ./mapper/LICENSE
       - name: '>> publish mapper package to pub.dev <<'
         id: publish
         uses: k-paxian/dart-package-publisher@master
@@ -46,7 +42,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - run: cp -f LICENSE ./adapters/${{ matrix.adapter }}/LICENSE
+      - run: cp -f ./mapper/LICENSE ./adapters/${{ matrix.adapter }}/LICENSE
       - name: '>> test & publish adapter / ${{ matrix.adapter }} <<'
         id: publish
         uses: k-paxian/dart-package-publisher@master

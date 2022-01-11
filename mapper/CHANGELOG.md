@@ -1,3 +1,7 @@
+## 2.2.1+2
+
+* #178 (fix) Uncompilable `main.mapper.g.dart` when no classes has been annotated with `@jsonSerializable`
+
 ## 2.2.1+1
 
 * format code
