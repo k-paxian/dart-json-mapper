@@ -17,4 +17,4 @@ dependencies:
 dev_dependencies:
   lints:
   build_runner:
-  build_version:
+  pubspec_parse:

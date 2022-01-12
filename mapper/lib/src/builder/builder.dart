@@ -1,5 +1,6 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:build/build.dart';
+import 'package:pubspec_parse/pubspec_parse.dart';
 // ignore: implementation_imports
 import 'package:reflectable/src/builder_implementation.dart'
     show BuilderImplementation;
@@ -22,13 +23,21 @@ class DartJsonMapperBuilder implements Builder {
         '.dart': [_extension]
       };
 
-  ReflectableSourceWrapper getWrapperForLibrary(LibraryElement inputLibrary) {
+  ReflectableSourceWrapper getWrapperForLibrary(LibraryElement inputLibrary,
+      Pubspec mapperPubspec, Pubspec inputPubspec) {
     var result = wrappersMap[inputLibrary.identifier];
     if (result == null) {
-      result = ReflectableSourceWrapper(inputLibrary, builderOptions.config);
+      result = ReflectableSourceWrapper(
+          inputLibrary, builderOptions.config, mapperPubspec, inputPubspec);
       wrappersMap.putIfAbsent(inputLibrary.identifier, () => result);
     }
     return result;
+  }
+
+  Future<Pubspec> getPubspec(String package, BuildStep buildStep) async {
+    final assetId = AssetId(package, 'pubspec.yaml');
+    final content = await buildStep.readAsString(assetId);
+    return Pubspec.parse(content, sourceUrl: assetId.uri);
   }
 
   @override
@@ -37,7 +46,10 @@ class DartJsonMapperBuilder implements Builder {
     final outputId = inputId.changeExtension(_extension);
     final inputLibrary = await buildStep.inputLibrary;
     final incrementalBuild = wrappersMap[inputLibrary.identifier] != null;
-    final wrapper = getWrapperForLibrary(inputLibrary);
+    final wrapper = getWrapperForLibrary(
+        inputLibrary,
+        await getPubspec('dart_json_mapper', buildStep),
+        await getPubspec(buildStep.inputId.package, buildStep));
     if (incrementalBuild && wrapper.hasNoIncrementalChanges(inputLibrary)) {
       await buildStep.writeAsString(outputId, wrapper.lastOutput!);
       return;

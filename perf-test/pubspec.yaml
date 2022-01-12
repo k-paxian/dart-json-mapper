@@ -7,6 +7,7 @@ description: >
   - BuiltValue https://pub.dev/packages/built_value
   - DartJsonMapper https://pub.dev/packages/dart_json_mapper
   And unit tests for DartJsonMapper
+homepage: https://github.com/k-paxian/dart-json-mapper/perf-test
 environment:
   sdk: '>=2.13.0 <3.0.0'
 dependencies:

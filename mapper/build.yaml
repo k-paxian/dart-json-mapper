@@ -26,9 +26,6 @@ builders:
 targets:
   $default:
     builders:
-      build_version:
-        options:
-          output: lib/src/builder/version.dart
       dart_json_mapper:
         options:
           iterables: List, Set
