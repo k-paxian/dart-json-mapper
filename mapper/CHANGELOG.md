@@ -1,3 +1,7 @@
+## 2.2.1+3
+
+* bump the dependencies versions
+
 ## 2.2.1+2
 
 * #178 (fix) Uncompilable `main.mapper.g.dart` when no classes has been annotated with `@jsonSerializable`
