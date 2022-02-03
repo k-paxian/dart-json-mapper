@@ -14,7 +14,7 @@ dependencies:
   path: ^1.8.1
   reflectable: ^3.0.5
   collection: ^1.15.0
+  pubspec_parse: ^1.2.0
 dev_dependencies:
   lints:
   build_runner:
-  pubspec_parse:
