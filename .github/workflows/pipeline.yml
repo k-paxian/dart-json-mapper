@@ -24,6 +24,7 @@ jobs:
         uses: k-paxian/dart-package-publisher@master
         with:
           credentialJson: ${{ secrets.CREDENTIAL_JSON }}
+          force: true
           relativePath: mapper
       - name: 'Commit release tag'
         if: steps.publish.outputs.success
