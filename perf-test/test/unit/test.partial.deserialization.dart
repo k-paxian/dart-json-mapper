@@ -16,13 +16,10 @@ class IgnoreMembers {
 
 @jsonSerializable
 class FieldAliasObject {
-  // alias ?? fullName ?? name
-  @JsonProperty(name: ['alias', 'fullName', 'name'])
-  final String? name;
-
-  const FieldAliasObject({
-    this.name,
-  });
+  @JsonProperty(
+    name: ['id', 'id_a', 'id_b', 'id_test'],
+  )
+  int id = 0;
 }
 
 @jsonSerializable
@@ -249,23 +246,23 @@ void testPartialDeserialization() {
 
     test('Field aliases, main ?? alias1 ?? alias2 ?? ...', () {
       // given
-      final json = '''{"alias":"007"}''';
-      final json2 = '''{"alias":null,"fullName":"James Bond"}''';
-      final json3 = '''{"name":"Bond"}''';
-      final json4 = '''{"name":"Bond","fullName":"James Bond"}''';
-      final instance = FieldAliasObject(name: '007');
-      // when
-      final targetJson = JsonMapper.serialize(instance, compactOptions);
-      final target = JsonMapper.deserialize<FieldAliasObject>(json)!;
-      final target2 = JsonMapper.deserialize<FieldAliasObject>(json2)!;
-      final target3 = JsonMapper.deserialize<FieldAliasObject>(json3)!;
-      final target4 = JsonMapper.deserialize<FieldAliasObject>(json4)!;
-      // then
-      expect(targetJson, json);
-      expect(target.name, '007');
-      expect(target2.name, 'James Bond');
-      expect(target3.name, 'Bond');
-      expect(target4.name, 'James Bond');
+      List<List<dynamic>> cases = [
+        ['''{}''', 0],
+        ['''{"id": 90}''', 90],
+        ['''{"id": 90, "id_a": 91}''', 90],
+        ['''{"id_a": 90, "id_b": 91, "id_test": 92}''', 90],
+        ['''{"id_b": 90, "id_test": 91}''', 90],
+        ['''{"id_a": 91}''', 91],
+        ['''{"id_test": 92}''', 92],
+        ['''{"id_b": 93}''', 93],
+      ];
+      for (final testCase in cases) {
+        // when
+        final target = JsonMapper.deserialize<FieldAliasObject>(testCase.first);
+
+        // then
+        expect(target!.id, testCase.last);
+      }
     });
 
     test('Unmapped properties deserialization & serialization', () {

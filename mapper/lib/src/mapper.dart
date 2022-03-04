@@ -587,12 +587,14 @@ class JsonMapper {
     if (jsonMap != null &&
         meta != null &&
         (value == null || !jsonMap.hasProperty(jsonName))) {
-      for (var alias in JsonProperty.getAliases(meta)!) {
-        jsonName = transformFieldName(
+      final initialValue = value;
+      for (final alias in JsonProperty.getAliases(meta)!) {
+        final targetJsonName = transformFieldName(
             alias, _getCaseStyle(classMeta, context.options));
-        if (value != null || !jsonMap.hasProperty(jsonName)) {
+        if (value != initialValue || !jsonMap.hasProperty(targetJsonName)) {
           continue;
         }
+        jsonName = targetJsonName;
         value = jsonMap.getPropertyValue(jsonName);
       }
     }

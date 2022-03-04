@@ -8,7 +8,7 @@ This package allows programmers to annotate Dart objects in order to
 
 * Compatible with **all** target platforms for Dart language, **NO** dependency on `dart:mirrors`, one of the reasons is described [here][1].
 * No need to extend your classes from **any** mixins/base/abstract classes to keep code leaner
-* No enforced [private constructors][17], do not require any constructors at all for your data-only classes
+* No enforced [private constructors], do not require any constructors at all for your data-only classes
 * No magic `_$` prefixes, No enforced `static` fields in your classes
 * Clean and simple setup, transparent and straight-forward usage with **no heavy maintenance**
 * Inspired by [json2typescript][4], [serde][5], [gson][6], feature parity with highly popular [Java Jackson][12] and only **4** [annotations](#annotations) to remember to cover all possible use cases.
@@ -1319,7 +1319,6 @@ JsonMapper()
 [14]: https://pub.dev/packages/super_enum
 [15]: https://pub.dev/packages/freezed
 [16]: https://pub.dev/packages/built_collection
-[17]: https://github.com/google/json_serializable.dart/issues/1038
 
 [obfuscation]: https://flutter.dev/docs/deployment/obfuscate
 

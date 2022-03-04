@@ -1,3 +1,7 @@
+## 2.2.2
+
+* #181 (fix) The `JsonProperty.name` support for aliases doesn't work as advertised
+
 ## 2.2.1+3
 
 * bump the dependencies versions
