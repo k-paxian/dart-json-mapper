@@ -109,12 +109,12 @@ class MyCarModel extends AbstractEntityModel<Car> {
 
 @jsonSerializable
 class ApiResult<T> {
-  bool? Success;
-  T? Result;
+  bool? success;
+  T? result;
 
   ApiResult({
-    this.Success,
-    this.Result,
+    this.success,
+    this.result,
   });
 
   ApiResult<T>? fromJson(dynamic json) =>
@@ -125,12 +125,12 @@ class ApiResult<T> {
 
 @jsonSerializable
 class UserModel {
-  int? Id;
-  String? Name;
+  int? id;
+  String? name;
 
   UserModel({
-    this.Id,
-    this.Name,
+    this.id,
+    this.name,
   });
 }
 
@@ -141,15 +141,15 @@ class ApiResultUserModel extends ApiResult<UserModel> {
       {typeOf<ApiResult<UserModel>>(): (value) => ApiResultUserModel.of(value)};
 
   ApiResultUserModel({
-    bool? Success,
-    UserModel? Result,
+    bool? success,
+    UserModel? result,
   }) : super(
-          Success: Success,
-          Result: Result,
+          success: success,
+          result: result,
         );
 
   factory ApiResultUserModel.of(ApiResult other) => ApiResultUserModel(
-        Success: other.Success,
-        Result: JsonMapper.deserialize<UserModel>(other.Result),
+        success: other.success,
+        result: JsonMapper.deserialize<UserModel>(other.result),
       );
 }

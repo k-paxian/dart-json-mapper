@@ -16,7 +16,7 @@ void testGenerics() {
   group('[Verify generics<T> cases]', () {
     test('ApiResult<UserModel>', () {
       // given
-      final json = '''{"Success":true,"Result":{"Id":1,"Name":"aa"}}''';
+      final json = '''{"success":true,"result":{"id":1,"name":"aa"}}''';
 
       // when
       final target = ApiResult<UserModel>().fromJson(json);
@@ -24,13 +24,13 @@ void testGenerics() {
       final target2 = JsonMapper.deserialize<ApiResultUserModel>(json);
 
       // then
-      expect(target!.Result!.Id, 1);
-      expect(target.Result!.Name, 'aa');
-      expect(target.Success, true);
+      expect(target!.result!.id, 1);
+      expect(target.result!.name, 'aa');
+      expect(target.success, true);
 
-      expect(target2!.Result!.Id, 1);
-      expect(target2.Result!.Name, 'aa');
-      expect(target2.Success, true);
+      expect(target2!.result!.id, 1);
+      expect(target2.result!.name, 'aa');
+      expect(target2.success, true);
 
       expect(target.toJson(), json);
       expect(target.toJson(), target2.toJson());

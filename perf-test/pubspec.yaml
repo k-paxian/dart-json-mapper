@@ -6,6 +6,7 @@ description: >
   - JsonSerializable https://pub.dev/packages/json_serializable
   - BuiltValue https://pub.dev/packages/built_value
   - DartJsonMapper https://pub.dev/packages/dart_json_mapper
+  - DartMappable https://pub.dev/packages/dart_mappable
   And unit tests for DartJsonMapper
 homepage: https://github.com/k-paxian/dart-json-mapper/perf-test
 environment:
@@ -14,6 +15,7 @@ dependencies:
   dart_json_mapper:
   json_annotation: 4.4.0
   built_value: 8.1.4
+  dart_mappable:
   intl: ^0.17.0
 dev_dependencies:
   json_serializable: 6.1.4
