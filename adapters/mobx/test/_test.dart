@@ -4,6 +4,7 @@ import 'package:dart_json_mapper/dart_json_mapper.dart'
     show
         SerializationOptions,
         jsonSerializable,
+        JsonProperty,
         JsonMapper,
         Json,
         typeOf,
@@ -18,6 +19,7 @@ import 'package:mobx/mobx.dart'
         Observable,
         Atom,
         AtomSpyReporter,
+        ReactiveContext,
         Store,
         observable;
 import 'package:test/test.dart';

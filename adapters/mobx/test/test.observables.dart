@@ -11,6 +11,10 @@ abstract class TestBase with Store {
   @observable
   String value;
 
+  @override
+  @JsonProperty(ignore: true)
+  ReactiveContext get context => ReactiveContext();
+
   TestBase({required this.value});
 }
 
