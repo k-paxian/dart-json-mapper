@@ -1,3 +1,7 @@
+## 2.2.3
+
+* #184 (fix) "It seems your class 'Uint8List' has not been annotated with @jsonSerializable" error when using `Uint8ListConverter`
+
 ## 2.2.2+1
 
 * bump the dependencies versions

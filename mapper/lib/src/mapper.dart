@@ -382,7 +382,9 @@ class JsonMapper {
     final result = jsonProperty?.converter ??
         converters[typeInfo.type!] ??
         converters[typeInfo.genericType] ??
-        (enumValues[typeInfo.type!] != null ? converters[Enum] : null);
+        (enumValues[typeInfo.type!] != null ? converters[Enum] : null) ??
+        converters[converters.keys.firstWhereOrNull(
+            (Type type) => type.toString() == typeInfo.typeName)];
 
     if (result is ICustomEnumConverter) {
       (result as ICustomEnumConverter)

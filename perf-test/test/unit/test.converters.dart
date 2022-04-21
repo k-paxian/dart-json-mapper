@@ -299,7 +299,20 @@ void testConverters() {
     test('Uint8List converter', () {
       // given
       final json = '{"data":"QmFzZTY0IGlzIHdvcmtpbmch"}';
+      final emptyJson = '"AAAAAAAAAAAAAA=="';
+      final emptyListsJson = '["AAAAAAA=","AAAAAAA="]';
       final rawString = r'Base64 is working!';
+
+      // when
+      final emptyListJson = JsonMapper.serialize(Uint8List(10), compactOptions);
+      // then
+      expect(emptyListJson, emptyJson);
+
+      // when
+      final targetEmptyListsJson =
+          JsonMapper.serialize([Uint8List(5), Uint8List(5)], compactOptions);
+      // then
+      expect(targetEmptyListsJson, emptyListsJson);
 
       // when
       final targetJson = JsonMapper.serialize(

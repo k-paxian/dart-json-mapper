@@ -145,6 +145,7 @@ final dartCoreAdapter =
   typeOf<Set<Symbol>>(): (value) => value.cast<Symbol>(),
   typeOf<Set<BigInt>>(): (value) => value.cast<BigInt>(),
   typeOf<Uint8List>(): (value) => Uint8List.fromList(value.cast<int>()),
+  typeOf<List<Uint8List>>(): (value) => value.cast<Uint8List>(),
 });
 
 /// Covers support for Dart collection types
