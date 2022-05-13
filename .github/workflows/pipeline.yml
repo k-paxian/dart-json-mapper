@@ -1,6 +1,8 @@
 name: Pipeline
 
-on: push
+on:
+  workflow_dispatch:
+  push:
 
 jobs:
   test_mapper:
