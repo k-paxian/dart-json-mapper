@@ -43,7 +43,7 @@ class Int32Converter implements ICustomConverter<Int32> {
 
   @override
   dynamic toJSON(Int32 object, SerializationContext context) {
-    return object is Int32 ? object.toInt() : object;
+    return object.toInt();
   }
 }
 
@@ -64,7 +64,7 @@ class Int64Converter implements ICustomConverter<Int64> {
 
   @override
   dynamic toJSON(Int64 object, SerializationContext context) {
-    return object is Int64 ? object.toInt() : object;
+    return object.toInt();
   }
 }
 

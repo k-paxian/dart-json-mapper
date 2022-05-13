@@ -27,7 +27,7 @@ class ColorConverter implements ICustomConverter<Color> {
 
   @override
   dynamic toJSON(Color object, SerializationContext context) {
-    return object is Color ? colorToString(object) : object;
+    return colorToString(object);
   }
 
   String colorToString(Color color) {

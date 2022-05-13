@@ -1,7 +1,6 @@
 library perf_test.test;
 
-import 'dart:convert';
-import 'dart:convert' show json;
+import 'dart:convert' show json, JsonEncoder;
 import 'dart:io' show File;
 
 import 'package:built_value/built_value.dart';
