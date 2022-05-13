@@ -819,7 +819,7 @@ class JsonMapper {
           (jsonMeta != null && jsonMeta.allowCircularReferences! > 0);
       final allowanceExceeded = (allowanceIsSet &&
               processedObjectDescriptor.levelsCount >
-                  jsonMeta!.allowCircularReferences!)
+                  jsonMeta.allowCircularReferences!)
           ? true
           : null;
       if (allowanceExceeded == true) {

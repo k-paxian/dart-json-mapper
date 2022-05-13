@@ -54,8 +54,7 @@ JsonMapper initializeJsonMapper({Iterable<JsonMapperAdapter> adapters = const []
   }
 
   String getLibraryPackageName(LibraryElement library) =>
-      'package:' +
-      library.source.uri.toString().split(':').last.split('/').first;
+      'package:${library.source.uri.toString().split(':').last.split('/').first}';
 
   Iterable<String> get allowedIterables {
     return (options['iterables'] as String).split(',').map((x) => x.trim());
@@ -71,13 +70,7 @@ JsonMapper initializeJsonMapper({Iterable<JsonMapperAdapter> adapters = const []
   }
 
   String get _libraryName {
-    return (inputLibrary.identifier
-                .split('/')
-                .last
-                .replaceAll('.dart', '')
-                .replaceAll('.', ' ')
-                .replaceAll('_', ' ') +
-            ' generated adapter')
+    return ('${inputLibrary.identifier.split('/').last.replaceAll('.dart', '').replaceAll('.', ' ').replaceAll('_', ' ')} generated adapter')
         .split(' ')
         .map((e) => capitalize(e))
         .join(' ')
@@ -188,12 +181,12 @@ ${_renderEnumValues()}
   }
 
   Map<String?, List<String>> _buildImportsMap() {
-    final _importsMap = <String?, List<String>>{};
+    final importsMap = <String?, List<String>>{};
     for (var element
         in _libraryVisitor!.visitedPublicAnnotatedClassElements.values) {
-      _renderElementImport(element, _importsMap);
+      _renderElementImport(element, importsMap);
     }
-    return _importsMap;
+    return importsMap;
   }
 
   String _renderImports() {
@@ -205,7 +198,7 @@ ${_renderEnumValues()}
           '''import '$key' as ${_importPrefix[key]} show ${importsMap[key]!.join(', ')};''')
     }.where((x) => x != null).toList();
     importsList.sort();
-    return importsList.join('\n') + '\n';
+    return '${importsList.join('\n')}\n';
   }
 
   String _removeObjectCasts(String input) {
@@ -221,12 +214,8 @@ ${_renderEnumValues()}
   }
 
   String _patchInitMethod(String input) {
-    final patch = '\n' +
-        _renderLibraryAdapterDefinition(input) +
-        '\n' +
-        initMethod +
-        '\n' +
-        _renderLibraryAdapterRegistration(input);
+    final patch =
+        '\n${_renderLibraryAdapterDefinition(input)}\n$initMethod\n${_renderLibraryAdapterRegistration(input)}';
     return input.replaceFirst(
             reflectableInitMethod, reflectableInitMethodPatch) +
         patch;

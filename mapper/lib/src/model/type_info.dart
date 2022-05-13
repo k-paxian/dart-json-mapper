@@ -32,8 +32,7 @@ class TypeInfo {
 
   @override
   String toString() =>
-      'typeName: $typeName, parameters: $parameters, genericType: ' +
-      genericType.runtimeType.toString();
+      'typeName: $typeName, parameters: $parameters, genericType: ${genericType.runtimeType}';
 
   @override
   int get hashCode => typeName.hashCode;
@@ -172,13 +171,10 @@ class DefaultTypeInfoDecorator implements ITypeInfoDecorator {
         : [];
   }
 
-  String? detectGenericTypeName(TypeInfo typeInfo) =>
-      typeInfo.typeName!.contains('<')
-          ? typeInfo.typeName!.substring(0, typeInfo.typeName!.indexOf('<')) +
-              '<' +
-              typeInfo.parameters.map((x) => 'dynamic').join(', ') +
-              '>'
-          : null;
+  String? detectGenericTypeName(TypeInfo typeInfo) => typeInfo.typeName!
+          .contains('<')
+      ? '${typeInfo.typeName!.substring(0, typeInfo.typeName!.indexOf('<'))}<${typeInfo.parameters.map((x) => 'dynamic').join(', ')}>'
+      : null;
 
   Type? detectGenericType(TypeInfo typeInfo) {
     if (isUnmodifiableListView(typeInfo)) {

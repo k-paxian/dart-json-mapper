@@ -364,25 +364,25 @@ class MapConverter
   @override
   Map? fromJSON(dynamic jsonValue, DeserializationContext context) {
     var result = jsonValue;
-    final _typeInfo = context.typeInfo;
+    final typeInfo = context.typeInfo;
     if (jsonValue is String) {
       result = _jsonDecoder.convert(jsonValue);
     }
-    if (_typeInfo != null && result is Map) {
+    if (typeInfo != null && result is Map) {
       if (_instance != null && _instance is Map || _instance == null) {
         result = result.map((key, value) => MapEntry(
             _deserializeObject(
                 key,
                 context,
-                _typeInfo.parameters.isEmpty
+                typeInfo.parameters.isEmpty
                     ? String
-                    : _typeInfo.parameters.first),
+                    : typeInfo.parameters.first),
             _deserializeObject(
                 value,
                 context,
-                _typeInfo.parameters.isEmpty
+                typeInfo.parameters.isEmpty
                     ? dynamic
-                    : _typeInfo.parameters.last)));
+                    : typeInfo.parameters.last)));
       }
       if (_instance != null && _instance is Map) {
         result.forEach((key, value) => _instance![key] = value);

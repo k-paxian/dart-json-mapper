@@ -291,7 +291,7 @@ class ClassInfo {
   static const Set<String> _builtinPublicGetters = {'hashCode', 'runtimeType'};
   static bool _isGetterAndSetter(MethodMirror method, ClassMirror classMirror) {
     return method.isGetter &&
-        classMirror.instanceMembers[method.simpleName + '='] != null;
+        classMirror.instanceMembers['${method.simpleName}='] != null;
   }
 
   static bool _isPublicGetter(MethodMirror method) {
@@ -384,7 +384,7 @@ class ClassInfo {
   }
 
   bool isGetterOnly(String name) {
-    return classMirror.instanceMembers[name + '='] == null;
+    return classMirror.instanceMembers['$name='] == null;
   }
 
   DeclarationMirror? getDeclarationMirror(String name) {
