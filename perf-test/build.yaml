@@ -1,6 +1,9 @@
 targets:
   $default:
     builders:
+      dart_mappable_builder:
+        generate_for:
+          - test/starlink/dart_mappable/mappable_test.dart
       dart_json_mapper:
         options:
           iterables: List, Set
