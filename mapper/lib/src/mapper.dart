@@ -142,8 +142,6 @@ class JsonMapper {
     _convertedValuesCache.clear();
   }
 
-  /// Private implementation area onwards /////////////////////////////////////
-
   static final JsonMapper instance = JsonMapper._internal();
   static final JsonDecoder _jsonDecoder = JsonDecoder();
   final _serializable = const JsonSerializable();
@@ -449,7 +447,10 @@ class JsonMapper {
     return value;
   }
 
-  bool _isFieldIgnoredBeforehand(
+  bool _isNullableField(JsonProperty? meta) =>
+      !(JsonProperty.isRequired(meta) || JsonProperty.isNotNull(meta));
+
+  bool _isFieldIgnored(
           [Json? classMeta,
           JsonProperty? meta,
           DeserializationOptions? options]) =>
@@ -461,30 +462,29 @@ class JsonMapper {
                   options is SerializationOptions) ||
               (meta.ignoreForDeserialization == true &&
                   options is! SerializationOptions)) &&
-          !(JsonProperty.isRequired(meta) || JsonProperty.isNotNull(meta)));
+          _isNullableField(meta));
 
-  // TODO: reuse logic from [_isFieldIgnoredBeforehand]
-  bool _isFieldIgnored(
+  bool _isFieldIgnoredByValue(
           [dynamic value,
           Json? classMeta,
           JsonProperty? meta,
           DeserializationOptions? options]) =>
       ((meta != null &&
-              ((meta.ignore == true ||
-                      ((meta.ignoreForSerialization == true ||
-                              JsonProperty.hasParentReference(meta) ||
-                              meta.inject == true) &&
-                          options is SerializationOptions) ||
-                      (meta.ignoreForDeserialization == true &&
-                          options is! SerializationOptions)) ||
+              (_isFieldIgnored(classMeta, meta, options) ||
                   meta.ignoreIfNull == true && value == null)) ||
           (options is SerializationOptions &&
               (((options.ignoreNullMembers == true ||
                           classMeta?.ignoreNullMembers == true) &&
                       value == null) ||
-                  ((_isIgnoreDefault(meta, classMeta, options)) &&
+                  ((_isFieldIgnoredByDefault(meta, classMeta, options)) &&
                       JsonProperty.isDefaultValue(meta, value) == true)))) &&
-      !(JsonProperty.isRequired(meta) || JsonProperty.isNotNull(meta));
+      _isNullableField(meta);
+
+  bool _isFieldIgnoredByDefault(
+          JsonProperty? meta, Json? classMeta, SerializationOptions options) =>
+      meta?.ignoreIfDefault == true ||
+      classMeta?.ignoreDefaultMembers == true ||
+      options.ignoreDefaultMembers == true;
 
   void _enumerateAnnotatedClasses(Function visitor) {
     for (var classMirror in _serializable.annotatedClasses) {
@@ -522,7 +522,7 @@ class JsonMapper {
         continue;
       }
 
-      if (_isFieldIgnoredBeforehand(classMeta, meta, context.options)) {
+      if (_isFieldIgnored(classMeta, meta, context.options)) {
         continue;
       }
 
@@ -538,7 +538,8 @@ class JsonMapper {
       _checkFieldConstraints(
           property.value, name, jsonMap?.hasProperty(property.name), meta);
 
-      if (_isFieldIgnored(property.value, classMeta, meta, context.options)) {
+      if (_isFieldIgnoredByValue(
+          property.value, classMeta, meta, context.options)) {
         continue;
       }
       final typeInfo =
@@ -561,7 +562,8 @@ class JsonMapper {
 
       _checkFieldConstraints(property.value, mm.simpleName,
           jsonMap?.hasProperty(property.name), meta);
-      if (_isFieldIgnored(property.value, classMeta, meta, context.options)) {
+      if (_isFieldIgnoredByValue(
+          property.value, classMeta, meta, context.options)) {
         return;
       }
       final typeInfo =
@@ -618,7 +620,7 @@ class JsonMapper {
     }
     if (value == null &&
         meta?.defaultValue != null &&
-        _isIgnoreDefault(
+        _isFieldIgnoredByDefault(
             meta, classMeta, context.options as SerializationOptions)) {
       return PropertyDescriptor(jsonName!, meta?.defaultValue, true);
     }
@@ -701,12 +703,6 @@ class JsonMapper {
           ? meta.processAnnotatedMembersOnly
           : options.processAnnotatedMembersOnly;
 
-  bool _isIgnoreDefault(
-          JsonProperty? meta, Json? classMeta, SerializationOptions options) =>
-      meta?.ignoreIfDefault == true ||
-      classMeta?.ignoreDefaultMembers == true ||
-      options.ignoreDefaultMembers == true;
-
   void _dumpDiscriminatorToObjectProperty(JsonMap object,
       ClassMirror classMirror, DeserializationOptions? options) {
     final classInfo = ClassInfo.fromCache(classMirror, _classes);
@@ -735,7 +731,7 @@ class JsonMapper {
     _enumerateConstructorParameters(
         cm, jsonMap, context, (param) => param.isNamed, (param, name, jsonName,
             classMeta, JsonProperty? meta, value, TypeInfo typeInfo) {
-      if (!_isFieldIgnored(value, classMeta, meta, context.options)) {
+      if (!_isFieldIgnoredByValue(value, classMeta, meta, context.options)) {
         result[Symbol(name)] = value;
       }
     });
@@ -752,7 +748,7 @@ class JsonMapper {
         (param, name, jsonName, classMeta, JsonProperty? meta, value,
             TypeInfo typeInfo) {
       positionalArgumentNames.add(name);
-      result.add(_isFieldIgnored(value, classMeta, meta, context.options)
+      result.add(_isFieldIgnoredByValue(value, classMeta, meta, context.options)
           ? null
           : value);
     });
@@ -842,7 +838,7 @@ class JsonMapper {
         final Map flattenedPropertiesMap =
             _serializeObject(property.value, newContext);
         final fieldPrefixWords = meta?.name != null
-            ? toWords(meta?.name, newContext.caseStyle)
+            ? toWords(meta?.name, newContext.caseStyle).join(' ')
             : null;
         for (var element in flattenedPropertiesMap.entries) {
           result.setPropertyValue(
