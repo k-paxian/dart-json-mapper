@@ -957,7 +957,9 @@ class JsonMapper {
               : fieldValue;
           im.invokeSetter(name, _deserializeObject(object, newContext));
         }
-        if (defaultValue != null && !isGetterOnly) {
+        if (im.invokeGetter(name) == null &&
+            defaultValue != null &&
+            !isGetterOnly) {
           im.invokeSetter(name, defaultValue);
         }
         if (meta?.inject != true) {

@@ -1,3 +1,7 @@
+## 2.2.4
+
+* #187 (fix) defaultValue always overwrites the deserialized value
+
 ## 2.2.3
 
 * #184 (fix) "It seems your class 'Uint8List' has not been annotated with @jsonSerializable" error when using `Uint8ListConverter`

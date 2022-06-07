@@ -1,6 +1,5 @@
 import 'package:dart_json_mapper/dart_json_mapper.dart';
 import 'package:test/test.dart';
-
 import 'package:unit_testing/unit_testing.dart' show compactOptions, Car, Color;
 
 @jsonSerializable
@@ -57,8 +56,27 @@ class GlobalDefaultFields {
   int? id;
 }
 
+@jsonSerializable
+class DefaultValueOverrideTest {
+  @JsonProperty(defaultValue: 4)
+  int value;
+  DefaultValueOverrideTest(this.value);
+}
+
 void testDefaultValue() {
   group('[Verify default value cases]', () {
+    test('Override default value by the json value', () {
+      // given
+      final json1 = '''{"value":12}''';
+      final json2 = '''{}''';
+      // when
+      final target1 = JsonMapper.deserialize<DefaultValueOverrideTest>(json1);
+      final target2 = JsonMapper.deserialize<DefaultValueOverrideTest>(json2);
+      // then
+      expect(target1!.value, 12);
+      expect(target2!.value, 4);
+    });
+
     test('Ignore default field via field annotation', () {
       // given
       final instance = DefaultFields();
