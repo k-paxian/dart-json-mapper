@@ -1,3 +1,7 @@
+## 2.2.4+1
+
+* #188 (fix) downgrade dependencies to improve package compatibility
+
 ## 2.2.4
 
 * #187 (fix) defaultValue always overwrites the deserialized value
