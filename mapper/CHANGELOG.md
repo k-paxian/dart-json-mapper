@@ -1,3 +1,7 @@
+## 2.2.4+2
+
+* #190 (fix) type 'Null' is not a subtype of type 'Object' when serializing Null element in List and Set
+
 ## 2.2.4+1
 
 * #188 (fix) downgrade dependencies to improve package compatibility
