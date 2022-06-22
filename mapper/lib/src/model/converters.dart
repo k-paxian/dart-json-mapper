@@ -8,7 +8,7 @@ import 'package:intl/intl.dart';
 import 'index.dart';
 
 typedef SerializeObjectFunction = dynamic Function(
-    Object object, SerializationContext context);
+    Object? object, SerializationContext context);
 typedef DeserializeObjectFunction = dynamic Function(
     dynamic object, DeserializationContext context, Type type);
 typedef GetConverterFunction = ICustomConverter? Function(
