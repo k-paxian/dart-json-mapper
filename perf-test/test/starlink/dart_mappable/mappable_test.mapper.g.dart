@@ -102,7 +102,7 @@ class _RecordCopyWithImpl<$R> extends BaseCopyWith<Record, $R> implements Record
 class Mapper {
   Mapper._();
 
-  static late MapperContainer i = MapperContainer(_mappers);
+  static MapperContainer i = MapperContainer(_mappers);
 
   static T fromValue<T>(dynamic value) => i.fromValue<T>(value);
   static T fromMap<T>(Map<String, dynamic> map) => i.fromMap<T>(map);
