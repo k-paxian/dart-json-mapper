@@ -263,7 +263,7 @@ class JsonMapper {
   }
 
   String _getObjectKey(Object object) =>
-      '${object.runtimeType}-${object.hashCode}';
+      '${object.runtimeType}-${identityHashCode(object)}';
 
   ProcessedObjectDescriptor? _getObjectProcessed(Object object, int level) {
     ProcessedObjectDescriptor? result;

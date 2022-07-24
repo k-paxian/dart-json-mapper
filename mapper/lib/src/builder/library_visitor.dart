@@ -14,15 +14,15 @@ class LibraryVisitor extends RecursiveElementVisitor {
   LibraryVisitor(this.packageName);
 
   @override
-  void visitExportElement(ExportElement element) {
+  void visitLibraryExportElement(LibraryExportElement element) {
     _visitLibrary(element.exportedLibrary);
-    super.visitExportElement(element);
+    super.visitLibraryExportElement(element);
   }
 
   @override
-  void visitImportElement(ImportElement element) {
+  void visitLibraryImportElement(LibraryImportElement element) {
     _visitLibrary(element.importedLibrary);
-    super.visitImportElement(element);
+    super.visitLibraryImportElement(element);
   }
 
   @override

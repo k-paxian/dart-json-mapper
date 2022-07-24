@@ -1,3 +1,8 @@
+## 2.2.5+1
+
+* bump dependencies
+* #191 Incorrect detection of circular reference if hashCode has been overridden 
+ 
 ## 2.2.5
 
 * bump dependencies

@@ -3,6 +3,27 @@ import 'package:test/test.dart';
 import 'package:unit_testing/unit_testing.dart' show compactOptions;
 
 @jsonSerializable
+class A {
+  final int a;
+
+  A(this.a);
+
+  @override
+  bool operator ==(Object other) =>
+      runtimeType == other.runtimeType && a == (other as A).a;
+
+  @override
+  int get hashCode => a.hashCode;
+}
+
+@jsonSerializable
+class B {
+  final A a;
+
+  B(this.a);
+}
+
+@jsonSerializable
 class AA {
   BB? content;
 }
@@ -52,6 +73,19 @@ void testSpecialCases() {
       expect(target, TypeMatcher<AA>());
       expect(target.content, TypeMatcher<BB>());
       expect(target.content!.content, TypeMatcher<List<AA>>());
+    });
+
+    test('A/B circular reference serialization with overridden hashCode', () {
+      // given
+      final json = '[{"a":1},{"a":1},{"a":{"a":1}}]';
+      final a = A(1);
+      final b = B(A(1));
+
+      // when
+      final target = JsonMapper.serialize([a, a, b], compactOptions);
+
+      // then
+      expect(target, json);
     });
   });
 

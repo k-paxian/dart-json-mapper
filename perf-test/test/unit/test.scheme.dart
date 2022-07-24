@@ -65,9 +65,9 @@ class Address {
   Address.jsonTwo();
 
   @JsonConstructor(scheme: Scheme.A)
-  Address.jsonOne(@JsonProperty(name: 'id', scheme: Scheme.A) int _id,
+  Address.jsonOne(@JsonProperty(name: 'id', scheme: Scheme.A) int id,
       this.streetList, this.city)
-      : id = _id.toString(),
+      : id = id.toString(),
         street = streetList?.elementAt(0),
         district = city;
 }
