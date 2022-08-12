@@ -1,3 +1,7 @@
+## 2.2.5+2
+
+* pin analyzer 4.3.0 since further versions are incompatible with reflectable 3.0.9
+
 ## 2.2.5+1
 
 * bump dependencies
