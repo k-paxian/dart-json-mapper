@@ -12,7 +12,7 @@ jobs:
       - name: '>> unit & performance tests for mapper <<'
         uses: k-paxian/dart-package-publisher@master
         with:
-          dryRunOnly: true
+          testRunOnly: true
           credentialJson: ${{ secrets.CREDENTIAL_JSON }}
           relativePath: perf-test
 
