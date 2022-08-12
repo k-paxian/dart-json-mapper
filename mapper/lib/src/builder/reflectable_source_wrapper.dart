@@ -100,7 +100,7 @@ JsonMapper initializeJsonMapper({Iterable<JsonMapperAdapter> adapters = const []
     ].join(',\n');
   }
 
-  String _renderEnumValuesForElement(EnumElement element) {
+  String _renderEnumValuesForClassElement(ClassElement element) {
     return '    ${_getElementFullName(element)}: ${_getElementFullName(element)}.values';
   }
 
@@ -112,8 +112,8 @@ JsonMapper initializeJsonMapper({Iterable<JsonMapperAdapter> adapters = const []
 
   String _renderEnumValues() {
     return _libraryVisitor!.visitedPublicAnnotatedClassElements.values
-        .whereType<EnumElement>()
-        .map((e) => _renderEnumValuesForElement(e))
+        .where((element) => element.isEnum)
+        .map((e) => _renderEnumValuesForClassElement(e))
         .join(',\n');
   }
 
