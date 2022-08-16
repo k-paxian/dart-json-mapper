@@ -161,6 +161,7 @@ class JsonMapper {
   Map<Type, ICustomConverter> converters = {};
   Map<int, ITypeInfoDecorator> typeInfoDecorators = {};
   Map<Type, ValueDecoratorFunction> valueDecorators = {};
+  Map<Type, Function> typeFactories = {};
   Map<Type, dynamic> enumValues = {};
 
   static JsonEncoder _getJsonEncoder(SerializationContext context) =>
@@ -203,6 +204,7 @@ class JsonMapper {
     enumValues = _enumValues;
     converters = _converters;
     typeInfoDecorators = _typeInfoDecorators;
+    typeFactories = _typeFactories;
     valueDecorators = _valueDecorators;
 
     _enumerateAnnotatedClasses((ClassInfo classInfo) {
@@ -240,6 +242,14 @@ class JsonMapper {
     result.addAll(_inlineValueDecorators);
     for (var adapter in _adapters.values) {
       result.addAll(adapter.valueDecorators);
+    }
+    return result;
+  }
+
+  Map<Type, Function> get _typeFactories {
+    final result = <Type, Function>{};
+    for (var adapter in _adapters.values) {
+      result.addAll(adapter.typeFactories);
     }
     return result;
   }

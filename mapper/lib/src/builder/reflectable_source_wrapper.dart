@@ -1,4 +1,5 @@
 import 'package:analyzer/dart/element/element.dart';
+import 'package:collection/collection.dart';
 import 'package:path/path.dart' show posix;
 import 'package:pubspec_parse/pubspec_parse.dart';
 
@@ -82,6 +83,16 @@ JsonMapper initializeJsonMapper({Iterable<JsonMapperAdapter> adapters = const []
     return '''$prefix.${element.name}''';
   }
 
+  String? _renderTypeFactoryForClassElement(ClassElement element) {
+    if (element.typeParameters.isEmpty) {
+      return null;
+    }
+    final name = _getElementFullName(element);
+    final params = element.typeParameters.map((e) => e.name).join(', ');
+    final genericName = '$name<$params>';
+    return '''    typeOf<$name>(): <$params>(f) => f<$genericName>()''';
+  }
+
   String _renderValueDecoratorsForClassElement(ClassElement element) {
     return [
       ...[
@@ -110,6 +121,13 @@ JsonMapper initializeJsonMapper({Iterable<JsonMapperAdapter> adapters = const []
         .join(',\n');
   }
 
+  String _renderTypeFactories() {
+    return _libraryVisitor!.visitedPublicAnnotatedClassElements.values
+        .map((e) => _renderTypeFactoryForClassElement(e))
+        .whereNotNull()
+        .join(',\n');
+  }
+
   String _renderEnumValues() {
     return _libraryVisitor!.visitedPublicAnnotatedClassElements.values
         .where((element) => element.isEnum)
@@ -130,6 +148,9 @@ final $_libraryAdapterId = JsonMapperAdapter(
   memberSymbolMap: ${hasReflectableOutput ? '_memberSymbolMap' : 'null'},
   valueDecorators: {
 ${_renderValueDecorators()}
+},
+  typeFactories: {
+${_renderTypeFactories()}
 },
   enumValues: {
 ${_renderEnumValues()}

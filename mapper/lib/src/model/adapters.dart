@@ -36,6 +36,10 @@ abstract class IJsonMapperAdapter {
   /// during Deserialization process
   Map<Type, ValueDecoratorFunction> get valueDecorators;
 
+  /// A Map of type factory functions to be used for creation of [Type] instances
+  /// during Deserialization process
+  Map<Type, Function> get typeFactories;
+
   /// A Map of [Enum] descriptors. [Enum] as a key and value could be [Enum.values] or [EnumDescriptor]
   Map<Type, dynamic> get enumValues;
 
@@ -69,6 +73,8 @@ class JsonMapperAdapter implements IJsonMapperAdapter {
   @override
   final Map<Type, ValueDecoratorFunction> valueDecorators;
   @override
+  final Map<Type, Function> typeFactories;
+  @override
   final Map<int, ITypeInfoDecorator> typeInfoDecorators;
   @override
   final Map<Type, dynamic> enumValues;
@@ -80,6 +86,7 @@ class JsonMapperAdapter implements IJsonMapperAdapter {
   const JsonMapperAdapter(
       {this.converters = const {},
       this.valueDecorators = const {},
+      this.typeFactories = const {},
       this.typeInfoDecorators = const {},
       this.enumValues = const {},
       this.memberSymbolMap,
