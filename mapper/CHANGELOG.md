@@ -1,3 +1,7 @@
+## 2.2.5+3
+
+* #193 (fix) downgrade dependencies to improve package compatibility
+
 ## 2.2.5+2
 
 * pin analyzer 4.3.0 since further versions are incompatible with reflectable 3.0.9
