@@ -221,7 +221,7 @@ void testObservables() {
     test('ObservableSet<String>', () {
       // given
       final json =
-          '''{"stringSet":["bb@test.com","aa@test.com","cc@test.com"]}''';
+          '''{"stringSet":["aa@test.com","bb@test.com","cc@test.com"]}''';
       final m = MobX(
           stringSet: ObservableSet<String>.of(
               ['aa@test.com', 'bb@test.com', 'cc@test.com']));
@@ -236,7 +236,7 @@ void testObservables() {
 
     test('ObservableSet<num>', () {
       // given
-      final json = '''{"numSet":[2.1,1,3]}''';
+      final json = '''{"numSet":[1,2.1,3]}''';
       final m = MobX(numSet: ObservableSet<num>.of([1, 2.1, 3]));
       // when
       final targetJson = JsonMapper.serialize(m, compactOptions);
@@ -262,7 +262,7 @@ void testObservables() {
 
     test('ObservableSet<double>', () {
       // given
-      final json = '''{"doubleSet":[1.0003,3.01,2.01]}''';
+      final json = '''{"doubleSet":[1.0003,2.01,3.01]}''';
       final m = MobX(doubleSet: ObservableSet<double>.of([1.0003, 2.01, 3.01]));
       // when
       final targetJson = JsonMapper.serialize(m, compactOptions);
@@ -275,7 +275,7 @@ void testObservables() {
 
     test('ObservableSet<bool>', () {
       // given
-      final json = '''{"boolSet":[false,true]}''';
+      final json = '''{"boolSet":[true,false]}''';
       final m = MobX(boolSet: ObservableSet<bool>.of([true, false, true]));
       // when
       final targetJson = JsonMapper.serialize(m, compactOptions);
@@ -289,7 +289,7 @@ void testObservables() {
     test('ObservableSet<DateTime>', () {
       // given
       final json =
-          '''{"dateTimeSet":["2014-02-20 00:00:00.000","2013-01-23 00:00:00.000","2003-02-28 00:00:00.000"]}''';
+          '''{"dateTimeSet":["2003-02-28 00:00:00.000","2013-01-23 00:00:00.000","2014-02-20 00:00:00.000"]}''';
       final m = MobX(
           dateTimeSet: ObservableSet<DateTime>.of([
         DateTime.parse('2003-02-28 00:00:00.000'),
