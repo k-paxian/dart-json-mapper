@@ -129,6 +129,21 @@ class MySuperclass implements MyBaseClass {
   final String myField = 'myFieldValue';
 }
 
+/// Case 4: Discriminator as of Type type /////////////////////
+@JsonSerializable()
+@Json(discriminatorProperty: 'type')
+abstract class TypedParent {
+  @JsonProperty(ignore: true)
+  Type get type => runtimeType;
+
+  var a = 1;
+}
+
+@JsonSerializable()
+class TypedChild extends TypedParent {
+  var b = "test";
+}
+
 void testInheritance() {
   group('[Verify inheritance cases]', () {
     test(
@@ -195,6 +210,20 @@ void testInheritance() {
 
       expect(newUser.id, 'xxx');
       expect(newUser.email, 'x@x.com');
+    });
+
+    test('Discriminator as of Type type', () {
+      // given
+      final childInstance = TypedChild();
+
+      // when
+      final firstJson = JsonMapper.serialize(childInstance, compactOptions);
+      final targetInstance = JsonMapper.deserialize<TypedParent>(firstJson);
+      final secondJson = JsonMapper.serialize(targetInstance, compactOptions);
+
+      // then
+      expect(targetInstance, TypeMatcher<TypedChild>());
+      expect(firstJson, secondJson);
     });
   });
 }

@@ -337,6 +337,9 @@ class JsonMapper {
         final discriminatorType = _getDeclarationType(declarationMirror);
         final value = _deserializeObject(discriminatorValue,
             context.reBuild(typeInfo: _getTypeInfo(discriminatorType)));
+        if (value is Type) {
+          return _getTypeInfo(value);
+        }
         return _getTypeInfo(_discriminatorToType[value]!);
       }
     }
@@ -756,6 +759,18 @@ class JsonMapper {
     return result;
   }
 
+  bool _isValidJSON(dynamic jsonValue) {
+    try {
+      if (jsonValue is String) {
+        _jsonDecoder.convert(jsonValue);
+        return true;
+      }
+      return false;
+    } on FormatException {
+      return false;
+    }
+  }
+
   void _configureConverter(
       ICustomConverter converter, DeserializationContext context,
       {dynamic value}) {
@@ -889,12 +904,11 @@ class JsonMapper {
           _getConvertedValue(converter, jsonValue, context), typeInfo);
     }
 
-    dynamic convertedJsonValue;
-    try {
-      convertedJsonValue =
-          (jsonValue is String) ? _jsonDecoder.convert(jsonValue) : jsonValue;
-    } on FormatException catch (exception) {
-      throw JsonFormatError(context, formatException: exception);
+    dynamic convertedJsonValue =
+        _isValidJSON(jsonValue) ? _jsonDecoder.convert(jsonValue) : jsonValue;
+
+    if (convertedJsonValue is String && typeInfo.type is Type) {
+      return _getTypeByStringName(convertedJsonValue.replaceAll("\"", ""));
     }
 
     final jsonMap = JsonMap(

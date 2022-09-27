@@ -1,3 +1,7 @@
+## 2.2.6
+
+* #195 Deserializing with String discriminatorProperty throws JsonFormatError(FormatException) 
+
 ## 2.2.5+3
 
 * #193 (fix) downgrade dependencies to improve package compatibility
