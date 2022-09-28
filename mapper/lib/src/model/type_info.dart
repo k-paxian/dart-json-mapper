@@ -65,7 +65,9 @@ class DefaultTypeInfoDecorator implements ITypeInfoDecorator {
       typeInfo.typeName == 'RegExp' || typeInfo.typeName == '_RegExp';
 
   bool isUri(TypeInfo typeInfo) =>
-      typeInfo.typeName == 'Uri' || typeInfo.typeName == '_SimpleUri';
+      typeInfo.typeName == 'Uri' ||
+      typeInfo.typeName == '_SimpleUri' ||
+      typeInfo.typeName == '_Uri';
 
   bool isHashSet(TypeInfo typeInfo) =>
       typeInfo.typeName!.startsWith('HashSet<') ||
