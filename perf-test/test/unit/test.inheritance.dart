@@ -144,6 +144,24 @@ class TypedChild extends TypedParent {
   var b = "test";
 }
 
+/// Case 5: Discriminator as of type String /////////////////////
+@JsonSerializable()
+@Json(discriminatorProperty: 'type', discriminatorValue: 'p')
+abstract class TypedStringParent {
+  String get type => 'p';
+
+  var a = 1;
+}
+
+@JsonSerializable()
+@Json(discriminatorValue: 'ch')
+class TypedStringChild extends TypedStringParent {
+  @override
+  String get type => 'ch';
+
+  var b = "test";
+}
+
 void testInheritance() {
   group('[Verify inheritance cases]', () {
     test(
@@ -223,6 +241,20 @@ void testInheritance() {
 
       // then
       expect(targetInstance, TypeMatcher<TypedChild>());
+      expect(firstJson, secondJson);
+    });
+    test('Discriminator as of type String', () {
+      // given
+      final childInstance = TypedStringChild();
+
+      // when
+      final firstJson = JsonMapper.serialize(childInstance, compactOptions);
+      final targetInstance =
+          JsonMapper.deserialize<TypedStringParent>(firstJson);
+      final secondJson = JsonMapper.serialize(targetInstance, compactOptions);
+
+      // then
+      expect(targetInstance, TypeMatcher<TypedStringChild>());
       expect(firstJson, secondJson);
     });
   });
