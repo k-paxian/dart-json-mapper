@@ -1,7 +1,7 @@
 import 'package:dart_json_mapper/dart_json_mapper.dart';
 import 'package:test/test.dart';
 import 'package:unit_testing/unit_testing.dart'
-    show compactOptions, Car, Color, Immutable;
+    show defaultOptions, Car, Color, Immutable;
 
 @jsonSerializable
 class BusinessObject {
@@ -269,7 +269,7 @@ void testConstructors() {
       var instance = NamedParametersClass(firstName: 'Bob', lastName: 'Marley');
 
       // when
-      final target = JsonMapper.serialize(instance, compactOptions);
+      final target = JsonMapper.serialize(instance);
       final targetInstance = JsonMapper.deserialize<NamedParametersClass>(json);
 
       // then
@@ -281,7 +281,7 @@ void testConstructors() {
       // given
       var instance = PartiallyOptionalParametersClass('Bob', 'Marley');
       // when
-      final target = JsonMapper.serialize(instance, compactOptions);
+      final target = JsonMapper.serialize(instance);
       // then
       expect(target, json);
     });
@@ -290,7 +290,7 @@ void testConstructors() {
       // given
       var instance = OptionalParametersClass('Bob', 'Marley');
       // when
-      final target = JsonMapper.serialize(instance, compactOptions);
+      final target = JsonMapper.serialize(instance);
       // then
       expect(target, json);
     });
@@ -299,7 +299,7 @@ void testConstructors() {
       // given
       var instance = PositionalParametersClass('Bob', 'Marley');
       // when
-      final target = JsonMapper.serialize(instance, compactOptions);
+      final target = JsonMapper.serialize(instance);
       // then
       expect(target, json);
     });
@@ -320,7 +320,7 @@ void testConstructors() {
       final target = Fo(null, 'hello world');
       // when
       final instance = JsonMapper.deserialize<Fo>(json)!;
-      final targetJson = JsonMapper.serialize(target, compactOptions);
+      final targetJson = JsonMapper.serialize(target);
       // then
       expect(instance.message, 'hello world');
       expect(targetJson, json);
@@ -334,9 +334,9 @@ void testConstructors() {
       final ptTarget2 = PtDerived2(Pt());
       // when
       final instance = JsonMapper.deserialize<Derived>(json)!;
-      final targetJson = JsonMapper.serialize(target, compactOptions);
-      final pTargetJson = JsonMapper.serialize(pTarget, compactOptions);
-      final ptTarget2Json = JsonMapper.serialize(ptTarget2, compactOptions);
+      final targetJson = JsonMapper.serialize(target);
+      final pTargetJson = JsonMapper.serialize(pTarget);
+      final ptTarget2Json = JsonMapper.serialize(ptTarget2);
       final pTargetBack = JsonMapper.deserialize<PtDerived>(pTargetJson)!;
       final ptTarget2Back = JsonMapper.deserialize<PtDerived2>(ptTarget2Json)!;
       // then
@@ -354,7 +354,7 @@ void testConstructors() {
       final user = User();
       user.email = 'a@a.com';
       // when
-      final json = JsonMapper.serialize(user, compactOptions);
+      final json = JsonMapper.serialize(user);
       final target = JsonMapper.deserialize<User>(json)!;
       // then
       expect(json, '{"email":"a@a.com"}');
@@ -395,7 +395,7 @@ void testConstructors() {
       // given
       final instance = IgnoreNullMembersClass(firstName: 'Bob');
       // when
-      final target = JsonMapper.serialize(instance, compactOptions);
+      final target = JsonMapper.serialize(instance);
       // then
       expect(target, '{"firstName":"Bob"}');
     });
@@ -414,7 +414,7 @@ void testConstructors() {
       // given
       final instance = ImmutableDefault2();
       // when
-      final target = JsonMapper.serialize(instance, compactOptions);
+      final target = JsonMapper.serialize(instance);
       // then
       expect(target, '{"id":1}');
     });
@@ -425,7 +425,7 @@ void testConstructors() {
       var instance = IgnoredFieldClass(
           firstName: 'Bob', middleName: null, lastName: 'Marley');
       // when
-      var target = JsonMapper.serialize(instance, compactOptions);
+      var target = JsonMapper.serialize(instance);
       // then
       expect(target, '{"firstName":"Bob"}');
 
@@ -456,14 +456,14 @@ void testConstructors() {
 }''';
       final i = Immutable(1, 'Bob', Car('Audi', Color.green));
       // when
-      final target = JsonMapper.serialize(i);
+      final target = JsonMapper.serialize(i, defaultOptions);
       // then
       expect(target, immutableJson);
 
       // when
       final ic = JsonMapper.deserialize<Immutable>(immutableJson);
       // then
-      expect(JsonMapper.serialize(ic), immutableJson);
+      expect(JsonMapper.serialize(ic, defaultOptions), immutableJson);
     });
 
     test('Back referencing to parent/owner object', () {

@@ -1,6 +1,7 @@
 import 'package:dart_json_mapper/dart_json_mapper.dart';
 
 final compactOptions = SerializationOptions(indent: '');
+final defaultOptions = defaultSerializationOptions;
 
 @jsonSerializable
 enum Color { red, blue, gray, grayMetallic, green, brown, yellow, black, white }

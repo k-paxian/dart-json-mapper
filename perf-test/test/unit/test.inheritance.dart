@@ -1,6 +1,5 @@
 import 'package:dart_json_mapper/dart_json_mapper.dart';
 import 'package:test/test.dart';
-import 'package:unit_testing/unit_testing.dart' show compactOptions;
 
 @jsonSerializable
 enum BusinessType { private, public, private2, public2 }
@@ -205,7 +204,7 @@ void testInheritance() {
           '{"myCustomFieldName":"myFieldValue","myCustomGetterName":"myGetterValue"}';
 
       // when
-      final targetJson = JsonMapper.serialize(instance, compactOptions);
+      final targetJson = JsonMapper.serialize(instance);
       final target = JsonMapper.deserialize<MySuperclass>(targetJson)!;
 
       // then
@@ -235,23 +234,24 @@ void testInheritance() {
       final childInstance = TypedChild();
 
       // when
-      final firstJson = JsonMapper.serialize(childInstance, compactOptions);
+      final firstJson = JsonMapper.serialize(childInstance);
       final targetInstance = JsonMapper.deserialize<TypedParent>(firstJson);
-      final secondJson = JsonMapper.serialize(targetInstance, compactOptions);
+      final secondJson = JsonMapper.serialize(targetInstance);
 
       // then
       expect(targetInstance, TypeMatcher<TypedChild>());
       expect(firstJson, secondJson);
     });
+
     test('Discriminator as of type String', () {
       // given
       final childInstance = TypedStringChild();
 
       // when
-      final firstJson = JsonMapper.serialize(childInstance, compactOptions);
+      final firstJson = JsonMapper.serialize(childInstance);
       final targetInstance =
           JsonMapper.deserialize<TypedStringParent>(firstJson);
-      final secondJson = JsonMapper.serialize(targetInstance, compactOptions);
+      final secondJson = JsonMapper.serialize(targetInstance);
 
       // then
       expect(targetInstance, TypeMatcher<TypedStringChild>());

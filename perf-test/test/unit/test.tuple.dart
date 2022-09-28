@@ -1,5 +1,6 @@
 import 'package:dart_json_mapper/dart_json_mapper.dart';
 import 'package:test/test.dart';
+import 'package:unit_testing/unit_testing.dart' show defaultOptions;
 
 /// Motivation: https://github.com/google/json_serializable.dart/blob/master/example/lib/tuple_example.dart
 
@@ -51,7 +52,7 @@ void testTupleCases() {
       );
 
       // when
-      final targetJson = JsonMapper.serialize(instance);
+      final targetJson = JsonMapper.serialize(instance, defaultOptions);
       final target = JsonMapper.deserialize<ConcreteClass>(targetJson)!;
 
       // then

@@ -1,6 +1,6 @@
 import 'package:dart_json_mapper/dart_json_mapper.dart';
 import 'package:test/test.dart';
-import 'package:unit_testing/unit_testing.dart' show compactOptions, Car, Color;
+import 'package:unit_testing/unit_testing.dart' show defaultOptions, Car, Color;
 
 @jsonSerializable
 class CropArea {
@@ -81,7 +81,7 @@ void testDefaultValue() {
       // given
       final instance = DefaultFields();
       // when
-      final target = JsonMapper.serialize(instance, compactOptions);
+      final target = JsonMapper.serialize(instance);
       // then
       expect(target, '{"id":1}');
     });
@@ -90,7 +90,7 @@ void testDefaultValue() {
       // given
       final instance = ManyDefaultFields();
       // when
-      final target = JsonMapper.serialize(instance, compactOptions);
+      final target = JsonMapper.serialize(instance);
       // then
       expect(target, '{}');
     });
@@ -143,7 +143,7 @@ void testDefaultValue() {
       final i = ImmutableDefault(name: 'Bob', car: Car('Audi', Color.green));
 
       // when
-      final targetJson = JsonMapper.serialize(i);
+      final targetJson = JsonMapper.serialize(i, defaultOptions);
       final target = JsonMapper.deserialize<ImmutableDefault>(json)!;
 
       // then

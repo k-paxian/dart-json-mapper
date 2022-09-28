@@ -1,6 +1,5 @@
 import 'package:dart_json_mapper/dart_json_mapper.dart';
 import 'package:test/test.dart';
-import 'package:unit_testing/unit_testing.dart' show compactOptions;
 
 @jsonSerializable
 class MyNullableFieldsExample {
@@ -73,7 +72,7 @@ void testRequired() {
 
       // when
       final target = JsonMapper.deserialize<Preferences>(json)!;
-      final targetJson = JsonMapper.serialize(target, compactOptions);
+      final targetJson = JsonMapper.serialize(target);
 
       // then
       expect(target.metadata.id, 'e5PPxnqulIgBslobDZPXVweoTCC2');
@@ -86,8 +85,7 @@ void testRequired() {
       final json = r'''{"myList":null,"myMap":null,"mySet":null}''';
 
       // when
-      final targetJson =
-          JsonMapper.toJson(MyNullableFieldsExample(), compactOptions);
+      final targetJson = JsonMapper.toJson(MyNullableFieldsExample());
 
       // then
       expect(targetJson, json);
@@ -98,8 +96,8 @@ void testRequired() {
       final json = r'''{"accountType":null}''';
 
       // when
-      final targetJson = JsonMapper.toJson(
-          TransactionsRequestModel(accountType: null), compactOptions);
+      final targetJson =
+          JsonMapper.toJson(TransactionsRequestModel(accountType: null));
       final target =
           JsonMapper.toMap(TransactionsRequestModel(accountType: null));
 

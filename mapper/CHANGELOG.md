@@ -1,3 +1,7 @@
+## 2.2.6+1
+
+* #196 Allow to pass global default options for serialization/deserialization to `initializeJsonMapper` method
+
 ## 2.2.6
 
 * #195 Deserializing with String discriminatorProperty throws JsonFormatError(FormatException) 

@@ -1,6 +1,7 @@
 library json_mapper.test;
 
 import 'package:starlink/starlink.dart' show starlinkGeneratedAdapter;
+import 'package:unit_testing/model.dart' show compactOptions;
 import 'package:unit_testing/unit_testing.dart'
     show unitTestingGeneratedAdapter;
 
@@ -28,6 +29,7 @@ import 'test.value.decorators.dart';
 
 void main() {
   initializeJsonMapper(
+      serializationOptions: compactOptions,
       adapters: [starlinkGeneratedAdapter, unitTestingGeneratedAdapter]).info();
 
   testScheme();

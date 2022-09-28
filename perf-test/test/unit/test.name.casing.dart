@@ -1,6 +1,6 @@
 import 'package:dart_json_mapper/dart_json_mapper.dart';
 import 'package:test/test.dart';
-import 'package:unit_testing/unit_testing.dart' show compactOptions, Color;
+import 'package:unit_testing/unit_testing.dart' show Color;
 
 @jsonSerializable
 @Json(caseStyle: CaseStyle.kebab)
@@ -39,7 +39,7 @@ void testNameCasing() {
         final instance = NameCaseObjectOverride(
             mainTitle: 'title', description: 'desc', hasMainProperty: true);
         // when
-        final json = JsonMapper.serialize(instance, compactOptions);
+        final json = JsonMapper.serialize(instance);
         // then
         expect(json,
             '''{"main-title":"title","description":"desc","has-main-property":true,"primary-color":null}''');
@@ -50,7 +50,7 @@ void testNameCasing() {
         final instance = NameCaseObject(
             mainTitle: 'title', description: 'desc', hasMainProperty: true);
         // when
-        final json = JsonMapper.serialize(instance, compactOptions);
+        final json = JsonMapper.serialize(instance);
         // then
         expect(json,
             '''{"mainTitle":"title","description":"desc","hasMainProperty":true,"primaryColor":"grayMetallic"}''');

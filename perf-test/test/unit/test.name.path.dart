@@ -1,6 +1,5 @@
 import 'package:dart_json_mapper/dart_json_mapper.dart';
 import 'package:test/test.dart';
-import 'package:unit_testing/unit_testing.dart' show compactOptions;
 
 @jsonSerializable
 class Feature {
@@ -134,7 +133,7 @@ void testNamePath() {
       final instance = DeepNestedList(items: ['1', '2', '3']);
       final json = '''{"root":{"foo":{"bar":{"items":["1","2","3"]}}}}''';
       // when
-      final targetJson = JsonMapper.serialize(instance, compactOptions);
+      final targetJson = JsonMapper.serialize(instance);
       // then
       expect(targetJson, json);
     });
@@ -146,7 +145,7 @@ void testNamePath() {
           '''[{"id":1,"name":"category1","products":[{"id":3629,"name":"Apple","features":[{"id":9,"name":"Red Color"}]},{"id":5674,"name":"Banana"}]},{"id":2,"name":"category2","products":[{"id":7834,"name":"Car"},{"id":2386,"name":"Truck"}]}]''';
       // when
       final target = JsonMapper.deserialize<List<ProductCategory>>(json)!;
-      final targetJson = JsonMapper.serialize(target, compactOptions);
+      final targetJson = JsonMapper.serialize(target);
       // then
       expect(targetJson, json);
       expect(target.first.products!.first.categoryId, 1);

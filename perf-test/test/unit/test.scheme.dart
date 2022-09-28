@@ -1,6 +1,5 @@
 import 'package:dart_json_mapper/dart_json_mapper.dart';
 import 'package:test/test.dart';
-import 'package:unit_testing/unit_testing.dart' show compactOptions;
 
 enum Scheme { A, B }
 
@@ -120,7 +119,7 @@ void testScheme() {
       // given
       final instance = Object('No Scheme');
       // when
-      final json = JsonMapper.serialize(instance, compactOptions);
+      final json = JsonMapper.serialize(instance);
       // then
       expect(json, '''{"default":{"title":"No Scheme"}}''');
     });

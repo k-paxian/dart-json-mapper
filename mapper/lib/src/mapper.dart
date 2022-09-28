@@ -17,10 +17,18 @@ import 'utils.dart';
 /// Singleton class providing mostly static methods for conversion of previously
 /// annotated by [JsonSerializable] Dart objects from / to JSON string
 class JsonMapper {
+  /// global [SerializationOptions]
+  static SerializationOptions globalSerializationOptions =
+      defaultSerializationOptions;
+
+  /// global [DeserializationOptions]
+  static DeserializationOptions globalDeserializationOptions =
+      defaultDeserializationOptions;
+
   /// Converts an instance of Dart object to JSON String
-  static String serialize(Object? object,
-      [SerializationOptions options = defaultSerializationOptions]) {
-    final context = SerializationContext(options,
+  static String serialize(Object? object, [SerializationOptions? options]) {
+    final context = SerializationContext(
+        options ?? JsonMapper.globalSerializationOptions,
         typeInfo: instance._getTypeInfo(object.runtimeType));
     instance.clearCache();
     return _getJsonEncoder(context)
@@ -32,12 +40,13 @@ class JsonMapper {
   /// [jsonValue] could be as of [Object] type, then it will be processed as is
   /// [jsonValue] could be as of [Map<String, dynamic>] type, then it will be processed as is
   static T? deserialize<T>(dynamic jsonValue,
-      [DeserializationOptions options = defaultDeserializationOptions]) {
+      [DeserializationOptions? options]) {
+    final targetOptions = options ?? JsonMapper.globalDeserializationOptions;
     final targetType = T != dynamic
         ? T
-        : options.template != null
-            ? options.template.runtimeType
-            : options.type ?? dynamic;
+        : targetOptions.template != null
+            ? targetOptions.template.runtimeType
+            : targetOptions.type ?? dynamic;
     assert(targetType != dynamic
         ? true
         : throw MissingTypeForDeserializationError());
@@ -47,14 +56,14 @@ class JsonMapper {
                 ? _jsonDecoder.convert(jsonValue)
                 : jsonValue
             : null,
-        DeserializationContext(options,
-            classMeta: instance._classes[targetType]?.getMeta(options.scheme),
+        DeserializationContext(targetOptions,
+            classMeta:
+                instance._classes[targetType]?.getMeta(targetOptions.scheme),
             typeInfo: instance._getTypeInfo(targetType))) as T?;
   }
 
   /// Converts Dart object to JSON String
-  static String toJson(Object? object,
-          [SerializationOptions options = defaultSerializationOptions]) =>
+  static String toJson(Object? object, [SerializationOptions? options]) =>
       serialize(object, options);
 
   /// Converts [getParams] object to Uri GET request with [baseUrl]
@@ -68,14 +77,14 @@ class JsonMapper {
   }
 
   /// Converts JSON String to Dart object of type T
-  static T? fromJson<T>(String jsonValue,
-          [DeserializationOptions options = defaultDeserializationOptions]) =>
+  static T? fromJson<T>(String jsonValue, [DeserializationOptions? options]) =>
       deserialize<T>(jsonValue, options);
 
   /// Converts Dart object to Map<String, dynamic>
   static Map<String, dynamic>? toMap(Object? object,
-      [SerializationOptions options = defaultSerializationOptions]) {
-    final context = SerializationContext(options,
+      [SerializationOptions? options]) {
+    final context = SerializationContext(
+        options ?? JsonMapper.globalSerializationOptions,
         typeInfo: instance._getTypeInfo(object.runtimeType));
     instance.clearCache();
     final result = instance._serializeObject(object, context);
@@ -84,7 +93,7 @@ class JsonMapper {
 
   /// Converts Map<String, dynamic> to Dart object instance of type T
   static T? fromMap<T>(Map<String, dynamic>? map,
-          [DeserializationOptions options = defaultDeserializationOptions]) =>
+          [DeserializationOptions? options]) =>
       deserialize<T>(map, options);
 
   /// Clone Dart object of type T

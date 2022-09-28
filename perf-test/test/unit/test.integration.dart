@@ -1,7 +1,7 @@
 import 'package:dart_json_mapper/dart_json_mapper.dart';
 import 'package:test/test.dart';
 import 'package:unit_testing/unit_testing.dart'
-    show Car, Color, Person, personJson;
+    show Car, Color, Person, personJson, defaultOptions;
 
 void testIntegration() {
   group('[Verify end to end serialization <=> deserialization]', () {
@@ -62,7 +62,7 @@ void testIntegration() {
     test('Serialization', () {
       // given
       // when
-      final json = JsonMapper.serialize(Person());
+      final json = JsonMapper.serialize(Person(), defaultOptions);
       // then
       expect(json, personJson);
     });
@@ -73,7 +73,7 @@ void testIntegration() {
       final stopwatch = Stopwatch()..start();
       final person = JsonMapper.deserialize<Person>(personJson);
       final deserializationMs = stopwatch.elapsedMilliseconds;
-      final json = JsonMapper.serialize(person);
+      final json = JsonMapper.serialize(person, defaultOptions);
       print('Deserialization executed in $deserializationMs ms');
       print(
           'Serialization executed in ${stopwatch.elapsedMilliseconds - deserializationMs} ms');

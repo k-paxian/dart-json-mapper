@@ -1,6 +1,5 @@
 import 'package:dart_json_mapper/dart_json_mapper.dart';
 import 'package:test/test.dart';
-import 'package:unit_testing/unit_testing.dart' show compactOptions;
 
 @jsonSerializable
 class A {
@@ -82,7 +81,7 @@ void testSpecialCases() {
       final b = B(A(1));
 
       // when
-      final target = JsonMapper.serialize([a, a, b], compactOptions);
+      final target = JsonMapper.serialize([a, a, b]);
 
       // then
       expect(target, json);
@@ -97,7 +96,7 @@ void testSpecialCases() {
 
       // when
       final target = JsonMapper.deserialize<UnbalancedGetSet>(inputJson)!;
-      final outputJson = JsonMapper.serialize(target, compactOptions);
+      final outputJson = JsonMapper.serialize(target);
 
       // then
       expect(target, TypeMatcher<UnbalancedGetSet>());

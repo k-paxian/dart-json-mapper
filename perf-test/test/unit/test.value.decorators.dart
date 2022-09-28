@@ -1,6 +1,6 @@
 import 'package:dart_json_mapper/dart_json_mapper.dart';
 import 'package:test/test.dart';
-import 'package:unit_testing/unit_testing.dart' show compactOptions, Color, Car;
+import 'package:unit_testing/unit_testing.dart' show Color, Car;
 
 @jsonSerializable
 class NavbarTab {
@@ -197,7 +197,7 @@ void testValueDecorators() {
       test.mailingList.add('test2222@test.com');
       test.mailingList.add('test33333@test.com');
       // when
-      final json = JsonMapper.serialize(test, compactOptions);
+      final json = JsonMapper.serialize(test);
       final instance = JsonMapper.deserialize<TestChain>(json)!;
       // then
       expect(json,
@@ -241,7 +241,7 @@ void testValueDecorators() {
       set.add(Car('Audi', Color.green));
 
       // when
-      final json = JsonMapper.serialize(set, compactOptions);
+      final json = JsonMapper.serialize(set);
 
       // then
       expect(json, carListJson);

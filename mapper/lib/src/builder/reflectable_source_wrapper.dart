@@ -13,7 +13,7 @@ class ReflectableSourceWrapper {
   final collectionImport =
       '''import 'dart:collection' show HashSet, UnmodifiableListView;''';
   final mapperImport =
-      '''import 'package:dart_json_mapper/dart_json_mapper.dart' show JsonMapper, JsonMapperAdapter, typeOf;''';
+      '''import 'package:dart_json_mapper/dart_json_mapper.dart' show JsonMapper, JsonMapperAdapter, SerializationOptions, DeserializationOptions, typeOf;''';
   final reflectableInitMethod = '''initializeReflectable() {
   r.data = _data;
   r.memberSymbolMap = _memberSymbolMap;
@@ -26,10 +26,14 @@ class ReflectableSourceWrapper {
   r.data = adapter.reflectableData!;
   r.memberSymbolMap = adapter.memberSymbolMap;
 }''';
+  static const initSignature =
+      '''{Iterable<JsonMapperAdapter> adapters = const [], SerializationOptions? serializationOptions, DeserializationOptions? deserializationOptions}''';
+  static const initParams =
+      '''adapters: adapters, serializationOptions: serializationOptions, deserializationOptions: deserializationOptions''';
   final initMethod =
-      '''Future<JsonMapper> initializeJsonMapperAsync({Iterable<JsonMapperAdapter> adapters = const []}) => Future(() => initializeJsonMapper(adapters: adapters));
+      '''Future<JsonMapper> initializeJsonMapperAsync($initSignature) => Future(() => initializeJsonMapper($initParams));
 
-JsonMapper initializeJsonMapper({Iterable<JsonMapperAdapter> adapters = const []}) {''';
+JsonMapper initializeJsonMapper($initSignature) {''';
 
   LibraryVisitor? _libraryVisitor;
 
@@ -139,6 +143,8 @@ ${_renderEnumValues()}
   String _renderLibraryAdapterRegistration(String input) {
     final hasReflectableOutput = _hasReflectableOutput(input);
     return '''
+  JsonMapper.globalSerializationOptions = serializationOptions ?? JsonMapper.globalSerializationOptions;
+  JsonMapper.globalDeserializationOptions = deserializationOptions ?? JsonMapper.globalDeserializationOptions;    
   JsonMapper.enumerateAdapters([...adapters, $_libraryAdapterId], (JsonMapperAdapter adapter) {
     ${hasReflectableOutput ? '$reflectableInitMethodName(adapter);' : ''}
     JsonMapper().useAdapter(adapter);

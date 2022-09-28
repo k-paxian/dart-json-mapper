@@ -1,6 +1,6 @@
 import 'package:dart_json_mapper/dart_json_mapper.dart';
 import 'package:test/test.dart';
-import 'package:unit_testing/unit_testing.dart' show compactOptions, Car, Color;
+import 'package:unit_testing/unit_testing.dart' show Car, Color;
 
 class UnAnnotated {}
 
@@ -125,7 +125,7 @@ void testErrorHandling() {
         '[ignoreForSerialization], [ignoreIfNull], '
         '[Json.ignoreNullMembers] has no meaning', () {
       final instance = ObjectWithRequiredNullableField(value2: '');
-      final json = JsonMapper.serialize(instance, compactOptions);
+      final json = JsonMapper.serialize(instance);
       expect(json, '{"value":null,"value2":""}');
       expect(catchError(() => JsonMapper.serialize(instance)), null);
     });
@@ -140,14 +140,14 @@ void testErrorHandling() {
     test('[Suppress] Circular reference detection during serialization', () {
       final car = MyCar('VW', Color.blue);
       car.replacement = car;
-      expect(catchError(() => JsonMapper.serialize(car, compactOptions)), null);
+      expect(catchError(() => JsonMapper.serialize(car)), null);
     });
 
     test('Allow using same object same level during serialization', () {
       final device = Device();
       final us = UserSettings([device, device]);
 
-      expect(catchError(() => JsonMapper.serialize(us, compactOptions)), null);
+      expect(catchError(() => JsonMapper.serialize(us)), null);
     });
 
     test('Missing annotation on class', () {

@@ -2,7 +2,6 @@ import 'dart:collection';
 
 import 'package:dart_json_mapper/dart_json_mapper.dart';
 import 'package:test/test.dart';
-import 'package:unit_testing/unit_testing.dart' show compactOptions;
 
 void testCollections() {
   group('[Verify Dart Collection cases]', () {
@@ -16,7 +15,7 @@ void testCollections() {
       JsonMapper().useAdapter(adapter);
 
       // when
-      final json = JsonMapper.serialize(instance, compactOptions);
+      final json = JsonMapper.serialize(instance);
       final target =
           JsonMapper.deserialize<UnmodifiableMapView<String, int>>(json)!;
 
@@ -44,7 +43,7 @@ void testCollections() {
       JsonMapper().useAdapter(adapter);
 
       // when
-      final json = JsonMapper.serialize(instance, compactOptions);
+      final json = JsonMapper.serialize(instance);
       final target = JsonMapper.deserialize<UnmodifiableListView<int>>(json)!;
 
       // then
@@ -67,7 +66,7 @@ void testCollections() {
       JsonMapper().useAdapter(adapter);
 
       // when
-      final json = JsonMapper.serialize(instance, compactOptions);
+      final json = JsonMapper.serialize(instance);
       final target = JsonMapper.deserialize<HashSet<int>>(json)!;
 
       // then
@@ -90,7 +89,7 @@ void testCollections() {
       JsonMapper().useAdapter(adapter);
 
       // when
-      final json = JsonMapper.serialize(instance, compactOptions);
+      final json = JsonMapper.serialize(instance);
       final target = JsonMapper.deserialize<HashMap<String, int>>(json)!;
 
       // then
@@ -117,7 +116,7 @@ void testCollections() {
       JsonMapper().useAdapter(adapter);
 
       // when
-      final json = JsonMapper.serialize(instance, compactOptions);
+      final json = JsonMapper.serialize(instance);
       final target = JsonMapper.deserialize<HashMap<int, String>>(json)!;
 
       // then
