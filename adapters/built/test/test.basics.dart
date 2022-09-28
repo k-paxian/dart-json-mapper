@@ -37,7 +37,7 @@ void testBasics() {
       // when
       JsonMapper().useAdapter(adapter);
 
-      final targetJson = JsonMapper.serialize(ItemsList());
+      final targetJson = JsonMapper.serialize(ItemsList(), compactOptions);
       final instance = JsonMapper.deserialize<ItemsList>(targetJson);
 
       JsonMapper().removeAdapter(adapter);
