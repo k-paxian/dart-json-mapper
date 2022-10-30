@@ -6,7 +6,7 @@ import 'dart:io' show File;
 import 'package:dart_mappable/dart_mappable.dart';
 import 'package:path/path.dart' as path;
 
-import 'mappable_test.mapper.g.dart' show Mapper;
+import 'mappable_test.mapper.g.dart';
 
 part './index.dart';
 part './model.dart';

@@ -1,3 +1,7 @@
+## 2.2.7
+
+* bump dependencies
+
 ## 2.2.6+1
 
 * #196 Allow to pass global default options for serialization/deserialization to `initializeJsonMapper` method

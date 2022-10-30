@@ -86,7 +86,7 @@ JsonMapper initializeJsonMapper($initSignature) {''';
     return '''$prefix.${element.name}''';
   }
 
-  String _renderValueDecoratorsForClassElement(ClassElement element) {
+  String _renderValueDecoratorsForClassElement(InterfaceElement element) {
     return [
       ...[
         'List',
@@ -104,19 +104,18 @@ JsonMapper initializeJsonMapper($initSignature) {''';
     ].join(',\n');
   }
 
-  String _renderEnumValuesForClassElement(ClassElement element) {
+  String _renderEnumValuesForClassElement(EnumElement element) {
     return '    ${_getElementFullName(element)}: ${_getElementFullName(element)}.values';
   }
 
   String _renderValueDecorators() {
-    return _libraryVisitor!.visitedPublicAnnotatedClassElements.values
+    return _libraryVisitor!.visitedPublicAnnotatedElements
         .map((e) => _renderValueDecoratorsForClassElement(e))
         .join(',\n');
   }
 
   String _renderEnumValues() {
-    return _libraryVisitor!.visitedPublicAnnotatedClassElements.values
-        .where((element) => element.isEnum)
+    return _libraryVisitor!.visitedPublicAnnotatedEnumElements.values
         .map((e) => _renderEnumValuesForClassElement(e))
         .join(',\n');
   }
@@ -154,7 +153,7 @@ ${_renderEnumValues()}
   }
 
   void _renderElementImport(
-      ClassElement element, Map<String?, List<String>> importsMap) {
+      InterfaceElement element, Map<String?, List<String>> importsMap) {
     final elementPath = element.library.identifier;
     String? importString;
     if (elementPath.startsWith(_inputLibraryPath)) {
@@ -188,8 +187,7 @@ ${_renderEnumValues()}
 
   Map<String?, List<String>> _buildImportsMap() {
     final importsMap = <String?, List<String>>{};
-    for (var element
-        in _libraryVisitor!.visitedPublicAnnotatedClassElements.values) {
+    for (var element in _libraryVisitor!.visitedPublicAnnotatedElements) {
       _renderElementImport(element, importsMap);
     }
     return importsMap;
@@ -216,7 +214,7 @@ ${_renderEnumValues()}
   }
 
   String _removeLanguageOverrides(String input) {
-    return input.replaceAll(RegExp(r'\/\/ @dart = \d\.\d+'), '');
+    return input.replaceAll(RegExp(r'// @dart = \d\.\d+'), '');
   }
 
   String _patchInitMethod(String input) {

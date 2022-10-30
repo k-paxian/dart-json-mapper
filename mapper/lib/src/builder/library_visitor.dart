@@ -6,12 +6,20 @@ import '../model/annotations.dart';
 class LibraryVisitor extends RecursiveElementVisitor {
   Map<num, ClassElement> visitedPublicClassElements = {};
   Map<num, ClassElement> visitedPublicAnnotatedClassElements = {};
+  Map<num, EnumElement> visitedPublicAnnotatedEnumElements = {};
   Map<String, LibraryElement?> visitedLibraries = {};
 
   final _annotationClassName = jsonSerializable.runtimeType.toString();
   String? packageName;
 
   LibraryVisitor(this.packageName);
+
+  List<InterfaceElement> get visitedPublicAnnotatedElements {
+    return [
+      ...visitedPublicAnnotatedClassElements.values,
+      ...visitedPublicAnnotatedEnumElements.values
+    ];
+  }
 
   @override
   void visitLibraryExportElement(LibraryExportElement element) {
@@ -42,6 +50,25 @@ class LibraryVisitor extends RecursiveElementVisitor {
       }
     }
     super.visitClassElement(element);
+  }
+
+  @override
+  void visitEnumElement(EnumElement element) {
+    if (!element.isPrivate &&
+        !visitedPublicAnnotatedEnumElements.containsKey(element.id)) {
+      visitedPublicAnnotatedEnumElements.putIfAbsent(element.id, () => element);
+      if (element.metadata.isNotEmpty &&
+          element.metadata.any((meta) =>
+              meta
+                  .computeConstantValue()!
+                  .type!
+                  .getDisplayString(withNullability: false) ==
+              _annotationClassName)) {
+        visitedPublicAnnotatedEnumElements.putIfAbsent(
+            element.id, () => element);
+      }
+    }
+    super.visitEnumElement(element);
   }
 
   void _visitLibrary(LibraryElement? element) {

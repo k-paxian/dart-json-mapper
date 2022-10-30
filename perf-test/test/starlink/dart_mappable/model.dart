@@ -5,7 +5,7 @@ part of perf_test.test;
         head: TextTransform.upperCase,
         tail: TextTransform.upperCase,
         separator: '_'))
-class SpaceTrack {
+class SpaceTrack with SpaceTrackMappable {
   final String ccsdsOmmVers;
   final String comment;
   final String originator;
@@ -91,7 +91,7 @@ class SpaceTrack {
 }
 
 @MappableClass()
-class Record {
+class Record with RecordMappable {
   final SpaceTrack spaceTrack;
   final String version;
   final String id;
