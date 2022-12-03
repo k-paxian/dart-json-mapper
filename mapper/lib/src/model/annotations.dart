@@ -1,7 +1,7 @@
 import 'package:meta/meta_meta.dart';
 import 'package:reflectable/reflectable.dart';
 
-import '../name_casing.dart';
+import '../identifier_casing.dart';
 import 'converters.dart';
 import 'value_decorators.dart';
 

@@ -1,9 +1,11 @@
-import '../name_casing.dart';
+import 'package:collection/collection.dart';
+
+import '../identifier_casing.dart';
 import '../utils.dart';
 import 'annotations.dart';
 import 'type_info.dart';
 
-export '../name_casing.dart';
+export '../identifier_casing.dart';
 export 'adapters.dart';
 export 'annotations.dart';
 export 'converters.dart';
@@ -105,9 +107,31 @@ class DeserializationContext {
       this.typeInfo,
       this.parentJsonMaps});
 
+  CaseStyle? getParentCaseStyle() {
+    if (parentJsonMaps != null && parentJsonMaps!.isNotEmpty) {
+      final parentJsonMap = parentJsonMaps!
+          .firstWhereOrNull((element) => element.jsonMeta != null);
+      return parentJsonMap != null && parentJsonMap.jsonMeta != null
+          ? parentJsonMap.jsonMeta!.caseStyle
+          : null;
+    }
+    return null;
+  }
+
   CaseStyle? get caseStyle => (classMeta != null && classMeta!.caseStyle != null
       ? classMeta!.caseStyle
-      : options.caseStyle);
+      : getParentCaseStyle() ?? options.caseStyle ?? defaultCaseStyle);
+
+  CaseStyle? get targetCaseStyle =>
+      direction == ConversionDirection.fromJson ? defaultCaseStyle : caseStyle;
+
+  CaseStyle? get sourceCaseStyle =>
+      direction == ConversionDirection.fromJson ? caseStyle : defaultCaseStyle;
+
+  String transformIdentifier(String name) => direction ==
+          ConversionDirection.fromJson
+      ? transformIdentifierCaseStyle(name, sourceCaseStyle, targetCaseStyle)
+      : transformIdentifierCaseStyle(name, targetCaseStyle, sourceCaseStyle);
 
   ConversionDirection get direction => ConversionDirection.fromJson;
 

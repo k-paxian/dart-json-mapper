@@ -173,14 +173,17 @@ class EnumConverterShort implements ICustomConverter, ICustomEnumConverter {
 
   @override
   Object? fromJSON(dynamic jsonValue, DeserializationContext context) {
+    dynamic transformDescriptorValue(value) =>
+        _transformValue(value, context, doubleMapping: true);
+    dynamic transformJsonValue(value) =>
+        _transformValue(value, context, preTransform: true);
     dynamic convert(value) =>
         _enumDescriptor!.values.firstWhereOrNull((eValue) =>
             _enumDescriptor!.caseInsensitive == true
-                ? _transformValue(value, context).toLowerCase() ==
-                    _transformValue(eValue, context, doubleMapping: true)
-                        .toLowerCase()
-                : _transformValue(value, context) ==
-                    _transformValue(eValue, context, doubleMapping: true)) ??
+                ? transformJsonValue(value).toLowerCase() ==
+                    transformDescriptorValue(eValue).toLowerCase()
+                : transformJsonValue(value) ==
+                    transformDescriptorValue(eValue)) ??
         _enumDescriptor!.defaultValue;
     return jsonValue is Iterable
         ? jsonValue.map(convert).toList()
@@ -202,7 +205,7 @@ class EnumConverterShort implements ICustomConverter, ICustomEnumConverter {
   }
 
   dynamic _transformValue(dynamic value, DeserializationContext context,
-      {bool doubleMapping = false}) {
+      {bool doubleMapping = false, bool preTransform = false}) {
     final mapping = {};
     mapping.addAll(_enumDescriptor!.mapping);
     if (context.jsonPropertyMeta != null &&
@@ -214,7 +217,11 @@ class EnumConverterShort implements ICustomConverter, ICustomEnumConverter {
       value = _mapValue(value, mapping);
     }
     if (value is String) {
-      value = transformFieldName(value, context.caseStyle);
+      if (preTransform) {
+        value = transformIdentifierCaseStyle(
+            value, context.targetCaseStyle, context.sourceCaseStyle);
+      }
+      value = context.transformIdentifier(value);
     }
     return value;
   }

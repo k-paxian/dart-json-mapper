@@ -2,7 +2,7 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:path/path.dart' show posix;
 import 'package:pubspec_parse/pubspec_parse.dart';
 
-import '../name_casing.dart';
+import '../identifier_casing.dart';
 import 'change_analyzer.dart';
 import 'library_visitor.dart';
 
@@ -70,7 +70,7 @@ JsonMapper initializeJsonMapper($initSignature) {''';
   }
 
   String get _libraryAdapterId {
-    return transformFieldName(_libraryName, CaseStyle.camel);
+    return transformIdentifierCaseStyle(_libraryName, CaseStyle.camel, null);
   }
 
   String get _libraryName {

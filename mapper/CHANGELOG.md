@@ -1,3 +1,8 @@
+## 2.2.7+1
+
+* bump dependencies
+* (fix): Problem converting enum with following uppercase character #203
+
 ## 2.2.7
 
 * bump dependencies

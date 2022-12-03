@@ -2,6 +2,18 @@ import 'package:dart_json_mapper/dart_json_mapper.dart';
 import 'package:test/test.dart';
 import 'package:unit_testing/unit_testing.dart' show Color;
 
+@jsonSerializable
+// Case style is camelCase which is default for Dart
+enum EDeviceRadioType { loRa, nBIoT, mBus, mobileInternet, wMBus }
+
+@jsonSerializable
+@Json(caseStyle: CaseStyle.pascal)
+// Case style is Pascal which is inferred by class annotation
+class PascalCaseModel {
+  String? id;
+  EDeviceRadioType radio = EDeviceRadioType.loRa;
+}
+
 enum ThirdParty { A, B, C }
 
 @jsonSerializable
@@ -206,6 +218,38 @@ void testEnums() {
       expect(instance, TypeMatcher<SplitModel>());
       expect(instance.values[Category.first], TypeMatcher<StylingModel>());
       expect(instance.values[Category.second]!.primary, '2');
+    });
+
+    test('Should retain style casing transparently', () {
+      // given
+      const json = '[{ "Id": "6267a8bf0a66709b2c7021bd", "Radio": "WMBus" }]';
+      const jsonPascal = '["WMBus","MobileInternet","LoRa", "NBIoT", "MBus"]';
+      const jsonKebab =
+          '["w-m-bus","mobile-internet","lo-ra","n-b-io-t","m-bus"]';
+
+      // when
+      final target = JsonMapper.deserialize<List<PascalCaseModel>>(json);
+      final targetPascal = JsonMapper.deserialize<List<EDeviceRadioType>>(
+          jsonPascal, DeserializationOptions(caseStyle: CaseStyle.pascal));
+      final targetKebab = JsonMapper.deserialize<List<EDeviceRadioType>>(
+          jsonKebab, DeserializationOptions(caseStyle: CaseStyle.kebab));
+
+      // then
+      expect(target!.first.radio, EDeviceRadioType.wMBus);
+      expect(targetPascal, [
+        EDeviceRadioType.wMBus,
+        EDeviceRadioType.mobileInternet,
+        EDeviceRadioType.loRa,
+        EDeviceRadioType.nBIoT,
+        EDeviceRadioType.mBus
+      ]);
+      expect(targetKebab, [
+        EDeviceRadioType.wMBus,
+        EDeviceRadioType.mobileInternet,
+        EDeviceRadioType.loRa,
+        EDeviceRadioType.nBIoT,
+        EDeviceRadioType.mBus
+      ]);
     });
 
     test('Enum Iterable instance', () {

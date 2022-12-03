@@ -176,7 +176,7 @@ void testPartialDeserialization() {
  "pagination_total": 1053,
  "cars": [
   {
-   "modelName": "Tesla X",
+   "model_name": "Tesla X",
    "color": "red"
   }
  ]

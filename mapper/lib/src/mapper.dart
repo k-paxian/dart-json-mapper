@@ -537,9 +537,10 @@ class JsonMapper {
       if (_isFieldIgnored(classMeta, meta, context.options)) {
         continue;
       }
-
-      final property = _resolveProperty(name, jsonMap, context, classMeta, meta,
-          (name, jsonName, _) {
+      final propertyContext =
+          context.reBuild(classMeta: classMeta, jsonPropertyMeta: meta);
+      final property = _resolveProperty(
+          name, jsonMap, propertyContext, classMeta, meta, (name, jsonName, _) {
         var result = instanceMirror.invokeGetter(name);
         if (result == null && jsonMap != null) {
           result = jsonMap.getPropertyValue(jsonName);
@@ -551,7 +552,7 @@ class JsonMapper {
           property.value, name, jsonMap?.hasProperty(property.name), meta);
 
       if (_isFieldIgnoredByValue(
-          property.value, classMeta, meta, context.options)) {
+          property.value, classMeta, meta, propertyContext.options)) {
         continue;
       }
       final typeInfo =
@@ -562,9 +563,11 @@ class JsonMapper {
 
     classInfo.enumerateJsonGetters((MethodMirror mm, JsonProperty meta) {
       final declarationType = _getDeclarationType(mm);
-      final property =
-          _resolveProperty(mm.simpleName, jsonMap, context, classMeta, meta,
-              (name, jsonName, _) {
+      final propertyContext =
+          context.reBuild(classMeta: classMeta, jsonPropertyMeta: meta);
+      final property = _resolveProperty(
+          mm.simpleName, jsonMap, propertyContext, classMeta, meta,
+          (name, jsonName, _) {
         var result = instanceMirror.invoke(name, []);
         if (result == null && jsonMap != null) {
           result = jsonMap.getPropertyValue(jsonName);
@@ -597,16 +600,15 @@ class JsonMapper {
     if (meta != null && meta.name != null) {
       jsonName = JsonProperty.getPrimaryName(meta);
     }
-    jsonName = transformFieldName(
-        jsonName!, _getCaseStyle(classMeta, context.options));
+    jsonName = context.transformIdentifier(jsonName!);
     var value = getValueByName(name, jsonName, meta?.defaultValue);
     if (jsonMap != null &&
         meta != null &&
         (value == null || !jsonMap.hasProperty(jsonName))) {
       final initialValue = value;
       for (final alias in JsonProperty.getAliases(meta)!) {
-        final targetJsonName = transformFieldName(
-            alias, _getCaseStyle(classMeta, context.options));
+        final targetJsonName = transformIdentifierCaseStyle(
+            alias, context.targetCaseStyle, context.sourceCaseStyle);
         if (value != initialValue || !jsonMap.hasProperty(targetJsonName)) {
           continue;
         }
@@ -670,11 +672,19 @@ class JsonMapper {
       final meta = classInfo.getDeclarationMeta(
               declarationMirror, context.options.scheme) ??
           classInfo.getDeclarationMeta(param, context.options.scheme);
+      final propertyContext = context.reBuild(
+          classMeta: classMeta,
+          jsonPropertyMeta: meta,
+          typeInfo: paramTypeInfo,
+          parentJsonMaps: <JsonMap>[
+            ...(context.parentJsonMaps ?? []),
+            jsonMap
+          ]);
 
       final property = _resolveProperty(
           name,
           jsonMap,
-          context,
+          propertyContext,
           classMeta,
           meta,
           (_, jsonName, defaultValue) => jsonMap.hasProperty(jsonName)
@@ -682,25 +692,12 @@ class JsonMapper {
               : defaultValue);
       final jsonName = property.name;
       final value = property.raw
-          ? _deserializeObject(
-              property.value,
-              context.reBuild(
-                  typeInfo: paramTypeInfo,
-                  jsonPropertyMeta: meta,
-                  parentJsonMaps: <JsonMap>[
-                    ...(context.parentJsonMaps ?? []),
-                    jsonMap
-                  ]))
+          ? _deserializeObject(property.value, propertyContext)
           : property.value;
 
       visitor(param, name, jsonName, classMeta, meta, value, paramTypeInfo);
     }
   }
-
-  CaseStyle? _getCaseStyle(Json? meta, DeserializationOptions? options) =>
-      meta != null && meta.caseStyle != null
-          ? meta.caseStyle
-          : options!.caseStyle;
 
   String? _getDiscriminatorProperty(
           ClassInfo classInfo, DeserializationOptions? options) =>
@@ -853,22 +850,27 @@ class JsonMapper {
     _enumeratePublicProperties(im, null, context, (name, property, isGetterOnly,
         JsonProperty? meta, converter, TypeInfo typeInfo) {
       dynamic convertedValue;
-      final newContext = context.reBuild(
+      final propertyContext = context.reBuild(
           level: context.level + 1,
           jsonPropertyMeta: meta,
           classMeta: jsonMeta,
           typeInfo: typeInfo) as SerializationContext;
       if (meta?.flatten == true) {
         final Map flattenedPropertiesMap =
-            _serializeObject(property.value, newContext);
+            _serializeObject(property.value, propertyContext);
         final fieldPrefixWords = meta?.name != null
-            ? toWords(meta?.name, newContext.caseStyle).join(' ')
+            ? toWords(meta?.name, propertyContext.caseStyle).join(' ')
             : null;
         for (var element in flattenedPropertiesMap.entries) {
           result.setPropertyValue(
               fieldPrefixWords != null
-                  ? transformFieldName('$fieldPrefixWords ${element.key}',
-                      newContext.caseStyle ?? defaultCaseStyle)
+                  ? transformIdentifierCaseStyle(
+                      transformIdentifierCaseStyle(
+                          '$fieldPrefixWords ${element.key}',
+                          defaultCaseStyle,
+                          null),
+                      propertyContext.targetCaseStyle,
+                      defaultCaseStyle)
                   : element.key,
               element.value);
         }
@@ -876,10 +878,10 @@ class JsonMapper {
       }
       if (converter != null) {
         final value = property.value ?? meta?.defaultValue;
-        _configureConverter(converter, newContext, value: value);
-        convertedValue = _getConvertedValue(converter, value, newContext);
+        _configureConverter(converter, propertyContext, value: value);
+        convertedValue = _getConvertedValue(converter, value, propertyContext);
       } else {
-        convertedValue = _serializeObject(property.value, newContext);
+        convertedValue = _serializeObject(property.value, propertyContext);
       }
       result.setPropertyValue(
           property.name, convertedValue ?? meta?.defaultValue);
@@ -958,7 +960,7 @@ class JsonMapper {
 
     _enumeratePublicProperties(im, jsonMap, context, (name, property,
         isGetterOnly, JsonProperty? meta, converter, TypeInfo typeInfo) {
-      final newContext = context.reBuild(
+      final propertyContext = context.reBuild(
           parentObjectInstances: [
             ...(context.parentObjectInstances ?? []),
             objectInstance
@@ -976,9 +978,10 @@ class JsonMapper {
         if (meta?.flatten == true) {
           final object = meta?.name != null && fieldValue is Map
               ? fieldValue.map((key, value) => MapEntry(
-                  skipPrefix(meta?.name, key, newContext.caseStyle), value))
+                  skipPrefix(meta?.name, key, propertyContext.caseStyle),
+                  value))
               : fieldValue;
-          im.invokeSetter(name, _deserializeObject(object, newContext));
+          im.invokeSetter(name, _deserializeObject(object, propertyContext));
         }
         if (im.invokeGetter(name) == null &&
             defaultValue != null &&
@@ -990,7 +993,7 @@ class JsonMapper {
         }
       }
       fieldValue = property.raw
-          ? _deserializeObject(fieldValue, newContext)
+          ? _deserializeObject(fieldValue, propertyContext)
           : property.value;
       if (isGetterOnly) {
         if (inheritedPublicFieldNames.contains(name) &&
