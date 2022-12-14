@@ -20,8 +20,8 @@ class JsonMapperSubtypeError extends JsonMapperError {
   @override
   String toString() {
     validDiscriminators.sort((a, b ) => a.toString().similarityTo(discriminatorValue.toString()).compareTo(b.toString().similarityTo(discriminatorValue.toString())));
-    throw Exception('$discriminatorValue is not a valid discriminator value for ${superclass.reflectedType}. Did you mean ${validDiscriminators.last}?\n\n'
-        'Valid values are:\n${validDiscriminators.join(',\n')}');
+    return '$discriminatorValue is not a valid discriminator value for ${superclass.reflectedType}. Did you mean ${validDiscriminators.last}?\n\n'
+        'Valid values are:\n${validDiscriminators.join(',\n')}';
   }
 }
 
