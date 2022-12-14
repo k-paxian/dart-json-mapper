@@ -1,3 +1,6 @@
+import 'package:dart_json_mapper/dart_json_mapper.dart';
+import 'package:string_similarity/string_similarity.dart';
+
 import './model/index.dart';
 
 abstract class JsonMapperError extends Error {}
@@ -6,6 +9,22 @@ abstract class JsonFormatError extends JsonMapperError {
   factory JsonFormatError(DeserializationContext context,
       {FormatException? formatException}) = _JsonFormatErrorImpl;
 }
+
+class JsonMapperSubtypeError extends JsonMapperError {
+  JsonMapperSubtypeError(this.discriminatorValue, this.validDiscriminators, this.superclass);
+
+  final dynamic discriminatorValue;
+  final List<dynamic> validDiscriminators;
+  final ClassInfo superclass;
+
+  @override
+  String toString() {
+    validDiscriminators.sort((a, b ) => a.toString().similarityTo(discriminatorValue.toString()).compareTo(b.toString().similarityTo(discriminatorValue.toString())));
+    throw Exception('$discriminatorValue is not a valid discriminator value for ${superclass.reflectedType}. Did you mean ${validDiscriminators.last}?\n\n'
+        'Valid values are:\n${validDiscriminators.join(',\n')}');
+  }
+}
+
 
 class _JsonFormatErrorImpl extends JsonMapperError implements JsonFormatError {
   final DeserializationContext _context;

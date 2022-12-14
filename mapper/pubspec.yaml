@@ -16,6 +16,7 @@ dependencies:
   reflectable: ^4.0.1
   collection: ^1.17.0
   pubspec_parse: ^1.2.1
+  string_similarity: ^2.0.0
 dev_dependencies:
   lints:
   build_runner:

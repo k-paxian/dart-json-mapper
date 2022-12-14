@@ -9,6 +9,7 @@ import 'package:reflectable/reflectable.dart'
         DeclarationMirror,
         VariableMirror,
         MethodMirror;
+import 'package:string_similarity/string_similarity.dart';
 
 import 'errors.dart';
 import 'model/index.dart';
@@ -349,6 +350,19 @@ class JsonMapper {
         if (value is Type) {
           return _getTypeInfo(value);
         }
+
+        if(_discriminatorToType[value] == null) {
+          var subs = getAllSubTypes(objectClassInfo);
+          // Map each [ClassInfo] to its discriminator value
+          var validDiscriminators = subs.map((e) => e.getMeta(context.options.scheme)!.discriminatorValue).toList();
+
+          throw JsonMapperSubtypeError(
+            discriminatorValue,
+            validDiscriminators,
+            objectClassInfo,
+          );
+        }
+
         return _getTypeInfo(_discriminatorToType[value]!);
       }
     }
@@ -359,6 +373,21 @@ class JsonMapper {
           : typeInfo;
     }
     return typeInfo;
+  }
+
+  /// Returns all subtypes of [classInfo], this is transitive
+  List<ClassInfo> getAllSubTypes(ClassInfo classInfo) {
+    final result = <ClassInfo>[];
+    for (var subType in _classes.values) {
+      try {
+      if (
+          subType.classMirror.isSubtypeOf(classInfo.classMirror)) {
+        result.add(subType);
+      } } catch (e) {
+        // Ignore no capability to check subtype
+      }
+    }
+    return result;
   }
 
   Type? _getTypeByStringName(String? typeName) =>

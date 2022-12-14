@@ -257,5 +257,14 @@ void testInheritance() {
       expect(targetInstance, TypeMatcher<TypedStringChild>());
       expect(firstJson, secondJson);
     });
+
+    test('Discriminator property wrong', () {
+
+      // given
+      final json = '{"type":"p","a":1}';
+
+      expect(() => JsonMapper.deserialize<Business>(json),
+          throwsA(TypeMatcher<JsonMapperSubtypeError>()));
+    });
   });
 }
