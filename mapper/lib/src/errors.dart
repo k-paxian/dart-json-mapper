@@ -1,10 +1,24 @@
-import './model/index.dart';
+import 'package:dart_json_mapper/dart_json_mapper.dart';
 
 abstract class JsonMapperError extends Error {}
 
 abstract class JsonFormatError extends JsonMapperError {
   factory JsonFormatError(DeserializationContext context,
       {FormatException? formatException}) = _JsonFormatErrorImpl;
+}
+
+class JsonMapperSubtypeError extends JsonMapperError {
+  JsonMapperSubtypeError(
+      this.discriminatorValue, this.validDiscriminators, this.superclass);
+
+  final dynamic discriminatorValue;
+  final List<dynamic> validDiscriminators;
+  final ClassInfo superclass;
+
+  @override
+  String toString() =>
+      '"$discriminatorValue" is not a valid discriminator value for type "${superclass.reflectedType}".\n\n'
+      'Valid values are:\n${validDiscriminators.map((x) => '  - $x').join(',\n')}';
 }
 
 class _JsonFormatErrorImpl extends JsonMapperError implements JsonFormatError {

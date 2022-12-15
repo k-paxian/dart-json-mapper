@@ -349,6 +349,19 @@ class JsonMapper {
         if (value is Type) {
           return _getTypeInfo(value);
         }
+
+        if (_discriminatorToType[value] == null) {
+          final validDiscriminators = ClassInfo.getAllSubTypes(
+                  _classes, objectClassInfo)
+              .map((e) => e.getMeta(context.options.scheme)!.discriminatorValue)
+              .toList();
+          throw JsonMapperSubtypeError(
+            discriminatorValue,
+            validDiscriminators,
+            objectClassInfo,
+          );
+        }
+
         return _getTypeInfo(_discriminatorToType[value]!);
       }
     }
