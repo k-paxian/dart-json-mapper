@@ -1,3 +1,8 @@
+## 2.2.7+2
+
+* bump dependencies
+* (fix): Add additional error handling for `discriminatorValue` mismatch errors #206
+
 ## 2.2.7+1
 
 * bump dependencies
