@@ -7,6 +7,18 @@ final defaultOptions = defaultSerializationOptions;
 enum Color { red, blue, gray, grayMetallic, green, brown, yellow, black, white }
 
 @jsonSerializable
+class Tire {
+  final num thickness;
+  const Tire(this.thickness);
+}
+
+@jsonSerializable
+class Wheel {
+  final Tire tire;
+  const Wheel(this.tire);
+}
+
+@jsonSerializable
 class Car {
   @JsonProperty(name: 'modelName')
   String? model;
@@ -17,6 +29,13 @@ class Car {
   Car? replacement;
 
   Car(this.model, this.color);
+}
+
+@jsonSerializable
+class ComposableCar {
+  final Wheel leftWheel;
+  final Wheel rightWheel;
+  const ComposableCar(this.leftWheel, this.rightWheel);
 }
 
 extension TitledCar on Car {

@@ -1,7 +1,15 @@
 import 'package:dart_json_mapper/dart_json_mapper.dart';
 import 'package:test/test.dart';
 import 'package:unit_testing/unit_testing.dart'
-    show Car, Color, Person, personJson, defaultOptions;
+    show
+        Car,
+        Color,
+        Person,
+        personJson,
+        defaultOptions,
+        ComposableCar,
+        Wheel,
+        Tire;
 
 void testIntegration() {
   group('[Verify end to end serialization <=> deserialization]', () {
@@ -45,6 +53,23 @@ void testIntegration() {
       expect(instance == car, false);
       expect(instance.color, Color.blue);
       expect(instance.model, car.model);
+    });
+
+    test('Object copyWith full depth', () {
+      // given
+      final car = ComposableCar(Wheel(Tire(0.2)), Wheel(Tire(0.2)));
+
+      // when
+      final instance = JsonMapper.copyWith(car, {
+        'leftWheel': {
+          'tire': {'thickness': 32}
+        }
+      })!;
+
+      // then
+      expect(instance == car, false);
+      expect(instance.rightWheel.tire.thickness, 0.2);
+      expect(instance.leftWheel.tire.thickness, 32);
     });
 
     test('Serialize to target template map', () {
