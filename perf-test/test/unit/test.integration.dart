@@ -57,7 +57,8 @@ void testIntegration() {
 
     test('Object copyWith full depth', () {
       // given
-      final car = ComposableCar(Wheel(Tire(0.2)), Wheel(Tire(0.2)));
+      final car = ComposableCar(
+          Wheel(Tire(0.2, Color.black)), Wheel(Tire(0.2, Color.black)));
 
       // when
       final instance = JsonMapper.copyWith(car, {
@@ -69,7 +70,9 @@ void testIntegration() {
       // then
       expect(instance == car, false);
       expect(instance.rightWheel.tire.thickness, 0.2);
+      expect(instance.rightWheel.tire.color, Color.black);
       expect(instance.leftWheel.tire.thickness, 32);
+      expect(instance.leftWheel.tire.color, Color.black);
     });
 
     test('Serialize to target template map', () {

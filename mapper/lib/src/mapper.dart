@@ -104,7 +104,27 @@ class JsonMapper {
 
   /// Copy Dart object of type T & merge it with Map<String, dynamic>
   static T? copyWith<T>(T object, Map<String, dynamic> map) =>
-      fromMap<T>(toMap(object)?..addAll(map));
+      fromMap<T>(mergeMaps(toMap(object), map));
+
+  /// Recursive deep merge two maps
+  static Map<String, dynamic> mergeMaps(
+      Map<String, dynamic>? mapA, Map<String, dynamic> mapB) {
+    if (mapA == null) {
+      return mapB;
+    }
+    mapB.forEach((key, value) {
+      if (!mapA.containsKey(key)) {
+        mapA[key] = value;
+      } else {
+        if (mapA[key] is Map) {
+          mergeMaps(mapA[key], mapB[key]);
+        } else {
+          mapA[key] = mapB[key];
+        }
+      }
+    });
+    return mapA;
+  }
 
   /// Enumerates adapter [IJsonMapperAdapter] instances using visitor pattern
   /// Abstracts adapters ordering logic from consumers

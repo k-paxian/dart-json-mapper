@@ -9,7 +9,8 @@ enum Color { red, blue, gray, grayMetallic, green, brown, yellow, black, white }
 @jsonSerializable
 class Tire {
   final num thickness;
-  const Tire(this.thickness);
+  final Color color;
+  const Tire(this.thickness, this.color);
 }
 
 @jsonSerializable

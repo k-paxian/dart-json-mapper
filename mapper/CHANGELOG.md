@@ -1,3 +1,7 @@
+## 2.2.7+3
+
+* (fix): `JsonMapper.copyWith` doesn't respect deep merge #209
+
 ## 2.2.7+2
 
 * bump dependencies
