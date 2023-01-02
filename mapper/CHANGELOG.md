@@ -1,3 +1,7 @@
+## 2.2.7+4
+
+* downgrade dependencies to improve package compatibility
+
 ## 2.2.7+3
 
 * (fix): `JsonMapper.copyWith` doesn't respect deep merge #209
