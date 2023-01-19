@@ -27,6 +27,13 @@ class UnAnnotatedEnumField {
 }
 
 @jsonSerializable
+class PartialPerson {
+  final String name;
+  final int age;
+  const PartialPerson(this.age, this.name);
+}
+
+@jsonSerializable
 class ObjectWithRequiredField {
   @JsonProperty(requiredMessage: 'This Value is critically important')
   String? value;
@@ -141,6 +148,22 @@ void testErrorHandling() {
       final car = MyCar('VW', Color.blue);
       car.replacement = car;
       expect(catchError(() => JsonMapper.serialize(car)), null);
+    });
+
+    test('Unable to create instance of class error handling', () {
+      // given
+      final json = '{"name":"James"}';
+
+      // when
+      final error =
+          catchError(() => JsonMapper.deserialize<PartialPerson>(json));
+
+      // then
+      expect(
+          error.toString(),
+          'Unable to instantiate class \'PartialPerson\'\n'
+          '  with null positional arguments [age]');
+      expect(error, TypeMatcher<CannotCreateInstanceError>());
     });
 
     test('Allow using same object same level during serialization', () {

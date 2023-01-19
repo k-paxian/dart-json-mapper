@@ -121,3 +121,36 @@ class _MissingTypeForDeserializationErrorImpl extends JsonMapperError
       'OR Infere type via result variable like: TargetType target = '
       'JsonMapper.deserialize(jsonString)';
 }
+
+abstract class CannotCreateInstanceError extends JsonMapperError {
+  factory CannotCreateInstanceError(
+      ClassInfo classInfo,
+      Iterable<String> positionalNullArguments,
+      Map<Symbol, dynamic> namedNullArguments) = _CannotCreateInstanceErrorImpl;
+}
+
+class _CannotCreateInstanceErrorImpl extends JsonMapperError
+    implements CannotCreateInstanceError {
+  final ClassInfo _classInfo;
+  final Iterable<String> _positionalNullArguments;
+  final Map<Symbol, dynamic> _namedNullArguments;
+
+  _CannotCreateInstanceErrorImpl(
+      ClassInfo classInfo,
+      Iterable<String> positionalNullArguments,
+      Map<Symbol, dynamic> namedNullArguments)
+      : _classInfo = classInfo,
+        _positionalNullArguments = positionalNullArguments,
+        _namedNullArguments = namedNullArguments;
+
+  @override
+  String toString() => [
+        "Unable to instantiate class '${_classInfo.classMirror.simpleName}'",
+        _positionalNullArguments.isEmpty
+            ? null
+            : '  with null positional arguments [${_positionalNullArguments.join(', ')}]',
+        _namedNullArguments.keys.isEmpty
+            ? null
+            : '  with null named arguments [${_namedNullArguments.keys.join(', ')}]'
+      ].where((element) => element != null).join('\n');
+}

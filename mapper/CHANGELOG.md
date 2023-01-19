@@ -1,3 +1,7 @@
+## 2.2.8
+
+* Improve class instance creation error handling #211
+
 ## 2.2.7+5
 
 * downgrade dependencies to improve package compatibility
