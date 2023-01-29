@@ -62,7 +62,9 @@ class DefaultTypeInfoDecorator implements ITypeInfoDecorator {
       typeInfo.typeName == 'BigInt' || typeInfo.typeName == '_BigIntImpl';
 
   bool isRegExp(TypeInfo typeInfo) =>
-      typeInfo.typeName == 'RegExp' || typeInfo.typeName == '_RegExp';
+      typeInfo.typeName == 'JSSyntaxRegExp' ||
+      typeInfo.typeName == 'RegExp' ||
+      typeInfo.typeName == '_RegExp';
 
   bool isUri(TypeInfo typeInfo) =>
       typeInfo.typeName == 'Uri' ||
@@ -108,11 +110,14 @@ class DefaultTypeInfoDecorator implements ITypeInfoDecorator {
     typeInfo.isDynamic = typeName == 'dynamic';
     typeInfo.isList = typeName.startsWith('_GrowableList<') ||
         typeName.startsWith('List<') ||
+        typeName.startsWith('JSArray<') ||
         isUnmodifiableListView(typeInfo) ||
         isCastList(typeInfo);
     typeInfo.isSet = typeName.startsWith('Set<') || isHashSet(typeInfo);
     typeInfo.isMap = typeName == '_JsonMap' ||
         typeName.startsWith('Map<') ||
+        typeName.startsWith('IdentityMap<') ||
+        typeName.startsWith('LinkedMap<') ||
         isHashMap(typeInfo) ||
         isLinkedHashMap(typeInfo) ||
         isUnmodifiableMapView(typeInfo);

@@ -261,7 +261,9 @@ void testConverters() {
       expect(json, '"$source"');
       expect(target.pattern, instance.pattern);
       expect(target, TypeMatcher<RegExp>());
-      expect(target, instance);
+      if (!kIsWeb) {
+        expect(target, instance);
+      }
     });
 
     test('UriConverter', () {

@@ -112,12 +112,29 @@ void testDefaultValue() {
       final target = JsonMapper.serialize(instance,
           SerializationOptions(indent: '', processAnnotatedMembersOnly: true));
       // then
-      expect(target,
-          '{"cropArea":{"top":0.0,"left":1.0,"right":1.0,"bottom":0.0},"id":1}');
+      expect(
+          target,
+          kIsWeb
+              ? '{"cropArea":{"top":0,"left":1,"right":1,"bottom":0},"id":1}'
+              : '{"cropArea":{"top":0.0,"left":1.0,"right":1.0,"bottom":0.0},"id":1}');
     });
 
     test('Serialize Immutable class with DefaultValue provided', () {
       // given
+      final immutableJsonWeb = '''{
+ "cropArea": {
+  "top": 0,
+  "left": 1,
+  "right": 1,
+  "bottom": 0
+ },
+ "id": 1,
+ "name": "Bob",
+ "car": {
+  "modelName": "Audi",
+  "color": "green"
+ }
+}''';
       final immutableJson = '''{
  "cropArea": {
   "top": 0.0,
@@ -147,7 +164,7 @@ void testDefaultValue() {
       final target = JsonMapper.deserialize<ImmutableDefault>(json)!;
 
       // then
-      expect(targetJson, immutableJson);
+      expect(targetJson, kIsWeb ? immutableJsonWeb : immutableJson);
 
       expect(target.id, 1);
       expect(target.cropArea, TypeMatcher<CropArea>());

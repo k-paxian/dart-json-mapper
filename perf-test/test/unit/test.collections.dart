@@ -93,7 +93,7 @@ void testCollections() {
       final target = JsonMapper.deserialize<HashMap<String, int>>(json)!;
 
       // then
-      expect(json, '{"c":3,"a":1,"b":2}');
+      expect(json, kIsWeb ? '{"a":1,"b":2,"c":3}' : '{"c":3,"a":1,"b":2}');
 
       expect(target, TypeMatcher<HashMap<String, int>>());
       expect(target.containsKey('a'), true);

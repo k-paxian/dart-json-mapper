@@ -24,6 +24,7 @@ dev_dependencies:
   path:
   build_runner:
   build_test:
+  build_web_compilers:
   test:
 dependency_overrides:
   unit_testing:

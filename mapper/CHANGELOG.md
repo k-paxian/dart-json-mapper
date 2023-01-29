@@ -1,3 +1,7 @@
+## 2.2.9
+
+* Improve web platform support #13
+
 ## 2.2.8
 
 * Improve class instance creation error handling #211

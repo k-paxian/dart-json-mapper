@@ -763,11 +763,6 @@ class JsonMapper {
 
   Map<Symbol, dynamic> _getNamedArguments(
       ClassMirror cm, JsonMap jsonMap, DeserializationContext context) {
-    if (kIsWeb) {
-      // No named arguments in JS :(
-      return <Symbol, dynamic>{};
-    }
-
     final result = <Symbol, dynamic>{};
 
     _enumerateConstructorParameters(
