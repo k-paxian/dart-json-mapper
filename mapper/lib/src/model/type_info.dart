@@ -113,8 +113,11 @@ class DefaultTypeInfoDecorator implements ITypeInfoDecorator {
         typeName.startsWith('JSArray<') ||
         isUnmodifiableListView(typeInfo) ||
         isCastList(typeInfo);
-    typeInfo.isSet = typeName.startsWith('Set<') || isHashSet(typeInfo);
+    typeInfo.isSet = typeName == '_Set' ||
+        typeName.startsWith('Set<') ||
+        isHashSet(typeInfo);
     typeInfo.isMap = typeName == '_JsonMap' ||
+        typeName == '_Map' ||
         typeName.startsWith('Map<') ||
         typeName.startsWith('IdentityMap<') ||
         typeName.startsWith('LinkedMap<') ||
