@@ -223,7 +223,7 @@ void testEnums() {
     test('Should retain style casing transparently', () {
       // given
       const json = '[{ "Id": "6267a8bf0a66709b2c7021bd", "Radio": "WMBus" }]';
-      const jsonPascal = '["WMBus","MobileInternet","LoRa", "NBIoT", "MBus"]';
+      const jsonPascal = '["WMBus","MobileInternet","LoRa","NBIoT","MBus"]';
       const jsonKebab =
           '["w-m-bus","mobile-internet","lo-ra","n-b-io-t","m-bus"]';
 
@@ -233,8 +233,16 @@ void testEnums() {
           jsonPascal, DeserializationOptions(caseStyle: CaseStyle.pascal));
       final targetKebab = JsonMapper.deserialize<List<EDeviceRadioType>>(
           jsonKebab, DeserializationOptions(caseStyle: CaseStyle.kebab));
+      final targetPascalJson = JsonMapper.serialize([
+        EDeviceRadioType.wMBus,
+        EDeviceRadioType.mobileInternet,
+        EDeviceRadioType.loRa,
+        EDeviceRadioType.nBIoT,
+        EDeviceRadioType.mBus
+      ], SerializationOptions(caseStyle: CaseStyle.pascal));
 
       // then
+      expect(targetPascalJson, jsonPascal);
       expect(target!.first.radio, EDeviceRadioType.wMBus);
       expect(targetPascal, [
         EDeviceRadioType.wMBus,
