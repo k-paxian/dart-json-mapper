@@ -3,7 +3,6 @@
 [![pub package](https://img.shields.io/pub/v/dart_json_mapper.svg)](https://pub.dartlang.org/packages/dart_json_mapper)
 [![Pub Points](https://img.shields.io/pub/points/dart_json_mapper)](https://pub.dev/packages/dart_json_mapper/score)
 [![Popularity](https://img.shields.io/pub/popularity/dart_json_mapper)](https://pub.dev/packages/dart_json_mapper/score)
-[![CodeFactor](https://www.codefactor.io/repository/github/k-paxian/dart_json_mapper/badge)](https://www.codefactor.io/repository/github/k-paxian/dart_json_mapper)
 
 This package allows programmers to annotate Dart objects in order to
   Serialize / Deserialize them to / from JSON.
