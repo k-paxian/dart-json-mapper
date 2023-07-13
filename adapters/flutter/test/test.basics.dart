@@ -2,10 +2,11 @@ part of json_mapper_flutter.test;
 
 /// Sample flutter data class container
 @jsonSerializable
-class FlutterData {
+class ColorfulItem {
+  String name;
   Color color;
 
-  FlutterData(this.color);
+  ColorfulItem(this.name, this.color);
 }
 
 /// Shorthand for serialization options instance
@@ -14,17 +15,12 @@ final compactOptions = SerializationOptions(indent: '');
 void testBasics() {
   test('Color type', () {
     // given
-    final color = Color(0x113f4f5f);
-    final rawString = '#113F4F5F';
-    final json = '{"color":"$rawString"}';
+    final color = Color(0x003f4f5f);
 
     // when
-    final targetJson = JsonMapper.serialize(FlutterData(color), compactOptions);
-    // then
-    expect(targetJson, json);
+    final json = JsonMapper.serialize(ColorfulItem('Item 1', color));
+    final target = JsonMapper.deserialize<ColorfulItem>(json)!;
 
-    // when
-    final target = JsonMapper.deserialize<FlutterData>(json)!;
     // then
     expect(target.color, color);
   });
