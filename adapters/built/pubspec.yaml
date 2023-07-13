@@ -12,7 +12,7 @@ dependencies:
   built_collection: ^5.1.1
 dev_dependencies:
   reflectable:
-  pedantic:
+  lints:
   build_runner:
   build_test:
   test:

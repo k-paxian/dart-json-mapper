@@ -15,7 +15,7 @@ dev_dependencies:
   reflectable:
   flutter_test:
     sdk: flutter
-  pedantic:
+  lints:
   build_runner:
   build_test:
 #dependency_overrides:

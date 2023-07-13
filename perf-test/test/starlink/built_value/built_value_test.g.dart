@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of perf_test.test;
+part of 'built_value_test.dart';
 
 // **************************************************************************
 // BuiltValueGenerator
@@ -644,44 +644,50 @@ class _$SpaceTrack extends SpaceTrack {
 
   @override
   int get hashCode {
-    return $jf($jc(
-        $jc(
-            $jc(
-                $jc(
-                    $jc(
-                        $jc(
-                            $jc(
-                                $jc(
-                                    $jc(
-                                        $jc(
-                                            $jc(
-                                                $jc(
-                                                    $jc(
-                                                        $jc(
-                                                            $jc(
-                                                                $jc(
-                                                                    $jc(
-                                                                        $jc(
-                                                                            $jc($jc($jc($jc($jc($jc($jc($jc($jc($jc($jc($jc($jc($jc($jc($jc($jc($jc($jc($jc($jc($jc($jc(0, cCSDSOMMVERS.hashCode), cOMMENT.hashCode), cREATIONDATE.hashCode), oRIGINATOR.hashCode), oBJECTNAME.hashCode), oBJECTID.hashCode), cENTERNAME.hashCode), rEFFRAME.hashCode), tIMESYSTEM.hashCode), mEANELEMENTTHEORY.hashCode), ePOCH.hashCode), mEANMOTION.hashCode), eCCENTRICITY.hashCode), iNCLINATION.hashCode), rAOFASCNODE.hashCode), aRGOFPERICENTER.hashCode), mEANANOMALY.hashCode), ePHEMERISTYPE.hashCode), cLASSIFICATIONTYPE.hashCode), nORADCATID.hashCode), eLEMENTSETNO.hashCode), rEVATEPOCH.hashCode),
-                                                                                bSTAR.hashCode),
-                                                                            mEANMOTIONDOT.hashCode),
-                                                                        mEANMOTIONDDOT.hashCode),
-                                                                    sEMIMAJORAXIS.hashCode),
-                                                                pERIOD.hashCode),
-                                                            aPOAPSIS.hashCode),
-                                                        pERIAPSIS.hashCode),
-                                                    oBJECTTYPE.hashCode),
-                                                rCSSIZE.hashCode),
-                                            cOUNTRYCODE.hashCode),
-                                        lAUNCHDATE.hashCode),
-                                    sITE.hashCode),
-                                dECAYDATE.hashCode),
-                            dECAYED.hashCode),
-                        fILE.hashCode),
-                    gPID.hashCode),
-                tLELINE0.hashCode),
-            tLELINE1.hashCode),
-        tLELINE2.hashCode));
+    var _$hash = 0;
+    _$hash = $jc(_$hash, cCSDSOMMVERS.hashCode);
+    _$hash = $jc(_$hash, cOMMENT.hashCode);
+    _$hash = $jc(_$hash, cREATIONDATE.hashCode);
+    _$hash = $jc(_$hash, oRIGINATOR.hashCode);
+    _$hash = $jc(_$hash, oBJECTNAME.hashCode);
+    _$hash = $jc(_$hash, oBJECTID.hashCode);
+    _$hash = $jc(_$hash, cENTERNAME.hashCode);
+    _$hash = $jc(_$hash, rEFFRAME.hashCode);
+    _$hash = $jc(_$hash, tIMESYSTEM.hashCode);
+    _$hash = $jc(_$hash, mEANELEMENTTHEORY.hashCode);
+    _$hash = $jc(_$hash, ePOCH.hashCode);
+    _$hash = $jc(_$hash, mEANMOTION.hashCode);
+    _$hash = $jc(_$hash, eCCENTRICITY.hashCode);
+    _$hash = $jc(_$hash, iNCLINATION.hashCode);
+    _$hash = $jc(_$hash, rAOFASCNODE.hashCode);
+    _$hash = $jc(_$hash, aRGOFPERICENTER.hashCode);
+    _$hash = $jc(_$hash, mEANANOMALY.hashCode);
+    _$hash = $jc(_$hash, ePHEMERISTYPE.hashCode);
+    _$hash = $jc(_$hash, cLASSIFICATIONTYPE.hashCode);
+    _$hash = $jc(_$hash, nORADCATID.hashCode);
+    _$hash = $jc(_$hash, eLEMENTSETNO.hashCode);
+    _$hash = $jc(_$hash, rEVATEPOCH.hashCode);
+    _$hash = $jc(_$hash, bSTAR.hashCode);
+    _$hash = $jc(_$hash, mEANMOTIONDOT.hashCode);
+    _$hash = $jc(_$hash, mEANMOTIONDDOT.hashCode);
+    _$hash = $jc(_$hash, sEMIMAJORAXIS.hashCode);
+    _$hash = $jc(_$hash, pERIOD.hashCode);
+    _$hash = $jc(_$hash, aPOAPSIS.hashCode);
+    _$hash = $jc(_$hash, pERIAPSIS.hashCode);
+    _$hash = $jc(_$hash, oBJECTTYPE.hashCode);
+    _$hash = $jc(_$hash, rCSSIZE.hashCode);
+    _$hash = $jc(_$hash, cOUNTRYCODE.hashCode);
+    _$hash = $jc(_$hash, lAUNCHDATE.hashCode);
+    _$hash = $jc(_$hash, sITE.hashCode);
+    _$hash = $jc(_$hash, dECAYDATE.hashCode);
+    _$hash = $jc(_$hash, dECAYED.hashCode);
+    _$hash = $jc(_$hash, fILE.hashCode);
+    _$hash = $jc(_$hash, gPID.hashCode);
+    _$hash = $jc(_$hash, tLELINE0.hashCode);
+    _$hash = $jc(_$hash, tLELINE1.hashCode);
+    _$hash = $jc(_$hash, tLELINE2.hashCode);
+    _$hash = $jf(_$hash);
+    return _$hash;
   }
 
   @override
@@ -1073,10 +1079,13 @@ class _$Record extends Record {
 
   @override
   int get hashCode {
-    return $jf($jc(
-        $jc($jc($jc(0, spaceTrack.hashCode), version.hashCode),
-            launch.hashCode),
-        id.hashCode));
+    var _$hash = 0;
+    _$hash = $jc(_$hash, spaceTrack.hashCode);
+    _$hash = $jc(_$hash, version.hashCode);
+    _$hash = $jc(_$hash, launch.hashCode);
+    _$hash = $jc(_$hash, id.hashCode);
+    _$hash = $jf(_$hash);
+    return _$hash;
   }
 
   @override
@@ -1166,4 +1175,4 @@ class RecordBuilder implements Builder<Record, RecordBuilder> {
   }
 }
 
-// ignore_for_file: always_put_control_body_on_new_line,always_specify_types,annotate_overrides,avoid_annotating_with_dynamic,avoid_as,avoid_catches_without_on_clauses,avoid_returning_this,deprecated_member_use_from_same_package,lines_longer_than_80_chars,no_leading_underscores_for_local_identifiers,omit_local_variable_types,prefer_expression_function_bodies,sort_constructors_first,test_types_in_equals,unnecessary_const,unnecessary_new,unnecessary_lambdas
+// ignore_for_file: deprecated_member_use_from_same_package,type=lint
