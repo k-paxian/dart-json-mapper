@@ -1,3 +1,7 @@
+## 2.2.10
+
+* bump dependencies 
+
 ## 2.2.9
 
 * Improve web platform support #13
