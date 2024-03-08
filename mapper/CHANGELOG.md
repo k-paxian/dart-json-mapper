@@ -1,3 +1,7 @@
+## 2.2.11
+
+* bump dependencies
+
 ## 2.2.10
 
 * bump dependencies 
