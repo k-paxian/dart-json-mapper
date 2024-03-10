@@ -1,3 +1,7 @@
+## 2.2.12+1
+
+* downgrade `meta` dependency to improve package compatibility
+
 ## 2.2.12
 
 * bump dependencies
