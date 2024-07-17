@@ -43,7 +43,7 @@ class LibraryVisitor extends RecursiveElementVisitor {
               meta
                   .computeConstantValue()!
                   .type!
-                  .getDisplayString(withNullability: false) ==
+                  .getDisplayString() ==
               _annotationClassName)) {
         visitedPublicAnnotatedClassElements.putIfAbsent(
             element.id, () => element);
@@ -62,7 +62,7 @@ class LibraryVisitor extends RecursiveElementVisitor {
               meta
                   .computeConstantValue()!
                   .type!
-                  .getDisplayString(withNullability: false) ==
+                  .getDisplayString() ==
               _annotationClassName)) {
         visitedPublicAnnotatedEnumElements.putIfAbsent(
             element.id, () => element);
