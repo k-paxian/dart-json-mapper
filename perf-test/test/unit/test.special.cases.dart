@@ -54,7 +54,8 @@ class UnbalancedGetSet {
   }
 
   set id(
-      String? /*expects a nullable value that my come like that from the server*/ id) {
+      String? /*expects a nullable value that my come like that from the server*/
+          id) {
     _id = (id ?? "");
   }
 }
