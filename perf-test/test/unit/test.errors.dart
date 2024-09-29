@@ -150,7 +150,7 @@ void testErrorHandling() {
       expect(catchError(() => JsonMapper.serialize(car)), null);
     });
 
-    test('Unable to create instance of class error handling', () {
+    test('Unable to create instance of class error handling - null arguments', () {
       // given
       final json = '{"name":"James"}';
 
@@ -163,6 +163,21 @@ void testErrorHandling() {
           error.toString(),
           'Unable to instantiate class \'PartialPerson\'\n'
           '  with null positional arguments [age]');
+      expect(error, TypeMatcher<CannotCreateInstanceError>());
+    });
+
+    test('Unable to create instance of class error handling', () {
+      // given
+      final json = '{"name":["James"],"age":{}}';
+
+      // when
+      final error =
+      catchError(() => JsonMapper.deserialize<PartialPerson>(json));
+
+      // then
+      expect(
+          error.toString(),
+          'type \'_Map<String, dynamic>\' is not a subtype of type \'int\'');
       expect(error, TypeMatcher<CannotCreateInstanceError>());
     });
 

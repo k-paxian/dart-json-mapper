@@ -979,14 +979,14 @@ class JsonMapper {
                       .constructorName,
                   positionalArguments,
                   namedArguments));
-    } on TypeError {
+    } on TypeError catch (typeError) {
       final positionalNullArguments = positionalArgumentNames.where((element) =>
           positionalArguments[positionalArgumentNames.indexOf(element)] ==
           null);
       final namedNullArguments = Map<Symbol, dynamic>.from(namedArguments);
       namedNullArguments.removeWhere((key, value) => value != null);
       throw CannotCreateInstanceError(
-          classInfo, positionalNullArguments, namedNullArguments);
+          typeError, classInfo, positionalNullArguments, namedNullArguments);
     }
 
     final im = _safeGetInstanceMirror(objectInstance)!;

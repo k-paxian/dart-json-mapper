@@ -18,6 +18,7 @@ dependencies:
   unit_testing:
   starlink:
 dev_dependencies:
+  reflectable:
   json_serializable:
   built_value_generator:
   lints:

@@ -1,3 +1,8 @@
+## 2.2.14
+
+* bump dependencies to latest
+* Fix #227 Deserializing error: Unable to instantiate class. Improved error message
+
 ## 2.2.13
 
 * bump dependencies to latest

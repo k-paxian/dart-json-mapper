@@ -124,6 +124,7 @@ class _MissingTypeForDeserializationErrorImpl extends JsonMapperError
 
 abstract class CannotCreateInstanceError extends JsonMapperError {
   factory CannotCreateInstanceError(
+      TypeError typeError,
       ClassInfo classInfo,
       Iterable<String> positionalNullArguments,
       Map<Symbol, dynamic> namedNullArguments) = _CannotCreateInstanceErrorImpl;
@@ -132,25 +133,31 @@ abstract class CannotCreateInstanceError extends JsonMapperError {
 class _CannotCreateInstanceErrorImpl extends JsonMapperError
     implements CannotCreateInstanceError {
   final ClassInfo _classInfo;
+  final TypeError _typeError;
   final Iterable<String> _positionalNullArguments;
   final Map<Symbol, dynamic> _namedNullArguments;
 
   _CannotCreateInstanceErrorImpl(
+      TypeError typeError,
       ClassInfo classInfo,
       Iterable<String> positionalNullArguments,
       Map<Symbol, dynamic> namedNullArguments)
       : _classInfo = classInfo,
+        _typeError = typeError,
         _positionalNullArguments = positionalNullArguments,
         _namedNullArguments = namedNullArguments;
 
   @override
-  String toString() => [
-        "Unable to instantiate class '${_classInfo.classMirror.simpleName}'",
-        _positionalNullArguments.isEmpty
-            ? null
-            : '  with null positional arguments [${_positionalNullArguments.join(', ')}]',
-        _namedNullArguments.keys.isEmpty
-            ? null
-            : '  with null named arguments [${_namedNullArguments.keys.join(', ')}]'
-      ].where((element) => element != null).join('\n');
+  String toString() =>
+      _typeError.toString().startsWith("type 'Null' is not a subtype of type")
+          ? [
+              "Unable to instantiate class '${_classInfo.classMirror.simpleName}'",
+              _positionalNullArguments.isEmpty
+                  ? null
+                  : '  with null positional arguments [${_positionalNullArguments.join(', ')}]',
+              _namedNullArguments.keys.isEmpty
+                  ? null
+                  : '  with null named arguments [${_namedNullArguments.keys.join(', ')}]'
+            ].where((element) => element != null).join('\n')
+          : _typeError.toString();
 }
