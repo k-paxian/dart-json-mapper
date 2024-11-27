@@ -309,6 +309,41 @@ void testValueDecorators() {
       JsonMapper().removeAdapter(adapter);
     });
 
+    test('List of Lists with null', () {
+      // given
+      final json = '''{
+ "lists": [
+   null,
+   null,
+   [{}, {}, null],
+   [{}, {}, {}]
+ ]
+}''';
+      final adapter = JsonMapperAdapter(valueDecorators: {
+        typeOf<List<List<Item>>>(): (value) {
+          (value as List).removeWhere((x) => x == null);
+          return value.cast<List<Item>>();
+        },
+        typeOf<List<Item>>(): (value) {
+          (value as List).removeWhere((x) => x == null);
+          return value.cast<Item>();
+        }
+      });
+      JsonMapper().useAdapter(adapter);
+
+      // when
+      final target = JsonMapper.deserialize<ListOfLists>(json)!;
+
+      // then
+      expect(target.lists?.length, 2);
+      expect(target.lists?.first.length, 2);
+      expect(target.lists?.last.length, 3);
+      expect(target.lists?.first.first, TypeMatcher<Item>());
+      expect(target.lists?.last.first, TypeMatcher<Item>());
+
+      JsonMapper().removeAdapter(adapter);
+    });
+
     test('List of Lists with constructor', () {
       // given
       final json = '''{
