@@ -1,3 +1,8 @@
+## 2.2.15
+
+* bump dependencies to latest possible
+* clean up lints
+
 ## 2.2.14
 
 * bump dependencies to latest

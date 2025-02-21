@@ -75,19 +75,15 @@ class SerializationOptions extends DeserializationOptions {
   final bool? ignoreUnknownTypes;
 
   const SerializationOptions(
-      {scheme,
-      caseStyle,
-      template,
-      processAnnotatedMembersOnly,
+      {super.scheme,
+      super.caseStyle,
+      super.template,
+      super.processAnnotatedMembersOnly,
       this.indent,
       this.ignoreNullMembers,
       this.ignoreDefaultMembers,
       this.ignoreUnknownTypes})
-      : super(
-            scheme: scheme,
-            template: template,
-            caseStyle: caseStyle,
-            processAnnotatedMembersOnly: processAnnotatedMembersOnly);
+      : super();
 }
 
 /// Describes a set of data / state to be re-used down the road of recursive
@@ -170,18 +166,14 @@ class SerializationContext extends DeserializationContext {
   /// Recursion nesting level, 0 = top object, 1 = object's property, and so on
   final int level;
 
-  const SerializationContext(SerializationOptions options,
+  const SerializationContext(SerializationOptions super.options,
       {this.level = 0,
-      jsonPropertyMeta,
-      classMeta,
-      typeInfo,
-      parentJsonMaps,
+      super.jsonPropertyMeta,
+      super.classMeta,
+      super.typeInfo,
+      super.parentJsonMaps,
       parentObjectInstance})
-      : super(options,
-            jsonPropertyMeta: jsonPropertyMeta,
-            classMeta: classMeta,
-            typeInfo: typeInfo,
-            parentJsonMaps: parentJsonMaps,
+      : super(
             parentObjectInstances: parentObjectInstance);
 
   SerializationOptions get serializationOptions =>

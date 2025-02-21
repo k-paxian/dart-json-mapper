@@ -1,4 +1,4 @@
-part of perf_test.test;
+part of 'built_value_test.dart';
 
 void testStarlink(Iterable list) {
   final stopwatch = Stopwatch()..start();

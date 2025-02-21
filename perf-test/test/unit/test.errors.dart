@@ -9,7 +9,7 @@ enum Sex { male, female }
 @jsonSerializable
 @Json(allowCircularReferences: 1)
 class MyCar extends Car {
-  MyCar(model, color) : super(model, color);
+  MyCar(super.model, super.color);
 }
 
 @jsonSerializable

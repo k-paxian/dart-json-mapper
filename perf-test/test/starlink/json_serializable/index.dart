@@ -1,4 +1,4 @@
-part of perf_test.test;
+part of 'json_serializable_test.dart';
 
 void testStarlink(Iterable list) {
   final stopwatch = Stopwatch()..start();

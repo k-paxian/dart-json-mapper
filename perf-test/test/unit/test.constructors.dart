@@ -61,7 +61,7 @@ class Base<T> {
 
 @jsonSerializable
 class Derived extends Base<String> {
-  Derived(String value) : super(value);
+  Derived(super.value);
 }
 
 @jsonSerializable
@@ -71,7 +71,7 @@ class Pt {
 
 @jsonSerializable
 class PtDerived extends Base<Pt> {
-  PtDerived(Pt value) : super(value);
+  PtDerived(super.value);
 }
 
 @jsonSerializable

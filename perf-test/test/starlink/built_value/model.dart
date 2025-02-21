@@ -1,4 +1,4 @@
-part of perf_test.test;
+part of 'built_value_test.dart';
 
 abstract class SpaceTrack implements Built<SpaceTrack, SpaceTrackBuilder> {
   SpaceTrack._();

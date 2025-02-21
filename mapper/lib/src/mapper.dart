@@ -71,7 +71,7 @@ class JsonMapper {
     final params = _jsonDecoder
         .convert(serialize(getParams))
         ?.entries
-        .map((e) => e.key + '=' + Uri.encodeQueryComponent(e.value.toString()))
+        .map((e) => '${e.key}=${Uri.encodeQueryComponent(e.value.toString())}')
         .join('&');
     return Uri.parse('$baseUrl${params != null ? '?$params' : ''}');
   }
@@ -80,7 +80,7 @@ class JsonMapper {
   static T? fromJson<T>(String jsonValue, [DeserializationOptions? options]) =>
       deserialize<T>(jsonValue, options);
 
-  /// Converts Dart object to Map<String, dynamic>
+  /// Converts Dart object to Map
   static Map<String, dynamic>? toMap(Object? object,
       [SerializationOptions? options]) {
     final context = SerializationContext(
@@ -91,7 +91,7 @@ class JsonMapper {
     return result is Map<String, dynamic> ? result : null;
   }
 
-  /// Converts Map<String, dynamic> to Dart object instance of type T
+  /// Converts Map to Dart object instance of type T
   static T? fromMap<T>(Map<String, dynamic>? map,
           [DeserializationOptions? options]) =>
       deserialize<T>(map, options);
