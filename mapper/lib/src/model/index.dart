@@ -33,11 +33,11 @@ class DeserializationOptions {
   final bool? processAnnotatedMembersOnly;
 
   /// Template Instance
-  /// - for Deserialization output it could be a typed Iterable<T>, or Map<K, V>, or else
-  /// - for Serialization output it could be an instance of Map<String, dynamic>
+  /// - for Deserialization output it could be a typed `Iterable<T>`, or `Map<K, V>`, or else
+  /// - for Serialization output it could be an instance of `Map<String, dynamic>`
   final dynamic template;
 
-  /// A Map<String, dynamic> of injectable values to be used for direct injection
+  /// A `Map<String, dynamic>` of injectable values to be used for direct injection
   final InjectableValues? injectableValues;
 
   /// Declares a fallback target type to deserialize to, when it's not possible to detect

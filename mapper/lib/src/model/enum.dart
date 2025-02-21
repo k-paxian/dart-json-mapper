@@ -15,12 +15,14 @@ abstract class IEnumDescriptor {
 class EnumDescriptor implements IEnumDescriptor {
   /// Defines a mapping for enum values, key is the enum value, value is the target mapping value
   /// Example:
+  /// ```dart
   /// EnumDescriptor(
   ///           values: RecordType.values,
   ///           mapping: <RecordType, String>{
   ///             RecordType.asset: 'Asset',
   ///             RecordType.series: 'Series'
   ///           })
+  /// ```
   @override
   Map mapping;
 

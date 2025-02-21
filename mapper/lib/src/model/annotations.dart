@@ -35,7 +35,7 @@ class Json {
 
   /// Defines a custom override value for a discriminator
   /// Usually used on annotations of subclasses, to distinguish it from each other
-  /// Default value: <Annotated class name>
+  /// Default value: ```<Annotated class name>```
   final dynamic discriminatorValue;
 
   /// The most popular ways to combine words into a single string
@@ -60,7 +60,7 @@ class Json {
   final int? allowCircularReferences;
 
   /// Static function to return a Map of Inline value decorators
-  ///
+  /// ```dart
   /// @jsonSerializable
   /// class NoticeItem {}
   ///
@@ -76,7 +76,7 @@ class Json {
   ///
   ///   const NoticeList(this.list);
   /// }
-  ///
+  /// ```
   final Map<Type, ValueDecoratorFunction> Function()? valueDecorators;
 
   /// Scheme marker to associate this meta information with particular mapping scheme
