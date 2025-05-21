@@ -1,18 +1,19 @@
-import 'dart:convert' show JsonEncoder, JsonDecoder;
-import 'dart:math';
+import 'dart:convert' show JsonDecoder, JsonEncoder; // dart: imports first
 
-import 'package:collection/collection.dart' show IterableExtension;
+import 'package:collection/collection.dart' show IterableExtension; // package: imports next
 import 'package:reflectable/reflectable.dart'
-    show
-        ClassMirror,
-        InstanceMirror,
-        DeclarationMirror,
-        VariableMirror,
-        MethodMirror;
+    show ClassMirror, DeclarationMirror, InstanceMirror;
 
+import 'adapter_manager.dart'; // relative file imports last
+import 'deserialization_pipeline.dart';
 import 'errors.dart';
 import 'model/index.dart';
+import 'serialization_pipeline.dart';
+import 'type_info_provider.dart';
 import 'utils.dart';
+
+// Note: Original file had duplicate class JsonMapper {} definitions due to merge issue.
+// Assuming one definition that incorporates all members.
 
 /// Singleton class providing mostly static methods for conversion of previously
 /// annotated by [JsonSerializable] Dart objects from / to JSON string
@@ -27,18 +28,17 @@ class JsonMapper {
 
   /// Converts an instance of Dart object to JSON String
   static String serialize(Object? object, [SerializationOptions? options]) {
+    final effectiveOptions = options ?? JsonMapper.globalSerializationOptions;
     final context = SerializationContext(
-        options ?? JsonMapper.globalSerializationOptions,
-        typeInfo: instance._getTypeInfo(object.runtimeType));
-    instance.clearCache();
-    return _getJsonEncoder(context)
-        .convert(instance._serializeObject(object, context));
+        effectiveOptions,
+        typeInfo: instance._typeInfoProvider.getTypeInfo(object.runtimeType));
+    instance.clearCache(); 
+
+    final pipeline = SerializationPipeline(instance);
+    return SerializationPipeline.getJsonEncoder(context, pipeline)
+        .convert(pipeline.execute(object, context));
   }
 
-  /// Converts JSON [String] Or [Object] Or [Map<String, dynamic>] to Dart object instance of type T
-  /// [jsonValue] could be as of [String] type, then it will be parsed internally
-  /// [jsonValue] could be as of [Object] type, then it will be processed as is
-  /// [jsonValue] could be as of [Map<String, dynamic>] type, then it will be processed as is
   static T? deserialize<T>(dynamic jsonValue,
       [DeserializationOptions? options]) {
     final targetOptions = options ?? JsonMapper.globalDeserializationOptions;
@@ -47,66 +47,63 @@ class JsonMapper {
         : targetOptions.template != null
             ? targetOptions.template.runtimeType
             : targetOptions.type ?? dynamic;
-    assert(targetType != dynamic
-        ? true
-        : throw MissingTypeForDeserializationError());
-    return instance._deserializeObject(
-        jsonValue != null
-            ? jsonValue is String
-                ? _jsonDecoder.convert(jsonValue)
-                : jsonValue
-            : null,
-        DeserializationContext(targetOptions,
+    assert(targetType != dynamic,
+        throw MissingTypeForDeserializationError());
+
+    final deserializationContext = DeserializationContext(targetOptions,
             classMeta:
                 instance._classes[targetType]?.getMeta(targetOptions.scheme),
-            typeInfo: instance._getTypeInfo(targetType))) as T?;
+            typeInfo: instance._typeInfoProvider.getTypeInfo(targetType));
+    
+    final parsedJson = jsonValue != null
+            ? jsonValue is String
+                ? instance._jsonDecoder.convert(jsonValue) 
+                : jsonValue
+            : null;
+
+    final pipeline = DeserializationPipeline(instance);
+    return pipeline.execute(parsedJson, deserializationContext) as T?;
   }
 
-  /// Converts Dart object to JSON String
   static String toJson(Object? object, [SerializationOptions? options]) =>
       serialize(object, options);
 
-  /// Converts [getParams] object to Uri GET request with [baseUrl]
   static Uri toUri({Object? getParams, String? baseUrl = ''}) {
-    final params = _jsonDecoder
-        .convert(serialize(getParams))
-        ?.entries
+    final serializedParams = serialize(getParams);
+    final Map<String, dynamic>? paramsMap = instance._jsonDecoder.convert(serializedParams) as Map<String, dynamic>?;
+    final paramsString = paramsMap?.entries
         .map((e) => '${e.key}=${Uri.encodeQueryComponent(e.value.toString())}')
         .join('&');
-    return Uri.parse('$baseUrl${params != null ? '?$params' : ''}');
+    return Uri.parse('$baseUrl${paramsString != null && paramsString.isNotEmpty ? '?$paramsString' : ''}');
   }
 
-  /// Converts JSON String to Dart object of type T
   static T? fromJson<T>(String jsonValue, [DeserializationOptions? options]) =>
       deserialize<T>(jsonValue, options);
 
-  /// Converts Dart object to `Map<String, dynamic>`
   static Map<String, dynamic>? toMap(Object? object,
       [SerializationOptions? options]) {
+    final effectiveOptions = options ?? JsonMapper.globalSerializationOptions;
     final context = SerializationContext(
-        options ?? JsonMapper.globalSerializationOptions,
-        typeInfo: instance._getTypeInfo(object.runtimeType));
-    instance.clearCache();
-    final result = instance._serializeObject(object, context);
+        effectiveOptions,
+        typeInfo: instance._typeInfoProvider.getTypeInfo(object.runtimeType));
+    instance.clearCache(); 
+
+    final pipeline = SerializationPipeline(instance);
+    final result = pipeline.execute(object, context);
     return result is Map<String, dynamic> ? result : null;
   }
 
-  /// Converts `Map<String, dynamic>` to Dart object instance of type T
   static T? fromMap<T>(Map<String, dynamic>? map,
           [DeserializationOptions? options]) =>
       deserialize<T>(map, options);
 
-  /// Clone Dart object of type T
   static T? clone<T>(T object) => fromJson<T>(toJson(object));
 
-  /// Alias for clone method to copy Dart object of type T
   static T? copy<T>(T object) => clone<T>(object);
 
-  /// Copy Dart object of type T & merge it with ```Map<String, dynamic>```
   static T? copyWith<T>(T object, Map<String, dynamic> map) =>
       fromMap<T>(mergeMaps(toMap(object), map));
 
-  /// Recursive deep merge two maps
   static Map<String, dynamic> mergeMaps(
       Map<String, dynamic>? mapA, Map<String, dynamic> mapB) {
     if (mapA == null) {
@@ -126,8 +123,6 @@ class JsonMapper {
     return mapA;
   }
 
-  /// Enumerates adapter [IJsonMapperAdapter] instances using visitor pattern
-  /// Abstracts adapters ordering logic from consumers
   static void enumerateAdapters(
       Iterable<JsonMapperAdapter> adapters, Function visitor) {
     final generatedAdapters = adapters.where((adapter) => adapter.isGenerated);
@@ -137,49 +132,34 @@ class JsonMapper {
     }
   }
 
-  /// Registers an instance of [IJsonMapperAdapter] with the mapper engine
-  /// Adapters are meant to be used as a pluggable extensions, widening
-  /// the number of supported types to be seamlessly converted to/from JSON
+  final AdapterManager _adapterManager = AdapterManager();
+  late final TypeInfoProvider _typeInfoProvider; 
+
   JsonMapper useAdapter(IJsonMapperAdapter adapter, [int? priority]) {
-    if (_adapters.containsValue(adapter)) {
-      return this;
-    }
-    final nextPriority = priority ??
-        (_adapters.keys.isNotEmpty
-            ? _adapters.keys.reduce((value, item) => max(value, item)) + 1
-            : 0);
-    _adapters[nextPriority] = adapter;
-    _updateInternalMaps();
+    _adapterManager.useAdapter(adapter, priority);
+    _updateInternalMaps(); 
     return this;
   }
 
-  /// De-registers previously registered adapter using [useAdapter] method
   JsonMapper removeAdapter(IJsonMapperAdapter adapter) {
-    _adapters.removeWhere((priority, x) => x == adapter);
-    _updateInternalMaps();
+    _adapterManager.removeAdapter(adapter);
+    _updateInternalMaps(); 
     return this;
   }
 
-  /// Prints out current mapper configuration to the console
-  /// List of currently registered adapters and their priorities
-  void info() =>
-      _adapters.forEach((priority, adapter) => print('$priority : $adapter'));
-
-  /// Wipes the internal caches
+  void info() => _adapterManager.info();
+  
   void clearCache() {
-    _processedObjects.clear();
+    _typeInfoProvider.clearCache(); 
     _convertedValuesCache.clear();
   }
 
   static final JsonMapper instance = JsonMapper._internal();
-  static final JsonDecoder _jsonDecoder = JsonDecoder();
-  final _serializable = const JsonSerializable();
+  final JsonDecoder _jsonDecoder = JsonDecoder();
+
+  final _serializable = const JsonSerializable(); 
   final Map<Type, ClassInfo> _classes = {};
-  final Map<String, ClassInfo> _mixins = {};
-  final Map<int, IJsonMapperAdapter> _adapters = {};
-  final Map<String, ProcessedObjectDescriptor> _processedObjects = {};
   final Map<Type, ValueDecoratorFunction> _inlineValueDecorators = {};
-  final Map<Type, TypeInfo> _typeInfoCache = {};
   final Map<dynamic, Type> _discriminatorToType = {};
   final Map<
           ICustomConverter?,
@@ -187,32 +167,34 @@ class JsonMapper {
               Map<DeserializationContext?, Map<dynamic, dynamic>>>>
       _convertedValuesCache = {};
 
-  Map<Type, ICustomConverter> converters = {};
-  Map<int, ITypeInfoDecorator> typeInfoDecorators = {};
-  Map<Type, ValueDecoratorFunction> valueDecorators = {};
-  Map<Type, dynamic> enumValues = {};
-
-  static JsonEncoder _getJsonEncoder(SerializationContext context) =>
-      context.serializationOptions.indent != null &&
-              context.serializationOptions.indent!.isNotEmpty
-          ? JsonEncoder.withIndent(
-              context.serializationOptions.indent, _toEncodable(context))
-          : JsonEncoder(_toEncodable(context));
-
-  static dynamic _toEncodable(SerializationContext context) =>
-      (Object? object) => instance._serializeObject(object, context);
+  Map<Type, ICustomConverter> get converters => _adapterManager.converters;
+  Map<int, ITypeInfoDecorator> get typeInfoDecorators => _adapterManager.typeInfoDecorators;
+  Map<Type, ValueDecoratorFunction> get valueDecorators {
+    final allDecorators = <Type, ValueDecoratorFunction>{};
+    allDecorators.addAll(_inlineValueDecorators);
+    allDecorators.addAll(_adapterManager.valueDecorators); 
+    return allDecorators;
+  }
+  Map<Type, dynamic> get enumValues => _adapterManager.enumValues;
 
   factory JsonMapper() => instance;
 
   JsonMapper._internal() {
+    _typeInfoProvider = TypeInfoProvider(
+        classes: _classes, 
+        typeInfoDecorators: _adapterManager.typeInfoDecorators, 
+        valueDecorators: this.valueDecorators, 
+        enumValues: _adapterManager.enumValues 
+    );
     useAdapter(dartCoreAdapter);
     useAdapter(dartCollectionAdapter);
   }
 
   void _updateInternalMaps() {
-    _convertedValuesCache.clear();
-    _discriminatorToType.clear();
-    _typeInfoCache.clear();
+    _inlineValueDecorators.clear();
+    _classes.clear();
+    _discriminatorToType.clear(); 
+
     _enumerateAnnotatedClasses((ClassInfo classInfo) {
       final jsonMeta = classInfo.getMeta();
       if (jsonMeta != null && jsonMeta.valueDecorators != null) {
@@ -228,57 +210,8 @@ class JsonMapper {
             jsonMeta.discriminatorValue, () => classInfo.reflectedType!);
       }
     });
-
-    enumValues = _enumValues;
-    converters = _converters;
-    typeInfoDecorators = _typeInfoDecorators;
-    valueDecorators = _valueDecorators;
-
-    _enumerateAnnotatedClasses((ClassInfo classInfo) {
-      if (classInfo.superClass != null) {
-        final superClassInfo =
-            ClassInfo.fromCache(classInfo.superClass!, _classes);
-        final superClassTypeInfo = superClassInfo.reflectedType != null
-            ? _getTypeInfo(superClassInfo.reflectedType!)
-            : null;
-        if (superClassTypeInfo != null && superClassTypeInfo.isWithMixin) {
-          _mixins[superClassTypeInfo.mixinTypeName!] = classInfo;
-        }
-      }
-    });
-  }
-
-  Map<Type, dynamic> get _enumValues {
-    final result = <Type, dynamic>{};
-    for (var adapter in _adapters.values) {
-      result.addAll(adapter.enumValues);
-    }
-    return result;
-  }
-
-  Map<Type, ICustomConverter> get _converters {
-    final result = <Type, ICustomConverter>{};
-    for (var adapter in _adapters.values) {
-      result.addAll(adapter.converters);
-    }
-    return result;
-  }
-
-  Map<Type, ValueDecoratorFunction> get _valueDecorators {
-    final result = <Type, ValueDecoratorFunction>{};
-    result.addAll(_inlineValueDecorators);
-    for (var adapter in _adapters.values) {
-      result.addAll(adapter.valueDecorators);
-    }
-    return result;
-  }
-
-  Map<int, ITypeInfoDecorator> get _typeInfoDecorators {
-    final result = <int, ITypeInfoDecorator>{};
-    for (var adapter in _adapters.values) {
-      result.addAll(adapter.typeInfoDecorators);
-    }
-    return result;
+    
+    _typeInfoProvider.onClassesUpdated();
   }
 
   InstanceMirror? _safeGetInstanceMirror(Object object) {
@@ -291,147 +224,18 @@ class JsonMapper {
     return result;
   }
 
-  String _getObjectKey(Object object) =>
-      '${object.runtimeType}-${identityHashCode(object)}';
-
-  ProcessedObjectDescriptor? _getObjectProcessed(Object object, int level) {
-    ProcessedObjectDescriptor? result;
-
-    if (object.runtimeType.toString() == 'Null' ||
-        object.runtimeType.toString() == 'bool') {
-      return result;
-    }
-
-    final key = _getObjectKey(object);
-    if (_processedObjects.containsKey(key)) {
-      result = _processedObjects[key];
-      result!.logUsage(level);
-    } else {
-      result = _processedObjects[key] = ProcessedObjectDescriptor(object);
-    }
-    return result;
-  }
-
-  TypeInfo _getDeclarationTypeInfo(Type declarationType, Type? valueType) =>
-      _getTypeInfo((declarationType == dynamic && valueType != null)
-          ? valueType
-          : declarationType);
-
-  TypeInfo _getTypeInfo(Type type) {
-    if (_typeInfoCache[type] != null) {
-      return _typeInfoCache[type]!;
-    }
-    var result = TypeInfo(type);
-    for (var decorator in typeInfoDecorators.values) {
-      decorator.init(_classes, valueDecorators, enumValues);
-      result = decorator.decorate(result);
-    }
-    if (_mixins[result.typeName] != null) {
-      result.mixinType = _mixins[result.typeName]!.reflectedType;
-    }
-    _typeInfoCache[type] = result;
-    return result;
-  }
-
-  Type? _getGenericParameterTypeByIndex(
-          num parameterIndex, TypeInfo genericType) =>
-      genericType.isGeneric &&
-              genericType.parameters.length - 1 >= parameterIndex
-          ? genericType.parameters.elementAt(parameterIndex as int)
-          : null;
-
-  TypeInfo? _detectObjectType(dynamic objectInstance, Type? objectType,
-      JsonMap objectJsonMap, DeserializationContext context) {
-    final objectClassInfo = _classes[objectType];
-    if (objectClassInfo == null) {
-      return null;
-    }
-    final meta = objectClassInfo.getMeta(context.options.scheme);
-
-    if (objectInstance is Map<String, dynamic>) {
-      objectJsonMap = JsonMap(objectInstance, meta);
-    }
-    final typeInfo = _getTypeInfo(objectType ?? objectInstance.runtimeType);
-
-    final discriminatorProperty =
-        _getDiscriminatorProperty(objectClassInfo, context.options);
-    final discriminatorValue = discriminatorProperty != null &&
-            objectJsonMap.hasProperty(discriminatorProperty)
-        ? objectJsonMap.getPropertyValue(discriminatorProperty)
-        : null;
-    if (discriminatorProperty != null && discriminatorValue != null) {
-      final declarationMirror =
-          objectClassInfo.getDeclarationMirror(discriminatorProperty);
-      if (declarationMirror != null) {
-        final discriminatorType = _getDeclarationType(declarationMirror);
-        final value = _deserializeObject(discriminatorValue,
-            context.reBuild(typeInfo: _getTypeInfo(discriminatorType)));
-        if (value is Type) {
-          return _getTypeInfo(value);
-        }
-
-        if (_discriminatorToType[value] == null) {
-          final validDiscriminators = ClassInfo.getAllSubTypes(
-                  _classes, objectClassInfo)
-              .map((e) => e.getMeta(context.options.scheme)!.discriminatorValue)
-              .toList();
-          throw JsonMapperSubtypeError(
-            discriminatorValue,
-            validDiscriminators,
-            objectClassInfo,
-          );
-        }
-
-        return _getTypeInfo(_discriminatorToType[value]!);
-      }
-    }
-    if (discriminatorValue != null) {
-      final targetType = _getTypeByStringName(discriminatorValue);
-      return _classes[targetType] != null
-          ? _getTypeInfo(_classes[targetType]!.reflectedType!)
-          : typeInfo;
-    }
-    return typeInfo;
-  }
-
-  Type? _getTypeByStringName(String? typeName) =>
-      _classes.keys.firstWhereOrNull((t) => t.toString() == typeName);
-
-  Type _getDeclarationType(DeclarationMirror mirror) {
-    Type? result = dynamic;
-    VariableMirror variable;
-    MethodMirror method;
-
-    try {
-      variable = mirror as VariableMirror;
-      result = variable.hasReflectedType ? variable.reflectedType : null;
-    } catch (error) {
-      result = result;
-    }
-
-    try {
-      method = mirror as MethodMirror;
-      result =
-          method.hasReflectedReturnType ? method.reflectedReturnType : null;
-    } catch (error) {
-      result = result;
-    }
-
-    return result ??= dynamic;
-  }
-
   ICustomConverter? _getConverter(
       JsonProperty? jsonProperty, TypeInfo typeInfo) {
     final result = jsonProperty?.converter ??
-        converters[typeInfo.type!] ??
-        converters[typeInfo.genericType] ??
-        (enumValues[typeInfo.type!] != null ? converters[Enum] : null) ??
-        converters[converters.keys.firstWhereOrNull(
+        this.converters[typeInfo.type!] ??
+        this.converters[typeInfo.genericType] ??
+        (this.enumValues[typeInfo.type!] != null ? this.converters[Enum] : null) ??
+        this.converters[this.converters.keys.firstWhereOrNull(
             (Type type) => type.toString() == typeInfo.typeName)];
 
     if (result is ICustomEnumConverter) {
       (result as ICustomEnumConverter)
-          .setEnumDescriptor(_getEnumDescriptor(enumValues[typeInfo.type!]));
+          .setEnumDescriptor(_getEnumDescriptor(this.enumValues[typeInfo.type!]));
     }
     return result;
   }
@@ -459,23 +263,13 @@ class JsonMapper {
 
     final computedValue = direction == ConversionDirection.fromJson
         ? converter.fromJSON(value, context)
-        : converter.toJSON(value, context as SerializationContext);
-    _convertedValuesCache.putIfAbsent(
-        converter,
-        () => {
-              direction: {
-                context: {value: computedValue}
-              }
-            });
-    _convertedValuesCache[converter]!.putIfAbsent(
-        direction,
-        () => {
-              context: {value: computedValue}
-            });
-    _convertedValuesCache[converter]![direction]!
-        .putIfAbsent(context, () => {value: computedValue});
-    _convertedValuesCache[converter]![direction]![context]!
-        .putIfAbsent(value, () => computedValue);
+        : converter.toJSON(value, context as SerializationContext); 
+    
+    _convertedValuesCache
+        .putIfAbsent(converter, () => {})
+        .putIfAbsent(direction, () => {})
+        .putIfAbsent(context, () => {})[value] = computedValue;
+
     return computedValue;
   }
 
@@ -483,11 +277,11 @@ class JsonMapper {
     if (value == null) {
       return null;
     }
-    if (valueDecorators[typeInfo.genericType] != null) {
-      value = valueDecorators[typeInfo.genericType]!(value);
+    if (this.valueDecorators[typeInfo.genericType] != null) {
+      value = this.valueDecorators[typeInfo.genericType]!(value);
     }
-    if (valueDecorators[typeInfo.type!] != null) {
-      value = valueDecorators[typeInfo.type!]!(value);
+    if (this.valueDecorators[typeInfo.type!] != null) {
+      value = this.valueDecorators[typeInfo.type!]!(value);
     }
     return value;
   }
@@ -548,6 +342,54 @@ class JsonMapper {
     }
   }
 
+  void _processSingleProperty({
+    required String propertyName,
+    required DeclarationMirror declarationMirror,
+    required bool isMethod, 
+    required InstanceMirror instanceMirror,
+    required JsonMap? jsonMap,
+    required DeserializationContext context,
+    required ClassInfo classInfo,
+    required Json? classMeta,
+    required Function visitor,
+  }) {
+    final declarationType = _typeInfoProvider.getDeclarationType(declarationMirror);
+    final isGetterOnly = isMethod ? true : classInfo.isGetterOnly(propertyName);
+    final meta = classInfo.getDeclarationMeta(declarationMirror, context.options.scheme);
+
+    if (meta == null && _getProcessAnnotatedMembersOnly(classMeta, context.options) == true) {
+      return;
+    }
+    if (_isFieldIgnored(classMeta, meta, context.options)) {
+      return;
+    }
+
+    final propertyContext = context.reBuild(classMeta: classMeta, jsonPropertyMeta: meta);
+    final property = _resolveProperty(
+      propertyName,
+      jsonMap,
+      propertyContext,
+      classMeta,
+      meta,
+      (name, jsonName, _) {
+        var result = isMethod ? instanceMirror.invoke(name, []) : instanceMirror.invokeGetter(name);
+        if (result == null && jsonMap != null) {
+          result = jsonMap.getPropertyValue(jsonName);
+        }
+        return result;
+      },
+    );
+
+    _checkFieldConstraints(property.value, propertyName, jsonMap?.hasProperty(property.name), meta);
+
+    if (_isFieldIgnoredByValue(property.value, classMeta, meta, propertyContext.options)) {
+      return;
+    }
+
+    final typeInfo = _typeInfoProvider.getDeclarationTypeInfo(declarationType, property.value?.runtimeType);
+    visitor(propertyName, property, isGetterOnly, meta, _getConverter(meta, typeInfo), typeInfo);
+  }
+
   void _enumeratePublicProperties(InstanceMirror instanceMirror,
       JsonMap? jsonMap, DeserializationContext context, Function visitor) {
     final classInfo = ClassInfo.fromCache(instanceMirror.type, _classes);
@@ -558,66 +400,31 @@ class JsonMapper {
       if (declarationMirror == null) {
         continue;
       }
-      final declarationType = _getDeclarationType(declarationMirror);
-      final isGetterOnly = classInfo.isGetterOnly(name);
-      final meta = classInfo.getDeclarationMeta(
-          declarationMirror, context.options.scheme);
-      if (meta == null &&
-          _getProcessAnnotatedMembersOnly(classMeta, context.options) == true) {
-        continue;
-      }
-
-      if (_isFieldIgnored(classMeta, meta, context.options)) {
-        continue;
-      }
-      final propertyContext =
-          context.reBuild(classMeta: classMeta, jsonPropertyMeta: meta);
-      final property = _resolveProperty(
-          name, jsonMap, propertyContext, classMeta, meta, (name, jsonName, _) {
-        var result = instanceMirror.invokeGetter(name);
-        if (result == null && jsonMap != null) {
-          result = jsonMap.getPropertyValue(jsonName);
-        }
-        return result;
-      });
-
-      _checkFieldConstraints(
-          property.value, name, jsonMap?.hasProperty(property.name), meta);
-
-      if (_isFieldIgnoredByValue(
-          property.value, classMeta, meta, propertyContext.options)) {
-        continue;
-      }
-      final typeInfo =
-          _getDeclarationTypeInfo(declarationType, property.value?.runtimeType);
-      visitor(name, property, isGetterOnly, meta, _getConverter(meta, typeInfo),
-          typeInfo);
+      _processSingleProperty(
+        propertyName: name,
+        declarationMirror: declarationMirror,
+        isMethod: false,
+        instanceMirror: instanceMirror,
+        jsonMap: jsonMap,
+        context: context,
+        classInfo: classInfo,
+        classMeta: classMeta,
+        visitor: visitor,
+      );
     }
 
-    classInfo.enumerateJsonGetters((MethodMirror mm, JsonProperty meta) {
-      final declarationType = _getDeclarationType(mm);
-      final propertyContext =
-          context.reBuild(classMeta: classMeta, jsonPropertyMeta: meta);
-      final property = _resolveProperty(
-          mm.simpleName, jsonMap, propertyContext, classMeta, meta,
-          (name, jsonName, _) {
-        var result = instanceMirror.invoke(name, []);
-        if (result == null && jsonMap != null) {
-          result = jsonMap.getPropertyValue(jsonName);
-        }
-        return result;
-      });
-
-      _checkFieldConstraints(property.value, mm.simpleName,
-          jsonMap?.hasProperty(property.name), meta);
-      if (_isFieldIgnoredByValue(
-          property.value, classMeta, meta, context.options)) {
-        return;
-      }
-      final typeInfo =
-          _getDeclarationTypeInfo(declarationType, property.value?.runtimeType);
-      visitor(mm.simpleName, property, true, meta,
-          _getConverter(meta, typeInfo), _getTypeInfo(declarationType));
+    classInfo.enumerateJsonGetters((MethodMirror mm, JsonProperty metaPropertyAnnotation) {
+      _processSingleProperty(
+        propertyName: mm.simpleName,
+        declarationMirror: mm, 
+        isMethod: true,
+        instanceMirror: instanceMirror,
+        jsonMap: jsonMap,
+        context: context, 
+        classInfo: classInfo,
+        classMeta: classMeta,
+        visitor: visitor,
+      );
     }, context.options.scheme);
   }
 
@@ -635,13 +442,13 @@ class JsonMapper {
     }
     jsonName = context.transformIdentifier(jsonName!);
     var value = getValueByName(name, jsonName, meta?.defaultValue);
-    if (jsonMap != null &&
-        meta != null &&
-        (value == null || !jsonMap.hasProperty(jsonName))) {
+    // If the primary name didn't yield a value from the instance, or isn't in the jsonMap, try aliases.
+    if (jsonMap != null && meta != null && (value == null || !jsonMap.hasProperty(jsonName))) {
       final initialValue = value;
       for (final alias in JsonProperty.getAliases(meta)!) {
         final targetJsonName = transformIdentifierCaseStyle(
             alias, context.targetCaseStyle, context.sourceCaseStyle);
+        // If an alias has already found a value, or this alias isn't in the map, skip.
         if (value != initialValue || !jsonMap.hasProperty(targetJsonName)) {
           continue;
         }
@@ -657,7 +464,6 @@ class JsonMapper {
         value = injectionJsonMap.getPropertyValue(jsonName);
         return PropertyDescriptor(jsonName, value, false);
       } else {
-        // TODO: Possibly would be better to throw an error when no injectable value provided?
         return PropertyDescriptor(jsonName, null, false);
       }
     }
@@ -674,64 +480,6 @@ class JsonMapper {
     return PropertyDescriptor(jsonName!, value, true);
   }
 
-  void _enumerateConstructorParameters(ClassMirror classMirror, JsonMap jsonMap,
-      DeserializationContext context, Function filter, Function visitor) {
-    final classInfo = ClassInfo.fromCache(classMirror, _classes);
-    final classMeta = classInfo.getMeta(context.options.scheme);
-    final scheme =
-        classMeta != null ? classMeta.scheme : context.options.scheme;
-    final methodMirror = classInfo.getJsonConstructor(scheme);
-    if (methodMirror == null) {
-      return;
-    }
-    for (var param in methodMirror.parameters) {
-      if (!filter(param)) {
-        return;
-      }
-      final name = param.simpleName;
-      final declarationMirror = classInfo.getDeclarationMirror(name) ?? param;
-      final paramType = param.hasReflectedType
-          ? param.reflectedType
-          : param.hasDynamicReflectedType
-              ? param.dynamicReflectedType
-              : _getGenericParameterTypeByIndex(
-                      methodMirror.parameters.indexOf(param),
-                      context.typeInfo!) ??
-                  dynamic;
-      var paramTypeInfo = _getTypeInfo(paramType);
-      paramTypeInfo = paramTypeInfo.isDynamic
-          ? _getTypeInfo(_getDeclarationType(declarationMirror))
-          : paramTypeInfo;
-      final meta = classInfo.getDeclarationMeta(
-              declarationMirror, context.options.scheme) ??
-          classInfo.getDeclarationMeta(param, context.options.scheme);
-      final propertyContext = context.reBuild(
-          classMeta: classMeta,
-          jsonPropertyMeta: meta,
-          typeInfo: paramTypeInfo,
-          parentJsonMaps: <JsonMap>[
-            ...(context.parentJsonMaps ?? []),
-            jsonMap
-          ]);
-
-      final property = _resolveProperty(
-          name,
-          jsonMap,
-          propertyContext,
-          classMeta,
-          meta,
-          (_, jsonName, defaultValue) => jsonMap.hasProperty(jsonName)
-              ? jsonMap.getPropertyValue(jsonName) ?? defaultValue
-              : defaultValue);
-      final jsonName = property.name;
-      final value = property.raw
-          ? _deserializeObject(property.value, propertyContext)
-          : property.value;
-
-      visitor(param, name, jsonName, classMeta, meta, value, paramTypeInfo);
-    }
-  }
-
   String? _getDiscriminatorProperty(
           ClassInfo classInfo, DeserializationOptions? options) =>
       classInfo
@@ -744,66 +492,6 @@ class JsonMapper {
       meta != null && meta.processAnnotatedMembersOnly != null
           ? meta.processAnnotatedMembersOnly
           : options.processAnnotatedMembersOnly;
-
-  void _dumpDiscriminatorToObjectProperty(JsonMap object,
-      ClassMirror classMirror, DeserializationOptions? options) {
-    final classInfo = ClassInfo.fromCache(classMirror, _classes);
-    final discriminatorProperty = _getDiscriminatorProperty(classInfo, options);
-    if (discriminatorProperty != null) {
-      final typeInfo = _getTypeInfo(classMirror.reflectedType);
-      final lastMeta = classInfo.getMeta(options?.scheme);
-      final discriminatorValue =
-          (lastMeta != null && lastMeta.discriminatorValue != null
-                  ? lastMeta.discriminatorValue
-                  : typeInfo.typeName) ??
-              typeInfo.typeName;
-      object.setPropertyValue(discriminatorProperty, discriminatorValue);
-    }
-  }
-
-  Map<Symbol, dynamic> _getNamedArguments(
-      ClassMirror cm, JsonMap jsonMap, DeserializationContext context) {
-    final result = <Symbol, dynamic>{};
-
-    _enumerateConstructorParameters(
-        cm, jsonMap, context, (param) => param.isNamed, (param, name, jsonName,
-            classMeta, JsonProperty? meta, value, TypeInfo typeInfo) {
-      if (!_isFieldIgnoredByValue(value, classMeta, meta, context.options)) {
-        result[Symbol(name)] = value;
-      }
-    });
-
-    return result;
-  }
-
-  List _getPositionalArguments(ClassMirror cm, JsonMap jsonMap,
-      DeserializationContext context, List<String> positionalArgumentNames) {
-    final result = [];
-
-    _enumerateConstructorParameters(
-        cm, jsonMap, context, (param) => !param.isOptional && !param.isNamed,
-        (param, name, jsonName, classMeta, JsonProperty? meta, value,
-            TypeInfo typeInfo) {
-      positionalArgumentNames.add(name);
-      result.add(_isFieldIgnoredByValue(value, classMeta, meta, context.options)
-          ? null
-          : value);
-    });
-
-    return result;
-  }
-
-  bool _isValidJSON(dynamic jsonValue) {
-    try {
-      if (jsonValue is String) {
-        _jsonDecoder.convert(jsonValue);
-        return true;
-      }
-      return false;
-    } on FormatException {
-      return false;
-    }
-  }
 
   void _configureConverter(
       ICustomConverter converter, DeserializationContext context,
@@ -822,251 +510,10 @@ class JsonMapper {
     }
     if (converter is IRecursiveConverter) {
       (converter as IRecursiveConverter).setSerializeObjectFunction(
-          (o, context) => _serializeObject(o, context));
+          (o, context) => SerializationPipeline(this).execute(o,context)); // Use pipeline
       (converter as IRecursiveConverter).setDeserializeObjectFunction((o,
               context, type) =>
-          _deserializeObject(o, context.reBuild(typeInfo: _getTypeInfo(type))));
+          DeserializationPipeline(this).execute(o, context.reBuild(typeInfo: _typeInfoProvider.getTypeInfo(type)))); // Use pipeline
     }
-  }
-
-  dynamic _serializeObject(Object? object, SerializationContext? context) {
-    if (object == null) {
-      return object;
-    }
-
-    final im = _safeGetInstanceMirror(object);
-    final converter = _getConverter(
-        context!.jsonPropertyMeta, _getTypeInfo(object.runtimeType));
-    if (converter != null) {
-      _configureConverter(converter, context, value: object);
-      return _getConvertedValue(converter, object, context);
-    }
-
-    if (im == null) {
-      if (context.serializationOptions.ignoreUnknownTypes == true) {
-        return null;
-      } else {
-        throw MissingAnnotationOnTypeError(object.runtimeType);
-      }
-    }
-
-    final classInfo = ClassInfo.fromCache(im.type, _classes);
-    final jsonMeta = classInfo.getMeta(context.options.scheme);
-    final initialMap = context.level == 0
-        ? context.options.template ?? <String, dynamic>{}
-        : <String, dynamic>{};
-    final result = JsonMap(initialMap, jsonMeta);
-    final processedObjectDescriptor =
-        _getObjectProcessed(object, context.level);
-    if (processedObjectDescriptor != null &&
-        processedObjectDescriptor.levelsCount > 1) {
-      final allowanceIsSet =
-          (jsonMeta != null && jsonMeta.allowCircularReferences! > 0);
-      final allowanceExceeded = (allowanceIsSet &&
-              processedObjectDescriptor.levelsCount >
-                  jsonMeta.allowCircularReferences!)
-          ? true
-          : null;
-      if (allowanceExceeded == true) {
-        return null;
-      }
-      if (allowanceIsSet == false) {
-        throw CircularReferenceError(object);
-      }
-    }
-    _dumpDiscriminatorToObjectProperty(result, im.type, context.options);
-    _enumeratePublicProperties(im, null, context, (name, property, isGetterOnly,
-        JsonProperty? meta, converter, TypeInfo typeInfo) {
-      dynamic convertedValue;
-      final propertyContext = context.reBuild(
-          level: context.level + 1,
-          jsonPropertyMeta: meta,
-          classMeta: jsonMeta,
-          typeInfo: typeInfo) as SerializationContext;
-      if (meta?.flatten == true) {
-        final Map flattenedPropertiesMap =
-            _serializeObject(property.value, propertyContext);
-        final fieldPrefixWords = meta?.name != null
-            ? toWords(meta?.name, propertyContext.caseStyle).join(' ')
-            : null;
-        for (var element in flattenedPropertiesMap.entries) {
-          result.setPropertyValue(
-              fieldPrefixWords != null
-                  ? transformIdentifierCaseStyle(
-                      transformIdentifierCaseStyle(
-                          '$fieldPrefixWords ${element.key}',
-                          defaultCaseStyle,
-                          null),
-                      propertyContext.targetCaseStyle,
-                      defaultCaseStyle)
-                  : element.key,
-              element.value);
-        }
-        return;
-      }
-      if (converter != null) {
-        final value = property.value ?? meta?.defaultValue;
-        _configureConverter(converter, propertyContext, value: value);
-        convertedValue = _getConvertedValue(converter, value, propertyContext);
-      } else {
-        convertedValue = _serializeObject(property.value, propertyContext);
-      }
-      result.setPropertyValue(
-          property.name, convertedValue ?? meta?.defaultValue);
-    });
-
-    final jsonAnyGetter = classInfo.getJsonAnyGetter();
-    if (jsonAnyGetter != null) {
-      final anyMap = im.invoke(jsonAnyGetter.simpleName, [])!;
-      result.map.addAll(anyMap as Map<String, dynamic>);
-    }
-
-    return result.map;
-  }
-
-  Object? _deserializeObject(
-      dynamic jsonValue, DeserializationContext context) {
-    if (jsonValue == null) {
-      return null;
-    }
-    var typeInfo = context.typeInfo!;
-    final converter = _getConverter(context.jsonPropertyMeta, typeInfo);
-    if (converter != null) {
-      _configureConverter(converter, context);
-      if (typeInfo.isIterable &&
-          (converter is ICustomIterableConverter &&
-              converter is! DefaultIterableConverter)) {
-        return _applyValueDecorator(
-            _getConvertedValue(converter, jsonValue, context), typeInfo);
-      }
-      return _applyValueDecorator(
-          _getConvertedValue(converter, jsonValue, context), typeInfo);
-    }
-
-    dynamic convertedJsonValue =
-        _isValidJSON(jsonValue) ? _jsonDecoder.convert(jsonValue) : jsonValue;
-
-    if (convertedJsonValue is String && typeInfo.type is Type) {
-      return _getTypeByStringName(convertedJsonValue.replaceAll("\"", ""));
-    }
-
-    final jsonMap = JsonMap(
-        convertedJsonValue, null, context.parentJsonMaps as List<JsonMap>?);
-    typeInfo =
-        _detectObjectType(null, context.typeInfo!.type, jsonMap, context) ??
-            typeInfo;
-    final classInfo = _classes[typeInfo.type] ??
-        _classes[typeInfo.genericType] ??
-        _classes[typeInfo.mixinType];
-    if (classInfo == null) {
-      throw MissingAnnotationOnTypeError(typeInfo.type);
-    }
-    jsonMap.jsonMeta = classInfo.getMeta(context.options.scheme);
-
-    final namedArguments =
-        _getNamedArguments(classInfo.classMirror, jsonMap, context);
-    final positionalArgumentNames = <String>[];
-    final positionalArguments = _getPositionalArguments(
-        classInfo.classMirror, jsonMap, context, positionalArgumentNames);
-    dynamic objectInstance;
-    try {
-      objectInstance = context.options.template ??
-          (classInfo.classMirror.isEnum
-              ? null
-              : classInfo.classMirror.newInstance(
-                  classInfo
-                      .getJsonConstructor(context.options.scheme)!
-                      .constructorName,
-                  positionalArguments,
-                  namedArguments));
-    } on TypeError catch (typeError) {
-      final positionalNullArguments = positionalArgumentNames.where((element) =>
-          positionalArguments[positionalArgumentNames.indexOf(element)] ==
-          null);
-      final namedNullArguments = Map<Symbol, dynamic>.from(namedArguments);
-      namedNullArguments.removeWhere((key, value) => value != null);
-      throw CannotCreateInstanceError(
-          typeError, classInfo, positionalNullArguments, namedNullArguments);
-    }
-
-    final im = _safeGetInstanceMirror(objectInstance)!;
-    final inheritedPublicFieldNames = classInfo.inheritedPublicFieldNames;
-    final mappedFields = namedArguments.keys
-        .map((Symbol symbol) =>
-            RegExp('"(.+)"').allMatches(symbol.toString()).first.group(1))
-        .toList()
-      ..addAll(positionalArgumentNames);
-
-    _enumeratePublicProperties(im, jsonMap, context, (name, property,
-        isGetterOnly, JsonProperty? meta, converter, TypeInfo typeInfo) {
-      final propertyContext = context.reBuild(
-          parentObjectInstances: [
-            ...(context.parentObjectInstances ?? []),
-            objectInstance
-          ],
-          typeInfo: typeInfo,
-          jsonPropertyMeta: meta,
-          parentJsonMaps: <JsonMap>[
-            ...(context.parentJsonMaps ?? []),
-            jsonMap
-          ]);
-      final defaultValue = meta?.defaultValue;
-      final hasJsonProperty = jsonMap.hasProperty(property.name);
-      var fieldValue = jsonMap.getPropertyValue(property.name);
-      if (!hasJsonProperty || mappedFields.contains(name)) {
-        if (meta?.flatten == true) {
-          final object = meta?.name != null && fieldValue is Map
-              ? fieldValue.map((key, value) => MapEntry(
-                  skipPrefix(meta?.name, key, propertyContext.caseStyle),
-                  value))
-              : fieldValue;
-          im.invokeSetter(name, _deserializeObject(object, propertyContext));
-        }
-        if (im.invokeGetter(name) == null &&
-            defaultValue != null &&
-            !isGetterOnly) {
-          im.invokeSetter(name, defaultValue);
-        }
-        if (meta?.inject != true) {
-          return;
-        }
-      }
-      fieldValue = property.raw
-          ? _deserializeObject(fieldValue, propertyContext)
-          : property.value;
-      if (isGetterOnly) {
-        if (inheritedPublicFieldNames.contains(name) &&
-            !mappedFields.contains(property.name)) {
-          mappedFields.add(property.name);
-        }
-      } else {
-        fieldValue = _applyValueDecorator(fieldValue, typeInfo) ?? defaultValue;
-        im.invokeSetter(name, fieldValue);
-        mappedFields.add(property.name);
-      }
-    });
-
-    final discriminatorPropertyName =
-        _getDiscriminatorProperty(classInfo, context.options);
-    final unmappedFields = jsonMap.map.keys
-        .where((field) =>
-            !mappedFields.contains(field) && field != discriminatorPropertyName)
-        .toList();
-    if (unmappedFields.isNotEmpty) {
-      final jsonAnySetter = classInfo.getJsonAnySetter(context.options.scheme);
-      for (var field in unmappedFields) {
-        final jsonSetter =
-            classInfo.getJsonSetter(field, context.options.scheme) ??
-                jsonAnySetter;
-        final params = jsonSetter == jsonAnySetter
-            ? [field, jsonMap.map[field]]
-            : [jsonMap.map[field]];
-        if (jsonSetter != null) {
-          im.invoke(jsonSetter.simpleName, params);
-        }
-      }
-    }
-
-    return _applyValueDecorator(objectInstance, typeInfo);
   }
 }
