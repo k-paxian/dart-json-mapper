@@ -27,6 +27,33 @@ class TypeInfo {
 
   TypeInfo(this.type);
 
+  /// Checks if the type is a core Dart type (e.g., String, int, bool).
+  /// This logic might need refinement based on how "dart.core" types are identified.
+  /// A simple check for common types might be more robust than `startsWith('dart.core.')`
+  /// if `Type.toString()` doesn't consistently include the library prefix.
+  bool get isDartCoreType {
+    // A more robust check might be needed if typeName doesn't always include 'dart.core.'
+    // For example, checking against a list of known Dart core types.
+    // However, if typeName is reliably like 'dart.core.String', this is fine.
+    // Given the context, a simple check for common types is often used.
+    if (typeName == null) return false;
+    return typeName == 'String' ||
+        typeName == 'int' ||
+        typeName == 'double' ||
+        typeName == 'bool' ||
+        typeName == 'num' ||
+        typeName == 'Null' || // Consider if Null should be a "core type" for this check
+        typeName == 'Object' || // Object is a core type
+        typeName == 'DateTime' || // DateTime is often treated as a core serializable type
+        typeName == 'Duration' ||
+        typeName == 'Symbol' ||
+        typeName!.startsWith('List<') || // Also consider collections of core types if not handled by isList etc.
+        typeName!.startsWith('Map<') ||
+        typeName!.startsWith('Set<') ||
+        typeName == 'dynamic'; // dynamic is a core concept
+  }
+
+
   @override
   bool operator ==(Object other) => hashCode == other.hashCode;
 
