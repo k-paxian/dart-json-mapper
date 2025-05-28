@@ -714,21 +714,31 @@ class JsonMapper {
             jsonMap
           ]);
 
-      final property = _resolveProperty(
-          name,
-          jsonMap,
-          propertyContext,
-          classMeta,
-          meta,
-          (_, jsonName, defaultValue) => jsonMap.hasProperty(jsonName)
-              ? jsonMap.getPropertyValue(jsonName) ?? defaultValue
-              : defaultValue);
-      final jsonName = property.name;
-      final value = property.raw
-          ? _deserializeObject(property.value, propertyContext)
-          : property.value;
+      // New logic to determine jsonNameForVisitor and finalValueForVisitor starts here:
+      dynamic finalValueForVisitor;
+      String? jsonNameForVisitor;
 
-      visitor(param, name, jsonName, classMeta, meta, value, paramTypeInfo);
+      if (meta?.flatten == true) {
+        finalValueForVisitor = _deserializeObject(jsonMap.map, propertyContext.reBuild(jsonPropertyMeta: null));
+        jsonNameForVisitor = context.transformIdentifier(meta?.name ?? name);
+      } else {
+        final property = _resolveProperty(
+            name,
+            jsonMap,
+            propertyContext,
+            classMeta,
+            meta,
+            (_, resolvedJsonNameFromCallback, defaultValueFromCallback) =>
+                jsonMap.hasProperty(resolvedJsonNameFromCallback)
+                    ? jsonMap.getPropertyValue(resolvedJsonNameFromCallback) ?? defaultValueFromCallback
+                    : defaultValueFromCallback);
+        jsonNameForVisitor = property.name;
+        finalValueForVisitor = _deserializeObject(property.value, propertyContext);
+      }
+
+      // Call the visitor with the determined jsonNameForVisitor and finalValueForVisitor
+      visitor(param, name, jsonNameForVisitor, classMeta, meta, finalValueForVisitor, paramTypeInfo);
+      // End of the new logic block for this section
     }
   }
 
