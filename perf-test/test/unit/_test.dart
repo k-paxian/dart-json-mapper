@@ -13,6 +13,7 @@ import 'test.converters.dart';
 import 'test.default.value.dart';
 import 'test.enums.dart';
 import 'test.errors.dart';
+import 'test.flatten.dart'; // Added import
 import 'test.generics.dart';
 import 'test.inheritance.dart';
 import 'test.injection.dart';
@@ -52,4 +53,5 @@ void main() {
   testCollections();
   testTupleCases();
   testEnums();
+  testFlatten(); // Added function call
 }

@@ -41,7 +41,7 @@ class FlattenObject {
 //    (e.g., `import 'path/to/generated_adapter.init.dart'; initializeJsonMapper();`)
 //    usually in a setupTest.dart or at the beginning of the main test file.
 
-void main() {
+void testFlatten() {
   group('JsonProperty(flatten: true) tests', () {
     test('can deserialize with flatten: true', () {
       const jsonString = """
