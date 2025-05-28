@@ -1025,12 +1025,15 @@ class JsonMapper {
       var fieldValue = jsonMap.getPropertyValue(property.name);
       if (!hasJsonProperty || mappedFields.contains(name)) {
         if (meta?.flatten == true) {
-          final object = meta?.name != null && fieldValue is Map
-              ? fieldValue.map((key, value) => MapEntry(
-                  skipPrefix(meta?.name, key, propertyContext.caseStyle),
-                  value))
+          if (mappedFields.contains(name) || isGetterOnly) {
+              return;
+          }
+          final fieldValue = jsonMap.getPropertyValue(property.name);
+          final objectToDeserialize = meta?.name != null && fieldValue is Map
+              ? fieldValue.map((key, value) => MapEntry(skipPrefix(meta?.name, key, propertyContext.caseStyle), value))
               : fieldValue;
-          im.invokeSetter(name, _deserializeObject(object, propertyContext));
+          im.invokeSetter(name, _deserializeObject(objectToDeserialize, propertyContext));
+          return;
         }
         if (im.invokeGetter(name) == null &&
             defaultValue != null &&
