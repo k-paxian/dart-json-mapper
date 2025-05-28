@@ -721,7 +721,7 @@ class JsonMapper {
       if (meta?.flatten == true) {
         finalValueForVisitor = _deserializeObject(jsonMap.map, propertyContext.reBuild(jsonPropertyMeta: null));
         jsonNameForVisitor = context.transformIdentifier(meta?.name ?? name);
-      } else {
+      } else { // This is the beginning of the 'else' block to be replaced
         final property = _resolveProperty(
             name,
             jsonMap,
@@ -733,8 +733,12 @@ class JsonMapper {
                     ? jsonMap.getPropertyValue(resolvedJsonNameFromCallback) ?? defaultValueFromCallback
                     : defaultValueFromCallback);
         jsonNameForVisitor = property.name;
-        finalValueForVisitor = _deserializeObject(property.value, propertyContext);
-      }
+        if (property.raw) { // This check is crucial
+            finalValueForVisitor = _deserializeObject(property.value, propertyContext);
+        } else {
+            finalValueForVisitor = property.value;
+        }
+      } // This is the end of the 'else' block to be replaced
 
       // Call the visitor with the determined jsonNameForVisitor and finalValueForVisitor
       visitor(param, name, jsonNameForVisitor, classMeta, meta, finalValueForVisitor, paramTypeInfo);
@@ -1024,17 +1028,30 @@ class JsonMapper {
       final hasJsonProperty = jsonMap.hasProperty(property.name);
       var fieldValue = jsonMap.getPropertyValue(property.name);
       if (!hasJsonProperty || mappedFields.contains(name)) {
-        if (meta?.flatten == true) {
+      // BEGINNING OF BLOCK TO REPLACE/OVERWRITE
+      if (meta?.flatten == true) {
+          // name: the simple name of the property (e.g., "page")
+          // mappedFields: list of names of fields handled by constructor
+          // isGetterOnly: boolean, true if the property is final or getter-only
+
           if (mappedFields.contains(name) || isGetterOnly) {
-              return;
+              // If the field was handled by the constructor OR it's a final/getter-only field,
+              // do not attempt to process it further here (especially invokeSetter).
+              return; 
           }
-          final fieldValue = jsonMap.getPropertyValue(property.name);
-          final objectToDeserialize = meta?.name != null && fieldValue is Map
-              ? fieldValue.map((key, value) => MapEntry(skipPrefix(meta?.name, key, propertyContext.caseStyle), value))
+
+          // If we reach here, it's a mutable (non-final) flattened field 
+          // that was NOT handled by the constructor. This scenario might be rare
+          // for 'flatten:true' but this logic would apply.
+          final fieldValue = jsonMap.getPropertyValue(property.name); 
+          final objectToDeserialize = meta?.name != null && fieldValue is Map 
+              ? fieldValue.map((key, value) => MapEntry(skipPrefix(meta?.name, key, propertyContext.caseStyle), value)) 
               : fieldValue;
+          
           im.invokeSetter(name, _deserializeObject(objectToDeserialize, propertyContext));
-          return;
-        }
+          return; // Ensure we don't fall through to other logic for this property
+      }
+      // END OF BLOCK TO REPLACE/OVERWRITE
         if (im.invokeGetter(name) == null &&
             defaultValue != null &&
             !isGetterOnly) {
