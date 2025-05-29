@@ -909,7 +909,17 @@ class JsonMapper {
         _configureConverter(converter, propertyContext, value: value);
         convertedValue = _getConvertedValue(converter, value, propertyContext);
       } else {
-        convertedValue = _serializeObject(property.value, propertyContext);
+        // Check for rawJson
+        if (meta?.rawJson == true && property.value is String) {
+          try {
+            convertedValue = JsonDecoder().convert(property.value as String);
+          } on FormatException {
+            // If not valid JSON, serialize as a normal string
+            convertedValue = _serializeObject(property.value, propertyContext);
+          }
+        } else {
+          convertedValue = _serializeObject(property.value, propertyContext);
+        }
       }
       result.setPropertyValue(
           property.name, convertedValue ?? meta?.defaultValue);
@@ -1040,6 +1050,23 @@ class JsonMapper {
           mappedFields.add(property.name);
         }
       } else {
+        // Logic for !isGetterOnly fields:
+        if (meta?.rawJson == true && typeInfo.type == String) {
+          if (fieldValue is Map || fieldValue is List) {
+            // If it's a Map or List, convert to JSON string.
+            fieldValue = JsonEncoder().convert(fieldValue);
+          } else if (fieldValue == null) {
+            // If JSON value is null, field should be null.
+            fieldValue = null;
+          } else {
+            // If it's any other type (e.g., String, num, bool),
+            // convert it to string to ensure type safety for the String field.
+            fieldValue = fieldValue.toString();
+          }
+        }
+
+        // Now, apply decorator and set the property.
+        // fieldValue at this point MUST be a String if rawJson conditions were met and typeInfo.type is String, or null.
         fieldValue = _applyValueDecorator(fieldValue, typeInfo) ?? defaultValue;
         im.invokeSetter(name, fieldValue);
         mappedFields.add(property.name);
