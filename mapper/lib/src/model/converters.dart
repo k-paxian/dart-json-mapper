@@ -1,5 +1,4 @@
-import 'dart:convert' show base64Decode, base64Encode;
-import 'dart:convert' show JsonDecoder;
+import 'dart:convert' show base64Decode, base64Encode, JsonEncoder, JsonDecoder; // Added JsonEncoder
 import 'dart:typed_data' show Uint8List;
 
 import 'package:collection/collection.dart' show IterableExtension;
@@ -531,8 +530,32 @@ class DefaultConverter implements ICustomConverter {
   const DefaultConverter() : super();
 
   @override
-  Object? fromJSON(dynamic jsonValue, DeserializationContext context) =>
-      jsonValue;
+  Object? fromJSON(dynamic jsonValue, DeserializationContext context) {
+    final jsonProperty = context.jsonPropertyMeta;
+    final typeInfo = context.typeInfo;
+
+    if (jsonProperty?.rawJson == true && typeInfo?.type == String) {
+      if (jsonValue == null) {
+        return null;
+      }
+      if (jsonValue is Map || jsonValue is List) {
+        return JsonEncoder().convert(jsonValue);
+      }
+      return jsonValue.toString();
+    } else {
+      // If this DefaultConverter is specifically handling a String type (even if not rawJson)
+      if (typeInfo?.type == String) {
+        if (jsonValue == null) {
+          return null;
+        }
+        // For non-rawJson strings, ensure it's robustly converted to string.
+        // Original strict: return jsonValue as String?;
+        return jsonValue.toString();
+      }
+      // Original pass-through logic for other types this DefaultConverter might handle
+      return jsonValue;
+    }
+  }
 
   @override
   dynamic toJSON(Object? object, SerializationContext context) => object;
