@@ -6,12 +6,12 @@ part of 'built_value_test.dart';
 // BuiltValueGenerator
 // **************************************************************************
 
-Serializers _$serializers = (new Serializers().toBuilder()
+Serializers _$serializers = (Serializers().toBuilder()
       ..add(Record.serializer)
       ..add(SpaceTrack.serializer))
     .build();
-Serializer<SpaceTrack> _$spaceTrackSerializer = new _$SpaceTrackSerializer();
-Serializer<Record> _$recordSerializer = new _$RecordSerializer();
+Serializer<SpaceTrack> _$spaceTrackSerializer = _$SpaceTrackSerializer();
+Serializer<Record> _$recordSerializer = _$RecordSerializer();
 
 class _$SpaceTrackSerializer implements StructuredSerializer<SpaceTrack> {
   @override
@@ -152,7 +152,7 @@ class _$SpaceTrackSerializer implements StructuredSerializer<SpaceTrack> {
   @override
   SpaceTrack deserialize(Serializers serializers, Iterable<Object?> serialized,
       {FullType specifiedType = FullType.unspecified}) {
-    final result = new SpaceTrackBuilder();
+    final result = SpaceTrackBuilder();
 
     final iterator = serialized.iterator;
     while (iterator.moveNext()) {
@@ -360,7 +360,7 @@ class _$RecordSerializer implements StructuredSerializer<Record> {
   @override
   Record deserialize(Serializers serializers, Iterable<Object?> serialized,
       {FullType specifiedType = FullType.unspecified}) {
-    final result = new RecordBuilder();
+    final result = RecordBuilder();
 
     final iterator = serialized.iterator;
     while (iterator.moveNext()) {
@@ -476,7 +476,7 @@ class _$SpaceTrack extends SpaceTrack {
   final String tLELINE2;
 
   factory _$SpaceTrack([void Function(SpaceTrackBuilder)? updates]) =>
-      (new SpaceTrackBuilder()..update(updates))._build();
+      (SpaceTrackBuilder()..update(updates))._build();
 
   _$SpaceTrack._(
       {required this.cCSDSOMMVERS,
@@ -520,80 +520,13 @@ class _$SpaceTrack extends SpaceTrack {
       required this.tLELINE0,
       required this.tLELINE1,
       required this.tLELINE2})
-      : super._() {
-    BuiltValueNullFieldError.checkNotNull(
-        cCSDSOMMVERS, r'SpaceTrack', 'cCSDSOMMVERS');
-    BuiltValueNullFieldError.checkNotNull(cOMMENT, r'SpaceTrack', 'cOMMENT');
-    BuiltValueNullFieldError.checkNotNull(
-        cREATIONDATE, r'SpaceTrack', 'cREATIONDATE');
-    BuiltValueNullFieldError.checkNotNull(
-        oRIGINATOR, r'SpaceTrack', 'oRIGINATOR');
-    BuiltValueNullFieldError.checkNotNull(
-        oBJECTNAME, r'SpaceTrack', 'oBJECTNAME');
-    BuiltValueNullFieldError.checkNotNull(oBJECTID, r'SpaceTrack', 'oBJECTID');
-    BuiltValueNullFieldError.checkNotNull(
-        cENTERNAME, r'SpaceTrack', 'cENTERNAME');
-    BuiltValueNullFieldError.checkNotNull(rEFFRAME, r'SpaceTrack', 'rEFFRAME');
-    BuiltValueNullFieldError.checkNotNull(
-        tIMESYSTEM, r'SpaceTrack', 'tIMESYSTEM');
-    BuiltValueNullFieldError.checkNotNull(
-        mEANELEMENTTHEORY, r'SpaceTrack', 'mEANELEMENTTHEORY');
-    BuiltValueNullFieldError.checkNotNull(ePOCH, r'SpaceTrack', 'ePOCH');
-    BuiltValueNullFieldError.checkNotNull(
-        mEANMOTION, r'SpaceTrack', 'mEANMOTION');
-    BuiltValueNullFieldError.checkNotNull(
-        eCCENTRICITY, r'SpaceTrack', 'eCCENTRICITY');
-    BuiltValueNullFieldError.checkNotNull(
-        iNCLINATION, r'SpaceTrack', 'iNCLINATION');
-    BuiltValueNullFieldError.checkNotNull(
-        rAOFASCNODE, r'SpaceTrack', 'rAOFASCNODE');
-    BuiltValueNullFieldError.checkNotNull(
-        aRGOFPERICENTER, r'SpaceTrack', 'aRGOFPERICENTER');
-    BuiltValueNullFieldError.checkNotNull(
-        mEANANOMALY, r'SpaceTrack', 'mEANANOMALY');
-    BuiltValueNullFieldError.checkNotNull(
-        ePHEMERISTYPE, r'SpaceTrack', 'ePHEMERISTYPE');
-    BuiltValueNullFieldError.checkNotNull(
-        cLASSIFICATIONTYPE, r'SpaceTrack', 'cLASSIFICATIONTYPE');
-    BuiltValueNullFieldError.checkNotNull(
-        nORADCATID, r'SpaceTrack', 'nORADCATID');
-    BuiltValueNullFieldError.checkNotNull(
-        eLEMENTSETNO, r'SpaceTrack', 'eLEMENTSETNO');
-    BuiltValueNullFieldError.checkNotNull(
-        rEVATEPOCH, r'SpaceTrack', 'rEVATEPOCH');
-    BuiltValueNullFieldError.checkNotNull(bSTAR, r'SpaceTrack', 'bSTAR');
-    BuiltValueNullFieldError.checkNotNull(
-        mEANMOTIONDOT, r'SpaceTrack', 'mEANMOTIONDOT');
-    BuiltValueNullFieldError.checkNotNull(
-        mEANMOTIONDDOT, r'SpaceTrack', 'mEANMOTIONDDOT');
-    BuiltValueNullFieldError.checkNotNull(
-        sEMIMAJORAXIS, r'SpaceTrack', 'sEMIMAJORAXIS');
-    BuiltValueNullFieldError.checkNotNull(pERIOD, r'SpaceTrack', 'pERIOD');
-    BuiltValueNullFieldError.checkNotNull(aPOAPSIS, r'SpaceTrack', 'aPOAPSIS');
-    BuiltValueNullFieldError.checkNotNull(
-        pERIAPSIS, r'SpaceTrack', 'pERIAPSIS');
-    BuiltValueNullFieldError.checkNotNull(
-        oBJECTTYPE, r'SpaceTrack', 'oBJECTTYPE');
-    BuiltValueNullFieldError.checkNotNull(rCSSIZE, r'SpaceTrack', 'rCSSIZE');
-    BuiltValueNullFieldError.checkNotNull(
-        cOUNTRYCODE, r'SpaceTrack', 'cOUNTRYCODE');
-    BuiltValueNullFieldError.checkNotNull(
-        lAUNCHDATE, r'SpaceTrack', 'lAUNCHDATE');
-    BuiltValueNullFieldError.checkNotNull(sITE, r'SpaceTrack', 'sITE');
-    BuiltValueNullFieldError.checkNotNull(dECAYED, r'SpaceTrack', 'dECAYED');
-    BuiltValueNullFieldError.checkNotNull(fILE, r'SpaceTrack', 'fILE');
-    BuiltValueNullFieldError.checkNotNull(gPID, r'SpaceTrack', 'gPID');
-    BuiltValueNullFieldError.checkNotNull(tLELINE0, r'SpaceTrack', 'tLELINE0');
-    BuiltValueNullFieldError.checkNotNull(tLELINE1, r'SpaceTrack', 'tLELINE1');
-    BuiltValueNullFieldError.checkNotNull(tLELINE2, r'SpaceTrack', 'tLELINE2');
-  }
-
+      : super._();
   @override
   SpaceTrack rebuild(void Function(SpaceTrackBuilder) updates) =>
       (toBuilder()..update(updates)).build();
 
   @override
-  SpaceTrackBuilder toBuilder() => new SpaceTrackBuilder()..replace(this);
+  SpaceTrackBuilder toBuilder() => SpaceTrackBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
@@ -965,7 +898,6 @@ class SpaceTrackBuilder implements Builder<SpaceTrack, SpaceTrackBuilder> {
 
   @override
   void replace(SpaceTrack other) {
-    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$SpaceTrack;
   }
 
@@ -979,57 +911,89 @@ class SpaceTrackBuilder implements Builder<SpaceTrack, SpaceTrackBuilder> {
 
   _$SpaceTrack _build() {
     final _$result = _$v ??
-        new _$SpaceTrack._(
-            cCSDSOMMVERS: BuiltValueNullFieldError.checkNotNull(
-                cCSDSOMMVERS, r'SpaceTrack', 'cCSDSOMMVERS'),
-            cOMMENT: BuiltValueNullFieldError.checkNotNull(
-                cOMMENT, r'SpaceTrack', 'cOMMENT'),
-            cREATIONDATE: BuiltValueNullFieldError.checkNotNull(
-                cREATIONDATE, r'SpaceTrack', 'cREATIONDATE'),
-            oRIGINATOR: BuiltValueNullFieldError.checkNotNull(
-                oRIGINATOR, r'SpaceTrack', 'oRIGINATOR'),
-            oBJECTNAME: BuiltValueNullFieldError.checkNotNull(
-                oBJECTNAME, r'SpaceTrack', 'oBJECTNAME'),
-            oBJECTID: BuiltValueNullFieldError.checkNotNull(
-                oBJECTID, r'SpaceTrack', 'oBJECTID'),
-            cENTERNAME: BuiltValueNullFieldError.checkNotNull(
-                cENTERNAME, r'SpaceTrack', 'cENTERNAME'),
-            rEFFRAME: BuiltValueNullFieldError.checkNotNull(
-                rEFFRAME, r'SpaceTrack', 'rEFFRAME'),
-            tIMESYSTEM: BuiltValueNullFieldError.checkNotNull(
-                tIMESYSTEM, r'SpaceTrack', 'tIMESYSTEM'),
-            mEANELEMENTTHEORY: BuiltValueNullFieldError.checkNotNull(mEANELEMENTTHEORY, r'SpaceTrack', 'mEANELEMENTTHEORY'),
-            ePOCH: BuiltValueNullFieldError.checkNotNull(ePOCH, r'SpaceTrack', 'ePOCH'),
-            mEANMOTION: BuiltValueNullFieldError.checkNotNull(mEANMOTION, r'SpaceTrack', 'mEANMOTION'),
-            eCCENTRICITY: BuiltValueNullFieldError.checkNotNull(eCCENTRICITY, r'SpaceTrack', 'eCCENTRICITY'),
-            iNCLINATION: BuiltValueNullFieldError.checkNotNull(iNCLINATION, r'SpaceTrack', 'iNCLINATION'),
-            rAOFASCNODE: BuiltValueNullFieldError.checkNotNull(rAOFASCNODE, r'SpaceTrack', 'rAOFASCNODE'),
-            aRGOFPERICENTER: BuiltValueNullFieldError.checkNotNull(aRGOFPERICENTER, r'SpaceTrack', 'aRGOFPERICENTER'),
-            mEANANOMALY: BuiltValueNullFieldError.checkNotNull(mEANANOMALY, r'SpaceTrack', 'mEANANOMALY'),
-            ePHEMERISTYPE: BuiltValueNullFieldError.checkNotNull(ePHEMERISTYPE, r'SpaceTrack', 'ePHEMERISTYPE'),
-            cLASSIFICATIONTYPE: BuiltValueNullFieldError.checkNotNull(cLASSIFICATIONTYPE, r'SpaceTrack', 'cLASSIFICATIONTYPE'),
-            nORADCATID: BuiltValueNullFieldError.checkNotNull(nORADCATID, r'SpaceTrack', 'nORADCATID'),
-            eLEMENTSETNO: BuiltValueNullFieldError.checkNotNull(eLEMENTSETNO, r'SpaceTrack', 'eLEMENTSETNO'),
-            rEVATEPOCH: BuiltValueNullFieldError.checkNotNull(rEVATEPOCH, r'SpaceTrack', 'rEVATEPOCH'),
-            bSTAR: BuiltValueNullFieldError.checkNotNull(bSTAR, r'SpaceTrack', 'bSTAR'),
-            mEANMOTIONDOT: BuiltValueNullFieldError.checkNotNull(mEANMOTIONDOT, r'SpaceTrack', 'mEANMOTIONDOT'),
-            mEANMOTIONDDOT: BuiltValueNullFieldError.checkNotNull(mEANMOTIONDDOT, r'SpaceTrack', 'mEANMOTIONDDOT'),
-            sEMIMAJORAXIS: BuiltValueNullFieldError.checkNotNull(sEMIMAJORAXIS, r'SpaceTrack', 'sEMIMAJORAXIS'),
-            pERIOD: BuiltValueNullFieldError.checkNotNull(pERIOD, r'SpaceTrack', 'pERIOD'),
-            aPOAPSIS: BuiltValueNullFieldError.checkNotNull(aPOAPSIS, r'SpaceTrack', 'aPOAPSIS'),
-            pERIAPSIS: BuiltValueNullFieldError.checkNotNull(pERIAPSIS, r'SpaceTrack', 'pERIAPSIS'),
-            oBJECTTYPE: BuiltValueNullFieldError.checkNotNull(oBJECTTYPE, r'SpaceTrack', 'oBJECTTYPE'),
-            rCSSIZE: BuiltValueNullFieldError.checkNotNull(rCSSIZE, r'SpaceTrack', 'rCSSIZE'),
-            cOUNTRYCODE: BuiltValueNullFieldError.checkNotNull(cOUNTRYCODE, r'SpaceTrack', 'cOUNTRYCODE'),
-            lAUNCHDATE: BuiltValueNullFieldError.checkNotNull(lAUNCHDATE, r'SpaceTrack', 'lAUNCHDATE'),
-            sITE: BuiltValueNullFieldError.checkNotNull(sITE, r'SpaceTrack', 'sITE'),
-            dECAYDATE: dECAYDATE,
-            dECAYED: BuiltValueNullFieldError.checkNotNull(dECAYED, r'SpaceTrack', 'dECAYED'),
-            fILE: BuiltValueNullFieldError.checkNotNull(fILE, r'SpaceTrack', 'fILE'),
-            gPID: BuiltValueNullFieldError.checkNotNull(gPID, r'SpaceTrack', 'gPID'),
-            tLELINE0: BuiltValueNullFieldError.checkNotNull(tLELINE0, r'SpaceTrack', 'tLELINE0'),
-            tLELINE1: BuiltValueNullFieldError.checkNotNull(tLELINE1, r'SpaceTrack', 'tLELINE1'),
-            tLELINE2: BuiltValueNullFieldError.checkNotNull(tLELINE2, r'SpaceTrack', 'tLELINE2'));
+        _$SpaceTrack._(
+          cCSDSOMMVERS: BuiltValueNullFieldError.checkNotNull(
+              cCSDSOMMVERS, r'SpaceTrack', 'cCSDSOMMVERS'),
+          cOMMENT: BuiltValueNullFieldError.checkNotNull(
+              cOMMENT, r'SpaceTrack', 'cOMMENT'),
+          cREATIONDATE: BuiltValueNullFieldError.checkNotNull(
+              cREATIONDATE, r'SpaceTrack', 'cREATIONDATE'),
+          oRIGINATOR: BuiltValueNullFieldError.checkNotNull(
+              oRIGINATOR, r'SpaceTrack', 'oRIGINATOR'),
+          oBJECTNAME: BuiltValueNullFieldError.checkNotNull(
+              oBJECTNAME, r'SpaceTrack', 'oBJECTNAME'),
+          oBJECTID: BuiltValueNullFieldError.checkNotNull(
+              oBJECTID, r'SpaceTrack', 'oBJECTID'),
+          cENTERNAME: BuiltValueNullFieldError.checkNotNull(
+              cENTERNAME, r'SpaceTrack', 'cENTERNAME'),
+          rEFFRAME: BuiltValueNullFieldError.checkNotNull(
+              rEFFRAME, r'SpaceTrack', 'rEFFRAME'),
+          tIMESYSTEM: BuiltValueNullFieldError.checkNotNull(
+              tIMESYSTEM, r'SpaceTrack', 'tIMESYSTEM'),
+          mEANELEMENTTHEORY: BuiltValueNullFieldError.checkNotNull(
+              mEANELEMENTTHEORY, r'SpaceTrack', 'mEANELEMENTTHEORY'),
+          ePOCH: BuiltValueNullFieldError.checkNotNull(
+              ePOCH, r'SpaceTrack', 'ePOCH'),
+          mEANMOTION: BuiltValueNullFieldError.checkNotNull(
+              mEANMOTION, r'SpaceTrack', 'mEANMOTION'),
+          eCCENTRICITY: BuiltValueNullFieldError.checkNotNull(
+              eCCENTRICITY, r'SpaceTrack', 'eCCENTRICITY'),
+          iNCLINATION: BuiltValueNullFieldError.checkNotNull(
+              iNCLINATION, r'SpaceTrack', 'iNCLINATION'),
+          rAOFASCNODE: BuiltValueNullFieldError.checkNotNull(
+              rAOFASCNODE, r'SpaceTrack', 'rAOFASCNODE'),
+          aRGOFPERICENTER: BuiltValueNullFieldError.checkNotNull(
+              aRGOFPERICENTER, r'SpaceTrack', 'aRGOFPERICENTER'),
+          mEANANOMALY: BuiltValueNullFieldError.checkNotNull(
+              mEANANOMALY, r'SpaceTrack', 'mEANANOMALY'),
+          ePHEMERISTYPE: BuiltValueNullFieldError.checkNotNull(
+              ePHEMERISTYPE, r'SpaceTrack', 'ePHEMERISTYPE'),
+          cLASSIFICATIONTYPE: BuiltValueNullFieldError.checkNotNull(
+              cLASSIFICATIONTYPE, r'SpaceTrack', 'cLASSIFICATIONTYPE'),
+          nORADCATID: BuiltValueNullFieldError.checkNotNull(
+              nORADCATID, r'SpaceTrack', 'nORADCATID'),
+          eLEMENTSETNO: BuiltValueNullFieldError.checkNotNull(
+              eLEMENTSETNO, r'SpaceTrack', 'eLEMENTSETNO'),
+          rEVATEPOCH: BuiltValueNullFieldError.checkNotNull(
+              rEVATEPOCH, r'SpaceTrack', 'rEVATEPOCH'),
+          bSTAR: BuiltValueNullFieldError.checkNotNull(
+              bSTAR, r'SpaceTrack', 'bSTAR'),
+          mEANMOTIONDOT: BuiltValueNullFieldError.checkNotNull(
+              mEANMOTIONDOT, r'SpaceTrack', 'mEANMOTIONDOT'),
+          mEANMOTIONDDOT: BuiltValueNullFieldError.checkNotNull(
+              mEANMOTIONDDOT, r'SpaceTrack', 'mEANMOTIONDDOT'),
+          sEMIMAJORAXIS: BuiltValueNullFieldError.checkNotNull(
+              sEMIMAJORAXIS, r'SpaceTrack', 'sEMIMAJORAXIS'),
+          pERIOD: BuiltValueNullFieldError.checkNotNull(
+              pERIOD, r'SpaceTrack', 'pERIOD'),
+          aPOAPSIS: BuiltValueNullFieldError.checkNotNull(
+              aPOAPSIS, r'SpaceTrack', 'aPOAPSIS'),
+          pERIAPSIS: BuiltValueNullFieldError.checkNotNull(
+              pERIAPSIS, r'SpaceTrack', 'pERIAPSIS'),
+          oBJECTTYPE: BuiltValueNullFieldError.checkNotNull(
+              oBJECTTYPE, r'SpaceTrack', 'oBJECTTYPE'),
+          rCSSIZE: BuiltValueNullFieldError.checkNotNull(
+              rCSSIZE, r'SpaceTrack', 'rCSSIZE'),
+          cOUNTRYCODE: BuiltValueNullFieldError.checkNotNull(
+              cOUNTRYCODE, r'SpaceTrack', 'cOUNTRYCODE'),
+          lAUNCHDATE: BuiltValueNullFieldError.checkNotNull(
+              lAUNCHDATE, r'SpaceTrack', 'lAUNCHDATE'),
+          sITE: BuiltValueNullFieldError.checkNotNull(
+              sITE, r'SpaceTrack', 'sITE'),
+          dECAYDATE: dECAYDATE,
+          dECAYED: BuiltValueNullFieldError.checkNotNull(
+              dECAYED, r'SpaceTrack', 'dECAYED'),
+          fILE: BuiltValueNullFieldError.checkNotNull(
+              fILE, r'SpaceTrack', 'fILE'),
+          gPID: BuiltValueNullFieldError.checkNotNull(
+              gPID, r'SpaceTrack', 'gPID'),
+          tLELINE0: BuiltValueNullFieldError.checkNotNull(
+              tLELINE0, r'SpaceTrack', 'tLELINE0'),
+          tLELINE1: BuiltValueNullFieldError.checkNotNull(
+              tLELINE1, r'SpaceTrack', 'tLELINE1'),
+          tLELINE2: BuiltValueNullFieldError.checkNotNull(
+              tLELINE2, r'SpaceTrack', 'tLELINE2'),
+        );
     replace(_$result);
     return _$result;
   }
@@ -1046,26 +1010,20 @@ class _$Record extends Record {
   final String id;
 
   factory _$Record([void Function(RecordBuilder)? updates]) =>
-      (new RecordBuilder()..update(updates))._build();
+      (RecordBuilder()..update(updates))._build();
 
   _$Record._(
       {required this.spaceTrack,
       required this.version,
       required this.launch,
       required this.id})
-      : super._() {
-    BuiltValueNullFieldError.checkNotNull(spaceTrack, r'Record', 'spaceTrack');
-    BuiltValueNullFieldError.checkNotNull(version, r'Record', 'version');
-    BuiltValueNullFieldError.checkNotNull(launch, r'Record', 'launch');
-    BuiltValueNullFieldError.checkNotNull(id, r'Record', 'id');
-  }
-
+      : super._();
   @override
   Record rebuild(void Function(RecordBuilder) updates) =>
       (toBuilder()..update(updates)).build();
 
   @override
-  RecordBuilder toBuilder() => new RecordBuilder()..replace(this);
+  RecordBuilder toBuilder() => RecordBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
@@ -1104,7 +1062,7 @@ class RecordBuilder implements Builder<Record, RecordBuilder> {
 
   SpaceTrackBuilder? _spaceTrack;
   SpaceTrackBuilder get spaceTrack =>
-      _$this._spaceTrack ??= new SpaceTrackBuilder();
+      _$this._spaceTrack ??= SpaceTrackBuilder();
   set spaceTrack(SpaceTrackBuilder? spaceTrack) =>
       _$this._spaceTrack = spaceTrack;
 
@@ -1136,7 +1094,6 @@ class RecordBuilder implements Builder<Record, RecordBuilder> {
 
   @override
   void replace(Record other) {
-    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$Record;
   }
 
@@ -1152,20 +1109,21 @@ class RecordBuilder implements Builder<Record, RecordBuilder> {
     _$Record _$result;
     try {
       _$result = _$v ??
-          new _$Record._(
-              spaceTrack: spaceTrack.build(),
-              version: BuiltValueNullFieldError.checkNotNull(
-                  version, r'Record', 'version'),
-              launch: BuiltValueNullFieldError.checkNotNull(
-                  launch, r'Record', 'launch'),
-              id: BuiltValueNullFieldError.checkNotNull(id, r'Record', 'id'));
+          _$Record._(
+            spaceTrack: spaceTrack.build(),
+            version: BuiltValueNullFieldError.checkNotNull(
+                version, r'Record', 'version'),
+            launch: BuiltValueNullFieldError.checkNotNull(
+                launch, r'Record', 'launch'),
+            id: BuiltValueNullFieldError.checkNotNull(id, r'Record', 'id'),
+          );
     } catch (_) {
       late String _$failedField;
       try {
         _$failedField = 'spaceTrack';
         spaceTrack.build();
       } catch (e) {
-        throw new BuiltValueNestedFieldError(
+        throw BuiltValueNestedFieldError(
             r'Record', _$failedField, e.toString());
       }
       rethrow;
