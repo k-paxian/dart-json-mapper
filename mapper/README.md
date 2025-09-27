@@ -35,6 +35,18 @@ Here are some of the key features of `dart_json_mapper`:
 
 This library's reflection mechanism is based on the [reflectable][3] library. This means that "extended types information" is auto-generated from your existing Dart program, guided only by the annotated classes. As a result, type information is accessible at runtime at a reduced cost.
 
+## Comparison with `json_serializable`
+
+While Google's `json_serializable` is the standard for JSON serialization in Dart, `dart_json_mapper` offers a different approach with a richer feature set. Here's a quick comparison:
+
+| Feature | `json_serializable` | `dart_json_mapper` |
+| --- | --- | --- |
+| **Code Generation** | Generates a separate `*.g.dart` file for each class. | Generates a single `main.mapper.g.dart` file for the entire project. |
+| **API & Boilerplate** | Requires a factory constructor (`fromJson`), a `toJson` method, and a mixin in your model classes. | Uses a central `JsonMapper` object for serialization, keeping your model classes clean. |
+| **Advanced Features** | Core serialization features, with custom converters for advanced scenarios. | Rich, built-in feature set, including polymorphism, object cloning, advanced mapping, and schemes. |
+
+In summary, `json_serializable` is the more standard, straightforward, and widely adopted solution from the Dart team. `dart_json_mapper` offers a more feature-rich, "batteries-included" experience with more powerful out-of-the-box capabilities, potentially at the cost of being a less common choice.
+
 ![](banner.svg)
 
 * [Basic setup](#basic-setup)
