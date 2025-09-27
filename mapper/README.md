@@ -2,7 +2,6 @@
 [![Build Status][ci-badge]][ci-badge-url]
 [![pub package](https://img.shields.io/pub/v/dart_json_mapper.svg)](https://pub.dartlang.org/packages/dart_json_mapper)
 [![Pub Points](https://img.shields.io/pub/points/dart_json_mapper)](https://pub.dev/packages/dart_json_mapper/score)
-[![Popularity](https://img.shields.io/pub/popularity/dart_json_mapper)](https://pub.dev/packages/dart_json_mapper/score)
 
 This package allows programmers to annotate Dart objects in order to
   Serialize / Deserialize them to / from JSON.
