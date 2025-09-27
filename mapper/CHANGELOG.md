@@ -1,3 +1,7 @@
+## 2.2.17
+
+* bump dependencies to support wider compatibility #231
+
 ## 2.2.16
 
 * clean up lints
