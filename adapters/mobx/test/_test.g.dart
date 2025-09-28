@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of json_mapper_mobx.test;
+part of '_test.dart';
 
 // **************************************************************************
 // StoreGenerator
