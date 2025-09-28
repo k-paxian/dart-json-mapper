@@ -182,6 +182,9 @@ class JsonProperty {
   /// Final field default value
   final dynamic defaultValue;
 
+  /// Declares annotated field to be treated as raw json string
+  final bool? rawJson;
+
   const JsonProperty(
       {this.scheme,
       this.name,
@@ -198,7 +201,8 @@ class JsonProperty {
       this.ignoreIfDefault,
       this.converter,
       this.defaultValue,
-      this.converterParams});
+      this.converterParams,
+      this.rawJson});
 
   static const parentReference = '..';
 

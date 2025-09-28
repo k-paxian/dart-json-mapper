@@ -1105,6 +1105,36 @@ final mergedMap = JsonMapper.mergeMaps(mapA, mapB);
 expect(mergedMap, {'a': 1, 'b': {'c': 2, 'd': 3}, 'e': 4});
 ```
 
+## Raw JSON string
+
+It is possible to embed a raw JSON string into a target object without any extra quotes.
+This could be useful for cases when you have a string field, that is already a valid JSON string.
+
+```dart
+@jsonSerializable
+class RawBean {
+    String? name;
+
+    @JsonProperty(rawJson: true)
+    String? json;
+
+    RawBean(this.name, this.json);
+}
+
+final bean = RawBean('My bean', '{"attr":false}');
+```
+
+should produce:
+
+```json
+{
+    "name":"My bean",
+    "json":{
+        "attr":false
+    }
+}
+```
+
 ## Debugging
 
 You can print out the current mapper configuration to the console using the `info()` method. This is useful for debugging issues with adapters.

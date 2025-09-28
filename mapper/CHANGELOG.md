@@ -1,3 +1,7 @@
+## 2.2.18
+
+* #130, (feat) Introduce `rawJson` attribute to `@JsonProperty` meta
+
 ## 2.2.17
 
 * bump dependencies to support wider compatibility #231
@@ -34,7 +38,7 @@
 
 ## 2.2.10
 
-* bump dependencies 
+* bump dependencies
 
 ## 2.2.9
 
@@ -76,7 +80,7 @@
 
 ## 2.2.6
 
-* #195 Deserializing with String discriminatorProperty throws JsonFormatError(FormatException) 
+* #195 Deserializing with String discriminatorProperty throws JsonFormatError(FormatException)
 
 ## 2.2.5+3
 
@@ -89,8 +93,8 @@
 ## 2.2.5+1
 
 * bump dependencies
-* #191 Incorrect detection of circular reference if hashCode has been overridden 
- 
+* #191 Incorrect detection of circular reference if hashCode has been overridden
+
 ## 2.2.5
 
 * bump dependencies
@@ -249,8 +253,8 @@
 ## 2.0.5
 
 * #120, Support for subclass using a discriminator property `@Json(typeNameProperty)` => `@Json(discriminatorProperty)`
-        For migration from old versions just replace all `typeNameProperty` by `discriminatorProperty`.
-        Global option `DeserializationOptions.typeNameProperty` has been removed.
+  For migration from old versions just replace all `typeNameProperty` by `discriminatorProperty`.
+  Global option `DeserializationOptions.typeNameProperty` has been removed.
 
 ## 2.0.4
 
@@ -365,8 +369,8 @@
 ## 1.6.0
 
 * Own builder introduced, to support `List, Set, HashSet, UnmodifiableListView` iterables to slightly ease the pain
-of manual adding value decorators per each model class. From now on, support for `List<T>, Set<T>` iterables will be
-out of the box by default.
+  of manual adding value decorators per each model class. From now on, support for `List<T>, Set<T>` iterables will be
+  out of the box by default.
 * `Duration` converter introduced
 
 ## 1.5.24
@@ -436,7 +440,7 @@ out of the box by default.
 ## 1.5.8
 
 * #47, Introduced support for `composition over inheritance`
-using composition of `Generic<T>` with `T`.
+  using composition of `Generic<T>` with `T`.
 
 ## 1.5.7
 
@@ -463,22 +467,22 @@ using composition of `Generic<T>` with `T`.
 
 ## 1.5.2
 
-* #36, Allow serialize same object instances same nesting level.  
+* #36, Allow serialize same object instances same nesting level.
 
 ## 1.5.1
 
-* Adapters management improved. Easily extend & configure mapper capabilities via modular approach. 
+* Adapters management improved. Easily extend & configure mapper capabilities via modular approach.
 
 ## 1.5.0
 
-* #34, Default Iterables converter introduced. 
-Partial solution to avoid value decorators approach for the cases when
-it is possible to pre-initialize Iterable field with an empty instance.
+* #34, Default Iterables converter introduced.
+  Partial solution to avoid value decorators approach for the cases when
+  it is possible to pre-initialize Iterable field with an empty instance.
 
 ## 1.4.4
 
 * #33, Provide default values for `@JsonProperty(defaultValue: ...)`
-* #35, SerializationOptions enriched with global `ignoreNullMembers` flag 
+* #35, SerializationOptions enriched with global `ignoreNullMembers` flag
 
 ## 1.4.3
 
@@ -494,8 +498,8 @@ it is possible to pre-initialize Iterable field with an empty instance.
 
 ## 1.4.0
 
-* Enhancement #21 implemented, support @JsonConstructor to pick appropriate 
-constructor for deserialization.
+* Enhancement #21 implemented, support @JsonConstructor to pick appropriate
+  constructor for deserialization.
 * Enhancement #23 implemented, support for field names casing options for serialization. [Pascal, Kebab, Snake, SnakeAllCaps]
 
 ## 1.3.5
@@ -518,7 +522,7 @@ constructor for deserialization.
 ## 1.3.1
 
 * Imports refactored, from now on *everything* is imported from a single
-`import 'package:dart_json_mapper/dart_json_mapper.dart';` instead of several imports
+  `import 'package:dart_json_mapper/dart_json_mapper.dart';` instead of several imports
 
 ## 1.2.10
 
@@ -526,12 +530,12 @@ constructor for deserialization.
 
 ## 1.2.9
 
-* Introduced possibility to specify number of allowed circular references `@Json(allowCircularReferences: 1)`   
+* Introduced possibility to specify number of allowed circular references `@Json(allowCircularReferences: 1)`
 
 ## 1.2.8
 
 * Schemes introduced. Scheme - is a set of meta annotations associated with common scheme id.
-This enables the possibility to map *single* Dart class to *many* JSON structures.   
+  This enables the possibility to map *single* Dart class to *many* JSON structures.
 
 ## 1.2.7
 
@@ -710,10 +714,10 @@ This enables the possibility to map *single* Dart class to *many* JSON structure
 
 ## 0.0.4
 
-* Convert Enum values to string by default, to skip a disordered values drawback 
-with indexed enum values.
-* Enum's does not have to be annotated, since almost all of them are parts of 
-third party libraries w/o access for modification.
+* Convert Enum values to string by default, to skip a disordered values drawback
+  with indexed enum values.
+* Enum's does not have to be annotated, since almost all of them are parts of
+  third party libraries w/o access for modification.
 * dateTimeConverter introduced
 
 ## 0.0.2

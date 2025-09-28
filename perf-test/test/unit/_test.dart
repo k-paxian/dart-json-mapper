@@ -26,6 +26,7 @@ import 'test.scheme.dart';
 import 'test.special.cases.dart';
 import 'test.tuple.dart';
 import 'test.value.decorators.dart';
+import './test.raw_json.dart' as raw_json;
 
 void main() {
   initializeJsonMapper(
@@ -52,4 +53,5 @@ void main() {
   testCollections();
   testTupleCases();
   testEnums();
+  raw_json.main();
 }
