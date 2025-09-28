@@ -9,6 +9,7 @@ dependencies:
   dart_json_mapper:
 dev_dependencies:
   build_runner:
+  test: any
 dependency_overrides:
   dart_json_mapper:
     path: ../../mapper

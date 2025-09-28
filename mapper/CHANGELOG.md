@@ -1,3 +1,7 @@
+## 2.2.19
+
+* #230, Bug: @JsonProperty(flatten: true) fails on deserialization
+
 ## 2.2.18
 
 * #130, (feat) Introduce `rawJson` attribute to `@JsonProperty` meta
