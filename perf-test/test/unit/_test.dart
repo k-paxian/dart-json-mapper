@@ -13,7 +13,7 @@ import 'test.converters.dart';
 import 'test.default.value.dart';
 import 'test.enums.dart';
 import 'test.errors.dart';
-import 'test.flatten.dart'; // Added import
+import 'test.flatten.dart';
 import 'test.generics.dart';
 import 'test.inheritance.dart';
 import 'test.injection.dart';
@@ -27,6 +27,7 @@ import 'test.scheme.dart';
 import 'test.special.cases.dart';
 import 'test.tuple.dart';
 import 'test.value.decorators.dart';
+import './test.raw_json.dart' as raw_json;
 
 void main() {
   initializeJsonMapper(
@@ -53,5 +54,6 @@ void main() {
   testCollections();
   testTupleCases();
   testEnums();
-  testFlatten(); // Added function call
+  testFlatten();
+  raw_json.main();
 }

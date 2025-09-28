@@ -1,4 +1,6 @@
 import 'package:analyzer/dart/element/element.dart';
+// ignore: implementation_imports
+import 'package:analyzer/src/dart/element/element.dart' show LibraryElementImpl;
 import 'package:build/build.dart';
 import 'package:pubspec_parse/pubspec_parse.dart';
 // ignore: implementation_imports
@@ -62,7 +64,7 @@ class DartJsonMapperBuilder implements Builder {
         inputId,
         outputId,
         inputLibrary,
-        visibleLibraries,
+        visibleLibraries.cast<LibraryElementImpl>(),
         _formatted, []);
     final wrappedSource = wrapper.wrap(generatedSource)!;
     await buildStep.writeAsString(outputId, wrappedSource);

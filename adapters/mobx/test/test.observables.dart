@@ -1,4 +1,4 @@
-part of json_mapper_mobx.test;
+part of '_test.dart';
 
 @jsonSerializable
 class Test extends TestBase with _$Test {

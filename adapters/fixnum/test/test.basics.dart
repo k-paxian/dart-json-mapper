@@ -1,4 +1,4 @@
-part of json_mapper_fixnum.test;
+part of '_test.dart';
 
 @jsonSerializable
 class Int32IntData {
