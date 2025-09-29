@@ -1,3 +1,7 @@
+## 2.2.20
+
+* #234, Bug: Cannot map uppercase int´s or doubles
+
 ## 2.2.19
 
 * #230, Bug: @JsonProperty(flatten: true) fails on deserialization
