@@ -1,6 +1,5 @@
 library json_mapper.test;
 
-import 'package:reflectable/reflectable.dart';
 import 'package:starlink/starlink.dart' show starlinkGeneratedAdapter;
 import 'package:unit_testing/model.dart' show compactOptions;
 import 'package:unit_testing/unit_testing.dart'
@@ -30,7 +29,6 @@ import 'test.tuple.dart';
 import 'dart:convert';
 import 'package:dart_json_mapper/dart_json_mapper.dart';
 import 'package:test/test.dart';
-
 import 'test.value.decorators.dart';
 import './test.raw_json.dart' as raw_json;
 

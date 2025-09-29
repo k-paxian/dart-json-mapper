@@ -628,22 +628,12 @@ class JsonMapper {
       Json? classMeta,
       JsonProperty? meta,
       Function getValueByName) {
-    String jsonName;
-    final isDeserialization = jsonMap != null;
-    final isExplicitName = meta != null && meta.name != null;
+    String? jsonName = name;
 
-    if (isExplicitName) {
-      jsonName = JsonProperty.getPrimaryName(meta)!;
-    } else {
-      jsonName = name;
+    if (meta != null && meta.name != null) {
+      jsonName = JsonProperty.getPrimaryName(meta);
     }
-
-    if (isDeserialization && isExplicitName) {
-      // For deserialization of explicit names, we don't transform, we use the name as is.
-    } else {
-      jsonName = context.transformIdentifier(jsonName);
-    }
-
+    jsonName = context.transformIdentifier(jsonName!);
     var value = getValueByName(name, jsonName, meta?.defaultValue);
     if (jsonMap != null &&
         meta != null &&
