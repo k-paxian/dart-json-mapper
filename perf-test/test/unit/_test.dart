@@ -28,12 +28,14 @@ import 'test.special.cases.dart';
 import 'test.tuple.dart';
 import 'test.value.decorators.dart';
 import './test.raw_json.dart' as raw_json;
+import './test_issue_234.dart';
 
 void main() {
   initializeJsonMapper(
       serializationOptions: compactOptions,
       adapters: [starlinkGeneratedAdapter, unitTestingGeneratedAdapter]).info();
 
+  testIssue234();
   testScheme();
   testDefaultValue();
   testRequired();

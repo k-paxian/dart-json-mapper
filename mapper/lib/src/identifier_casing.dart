@@ -14,6 +14,9 @@ List<String> toWords(String input, [CaseStyle? caseStyle = defaultCaseStyle]) {
     case CaseStyle.kebab:
       return input.split('-');
     case CaseStyle.pascal:
+      if (input == input.toUpperCase()) {
+        return [input];
+      }
       return deCapitalize(input)
           .replaceAllMapped(RegExp('([a-z0-9])([A-Z])'),
               (match) => '${match.group(1)} ${match.group(2)}')
@@ -22,6 +25,9 @@ List<String> toWords(String input, [CaseStyle? caseStyle = defaultCaseStyle]) {
           .toLowerCase()
           .split(' ');
     case CaseStyle.camel:
+      if (input == input.toUpperCase()) {
+        return [input];
+      }
       return input
           .replaceAllMapped(RegExp('([a-z0-9])([A-Z])'),
               (match) => '${match.group(1)} ${match.group(2)}')
