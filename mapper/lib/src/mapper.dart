@@ -628,29 +628,30 @@ class JsonMapper {
       Json? classMeta,
       JsonProperty? meta,
       Function getValueByName) {
-    String? jsonName;
+    String jsonName;
     final isDeserialization = jsonMap != null;
     final isExplicitName = meta != null && meta.name != null;
 
     if (isExplicitName) {
-      jsonName = JsonProperty.getPrimaryName(meta);
+      jsonName = JsonProperty.getPrimaryName(meta)!;
     } else {
       jsonName = name;
     }
 
-    if (!isExplicitName || !isDeserialization) {
-      jsonName = context.transformIdentifier(jsonName!);
+    if (isDeserialization && isExplicitName) {
+      // For deserialization of explicit names, we don't transform, we use the name as is.
+    } else {
+      jsonName = context.transformIdentifier(jsonName);
     }
 
     var value = getValueByName(name, jsonName, meta?.defaultValue);
-
-    if (isDeserialization &&
+    if (jsonMap != null &&
         meta != null &&
-        (value == null || !jsonMap!.hasProperty(jsonName!))) {
+        (value == null || !jsonMap.hasProperty(jsonName))) {
       final initialValue = value;
       for (final alias in JsonProperty.getAliases(meta)!) {
-        final targetJsonName =
-            isExplicitName ? alias : context.transformIdentifier(alias);
+        final targetJsonName = transformIdentifierCaseStyle(
+            alias, context.targetCaseStyle, context.sourceCaseStyle);
         if (value != initialValue || !jsonMap.hasProperty(targetJsonName)) {
           continue;
         }
@@ -658,7 +659,6 @@ class JsonMapper {
         value = jsonMap.getPropertyValue(jsonName);
       }
     }
-
     if (meta != null &&
         meta.inject == true &&
         context.options.injectableValues != null) {
@@ -667,6 +667,7 @@ class JsonMapper {
         value = injectionJsonMap.getPropertyValue(jsonName);
         return PropertyDescriptor(jsonName, value, false);
       } else {
+        // TODO: Possibly would be better to throw an error when no injectable value provided?
         return PropertyDescriptor(jsonName, null, false);
       }
     }
