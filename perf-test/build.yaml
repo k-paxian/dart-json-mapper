@@ -3,7 +3,11 @@ targets:
     builders:
       build_web_compilers:entrypoint:
         generate_for:
-          - test/unit/*.dart
+          - test/unit/_test.dart
+        options:
+          compiler: dart2js
+          dart2js_args:
+            - --no-minify
       dart_json_mapper:
         options:
           iterables: List, Set
