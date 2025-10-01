@@ -4,7 +4,7 @@ import 'package:analyzer/src/dart/element/element.dart' show LibraryElementImpl;
 import 'package:build/build.dart';
 import 'package:pubspec_parse/pubspec_parse.dart';
 // ignore: implementation_imports
-import 'package:reflectable/src/builder_implementation.dart'
+import 'package:reflectable_builder/src/builder_implementation.dart'
     show BuilderImplementation;
 
 import 'reflectable_source_wrapper.dart';
@@ -22,8 +22,8 @@ class DartJsonMapperBuilder implements Builder {
 
   @override
   Map<String, List<String>> get buildExtensions => {
-        '.dart': [_extension]
-      };
+    '.dart': [_extension]
+  };
 
   ReflectableSourceWrapper getWrapperForLibrary(LibraryElement inputLibrary,
       Pubspec mapperPubspec, Pubspec inputPubspec) {
@@ -65,7 +65,8 @@ class DartJsonMapperBuilder implements Builder {
         outputId,
         inputLibrary,
         visibleLibraries.cast<LibraryElementImpl>(),
-        _formatted, []);
+        _formatted,
+        []);
     final wrappedSource = wrapper.wrap(generatedSource)!;
     await buildStep.writeAsString(outputId, wrappedSource);
   }
