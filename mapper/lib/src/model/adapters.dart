@@ -13,7 +13,8 @@ import 'package:reflectable/src/reflectable_builder_based.dart'
     show ReflectorData;
 
 import '../model/index.dart' show Enum;
-import '../utils.dart';
+import '../class_info.dart';
+import '../globals.dart';
 import 'converters.dart';
 import 'type_info.dart';
 import 'value_decorators.dart';
