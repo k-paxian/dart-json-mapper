@@ -28,7 +28,7 @@ import 'dart:core';
 import 'dart:typed_data' as prefix28;
 import 'package:dart_json_mapper/src/identifier_casing.dart' as prefix26;
 import 'package:dart_json_mapper/src/model/annotations.dart' as prefix0;
-import 'package:dart_json_mapper/src/model/converters.dart' as prefix27;
+import 'package:dart_json_mapper/src/model/converters/enum_converter_numeric.dart' as prefix27;
 import 'package:starlink/model.dart' as prefix22;
 import 'package:unit_testing/generic.dart' as prefix23;
 import 'package:unit_testing/immutable.dart' as prefix24;

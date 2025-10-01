@@ -1,0 +1,1 @@
+enum ConversionDirection { fromJson, toJson }
