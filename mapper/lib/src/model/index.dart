@@ -1,7 +1,8 @@
 import 'package:collection/collection.dart';
 
 import '../identifier_casing.dart';
-import '../utils.dart';
+import '../globals.dart';
+import '../json_map.dart';
 import 'annotations.dart';
 import 'type_info.dart';
 

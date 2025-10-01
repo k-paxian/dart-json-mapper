@@ -12,7 +12,9 @@ import 'package:reflectable/reflectable.dart'
 
 import 'errors.dart';
 import 'model/index.dart';
-import 'utils.dart';
+import 'class_info.dart';
+import 'globals.dart';
+import 'json_map.dart';
 
 /// Singleton class providing mostly static methods for conversion of previously
 /// annotated by [JsonSerializable] Dart objects from / to JSON string
