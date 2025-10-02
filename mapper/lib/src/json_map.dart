@@ -1,3 +1,5 @@
+import 'dart:convert' show JsonDecoder;
+
 import 'package:collection/collection.dart' show IterableExtension;
 
 import 'model/index.dart';
@@ -11,6 +13,20 @@ class JsonMap {
   Json? jsonMeta;
 
   JsonMap(this.map, [this.jsonMeta, this.parentMaps]);
+
+  static final JsonDecoder _jsonDecoder = JsonDecoder();
+
+  static bool isValidJSON(dynamic jsonValue) {
+    try {
+      if (jsonValue is String) {
+        _jsonDecoder.convert(jsonValue);
+        return true;
+      }
+      return false;
+    } on FormatException {
+      return false;
+    }
+  }
 
   bool hasProperty(String name) {
     return _isPathExists(_getPath(name));

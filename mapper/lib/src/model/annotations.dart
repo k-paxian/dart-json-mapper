@@ -2,8 +2,7 @@ import 'package:meta/meta_meta.dart';
 import 'package:reflectable/reflectable.dart';
 
 import '../identifier_casing.dart';
-import 'converters.dart';
-import 'value_decorators.dart';
+import 'index.dart';
 
 /// [jsonConstructor] is used as a shorthand metadata w/o "()"
 const jsonConstructor = JsonConstructor();
@@ -93,6 +92,12 @@ class Json {
       this.ignoreDefaultMembers,
       this.processAnnotatedMembersOnly,
       this.name});
+
+  static bool? getProcessAnnotatedMembersOnly(
+          Json? meta, DeserializationOptions options) =>
+      meta != null && meta.processAnnotatedMembersOnly != null
+          ? meta.processAnnotatedMembersOnly
+          : options.processAnnotatedMembersOnly;
 }
 
 /// [jsonProperty] is used as a shorthand metadata w/o "()"
