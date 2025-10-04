@@ -1,7 +1,6 @@
 import 'package:intl/intl.dart';
 
 import '../index.dart';
-import 'base_converter.dart';
 
 const dateConverter = DateConverter();
 

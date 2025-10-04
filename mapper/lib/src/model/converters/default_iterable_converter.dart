@@ -1,5 +1,4 @@
 import '../index.dart';
-import 'base_converter.dart';
 
 final defaultIterableConverter = DefaultIterableConverter();
 

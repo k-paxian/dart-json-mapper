@@ -16,7 +16,7 @@ dependencies:
   reflectable: ^5.0.0
   collection: ^1.18.0
   pubspec_parse: ^1.3.0
+  reflectable_builder: ^1.0.1
 dev_dependencies:
   lints:
   build_runner:
-  reflectable_builder:

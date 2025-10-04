@@ -2,11 +2,6 @@ import 'dart:convert' show JsonEncoder, JsonDecoder;
 
 import 'package:dart_json_mapper/dart_json_mapper.dart';
 
-import '../class_info.dart';
-import '../errors.dart';
-import '../identifier_casing.dart';
-import '../json_map.dart';
-import '../model/index.dart';
 import 'property_handler.dart';
 import 'reflection_handler.dart';
 
@@ -115,7 +110,7 @@ class DeserializationHandler {
               ? fieldValue.map((key, value) => MapEntry(skipPrefix(metaName, key, propertyContext.caseStyle), value))
               : fieldValue;
 
-          im.invokeSetter(name, this.deserializeObject(objectToDeserialize, propertyContext));
+          im.invokeSetter(name, deserializeObject(objectToDeserialize, propertyContext));
           return;
         }
         if (im.invokeGetter(name) == null &&
@@ -128,7 +123,7 @@ class DeserializationHandler {
         }
       }
       fieldValue = property.raw
-          ? this.deserializeObject(fieldValue, propertyContext)
+          ? deserializeObject(fieldValue, propertyContext)
           : property.value;
       if (isGetterOnly) {
         if (inheritedPublicFieldNames.contains(name) &&
@@ -200,7 +195,7 @@ class DeserializationHandler {
           objectClassInfo.getDeclarationMirror(discriminatorProperty);
       if (declarationMirror != null) {
         final discriminatorType = ReflectionHandler.getDeclarationType(declarationMirror);
-        final value = this.deserializeObject(discriminatorValue,
+        final value = deserializeObject(discriminatorValue,
             context.reBuild(typeInfo: _mapper.typeInfoHandler.getTypeInfo(discriminatorType)));
         if (value is Type) {
           return _mapper.typeInfoHandler.getTypeInfo(value);
@@ -273,7 +268,7 @@ class DeserializationHandler {
       String? jsonNameForVisitor;
 
       if (meta?.flatten == true) {
-        finalValueForVisitor = this.deserializeObject(jsonMap.map, propertyContext.reBuild(jsonPropertyMeta: null));
+        finalValueForVisitor = deserializeObject(jsonMap.map, propertyContext.reBuild(jsonPropertyMeta: null));
         jsonNameForVisitor = context.transformIdentifier(meta?.name ?? name);
       } else {
         final property = _mapper.propertyHandler.resolveProperty(
@@ -288,7 +283,7 @@ class DeserializationHandler {
                     : defaultValueFromCallback);
         jsonNameForVisitor = property.name;
         if (property.raw) {
-            finalValueForVisitor = this.deserializeObject(property.value, propertyContext);
+            finalValueForVisitor = deserializeObject(property.value, propertyContext);
         } else {
             finalValueForVisitor = property.value;
         }

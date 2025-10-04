@@ -1,7 +1,6 @@
 import 'dart:convert' show JsonDecoder;
 
 import '../index.dart';
-import 'base_converter.dart';
 
 final mapConverter = MapConverter();
 

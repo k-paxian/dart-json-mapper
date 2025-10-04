@@ -2,7 +2,6 @@ import 'dart:collection';
 
 import '../class_info.dart';
 import './value_decorators.dart';
-import '../globals.dart';
 
 /// Provides enhanced type information based on `Type.toString()` value
 class TypeInfo {

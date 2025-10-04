@@ -1,4 +1,3 @@
-import '../../globals.dart';
 import '../../identifier_casing.dart';
 import 'injectable_values.dart';
 
