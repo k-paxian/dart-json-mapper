@@ -1,6 +1,5 @@
 library json_mapper.test;
 
-import 'package:reflectable/reflectable.dart';
 import 'package:starlink/starlink.dart' show starlinkGeneratedAdapter;
 import 'package:unit_testing/model.dart' show compactOptions;
 import 'package:unit_testing/unit_testing.dart'
