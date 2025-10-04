@@ -1,16 +1,16 @@
 import 'dart:convert' show JsonEncoder, JsonDecoder;
 import 'dart:math';
 
-import 'package:collection/collection.dart' show IterableExtension;
 import 'package:dart_json_mapper/src/model/index.dart';
-import 'package:reflectable/reflectable.dart' show InstanceMirror, MethodMirror;
 
 import 'class_info.dart';
 import 'errors.dart';
 import 'globals.dart';
 import 'json_map.dart';
+import 'logic/converter_handler.dart';
 import 'logic/deserialization_handler.dart';
 import 'logic/field_handler.dart';
+import 'logic/property_handler.dart';
 import 'logic/reflection_handler.dart';
 import 'logic/serialization_handler.dart';
 import 'logic/type_info_handler.dart';
@@ -169,7 +169,7 @@ class JsonMapper {
   /// Wipes the internal caches
   void clearCache() {
     processedObjects.clear();
-    convertedValuesCache.clear();
+    converterHandler.clearCache();
   }
 
   static final JsonMapper instance = JsonMapper._internal();
@@ -181,17 +181,11 @@ class JsonMapper {
   final Map<Type, ValueDecoratorFunction> inlineValueDecorators = {};
   final Map<Type, TypeInfo> typeInfoCache = {};
   final Map<dynamic, Type> discriminatorToType = {};
-  final Map<
-          ICustomConverter?,
-          Map<ConversionDirection,
-              Map<DeserializationContext?, Map<dynamic, dynamic>>>>
-      convertedValuesCache = {};
-
   late final TypeInfoHandler typeInfoHandler;
   late final SerializationHandler serializationHandler;
   late final DeserializationHandler deserializationHandler;
-
-  Map<Type, ICustomConverter> converters = {};
+  late final ConverterHandler converterHandler;
+  late final PropertyHandler propertyHandler;
   Map<int, ITypeInfoDecorator> typeInfoDecorators = {};
   Map<Type, ValueDecoratorFunction> valueDecorators = {};
   Map<Type, dynamic> enumValues = {};
@@ -212,17 +206,19 @@ class JsonMapper {
     typeInfoHandler = TypeInfoHandler(this);
     serializationHandler = SerializationHandler(this);
     deserializationHandler = DeserializationHandler(this);
+    converterHandler = ConverterHandler(this);
+    propertyHandler = PropertyHandler(this);
     useAdapter(dartCoreAdapter);
     useAdapter(dartCollectionAdapter);
   }
 
   void _updateInternalMaps() {
-    convertedValuesCache.clear();
+    converterHandler.clearCache();
     discriminatorToType.clear();
     typeInfoCache.clear();
 
     enumValues = _enumValues;
-    converters = _converters;
+    converterHandler.converters = _converters;
     typeInfoDecorators = _typeInfoDecorators;
     valueDecorators = _valueDecorators;
 
@@ -312,64 +308,6 @@ class JsonMapper {
     return result;
   }
 
-  ICustomConverter? getConverter(
-      JsonProperty? jsonProperty, TypeInfo typeInfo) {
-    final result = jsonProperty?.converter ??
-        converters[typeInfo.type!] ??
-        converters[typeInfo.genericType] ??
-        (enumValues[typeInfo.type!] != null ? converters[Enum] : null) ??
-        converters[converters.keys.firstWhereOrNull(
-            (Type type) => type.toString() == typeInfo.typeName)];
-
-    if (result is ICustomEnumConverter) {
-      (result as ICustomEnumConverter)
-          .setEnumDescriptor(getEnumDescriptor(enumValues[typeInfo.type!]));
-    }
-    return result;
-  }
-
-  IEnumDescriptor? getEnumDescriptor(dynamic descriptor) {
-    if (descriptor is Iterable) {
-      return EnumDescriptor(values: descriptor);
-    }
-    if (descriptor is IEnumDescriptor) {
-      return descriptor;
-    }
-    return null;
-  }
-
-  dynamic getConvertedValue(ICustomConverter converter, dynamic value,
-      DeserializationContext context) {
-    final direction = context.direction;
-    if (convertedValuesCache.containsKey(converter) &&
-        convertedValuesCache[converter]!.containsKey(direction) &&
-        convertedValuesCache[converter]![direction]!.containsKey(context) &&
-        convertedValuesCache[converter]![direction]![context]!
-            .containsKey(value)) {
-      return convertedValuesCache[converter]![direction]![context]![value];
-    }
-
-    final computedValue = direction == ConversionDirection.fromJson
-        ? converter.fromJSON(value, context)
-        : converter.toJSON(value, context as SerializationContext);
-    convertedValuesCache.putIfAbsent(
-        converter,
-        () => {
-              direction: {
-                context: {value: computedValue}
-              }
-            });
-    convertedValuesCache[converter]!.putIfAbsent(
-        direction,
-        () => {
-              context: {value: computedValue}
-            });
-    convertedValuesCache[converter]![direction]!
-        .putIfAbsent(context, () => {value: computedValue});
-    convertedValuesCache[converter]![direction]![context]!
-        .putIfAbsent(value, () => computedValue);
-    return computedValue;
-  }
 
   dynamic applyValueDecorator(dynamic value, TypeInfo typeInfo) {
     if (value == null) {
@@ -384,152 +322,5 @@ class JsonMapper {
     return value;
   }
 
-  void enumeratePublicProperties(InstanceMirror instanceMirror,
-      JsonMap? jsonMap, DeserializationContext context, Function visitor) {
-    final classInfo = ClassInfo.fromCache(instanceMirror.type, classes);
-    final classMeta = classInfo.getMeta(context.options.scheme);
 
-    for (var name in classInfo.publicFieldNames) {
-      final declarationMirror = classInfo.getDeclarationMirror(name);
-      if (declarationMirror == null) {
-        continue;
-      }
-      final declarationType = ReflectionHandler.getDeclarationType(declarationMirror);
-      final isGetterOnly = classInfo.isGetterOnly(name);
-      final meta = classInfo.getDeclarationMeta(
-          declarationMirror, context.options.scheme);
-      if (meta == null &&
-          Json.getProcessAnnotatedMembersOnly(classMeta, context.options) == true) {
-        continue;
-      }
-
-      if (FieldHandler.isFieldIgnored(classMeta, meta, context.options)) {
-        continue;
-      }
-      final propertyContext =
-          context.reBuild(classMeta: classMeta, jsonPropertyMeta: meta);
-      final property = resolveProperty(
-          name, jsonMap, propertyContext, classMeta, meta, (name, jsonName, _) {
-        var result = instanceMirror.invokeGetter(name);
-        if (result == null && jsonMap != null) {
-          result = jsonMap.getPropertyValue(jsonName);
-        }
-        return result;
-      });
-
-      FieldHandler.checkFieldConstraints(
-          property.value, name, jsonMap?.hasProperty(property.name), meta);
-
-      if (FieldHandler.isFieldIgnoredByValue(
-          property.value, classMeta, meta, propertyContext.options)) {
-        continue;
-      }
-      final typeInfo =
-          typeInfoHandler.getDeclarationTypeInfo(declarationType, property.value?.runtimeType);
-      visitor(name, property, isGetterOnly, meta, getConverter(meta, typeInfo),
-          typeInfo);
-    }
-
-    classInfo.enumerateJsonGetters((MethodMirror mm, JsonProperty meta) {
-      final declarationType = ReflectionHandler.getDeclarationType(mm);
-      final propertyContext =
-          context.reBuild(classMeta: classMeta, jsonPropertyMeta: meta);
-      final property = resolveProperty(
-          mm.simpleName, jsonMap, propertyContext, classMeta, meta,
-          (name, jsonName, _) {
-        var result = instanceMirror.invoke(name, []);
-        if (result == null && jsonMap != null) {
-          result = jsonMap.getPropertyValue(jsonName);
-        }
-        return result;
-      });
-
-      FieldHandler.checkFieldConstraints(property.value, mm.simpleName,
-          jsonMap?.hasProperty(property.name), meta);
-      if (FieldHandler.isFieldIgnoredByValue(
-          property.value, classMeta, meta, context.options)) {
-        return;
-      }
-      final typeInfo =
-          typeInfoHandler.getDeclarationTypeInfo(declarationType, property.value?.runtimeType);
-      visitor(mm.simpleName, property, true, meta,
-          getConverter(meta, typeInfo), typeInfoHandler.getTypeInfo(declarationType));
-    }, context.options.scheme);
-  }
-
-  PropertyDescriptor resolveProperty(
-      String name,
-      JsonMap? jsonMap,
-      DeserializationContext context,
-      Json? classMeta,
-      JsonProperty? meta,
-      Function getValueByName) {
-    String? jsonName = name;
-
-    if (meta != null && meta.name != null) {
-      jsonName = JsonProperty.getPrimaryName(meta);
-    }
-    jsonName = context.transformIdentifier(jsonName!);
-    var value = getValueByName(name, jsonName, meta?.defaultValue);
-    if (jsonMap != null &&
-        meta != null &&
-        (value == null || !jsonMap.hasProperty(jsonName))) {
-      final initialValue = value;
-      for (final alias in JsonProperty.getAliases(meta)!) {
-        final targetJsonName = transformIdentifierCaseStyle(
-            alias, context.targetCaseStyle, context.sourceCaseStyle);
-        if (value != initialValue || !jsonMap.hasProperty(targetJsonName)) {
-          continue;
-        }
-        jsonName = targetJsonName;
-        value = jsonMap.getPropertyValue(jsonName);
-      }
-    }
-    if (meta != null &&
-        meta.inject == true &&
-        context.options.injectableValues != null) {
-      final injectionJsonMap = JsonMap(context.options.injectableValues!);
-      if (injectionJsonMap.hasProperty(jsonName!)) {
-        value = injectionJsonMap.getPropertyValue(jsonName);
-        return PropertyDescriptor(jsonName, value, false);
-      } else {
-        return PropertyDescriptor(jsonName, null, false);
-      }
-    }
-    if (jsonName == JsonProperty.parentReference) {
-      return PropertyDescriptor(
-          jsonName!, context.parentObjectInstances!.last, false);
-    }
-    if (value == null &&
-        meta?.defaultValue != null &&
-        FieldHandler.isFieldIgnoredByDefault(
-            meta, classMeta, context.options as SerializationOptions)) {
-      return PropertyDescriptor(jsonName!, meta?.defaultValue, true);
-    }
-    return PropertyDescriptor(jsonName!, value, true);
-  }
-
-  void configureConverter(
-      ICustomConverter converter, DeserializationContext context,
-      {dynamic value}) {
-    if (converter is ICompositeConverter) {
-      (converter as ICompositeConverter).setGetConverterFunction(getConverter);
-      (converter as ICompositeConverter)
-          .setGetConvertedValueFunction(getConvertedValue);
-    }
-    if (converter is ICustomIterableConverter) {
-      (converter as ICustomIterableConverter).setIterableInstance(value);
-    }
-    if (converter is ICustomMapConverter) {
-      final instance = value ?? (context.options.template);
-      (converter as ICustomMapConverter).setMapInstance(instance);
-    }
-    if (converter is IRecursiveConverter) {
-      (converter as IRecursiveConverter).setSerializeObjectFunction(
-          (o, context) => serializationHandler.serializeObject(o, context));
-      (converter as IRecursiveConverter).setDeserializeObjectFunction((o,
-              context, type) =>
-          deserializationHandler.deserializeObject(o, context.reBuild(typeInfo: typeInfoHandler.getTypeInfo(type))));
-    }
-  }
 }

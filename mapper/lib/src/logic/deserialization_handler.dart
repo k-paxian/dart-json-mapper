@@ -21,17 +21,17 @@ class DeserializationHandler {
       return null;
     }
     var typeInfo = context.typeInfo!;
-    final converter = _mapper.getConverter(context.jsonPropertyMeta, typeInfo);
+    final converter = _mapper.converterHandler.getConverter(context.jsonPropertyMeta, typeInfo);
     if (converter != null) {
-      _mapper.configureConverter(converter, context);
+      _mapper.converterHandler.configureConverter(converter, context);
       if (typeInfo.isIterable &&
           (converter is ICustomIterableConverter &&
               converter is! DefaultIterableConverter)) {
         return _mapper.applyValueDecorator(
-            _mapper.getConvertedValue(converter, jsonValue, context), typeInfo);
+            _mapper.converterHandler.getConvertedValue(converter, jsonValue, context), typeInfo);
       }
       return _mapper.applyValueDecorator(
-          _mapper.getConvertedValue(converter, jsonValue, context), typeInfo);
+          _mapper.converterHandler.getConvertedValue(converter, jsonValue, context), typeInfo);
     }
 
     dynamic convertedJsonValue =
@@ -88,7 +88,7 @@ class DeserializationHandler {
         .toList()
       ..addAll(positionalArgumentNames);
 
-    _mapper.enumeratePublicProperties(im, jsonMap, context, (name, property,
+    _mapper.propertyHandler.enumeratePublicProperties(im, jsonMap, context, (name, property,
         isGetterOnly, JsonProperty? meta, converter, TypeInfo typeInfo) {
       final propertyContext = context.reBuild(
           parentObjectInstances: [
@@ -276,7 +276,7 @@ class DeserializationHandler {
         finalValueForVisitor = this.deserializeObject(jsonMap.map, propertyContext.reBuild(jsonPropertyMeta: null));
         jsonNameForVisitor = context.transformIdentifier(meta?.name ?? name);
       } else {
-        final property = _mapper.resolveProperty(
+        final property = _mapper.propertyHandler.resolveProperty(
             name,
             jsonMap,
             propertyContext,
