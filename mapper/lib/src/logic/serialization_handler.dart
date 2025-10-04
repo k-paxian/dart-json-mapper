@@ -20,11 +20,11 @@ class SerializationHandler {
     }
 
     final im = ReflectionHandler.safeGetInstanceMirror(object);
-    final converter = _mapper.getConverter(
+    final converter = _mapper.converterHandler.getConverter(
         context!.jsonPropertyMeta, _mapper.typeInfoHandler.getTypeInfo(object.runtimeType));
     if (converter != null) {
-      _mapper.configureConverter(converter, context, value: object);
-      return _mapper.getConvertedValue(converter, object, context);
+      _mapper.converterHandler.configureConverter(converter, context, value: object);
+      return _mapper.converterHandler.getConvertedValue(converter, object, context);
     }
 
     if (im == null) {
@@ -60,7 +60,7 @@ class SerializationHandler {
       }
     }
     _dumpDiscriminatorToObjectProperty(result, im.type, context.options);
-    _mapper.enumeratePublicProperties(im, null, context, (name, property, isGetterOnly,
+    _mapper.propertyHandler.enumeratePublicProperties(im, null, context, (name, property, isGetterOnly,
         JsonProperty? meta, converter, TypeInfo typeInfo) {
       dynamic convertedValue;
       final propertyContext = context.reBuild(
@@ -104,11 +104,11 @@ class SerializationHandler {
           return;
         }
 
-        final actualConverter = _mapper.getConverter(meta, typeInfo);
+        final actualConverter = _mapper.converterHandler.getConverter(meta, typeInfo);
         if (actualConverter != null) {
           final valueToConvert = property.value ?? meta?.defaultValue;
-          _mapper.configureConverter(actualConverter, propertyContext, value: valueToConvert);
-          convertedValue = _mapper.getConvertedValue(actualConverter, valueToConvert, propertyContext);
+          _mapper.converterHandler.configureConverter(actualConverter, propertyContext, value: valueToConvert);
+          convertedValue = _mapper.converterHandler.getConvertedValue(actualConverter, valueToConvert, propertyContext);
         } else {
           convertedValue = this.serializeObject(property.value, propertyContext);
         }
