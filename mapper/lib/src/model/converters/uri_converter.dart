@@ -1,5 +1,4 @@
 import '../index.dart';
-import 'base_converter.dart';
 
 const uriConverter = UriConverter();
 

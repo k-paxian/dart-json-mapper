@@ -2,7 +2,6 @@ import 'dart:convert' show base64Decode, base64Encode;
 import 'dart:typed_data' show Uint8List;
 
 import '../index.dart';
-import 'base_converter.dart';
 
 const uint8ListConverter = Uint8ListConverter();
 

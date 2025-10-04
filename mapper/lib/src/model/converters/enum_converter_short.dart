@@ -1,8 +1,6 @@
 import 'package:collection/collection.dart' show IterableExtension;
 
-import '../../identifier_casing.dart';
 import '../index.dart';
-import 'base_converter.dart';
 
 final defaultEnumConverter = enumConverterShort;
 final enumConverterShort = EnumConverterShort();

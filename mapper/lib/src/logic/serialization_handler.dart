@@ -1,12 +1,6 @@
-import 'dart:convert' show JsonEncoder, JsonDecoder;
+import 'dart:convert' show JsonDecoder;
 
 import 'package:dart_json_mapper/dart_json_mapper.dart';
-
-import '../class_info.dart';
-import '../errors.dart';
-import '../identifier_casing.dart';
-import '../json_map.dart';
-import '../model/index.dart';
 import 'reflection_handler.dart';
 
 class SerializationHandler {
@@ -83,7 +77,7 @@ class SerializationHandler {
       } else {
         if (meta?.flatten == true) {
           final Map flattenedPropertiesMap =
-              this.serializeObject(property.value, propertyContext);
+              serializeObject(property.value, propertyContext);
           final metaName = meta?.name;
           final fieldPrefixWords = metaName != null
               ? toWords(metaName, propertyContext.caseStyle).join(' ')
@@ -110,7 +104,7 @@ class SerializationHandler {
           _mapper.converterHandler.configureConverter(actualConverter, propertyContext, value: valueToConvert);
           convertedValue = _mapper.converterHandler.getConvertedValue(actualConverter, valueToConvert, propertyContext);
         } else {
-          convertedValue = this.serializeObject(property.value, propertyContext);
+          convertedValue = serializeObject(property.value, propertyContext);
         }
       }
       result.setPropertyValue(property.name, convertedValue ?? meta?.defaultValue);

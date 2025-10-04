@@ -1,7 +1,6 @@
 import 'package:meta/meta_meta.dart';
 import 'package:reflectable/reflectable.dart';
 
-import '../identifier_casing.dart';
 import 'index.dart';
 
 /// [jsonConstructor] is used as a shorthand metadata w/o "()"

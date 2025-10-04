@@ -1,7 +1,6 @@
 import 'dart:convert' show JsonEncoder;
 
 import '../index.dart';
-import 'base_converter.dart';
 
 const defaultConverter = DefaultConverter();
 

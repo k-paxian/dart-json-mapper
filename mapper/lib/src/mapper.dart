@@ -5,8 +5,6 @@ import 'package:dart_json_mapper/src/model/index.dart';
 
 import 'class_info.dart';
 import 'errors.dart';
-import 'globals.dart';
-import 'json_map.dart';
 import 'logic/converter_handler.dart';
 import 'logic/deserialization_handler.dart';
 import 'logic/property_handler.dart';
