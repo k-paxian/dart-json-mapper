@@ -7,7 +7,7 @@ import '../errors.dart';
 import '../identifier_casing.dart';
 import '../json_map.dart';
 import '../model/index.dart';
-import 'field_handler.dart';
+import 'property_handler.dart';
 import 'reflection_handler.dart';
 
 class DeserializationHandler {
@@ -305,7 +305,7 @@ class DeserializationHandler {
     _enumerateConstructorParameters(
         cm, jsonMap, context, (param) => param.isNamed, (param, name, jsonName,
             classMeta, JsonProperty? meta, value, TypeInfo typeInfo) {
-      if (!FieldHandler.isFieldIgnoredByValue(value, classMeta, meta, context.options)) {
+      if (!PropertyHandler.isFieldIgnoredByValue(value, classMeta, meta, context.options)) {
         result[Symbol(name)] = value;
       }
     });
@@ -322,7 +322,7 @@ class DeserializationHandler {
         (param, name, jsonName, classMeta, JsonProperty? meta, value,
             TypeInfo typeInfo) {
       positionalArgumentNames.add(name);
-      result.add(FieldHandler.isFieldIgnoredByValue(value, classMeta, meta, context.options)
+      result.add(PropertyHandler.isFieldIgnoredByValue(value, classMeta, meta, context.options)
           ? null
           : value);
     });

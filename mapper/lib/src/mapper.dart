@@ -9,7 +9,6 @@ import 'globals.dart';
 import 'json_map.dart';
 import 'logic/converter_handler.dart';
 import 'logic/deserialization_handler.dart';
-import 'logic/field_handler.dart';
 import 'logic/property_handler.dart';
 import 'logic/reflection_handler.dart';
 import 'logic/serialization_handler.dart';

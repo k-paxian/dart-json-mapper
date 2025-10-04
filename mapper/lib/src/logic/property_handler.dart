@@ -2,15 +2,65 @@ import 'package:dart_json_mapper/src/model/index.dart';
 import 'package:reflectable/reflectable.dart' show InstanceMirror, MethodMirror;
 
 import '../class_info.dart';
+import '../errors.dart';
 import '../json_map.dart';
 import '../mapper.dart';
-import 'field_handler.dart';
 import 'reflection_handler.dart';
 
 class PropertyHandler {
   final JsonMapper _mapper;
 
   PropertyHandler(this._mapper);
+
+  static bool isNullableField(JsonProperty? meta) =>
+      !(JsonProperty.isRequired(meta) || JsonProperty.isNotNull(meta));
+
+  static bool isFieldIgnored(
+          [Json? classMeta,
+          JsonProperty? meta,
+          DeserializationOptions? options]) =>
+      (meta != null &&
+          (meta.ignore == true ||
+              ((meta.ignoreForSerialization == true ||
+                      JsonProperty.hasParentReference(meta) ||
+                      meta.inject == true) &&
+                  options is SerializationOptions) ||
+              (meta.ignoreForDeserialization == true &&
+                  options is! SerializationOptions)) &&
+          isNullableField(meta));
+
+  static bool isFieldIgnoredByDefault(
+          JsonProperty? meta, Json? classMeta, SerializationOptions options) =>
+      meta?.ignoreIfDefault == true ||
+      classMeta?.ignoreDefaultMembers == true ||
+      options.ignoreDefaultMembers == true;
+
+  static bool isFieldIgnoredByValue(
+          [dynamic value,
+          Json? classMeta,
+          JsonProperty? meta,
+          DeserializationOptions? options]) =>
+      ((meta != null &&
+              (isFieldIgnored(classMeta, meta, options) ||
+                  meta.ignoreIfNull == true && value == null)) ||
+          (options is SerializationOptions &&
+              (((options.ignoreNullMembers == true ||
+                          classMeta?.ignoreNullMembers == true) &&
+                      value == null) ||
+                  ((isFieldIgnoredByDefault(meta, classMeta, options)) &&
+                      JsonProperty.isDefaultValue(meta, value) == true)))) &&
+      isNullableField(meta);
+
+  static void checkFieldConstraints(dynamic value, String name,
+      dynamic hasJsonProperty, JsonProperty? fieldMeta) {
+    if (JsonProperty.isNotNull(fieldMeta) &&
+        (hasJsonProperty == false || (value == null))) {
+      throw FieldCannotBeNullError(name, message: fieldMeta!.notNullMessage);
+    }
+    if (hasJsonProperty == false && JsonProperty.isRequired(fieldMeta)) {
+      throw FieldIsRequiredError(name, message: fieldMeta!.requiredMessage);
+    }
+  }
 
   void enumeratePublicProperties(InstanceMirror instanceMirror,
       JsonMap? jsonMap, DeserializationContext context, Function visitor) {
@@ -31,7 +81,7 @@ class PropertyHandler {
         continue;
       }
 
-      if (FieldHandler.isFieldIgnored(classMeta, meta, context.options)) {
+      if (isFieldIgnored(classMeta, meta, context.options)) {
         continue;
       }
       final propertyContext =
@@ -45,10 +95,10 @@ class PropertyHandler {
         return result;
       });
 
-      FieldHandler.checkFieldConstraints(
+      checkFieldConstraints(
           property.value, name, jsonMap?.hasProperty(property.name), meta);
 
-      if (FieldHandler.isFieldIgnoredByValue(
+      if (isFieldIgnoredByValue(
           property.value, classMeta, meta, propertyContext.options)) {
         continue;
       }
@@ -72,9 +122,9 @@ class PropertyHandler {
         return result;
       });
 
-      FieldHandler.checkFieldConstraints(property.value, mm.simpleName,
+      checkFieldConstraints(property.value, mm.simpleName,
           jsonMap?.hasProperty(property.name), meta);
-      if (FieldHandler.isFieldIgnoredByValue(
+      if (isFieldIgnoredByValue(
           property.value, classMeta, meta, context.options)) {
         return;
       }
@@ -130,7 +180,7 @@ class PropertyHandler {
     }
     if (value == null &&
         meta?.defaultValue != null &&
-        FieldHandler.isFieldIgnoredByDefault(
+        isFieldIgnoredByDefault(
             meta, classMeta, context.options as SerializationOptions)) {
       return PropertyDescriptor(jsonName!, meta?.defaultValue, true);
     }
