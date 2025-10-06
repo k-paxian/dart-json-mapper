@@ -19,15 +19,15 @@ class PropertyHandler {
           [Json? classMeta,
           JsonProperty? meta,
           DeserializationOptions? options]) =>
-      (meta != null &&
-          (meta.ignore == true ||
-              ((meta.ignoreForSerialization == true ||
-                      JsonProperty.hasParentReference(meta) ||
-                      meta.inject == true) &&
-                  options is SerializationOptions) ||
-              (meta.ignoreForDeserialization == true &&
-                  options is! SerializationOptions)) &&
-          isNullableField(meta));
+      meta != null &&
+      (meta.ignore == true ||
+          ((meta.ignoreForSerialization == true ||
+                  JsonProperty.hasParentReference(meta) ||
+                  meta.inject == true) &&
+              options is SerializationOptions) ||
+          (meta.ignoreForDeserialization == true &&
+              options is! SerializationOptions)) &&
+      isNullableField(meta);
 
   static bool isFieldIgnoredByDefault(
           JsonProperty? meta, Json? classMeta, SerializationOptions options) =>

@@ -29,14 +29,14 @@ class DeserializationHandler {
           _mapper.converterHandler.getConvertedValue(converter, jsonValue, context), typeInfo);
     }
 
-    dynamic convertedJsonValue =
-        JsonMap.isValidJSON(jsonValue) ? JsonDecoder().convert(jsonValue) : jsonValue;
+    final convertedJsonValue =
+        JsonMap.isValidJSON(jsonValue) ? const JsonDecoder().convert(jsonValue) : jsonValue;
 
     if (convertedJsonValue is String && typeInfo.type is Type) {
       return _mapper.typeInfoHandler.getTypeByStringName(convertedJsonValue.replaceAll("\"", ""));
     }
 
-    final jsonMap = JsonMap(
+    var jsonMap = JsonMap(
         convertedJsonValue, null, context.parentJsonMaps as List<JsonMap>?);
     typeInfo =
         _detectObjectType(null, context.typeInfo!.type, jsonMap, context) ??
@@ -47,7 +47,8 @@ class DeserializationHandler {
     if (classInfo == null) {
       throw MissingAnnotationOnTypeError(typeInfo.type);
     }
-    jsonMap.jsonMeta = classInfo.getMeta(context.options.scheme);
+    jsonMap = JsonMap(jsonMap.map, classInfo.getMeta(context.options.scheme),
+        jsonMap.parentMaps);
 
     final namedArguments =
         _getNamedArguments(classInfo, jsonMap, context);

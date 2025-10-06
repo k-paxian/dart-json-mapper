@@ -1,9 +1,6 @@
 targets:
   $default:
     builders:
-      build_web_compilers:entrypoint:
-        generate_for:
-          - test/unit/*.dart
       dart_json_mapper:
         options:
           iterables: List, Set

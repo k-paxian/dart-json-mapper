@@ -32,7 +32,7 @@ class DateConverter extends BaseCustomConverter implements ICustomConverter {
   }
 
   DateFormat? getDateFormat([JsonProperty? jsonProperty]) {
-    String? format = getConverterParameter('format', jsonProperty);
+    final String? format = getConverterParameter('format', jsonProperty);
     return format != null ? DateFormat(format) : null;
   }
 }

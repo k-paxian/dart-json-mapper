@@ -20,24 +20,27 @@ final builtTypeInfoDecorator = BuiltTypeInfoDecorator();
 /// Type info decorator provides support for Built types like
 /// BuiltList, BuiltMap, BuiltSet
 class BuiltTypeInfoDecorator extends DefaultTypeInfoDecorator {
-  bool isBuiltList(TypeInfo typeInfo) =>
-      typeInfo.typeName!.indexOf('_BuiltList<') == 0 ||
-      typeInfo.typeName!.indexOf('BuiltList<') == 0;
-
-  bool isBuiltMap(TypeInfo typeInfo) =>
-      typeInfo.typeName!.indexOf('_BuiltMap<') == 0 ||
-      typeInfo.typeName!.indexOf('BuiltMap<') == 0;
-
-  bool isBuiltSet(TypeInfo typeInfo) =>
-      typeInfo.typeName!.indexOf('_BuiltSet<') == 0 ||
-      typeInfo.typeName!.indexOf('BuiltSet<') == 0;
+  final Map<Type, bool Function(TypeInfo)> _collectionTypePredicates = {
+    BuiltList: (TypeInfo typeInfo) =>
+        typeInfo.typeName!.startsWith('_BuiltList<') ||
+        typeInfo.typeName!.startsWith('BuiltList<'),
+    BuiltMap: (TypeInfo typeInfo) =>
+        typeInfo.typeName!.startsWith('_BuiltMap<') ||
+        typeInfo.typeName!.startsWith('BuiltMap<'),
+    BuiltSet: (TypeInfo typeInfo) =>
+        typeInfo.typeName!.startsWith('_BuiltSet<') ||
+        typeInfo.typeName!.startsWith('BuiltSet<'),
+  };
 
   @override
   TypeInfo decorate(TypeInfo typeInfo) {
     typeInfo = super.decorate(typeInfo);
-    typeInfo.isList = typeInfo.isList || isBuiltList(typeInfo);
-    typeInfo.isSet = typeInfo.isSet || isBuiltSet(typeInfo);
-    typeInfo.isMap = typeInfo.isMap || isBuiltMap(typeInfo);
+    typeInfo.isList =
+        typeInfo.isList || _collectionTypePredicates[BuiltList]!(typeInfo);
+    typeInfo.isSet =
+        typeInfo.isSet || _collectionTypePredicates[BuiltSet]!(typeInfo);
+    typeInfo.isMap =
+        typeInfo.isMap || _collectionTypePredicates[BuiltMap]!(typeInfo);
     typeInfo.isIterable =
         typeInfo.isIterable || typeInfo.isList || typeInfo.isSet;
     typeInfo.genericType = detectGenericType(typeInfo);
@@ -46,14 +49,10 @@ class BuiltTypeInfoDecorator extends DefaultTypeInfoDecorator {
 
   @override
   Type? detectGenericType(TypeInfo typeInfo) {
-    if (isBuiltList(typeInfo)) {
-      return BuiltList;
-    }
-    if (isBuiltSet(typeInfo)) {
-      return BuiltSet;
-    }
-    if (isBuiltMap(typeInfo)) {
-      return BuiltMap;
+    for (var entry in _collectionTypePredicates.entries) {
+      if (entry.value(typeInfo)) {
+        return entry.key;
+      }
     }
     return super.detectGenericType(typeInfo);
   }
