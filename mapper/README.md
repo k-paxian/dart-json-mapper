@@ -129,7 +129,7 @@ targets:
     builders:
       dart_json_mapper:
         generate_for:
-          # here should be listed entry point files having 'void main()' function
+      # here should be listed entry point files having 'void main()' function
           - lib/main.dart
       # dart_json_mapper is a wrapper around the reflectable builder.
       # This configuration is needed to prevent the original reflectable builder from running.
