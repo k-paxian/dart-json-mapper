@@ -29,6 +29,6 @@ targets:
       dart_json_mapper:
         options:
           iterables: List, Set
-      reflectable:
+      reflectable_builder:
         generate_for:
           - no/files

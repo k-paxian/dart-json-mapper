@@ -28,6 +28,8 @@ import 'test.special.cases.dart';
 import 'test.tuple.dart';
 import 'test.value.decorators.dart';
 import './test.raw_json.dart' as raw_json;
+import './test.cache_manager.dart';
+import './test.adapter_manager.dart';
 import './test_issue_234.dart';
 import './test_issue_225.dart';
 
@@ -36,6 +38,8 @@ void main() {
       serializationOptions: compactOptions,
       adapters: [starlinkGeneratedAdapter, unitTestingGeneratedAdapter]).info();
 
+  testCacheManager();
+  testAdapterManager();
   testIssue225();
   testIssue234();
   testScheme();

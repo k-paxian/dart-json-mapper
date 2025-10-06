@@ -35,15 +35,16 @@ class ClassInfo {
       {};
 
   Json? getMeta([dynamic scheme]) => _metaData.firstWhereOrNull((m) =>
-      (m is Json &&
-          ((scheme != null && m.scheme == scheme) ||
-              (scheme == null && m.scheme == null)))) as Json?;
+      m is Json &&
+      ((scheme != null && m.scheme == scheme) ||
+          (scheme == null && m.scheme == null))) as Json?;
 
   Json? getMetaWhere(Function whereFunction, [dynamic scheme]) =>
-      _metaData.firstWhereOrNull((m) => (m is Json &&
+      _metaData.firstWhereOrNull((m) =>
+          m is Json &&
           whereFunction(m) == true &&
           ((scheme != null && m.scheme == scheme) ||
-              (scheme == null && m.scheme == null)))) as Json?;
+              (scheme == null && m.scheme == null))) as Json?;
 
   JsonProperty? getDeclarationMeta(DeclarationMirror dm, [dynamic scheme]) =>
       getLastDeclarationMeta(dm, scheme);
@@ -51,9 +52,10 @@ class ClassInfo {
   List<JsonProperty> getAllDeclarationMeta(DeclarationMirror dm,
           [dynamic scheme]) =>
       lookupDeclarationMetaData(dm)
-          .where((m) => (m is JsonProperty &&
+          .where((m) =>
+              m is JsonProperty &&
               ((scheme != null && m.scheme == scheme) ||
-                  (scheme == null && m.scheme == null))))
+                  (scheme == null && m.scheme == null)))
           .toList()
           .cast<JsonProperty>();
 
@@ -61,17 +63,18 @@ class ClassInfo {
           [dynamic scheme]) =>
       lookupDeclarationMetaData(dm)
           .reversed
-          .where((m) => (m is JsonProperty &&
+          .where((m) =>
+              m is JsonProperty &&
               ((scheme != null && m.scheme == scheme) ||
-                  (scheme == null && m.scheme == null))))
+                  (scheme == null && m.scheme == null)))
           .cast<JsonProperty>()
           .firstOrNull;
 
   JsonConstructor? hasConstructorMeta(DeclarationMirror dm, [dynamic scheme]) =>
       lookupDeclarationMetaData(dm).firstWhereOrNull((m) =>
-          (m is JsonConstructor &&
-              ((scheme != null && m.scheme == scheme) ||
-                  (scheme == null && m.scheme == null)))) as JsonConstructor?;
+          m is JsonConstructor &&
+          ((scheme != null && m.scheme == scheme) ||
+              (scheme == null && m.scheme == null))) as JsonConstructor?;
 
   List<Object> get _metaData {
     return lookupClassMetaData(classMirror);

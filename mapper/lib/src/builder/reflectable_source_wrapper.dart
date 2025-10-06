@@ -74,7 +74,7 @@ JsonMapper initializeJsonMapper($initSignature) {''';
   }
 
   String get _libraryName {
-    return ('${inputLibrary.identifier.split('/').last.replaceAll('.dart', '').replaceAll('.', ' ').replaceAll('_', ' ')} generated adapter')
+    return '${inputLibrary.identifier.split('/').last.replaceAll('.dart', '').replaceAll('.', ' ').replaceAll('_', ' ')} generated adapter'
         .split(' ')
         .map((e) => capitalize(e))
         .join(' ')

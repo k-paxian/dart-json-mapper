@@ -1,6 +1,6 @@
 [![SWUbanner](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/banner2-direct.svg)](https://vshymanskyy.github.io/StandWithUkraine)
-[![Build Status][ci-badge]][ci-badge-url]
-[![pub package](https://img.shields.io/pub/v/dart_json_mapper.svg)](https://pub.dartlang.org/packages/dart_json_mapper)
+[![Build Status](https://github.com/k-paxian/dart-json-mapper/actions/workflows/ci.yaml/badge.svg)](https://github.com/k-paxian/dart-json-mapper/actions/workflows/ci.yaml)
+[![pub package](https://img.shields.io/pub/v/dart_json_mapper.svg)](https://pub.dev/packages/dart_json_mapper)
 [![Pub Points](https://img.shields.io/pub/points/dart_json_mapper)](https://pub.dev/packages/dart_json_mapper/score)
 
 This package allows programmers to annotate Dart objects to serialize/deserialize them to/from JSON.
@@ -10,20 +10,6 @@ This package allows programmers to annotate Dart objects to serialize/deserializ
 This library provides a powerful and flexible way to handle JSON serialization and deserialization in Dart. It is designed to be compatible with all Dart platforms, including Flutter, by avoiding `dart:mirrors`. The library is inspired by popular serialization libraries like Jackson, Gson, and Serde, offering a rich feature set with a simple and clean API.
 
 The core philosophy of this library is to keep your model classes clean and free of serialization logic. This is achieved through a powerful code generation mechanism that generates a single `*.mapper.g.dart` file for your entire project, containing all the necessary mapping logic.
-
-## Showcase
-
-Here are some of the key features of `dart_json_mapper`:
-
-- **Clean and Simple Setup**: Get started with just a few annotations and a single command to generate the mapping code.
-- **No Boilerplate**: No need to write any manual serialization/deserialization logic. The library handles everything for you.
-- **Highly Customizable**: A rich set of annotations and options allows you to customize every aspect of the serialization process.
-- **Powerful Features**: The library supports a wide range of features, including:
-    - **Inheritance and Mixins**: Serialize and deserialize complex object hierarchies with support for abstract classes and mixins.
-    - **Immutability**: Works seamlessly with immutable classes and `const` constructors.
-    - **Case Styles**: Automatically convert between different case styles (e.g., `camelCase` to `snake_case`).
-    - **Object Cloning**: Deep-clone objects with a single line of code.
-    - **And much more**: Check out the full list of features in the documentation below.
 
 ## Why dart_json_mapper?
 
@@ -39,11 +25,12 @@ This library's reflection mechanism is based on the [reflectable][3] library. Th
 
 While Google's `json_serializable` is the standard for JSON serialization in Dart, `dart_json_mapper` offers a different approach with a richer feature set. Here's a quick comparison:
 
-| Feature | `json_serializable` | `dart_json_mapper` |
-| --- | --- | --- |
-| **Code Generation** | Generates a separate `*.g.dart` file for each class. | Generates a single `main.mapper.g.dart` file for the entire project. |
-| **API & Boilerplate** | Requires a factory constructor (`fromJson`), a `toJson` method, and a mixin in your model classes. | Uses a central `JsonMapper` object for serialization, keeping your model classes clean. |
-| **Advanced Features** | Core serialization features, with custom converters for advanced scenarios. | Rich, built-in feature set, including polymorphism, object cloning, advanced mapping, and schemes. |
+| Feature                 | `json_serializable`                                                                                                      | `dart_json_mapper`                                                                                                                                    |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Code Generation**     | Generates a separate `*.g.dart` file for each class.                                                                     | Generates a single `main.mapper.g.dart` file for the entire project.                                                                                  |
+| **API & Boilerplate**   | Requires a factory constructor (`fromJson`), a `toJson` method, and a mixin in your model classes.                         | Uses a central `JsonMapper` object for serialization, keeping your model classes clean.                                                               |
+| **Advanced Features**   | Core serialization features, with custom converters for advanced scenarios.                                              | Rich, built-in feature set, including polymorphism, object cloning, advanced mapping, and schemes.                                                  |
+| **Community & Support** | Backed by Google and has a large, active community, making it a safe and reliable choice for most projects.              | A powerful and flexible alternative with a smaller community, ideal for projects that require its advanced features.                                 |
 
 In summary, `json_serializable` is the more standard, straightforward, and widely adopted solution from the Dart team. `dart_json_mapper` offers a more feature-rich, "batteries-included" experience with more powerful out-of-the-box capabilities, potentially at the cost of being a less common choice.
 
@@ -81,10 +68,10 @@ In summary, `json_serializable` is the more standard, straightforward, and widel
     * [URI Conversion](#uri-conversion)
 * [Adapters](#complementary-adapter-libraries)
     * [How to use adapter?](#complementary-adapter-libraries)
-    * [![pub package](https://img.shields.io/pub/v/dart_json_mapper_built.svg)](https://pub.dartlang.org/packages/dart_json_mapper_built) | [dart_json_mapper_built](adapters/built) | [Built Collection][16]
-    * [![pub package](https://img.shields.io/pub/v/dart_json_mapper_mobx.svg)](https://pub.dartlang.org/packages/dart_json_mapper_mobx) | [dart_json_mapper_mobx](adapters/mobx) | [MobX][7]
-    * [![pub package](https://img.shields.io/pub/v/dart_json_mapper_fixnum.svg)](https://pub.dartlang.org/packages/dart_json_mapper_fixnum) | [dart_json_mapper_fixnum](adapters/fixnum) | [Fixnum][8]
-    * [![pub package](https://img.shields.io/pub/v/dart_json_mapper_flutter.svg)](https://pub.dartlang.org/packages/dart_json_mapper_flutter) | [dart_json_mapper_flutter](adapters/flutter) | [Flutter][11]
+    * [![pub package](https://img.shields.io/pub/v/dart_json_mapper_built.svg)](https://pub.dev/packages/dart_json_mapper_built) | [dart_json_mapper_built](adapters/built) | [Built Collection][16]
+    * [![pub package](https://img.shields.io/pub/v/dart_json_mapper_mobx.svg)](https://pub.dev/packages/dart_json_mapper_mobx) | [dart_json_mapper_mobx](adapters/mobx) | [MobX][7]
+    * [![pub package](https://img.shields.io/pub/v/dart_json_mapper_fixnum.svg)](https://pub.dev/packages/dart_json_mapper_fixnum) | [dart_json_mapper_fixnum](adapters/fixnum) | [Fixnum][8]
+    * [![pub package](https://img.shields.io/pub/v/dart_json_mapper_flutter.svg)](https://pub.dev/packages/dart_json_mapper_flutter) | [dart_json_mapper_flutter](adapters/flutter) | [Flutter][11]
 
 ## Basic setup
 
@@ -103,35 +90,35 @@ Say, you have a dart program *main.dart* having some classes intended to be trav
 
 **lib/main.dart**
 ```dart
-import 'package:dart_json_mapper/dart_json_mapper.dart' show JsonMapper, jsonSerializable, JsonProperty;
+import 'package:dart_json_mapper/dart_json_mapper.dart'
+    show JsonMapper, jsonSerializable, JsonProperty;
 
 import 'main.mapper.g.dart' show initializeJsonMapper;
 
-@jsonSerializable // This annotation let instances of MyData travel to/from JSON
+@jsonSerializable
 class MyData {
-  int a = 123;
+  final int a;
+  @JsonProperty(name: 'd')
+  final String c;
 
   @JsonProperty(ignore: true)
-  bool b;
+  final bool b;
 
-  @JsonProperty(name: 'd')
-  String c;
-
-  MyData(this.a, this.b, this.c);
+  const MyData({required this.a, required this.b, required this.c});
 }
 
 void main() {
   initializeJsonMapper();
-  
-  print(JsonMapper.serialize(MyData(456, true, "yes")));
+
+  final myData = MyData(a: 456, b: true, c: 'yes');
+  final json = JsonMapper.serialize(myData);
+
+  print(json);
 }
 ```
 Output:
 ```json
-{ 
-  "a": 456,
-  "d": "yes"
-}
+{"a":456,"d":"yes"}
 ```
 
 Go ahead and create / update `build.yaml` file in your project root directory with the following snippet:
@@ -142,12 +129,11 @@ targets:
     builders:
       dart_json_mapper:
         generate_for:
-        # here should be listed entry point files having 'void main()' function
+      # here should be listed entry point files having 'void main()' function
           - lib/main.dart
-
-      # This part is needed to tell original reflectable builder to stay away
-      # it overrides default options for reflectable builder to an **empty** set of files
-      reflectable:
+      # dart_json_mapper is a wrapper around the reflectable builder.
+      # This configuration is needed to prevent the original reflectable builder from running.
+      reflectable_builder:
         generate_for:
           - no/files
 ```
@@ -176,30 +162,35 @@ provide [intl][2] based formatting patterns.
 
 **DateTime**
 ```dart
-@JsonProperty(converterParams: {'format': 'MM-dd-yyyy H:m:s'})
-DateTime lastPromotionDate = DateTime(2008, 05, 13, 22, 33, 44);
+@jsonSerializable
+class MyDates {
+  @JsonProperty(converterParams: {'format': 'MM-dd-yyyy H:m:s'})
+  final DateTime lastPromotionDate;
 
-@JsonProperty(converterParams: {'format': 'MM/dd/yyyy'})
-DateTime hireDate = DateTime(2003, 02, 28);
+  @JsonProperty(converterParams: {'format': 'MM/dd/yyyy'})
+  final DateTime hireDate;
+
+  const MyDates({required this.lastPromotionDate, required this.hireDate});
+}
 ```
 Output:
 ```json
-{
-"lastPromotionDate": "05-13-2008 22:33:44",
-"hireDate": "02/28/2003"
-}
+{"lastPromotionDate":"05-13-2008 22:33:44","hireDate":"02/28/2003"}
 ```
 
 **num**
 ```dart
-@JsonProperty(converterParams: {'format': '##.##'})
-num salary = 1200000.246;
+@jsonSerializable
+class MyNumbers {
+  @JsonProperty(converterParams: {'format': '##.##'})
+  final num salary;
+
+  const MyNumbers({required this.salary});
+}
 ```
 Output:
 ```json
-{
-"salary": "1200000.25"
-}
+{"salary":"1200000.25"}
 ```
 
 As well, it is possible to utilize `converterParams` map to provide custom
@@ -207,8 +198,7 @@ parameters to your [custom converters](#custom-types).
 
 ## Get or Set fields
 
-When relying on Dart `getters / setters`, no need to annotate them.
-But when you have custom `getter / setter` methods, you should provide annotations for them.
+When relying on Dart `getters / setters`, no need to annotate them. But when you have custom `getter / setter` methods, you should provide annotations for them.
 
 ```dart
 @jsonSerializable
@@ -230,22 +220,6 @@ class AllPrivateFields {
   @JsonProperty(name: 'lastName')
   String? getLastName() => _lastName;
 }
-
-// given
-final json = '''{"name":"Bob","lastName":"Marley"}''';
-
-// when
-final instance = JsonMapper.deserialize<AllPrivateFields>(json);
-
-// then
-expect(instance.name, 'Bob');
-expect(instance.getLastName(), 'Marley');
-
-// when
-final targetJson = JsonMapper.serialize(instance, SerializationOptions(indent: ''));
-
-// then
-expect(targetJson, json);
 ```
 
 ## Example with immutable class
@@ -256,41 +230,23 @@ enum Color { red, blue, green, brown, yellow, black, white }
 
 @jsonSerializable
 class Car {
-    @JsonProperty(name: 'modelName')
-    String model;
-    
-    Color color;
-    
-    @JsonProperty(ignore: true)
-    Car replacement;
-    
-    Car(this.model, this.color);
+  @JsonProperty(name: 'modelName')
+  final String model;
+  final Color color;
+
+  @JsonProperty(ignore: true)
+  final Car? replacement;
+
+  const Car({required this.model, required this.color, this.replacement});
 }
 
 @jsonSerializable
 class Immutable {
-    final int id;
-    final String name;
-    final Car car;
-    
-    const Immutable(this.id, this.name, this.car);
-}
+  final int id;
+  final String name;
+  final Car car;
 
-print(
-  JsonMapper.serialize(
-    Immutable(1, 'Bob', Car('Audi', Color.green))
-  )
-);
-``` 
-Output:
-```json
-{
- "id": 1,
- "name": "Bob",
- "car": {
-  "modelName": "Audi",
-  "color": "green"
- }
+  const Immutable({required this.id, required this.name, required this.car});
 }
 ```
 

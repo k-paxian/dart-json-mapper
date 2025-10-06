@@ -41,9 +41,9 @@ class SerializationHandler {
         processedObjectDescriptor.levelsCount > 1) {
       final allowanceIsSet =
           (jsonMeta != null && jsonMeta.allowCircularReferences! > 0);
-      final allowanceExceeded = (allowanceIsSet &&
+      final allowanceExceeded = allowanceIsSet &&
               processedObjectDescriptor.levelsCount >
-                  jsonMeta.allowCircularReferences!)
+                  jsonMeta.allowCircularReferences!
           ? true
           : null;
       if (allowanceExceeded == true) {

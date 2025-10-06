@@ -1,10 +1,11 @@
 import 'dart:convert' show JsonEncoder, JsonDecoder;
-import 'dart:math';
 
 import 'package:dart_json_mapper/src/model/index.dart';
 
 import 'class_info.dart';
 import 'errors.dart';
+import 'logic/adapter_manager.dart';
+import 'logic/cache_manager.dart';
 import 'logic/converter_handler.dart';
 import 'logic/deserialization_handler.dart';
 import 'logic/property_handler.dart';
@@ -23,12 +24,34 @@ class JsonMapper {
   static DeserializationOptions globalDeserializationOptions =
       defaultDeserializationOptions;
 
-  /// Converts an instance of Dart object to JSON String
-  static String serialize(Object? object, [SerializationOptions? options]) {
-    final context = SerializationContext(
+  static DeserializationContext _getDeserializationContext<T>(
+      [DeserializationOptions? options]) {
+    final targetOptions = options ?? JsonMapper.globalDeserializationOptions;
+    final targetType = T != dynamic
+        ? T
+        : targetOptions.template != null
+            ? targetOptions.template.runtimeType
+            : targetOptions.type ?? dynamic;
+    if (targetType == dynamic) {
+      throw MissingTypeForDeserializationError();
+    }
+    return DeserializationContext(targetOptions,
+        classMeta:
+            instance.classes[targetType]?.getMeta(targetOptions.scheme),
+        typeInfo: instance.typeInfoHandler.getTypeInfo(targetType));
+  }
+
+  static SerializationContext _getSerializationContext(
+      Object? object, SerializationOptions? options) {
+    instance.clearCache();
+    return SerializationContext(
         options ?? JsonMapper.globalSerializationOptions,
         typeInfo: instance.typeInfoHandler.getTypeInfo(object.runtimeType));
-    instance.clearCache();
+  }
+
+  /// Converts an instance of Dart object to JSON String
+  static String serialize(Object? object, [SerializationOptions? options]) {
+    final context = _getSerializationContext(object, options);
     return getJsonEncoder(context)
         .convert(instance.serializationHandler.serializeObject(object, context));
   }
@@ -39,25 +62,14 @@ class JsonMapper {
   /// [jsonValue] could be as of [Map<String, dynamic>] type, then it will be processed as is
   static T? deserialize<T>(dynamic jsonValue,
       [DeserializationOptions? options]) {
-    final targetOptions = options ?? JsonMapper.globalDeserializationOptions;
-    final targetType = T != dynamic
-        ? T
-        : targetOptions.template != null
-            ? targetOptions.template.runtimeType
-            : targetOptions.type ?? dynamic;
-    assert(targetType != dynamic
-        ? true
-        : throw MissingTypeForDeserializationError());
-    return instance.deserializationHandler.deserializeObject(
-        jsonValue != null
-            ? jsonValue is String
-                ? jsonDecoder.convert(jsonValue)
-                : jsonValue
-            : null,
-        DeserializationContext(targetOptions,
-            classMeta:
-                instance.classes[targetType]?.getMeta(targetOptions.scheme),
-            typeInfo: instance.typeInfoHandler.getTypeInfo(targetType))) as T?;
+    final context = _getDeserializationContext<T>(options);
+    final json = jsonValue != null
+        ? jsonValue is String
+            ? jsonDecoder.convert(jsonValue)
+            : jsonValue
+        : null;
+    return instance.deserializationHandler.deserializeObject(json, context)
+        as T?;
   }
 
   /// Converts Dart object to JSON String
@@ -81,11 +93,9 @@ class JsonMapper {
   /// Converts Dart object to `Map<String, dynamic>`
   static Map<String, dynamic>? toMap(Object? object,
       [SerializationOptions? options]) {
-    final context = SerializationContext(
-        options ?? JsonMapper.globalSerializationOptions,
-        typeInfo: instance.typeInfoHandler.getTypeInfo(object.runtimeType));
-    instance.clearCache();
-    final result = instance.serializationHandler.serializeObject(object, context);
+    final context = _getSerializationContext(object, options);
+    final result =
+        instance.serializationHandler.serializeObject(object, context);
     return result is Map<String, dynamic> ? result : null;
   }
 
@@ -139,33 +149,25 @@ class JsonMapper {
   /// Adapters are meant to be used as a pluggable extensions, widening
   /// the number of supported types to be seamlessly converted to/from JSON
   JsonMapper useAdapter(IJsonMapperAdapter adapter, [int? priority]) {
-    if (adapters.containsValue(adapter)) {
-      return this;
-    }
-    final nextPriority = priority ??
-        (adapters.keys.isNotEmpty
-            ? adapters.keys.reduce((value, item) => max(value, item)) + 1
-            : 0);
-    adapters[nextPriority] = adapter;
+    adapterManager.use(adapter, priority);
     _updateInternalMaps();
     return this;
   }
 
   /// De-registers previously registered adapter using [useAdapter] method
   JsonMapper removeAdapter(IJsonMapperAdapter adapter) {
-    adapters.removeWhere((priority, x) => x == adapter);
+    adapterManager.remove(adapter);
     _updateInternalMaps();
     return this;
   }
 
   /// Prints out current mapper configuration to the console
   /// List of currently registered adapters and their priorities
-  void info() =>
-      adapters.forEach((priority, adapter) => print('$priority : $adapter'));
+  void info() => adapterManager.info();
 
   /// Wipes the internal caches
   void clearCache() {
-    processedObjects.clear();
+    cacheManager.clear();
     converterHandler.clearCache();
   }
 
@@ -173,8 +175,8 @@ class JsonMapper {
   static final JsonDecoder jsonDecoder = JsonDecoder();
   final Map<Type, ClassInfo> classes = {};
   final Map<String, ClassInfo> mixins = {};
-  final Map<int, IJsonMapperAdapter> adapters = {};
-  final Map<String, ProcessedObjectDescriptor> processedObjects = {};
+  final CacheManager cacheManager = CacheManager();
+  final AdapterManager adapterManager = AdapterManager();
   final Map<Type, ValueDecoratorFunction> inlineValueDecorators = {};
   final Map<Type, TypeInfo> typeInfoCache = {};
   final Map<dynamic, Type> discriminatorToType = {};
@@ -195,7 +197,8 @@ class JsonMapper {
           : JsonEncoder(toEncodable(context));
 
   static dynamic toEncodable(SerializationContext context) =>
-      (Object? object) => instance.serializationHandler.serializeObject(object, context);
+      (Object? object) =>
+          instance.serializationHandler.serializeObject(object, context);
 
   factory JsonMapper() => instance;
 
@@ -210,15 +213,26 @@ class JsonMapper {
   }
 
   void _updateInternalMaps() {
+    _clearCachesAndMaps();
+    _populateMapsFromReflection();
+    _updateMapsFromAdapters();
+  }
+
+  void _clearCachesAndMaps() {
     converterHandler.clearCache();
     discriminatorToType.clear();
     typeInfoCache.clear();
+    classes.clear();
+    mixins.clear();
+    inlineValueDecorators.clear();
+  }
 
-    enumValues = _enumValues;
-    converterHandler.converters = _converters;
-    typeInfoDecorators = _typeInfoDecorators;
-    valueDecorators = _valueDecorators;
+  void _populateMapsFromReflection() {
+    _populateClassesAndDiscriminators();
+    _populateMixins();
+  }
 
+  void _populateClassesAndDiscriminators() {
     ReflectionHandler.enumerateAnnotatedClasses((classMirror) {
       final classInfo = ClassInfo.fromCache(classMirror, classes);
       final jsonMeta = classInfo.getMeta();
@@ -235,7 +249,9 @@ class JsonMapper {
             jsonMeta.discriminatorValue, () => classInfo.reflectedType!);
       }
     });
+  }
 
+  void _populateMixins() {
     ReflectionHandler.enumerateAnnotatedClasses((classMirror) {
       final classInfo = ClassInfo.fromCache(classMirror, classes);
       if (classInfo.superClass != null) {
@@ -251,60 +267,16 @@ class JsonMapper {
     });
   }
 
-  Map<Type, dynamic> get _enumValues {
-    final result = <Type, dynamic>{};
-    for (var adapter in adapters.values) {
-      result.addAll(adapter.enumValues);
-    }
-    return result;
+  void _updateMapsFromAdapters() {
+    enumValues = adapterManager.allEnumValues;
+    converterHandler.converters = adapterManager.allConverters;
+    typeInfoDecorators = adapterManager.allTypeInfoDecorators;
+    valueDecorators = adapterManager.allValueDecorators(inlineValueDecorators);
   }
-
-  Map<Type, ICustomConverter> get _converters {
-    final result = <Type, ICustomConverter>{};
-    for (var adapter in adapters.values) {
-      result.addAll(adapter.converters);
-    }
-    return result;
-  }
-
-  Map<Type, ValueDecoratorFunction> get _valueDecorators {
-    final result = <Type, ValueDecoratorFunction>{};
-    result.addAll(inlineValueDecorators);
-    for (var adapter in adapters.values) {
-      result.addAll(adapter.valueDecorators);
-    }
-    return result;
-  }
-
-  Map<int, ITypeInfoDecorator> get _typeInfoDecorators {
-    final result = <int, ITypeInfoDecorator>{};
-    for (var adapter in adapters.values) {
-      result.addAll(adapter.typeInfoDecorators);
-    }
-    return result;
-  }
-
-  String getObjectKey(Object object) =>
-      '${object.runtimeType}-${identityHashCode(object)}';
 
   ProcessedObjectDescriptor? getObjectProcessed(Object object, int level) {
-    ProcessedObjectDescriptor? result;
-
-    if (object.runtimeType.toString() == 'Null' ||
-        object.runtimeType.toString() == 'bool') {
-      return result;
-    }
-
-    final key = getObjectKey(object);
-    if (processedObjects.containsKey(key)) {
-      result = processedObjects[key];
-      result!.logUsage(level);
-    } else {
-      result = processedObjects[key] = ProcessedObjectDescriptor(object);
-    }
-    return result;
+    return cacheManager.getObjectProcessed(object, level);
   }
-
 
   dynamic applyValueDecorator(dynamic value, TypeInfo typeInfo) {
     if (value == null) {
@@ -318,6 +290,4 @@ class JsonMapper {
     }
     return value;
   }
-
-
 }

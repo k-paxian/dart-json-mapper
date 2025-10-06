@@ -8,13 +8,13 @@ import 'model/index.dart';
 class JsonMap {
   final pathDelimiter = '/';
 
-  Map map;
-  List<JsonMap>? parentMaps = [];
-  Json? jsonMeta;
+  final Map map;
+  final List<JsonMap>? parentMaps;
+  final Json? jsonMeta;
 
-  JsonMap(this.map, [this.jsonMeta, this.parentMaps]);
+  const JsonMap(this.map, [this.jsonMeta, this.parentMaps = const []]);
 
-  static final JsonDecoder _jsonDecoder = JsonDecoder();
+  static final JsonDecoder _jsonDecoder = const JsonDecoder();
 
   static bool isValidJSON(dynamic jsonValue) {
     try {

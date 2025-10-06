@@ -1,7 +1,7 @@
 targets:
   $default:
     builders:
-      reflectable:
+      reflectable_builder:
         generate_for:
           - no/files
       dart_json_mapper:
