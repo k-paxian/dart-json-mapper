@@ -34,6 +34,8 @@ While Google's `json_serializable` is the standard for JSON serialization in Dar
 
 In summary, `json_serializable` is the more standard, straightforward, and widely adopted solution from the Dart team. `dart_json_mapper` offers a more feature-rich, "batteries-included" experience with more powerful out-of-the-box capabilities, potentially at the cost of being a less common choice.
 
+![](banner.svg)
+
 * [Basic setup](#basic-setup)
 * [Annotations](#annotations)
 * [Builder](#builder)
@@ -80,7 +82,6 @@ dependencies:
   dart_json_mapper:
 dev_dependencies:
   build_runner:
-  dart_json_mapper_builder:
 ```
 
 Say, you have a dart program *main.dart* having some classes intended to be traveling to JSON and back.
@@ -128,12 +129,11 @@ targets:
     builders:
       dart_json_mapper:
         generate_for:
-          # In this example, we want to generate code for all files in the `lib` directory.
-          - lib/**.dart
-
+          # here should be listed entry point files having 'void main()' function
+          - lib/main.dart
       # dart_json_mapper is a wrapper around the reflectable builder.
       # This configuration is needed to prevent the original reflectable builder from running.
-      reflectable:
+      reflectable_builder:
         generate_for:
           - no/files
 ```
