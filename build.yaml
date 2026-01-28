@@ -1,0 +1,44 @@
+builders:
+  reflectable_helper:
+    target: ":dart_json_mapper"
+    import: "package:dart_json_mapper/builder_factory.dart"
+    builder_factories: ["reflectableHelperBuilder"]
+    build_extensions: {"$lib$": ["main.reflectable.helper.dart"]}
+    auto_apply: root_package
+    build_to: source
+    runs_before: ["dart_json_mapper"]
+    
+  dart_json_mapper:
+    target: ":dart_json_mapper"
+    import: "package:dart_json_mapper/builder_factory.dart"
+    builder_factories: ["dartJsonMapperBuilder"]
+    build_extensions: {".dart": [".mapper.g.dart"]}
+    auto_apply: root_package
+    build_to: source
+    required_inputs: [".reflectable.helper.dart"]
+    defaults:
+      options:
+        iterables: List, Set
+        extension: .mapper.g.dart
+        formatted: false
+      generate_for:
+        exclude:
+          - lib/**.dart
+        include:
+          - benchmark/**.dart
+          - bin/**.dart
+          - test/_*.dart
+          - example/**.dart
+          - lib/main.dart
+          - tool/**.dart
+          - web/**.dart
+
+targets:
+  $default:
+    builders:
+      dart_json_mapper:
+        options:
+          iterables: List, Set
+      reflectable:
+        generate_for:
+          - no/files
